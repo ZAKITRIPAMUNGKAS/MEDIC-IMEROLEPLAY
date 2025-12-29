@@ -968,7 +968,7 @@
     </div>
 
     <!-- Toast Notification Container -->
-    <div id="toastContainer" class="fixed top-32 left-1/2 transform -translate-x-1/2 z-[100000] flex flex-col items-center gap-3 pointer-events-none"></div>
+    <div id="toastContainer" class="fixed top-32 left-0 right-0 z-[100000] flex flex-col items-center gap-3 pointer-events-none"></div>
 
     <!-- Toast Template Styles -->
     <style>
