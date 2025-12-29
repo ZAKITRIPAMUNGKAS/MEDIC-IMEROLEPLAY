@@ -1232,7 +1232,7 @@
 
     <!-- Toast Notification Container -->
     <div id="toastContainer"
-        class="fixed top-6 left-1/2 transform -translate-x-1/2 z-[99999] flex flex-col items-center gap-3 pointer-events-none">
+        class="fixed top-32 left-1/2 transform -translate-x-1/2 z-[100000] flex flex-col items-center gap-3 pointer-events-none">
     </div>
 
     <!-- Toast Template Styles -->
@@ -1394,20 +1394,20 @@
             toast.className = `toast toast-${type}`;
             toast.style.setProperty('--duration', `${duration}ms`);
             toast.innerHTML = `
-                        <div class="toast-icon">
-                            <i class="fas ${icons[type]} text-white text-lg"></i>
-                        </div>
-                        <div class="toast-content">
-                            <div class="toast-title">${title}</div>
-                            <div class="toast-message">${message}</div>
-                        </div>
-                        <button class="toast-close" onclick="closeToast(this.parentElement)">
-                            <i class="fas fa-times text-sm"></i>
-                        </button>
-                        <div class="toast-progress">
-                            <div class="toast-progress-bar"></div>
-                        </div>
-                    `;
+                            <div class="toast-icon">
+                                <i class="fas ${icons[type]} text-white text-lg"></i>
+                            </div>
+                            <div class="toast-content">
+                                <div class="toast-title">${title}</div>
+                                <div class="toast-message">${message}</div>
+                            </div>
+                            <button class="toast-close" onclick="closeToast(this.parentElement)">
+                                <i class="fas fa-times text-sm"></i>
+                            </button>
+                            <div class="toast-progress">
+                                <div class="toast-progress-bar"></div>
+                            </div>
+                        `;
 
             container.appendChild(toast);
             setTimeout(() => closeToast(toast), duration);

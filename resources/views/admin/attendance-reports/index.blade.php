@@ -873,7 +873,7 @@
     </div>
 
     <!-- Edit Attendance Modal -->
-    <div id="editModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div id="editModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
         <div class="bg-gradient-to-br from-sky-900 to-sky-800 rounded-2xl shadow-2xl max-w-lg w-full border-2 border-sky-400/60">
             <!-- Modal Header -->
             <div class="p-6 border-b border-sky-400/20">
@@ -943,7 +943,7 @@
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div id="deleteModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
         <div class="bg-gradient-to-br from-red-900 to-red-800 rounded-2xl shadow-2xl max-w-md w-full border-2 border-red-400/60">
             <div class="p-6 text-center">
                 <div class="w-16 h-16 bg-red-500/30 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -968,7 +968,7 @@
     </div>
 
     <!-- Toast Notification Container -->
-    <div id="toastContainer" class="fixed top-6 left-1/2 transform -translate-x-1/2 z-[99999] flex flex-col items-center gap-3 pointer-events-none"></div>
+    <div id="toastContainer" class="fixed top-32 left-1/2 transform -translate-x-1/2 z-[100000] flex flex-col items-center gap-3 pointer-events-none"></div>
 
     <!-- Toast Template Styles -->
     <style>
