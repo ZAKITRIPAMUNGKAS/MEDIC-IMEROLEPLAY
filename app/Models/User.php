@@ -125,10 +125,10 @@ class User extends Authenticatable
                 return asset('storage/' . $this->profile_image);
             }
         }
-        
+
         return asset('profile.jpg');
     }
-    
+
     /**
      * Get profile image URL with fallback.
      * Returns default image URL if profile_image is null or empty.
@@ -139,7 +139,7 @@ class User extends Authenticatable
     {
         return $this->profile_image_url;
     }
-    
+
     /**
      * Get onerror handler for profile images.
      * Returns JavaScript code to handle image loading errors.
@@ -151,7 +151,7 @@ class User extends Authenticatable
         $defaultImage = asset('profile.jpg');
         return "this.onerror=null;this.src='{$defaultImage}';";
     }
-    
+
     /**
      * Check if profile image file actually exists.
      * Use this method for database cleanup commands, not for regular requests.
@@ -164,9 +164,9 @@ class User extends Authenticatable
         if (!$this->profile_image) {
             return false;
         }
-        
+
         $pathsToCheck = [];
-        
+
         // Determine which paths to check based on profile_image format
         if (str_starts_with($this->profile_image, 'uploads/')) {
             // Direct public path: uploads/profile-images/file.jpg
@@ -189,14 +189,14 @@ class User extends Authenticatable
                 $pathsToCheck[] = public_path('uploads/' . $this->profile_image);
             }
         }
-        
+
         // Check all possible paths
         foreach ($pathsToCheck as $filePath) {
             if (file_exists($filePath) && is_file($filePath)) {
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -206,9 +206,9 @@ class User extends Authenticatable
     public function scopeOrderByRoleLevel($query, $direction = 'desc')
     {
         return $query->join('staff_roles', 'users.role_id', '=', 'staff_roles.id')
-                    ->orderBy('staff_roles.level', $direction)
-                    ->orderBy('users.name', 'asc')
-                    ->select('users.*');
+            ->orderBy('staff_roles.level', $direction)
+            ->orderBy('users.name', 'asc')
+            ->select('users.*');
     }
 
     /**
@@ -216,7 +216,7 @@ class User extends Authenticatable
      */
     public function scopeExcludeAdmin($query)
     {
-        return $query->whereHas('role', function($q) {
+        return $query->whereHas('role', function ($q) {
             $q->where('name', '!=', 'admin');
         });
     }
@@ -240,17 +240,17 @@ class User extends Authenticatable
     public function canApproveForm(string $formType): bool
     {
         $userLevel = $this->role->level ?? 0;
-        
+
         // Surat kesehatan dan surat psikolog: minimal Co-ass (level 2) ke atas
         if (in_array($formType, ['surat_kesehatan', 'tes_psikologi', 'surat_psikolog'])) {
             return $userLevel >= 2;
         }
-        
+
         // Surat keterangan oplas (operasi plastik): minimal dokter umum (level 3) ke atas
         if ($formType === 'operasi_plastik') {
             return $userLevel >= 3;
         }
-        
+
         // Untuk form lain, semua user dengan role bisa approve (default behavior)
         return true;
     }
@@ -265,8 +265,8 @@ class User extends Authenticatable
     {
         $name = strtolower($this->name ?? '');
         $staffId = strtolower($this->staff_id ?? '');
-        
-        return str_contains($name, 'rh') 
+
+        return str_contains($name, 'rh')
             || str_contains($name, 'roxwood')
             || str_contains($name, 'rh -')
             || str_contains($name, 'rh-')
@@ -283,6 +283,35 @@ class User extends Authenticatable
     public function isAlta(): bool
     {
         return !$this->isRoxwood();
+    }
+
+    /**
+     * Scope untuk memfilter user Roxwood Hospital
+     */
+    public function scopeRoxwood($query)
+    {
+        return $query->where(function ($q) {
+            $q->where('name', 'like', '%rh%')
+                ->orWhere('name', 'like', '%roxwood%')
+                ->orWhere('staff_id', 'like', '%rh%')
+                ->orWhere('staff_id', 'like', '%rh -%')
+                ->orWhere('staff_id', 'like', '%rh-%');
+        });
+    }
+
+    /**
+     * Scope untuk memfilter user Alta Hospital
+     */
+    public function scopeAlta($query)
+    {
+        return $query->where(function ($q) {
+            $q->where('name', 'not like', '%rh%')
+                ->where('name', 'not like', '%roxwood%')
+                ->where('staff_id', 'not like', '%rh%')
+                ->where('staff_id', 'not like', '%rh -%')
+                ->where('staff_id', 'not like', '%rh-%')
+                ->orWhereNull('staff_id');
+        });
     }
 
     /**

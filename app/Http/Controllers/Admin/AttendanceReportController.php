@@ -54,18 +54,9 @@ class AttendanceReportController extends Controller
             $hospital = $request->get('hospital');
             $query->whereHas('user', function ($q) use ($hospital) {
                 if ($hospital === 'roxwood') {
-                    $q->where(function ($sub) {
-                        $sub->where('name', 'like', '%rh%')
-                            ->orWhere('name', 'like', '%roxwood%')
-                            ->orWhere('staff_id', 'like', '%rh%');
-                    });
+                    $q->roxwood();
                 } elseif ($hospital === 'alta') {
-                    $q->where(function ($sub) {
-                        $sub->where('name', 'not like', '%rh%')
-                            ->where('name', 'not like', '%roxwood%')
-                            ->where('staff_id', 'not like', '%rh%')
-                            ->orWhereNull('staff_id'); // Include null staff_id in Alta (default)
-                    });
+                    $q->alta();
                 }
             });
         }
