@@ -28,32 +28,69 @@ class PublicController extends Controller
 
         // Ambil beberapa testimoni untuk carousel (maksimal 10 testimoni)
         // Prioritas: testimoni yang sudah di-approve, jika tidak ada ambil yang terbaru untuk testing
-        $testimonials = MedicalForm::whereNotNull('testimoni')
-            ->whereNotNull('rating')
-            ->where('testimoni', '!=', '')
-            ->where('testimoni', '<>', '')
-            ->where(function ($query) {
-                // Cek dengan berbagai format boolean untuk kompatibilitas database
-                $query->where('testimoni_approved', true)
-                    ->orWhere('testimoni_approved', 1)
-                    ->orWhere('testimoni_approved', '1');
-            })
-            ->orderBy('updated_at', 'desc')
-            ->orderBy('created_at', 'desc')
-            ->limit(10)
-            ->get();
-
-        // Jika tidak ada yang approved, ambil testimoni terbaru yang sudah di-submit (untuk testing)
-        if ($testimonials->isEmpty()) {
-            $testimonials = MedicalForm::whereNotNull('testimoni')
-                ->whereNotNull('rating')
-                ->where('testimoni', '!=', '')
-                ->where('testimoni', '<>', '')
-                ->orderBy('updated_at', 'desc')
-                ->orderBy('created_at', 'desc')
-                ->limit(10)
-                ->get();
-        }
+        // Use specific testimonials requested by user for the design refresh
+        $testimonials = collect([
+            (object) [
+                'character_name' => 'Elmerz Ramirez',
+                'testimoni' => 'gg abiezzzzzzzzzzzzzzzzz',
+                'rating' => 5,
+                'created_at' => now()->subDays(2)
+            ],
+            (object) [
+                'character_name' => 'Thomas Andrew',
+                'testimoni' => 'Keren sekali',
+                'rating' => 5,
+                'created_at' => now()->subDays(3)
+            ],
+            (object) [
+                'character_name' => 'Thomas Andrew',
+                'testimoni' => 'Keren Sekali',
+                'rating' => 5,
+                'created_at' => now()->subDays(3)
+            ],
+            (object) [
+                'character_name' => 'Lil Hab',
+                'testimoni' => 'terbaik pokoknya',
+                'rating' => 5,
+                'created_at' => now()->subDays(3)
+            ],
+            (object) [
+                'character_name' => 'Delvin Shironomi',
+                'testimoni' => 'Nice discount pak Tan',
+                'rating' => 5,
+                'created_at' => now()->subDays(3)
+            ],
+            (object) [
+                'character_name' => 'Rangga Berto',
+                'testimoni' => 'BUAHAHAHAHHAYUKKK',
+                'rating' => 5,
+                'created_at' => now()->subDays(3)
+            ],
+            (object) [
+                'character_name' => 'MY BAE',
+                'testimoni' => 'good n comunicativ',
+                'rating' => 5,
+                'created_at' => now()->subDays(3)
+            ],
+            (object) [
+                'character_name' => 'Snapz Snapz',
+                'testimoni' => 'mantap dah pokok nyaa',
+                'rating' => 5,
+                'created_at' => now()->subDays(5)
+            ],
+            (object) [
+                'character_name' => 'Om Black',
+                'testimoni' => 'sangat ramah dan mau membantu warga baru',
+                'rating' => 5,
+                'created_at' => now()->subDays(5)
+            ],
+            (object) [
+                'character_name' => 'Om Black',
+                'testimoni' => 'selalu membimbing',
+                'rating' => 5,
+                'created_at' => now()->subDays(5)
+            ],
+        ]);
 
         // Untuk backward compatibility, ambil testimoni pertama
         $testimoni = $testimonials->first();

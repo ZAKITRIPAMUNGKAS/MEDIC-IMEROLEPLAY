@@ -61,6 +61,17 @@
                                 Hanya yang Masih Clock In</option>
                         </select>
                     </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Hospital</label>
+                        <select name="hospital"
+                            class="w-full bg-white/30 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 appearance-none text-sm shadow-xl">
+                            <option value="" class="bg-slate-800 text-slate-100">Semua Hospital</option>
+                            <option value="alta" <?php if(request('hospital') == 'alta'): echo 'selected'; endif; ?> class="bg-slate-800 text-slate-100">
+                                Alta Hospital</option>
+                            <option value="roxwood" <?php if(request('hospital') == 'roxwood'): echo 'selected'; endif; ?> class="bg-slate-800 text-slate-100">
+                                Roxwood Hospital</option>
+                        </select>
+                    </div>
                     <div class="sm:col-span-2 lg:col-span-1 flex gap-2">
                         <button type="submit"
                             class="flex-1 inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white rounded-lg font-semibold transition-all duration-300 text-sm">
@@ -334,10 +345,24 @@
                                                     <?php endif; ?>
                                                 </td>
                                                 <td class="px-4 py-4">
-                                                    <div class="text-white text-sm max-w-[200px] line-clamp-4" title="<?php echo e($attendance->notes); ?>">
-                                                        <?php echo e($attendance->notes ?? '-'); ?>
+                                                    <?php if($attendance->notes): ?>
+                                                        <div x-data="{ expanded: false }">
+                                                            <div class="text-white text-sm max-w-[200px]" 
+                                                                 :class="expanded ? '' : 'line-clamp-2'" 
+                                                                 title="<?php echo e($attendance->notes); ?>">
+                                                                <?php echo e($attendance->notes); ?>
 
-                                                    </div>
+                                                            </div>
+                                                            <?php if(strlen($attendance->notes) > 50): ?>
+                                                                <button @click="expanded = !expanded" 
+                                                                        class="text-xs text-sky-400 hover:text-sky-300 mt-1 focus:outline-none hover:underline">
+                                                                    <span x-text="expanded ? 'Sembunyikan' : 'Selengkapnya'"></span>
+                                                                </button>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <span class="text-gray-500">-</span>
+                                                    <?php endif; ?>
                                                 </td>
                                                 <td class="px-4 py-4 text-center">
                                                     <div class="flex items-center justify-center gap-2">
