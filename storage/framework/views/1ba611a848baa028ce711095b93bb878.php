@@ -204,6 +204,9 @@
                                                 class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
                                                 Status</th>
                                             <th
+                                                class="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">
+                                                Catatan</th>
+                                            <th
                                                 class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
                                                 Aksi</th>
                                         </tr>
@@ -329,6 +332,12 @@
                                                             <i class="fas fa-clock mr-1"></i>Belum Selesai
                                                         </span>
                                                     <?php endif; ?>
+                                                </td>
+                                                <td class="px-4 py-4">
+                                                    <div class="text-white text-sm max-w-[200px] truncate" title="<?php echo e($attendance->notes); ?>">
+                                                        <?php echo e($attendance->notes ?? '-'); ?>
+
+                                                    </div>
                                                 </td>
                                                 <td class="px-4 py-4 text-center">
                                                     <div class="flex items-center justify-center gap-2">

@@ -325,7 +325,7 @@
                                                     @endif
                                                 </td>
                                                 <td class="px-4 py-4">
-                                                    <div class="text-white text-sm max-w-[200px] truncate" title="{{ $attendance->notes }}">
+                                                    <div class="text-white text-sm max-w-[200px] line-clamp-4" title="{{ $attendance->notes }}">
                                                         {{ $attendance->notes ?? '-' }}
                                                     </div>
                                                 </td>
