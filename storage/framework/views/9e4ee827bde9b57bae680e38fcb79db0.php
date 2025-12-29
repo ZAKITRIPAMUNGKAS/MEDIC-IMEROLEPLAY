@@ -1416,8 +1416,10 @@ unset($__errorArgs, $__bag); ?>"
                                             required>
                                             <option value="">-- Pilih Dokter --</option>
                                             <?php $__currentLoopData = $doctors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $doctor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                <option value="<?php echo e($doctor->name); ?>" <?php if(old('form_data.doctor_name') == $doctor->name): ?>
-                                                selected <?php endif; ?> class="bg-slate-900 text-white font-bold">
+                                                <option value="<?php echo e($doctor->name); ?>"
+                                                    data-hospital="<?php echo e($doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta')); ?>"
+                                                    <?php if(old('form_data.doctor_name') == $doctor->name): ?> selected <?php endif; ?>
+                                                    class="bg-slate-900 text-white font-bold">
                                                     <?php echo e($doctor->name); ?>
 
                                                 </option>
