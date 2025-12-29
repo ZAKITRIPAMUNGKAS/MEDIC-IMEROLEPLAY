@@ -1009,8 +1009,10 @@
                                             required>
                                             <option value="">-- Pilih Dokter --</option>
                                             @foreach($doctors as $doctor)
-                                                <option value="{{ $doctor->name }}" @if(old('form_data.doctor_name') == $doctor->name)
-                                                selected @endif class="bg-slate-900 text-white font-bold">
+                                                <option value="{{ $doctor->name }}"
+                                                    data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
+                                                    @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                                    class="bg-slate-900 text-white font-bold">
                                                     {{ $doctor->name }}
                                                 </option>
                                             @endforeach
