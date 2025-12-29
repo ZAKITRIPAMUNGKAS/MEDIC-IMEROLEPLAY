@@ -445,7 +445,8 @@
                     @csrf
                     <h2 class="text-3xl font-bold text-slate-800 mb-2">Login Staf Medis</h2>
                     <p class="text-slate-500 mb-8 font-medium text-sm text-center max-w-[280px]">Akses area privat untuk
-                        <span class="text-blue-600 font-bold">medis profesional</span></p>
+                        <span class="text-blue-600 font-bold">medis profesional</span>
+                    </p>
 
                     <div class="input-field shadow-sm group">
                         <i class="fas fa-envelope group-focus-within:text-blue-600"></i>
@@ -497,7 +498,9 @@
                             <option value="" disabled selected>Pilih Peran Staf</option>
                             @if(isset($roles))
                                 @foreach($roles as $role)
-                                    <option value="{{ $role->id }}">{{ ucfirst(str_replace('_', ' ', $role->name)) }}</option>
+                                    <option value="{{ $role->id }}">
+                                        {{ ucfirst($role->display_name ?? str_replace('_', ' ', (string) $role->name)) }}
+                                    </option>
                                 @endforeach
                             @endif
                         </select>
@@ -546,7 +549,8 @@
                             class="flex items-center gap-4 bg-white/10 p-4 rounded-xl backdrop-blur-md border border-white/20 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 cursor-default group">
                             <div
                                 class="w-10 h-10 rounded-full bg-blue-500/30 flex items-center justify-center text-white text-lg group-hover:scale-110 transition-transform">
-                                <i class="fas fa-users"></i></div>
+                                <i class="fas fa-users"></i>
+                            </div>
                             <div>
                                 <h4 class="font-bold text-sm text-white">Kolaborasi Tim</h4>
                                 <span class="text-xs text-blue-100">Terhubung real-time</span>
@@ -556,7 +560,8 @@
                             class="flex items-center gap-4 bg-white/10 p-4 rounded-xl backdrop-blur-md border border-white/20 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 cursor-default group">
                             <div
                                 class="w-10 h-10 rounded-full bg-blue-500/30 flex items-center justify-center text-white text-lg group-hover:scale-110 transition-transform">
-                                <i class="fas fa-chart-line"></i></div>
+                                <i class="fas fa-chart-line"></i>
+                            </div>
                             <div>
                                 <h4 class="font-bold text-sm text-white">Jenjang Karir</h4>
                                 <span class="text-xs text-blue-100">Development yang jelas</span>
@@ -590,19 +595,22 @@
                         <div class="flex items-center gap-3 group">
                             <div
                                 class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white group-hover:bg-white/30 transition-colors">
-                                <i class="fas fa-calendar-check"></i></div>
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
                             <span class="text-sm font-medium">Manajemen Absensi</span>
                         </div>
                         <div class="flex items-center gap-3 group">
                             <div
                                 class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white group-hover:bg-white/30 transition-colors">
-                                <i class="fas fa-file-medical"></i></div>
+                                <i class="fas fa-file-medical"></i>
+                            </div>
                             <span class="text-sm font-medium">Formulir Medis</span>
                         </div>
                         <div class="flex items-center gap-3 group">
                             <div
                                 class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white group-hover:bg-white/30 transition-colors">
-                                <i class="fas fa-money-bill-wave"></i></div>
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
                             <span class="text-sm font-medium">Sistem Penggajian</span>
                         </div>
                     </div>
