@@ -306,8 +306,9 @@ class User extends Authenticatable
     {
         return $query->where(function ($q) {
             $q->where('name', 'not like', '%rh%')
-                ->where('name', 'not like', '%roxwood%')
-                ->where('staff_id', 'not like', '%rh%')
+                ->where('name', 'not like', '%roxwood%');
+        })->where(function ($q) {
+            $q->where('staff_id', 'not like', '%rh%')
                 ->where('staff_id', 'not like', '%rh -%')
                 ->where('staff_id', 'not like', '%rh-%')
                 ->orWhereNull('staff_id');
