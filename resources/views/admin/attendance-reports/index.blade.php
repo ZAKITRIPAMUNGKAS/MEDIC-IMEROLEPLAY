@@ -68,7 +68,8 @@
                             <option value="" class="bg-slate-800 text-slate-100">Semua Hospital</option>
                             <option value="alta" @selected(request('hospital') == 'alta') class="bg-slate-800 text-slate-100">
                                 Alta Hospital</option>
-                            <option value="roxwood" @selected(request('hospital') == 'roxwood') class="bg-slate-800 text-slate-100">
+                            <option value="roxwood" @selected(request('hospital') == 'roxwood')
+                                class="bg-slate-800 text-slate-100">
                                 Roxwood Hospital</option>
                         </select>
                     </div>
@@ -109,7 +110,8 @@
                         <div>
                             <p class="text-gray-300 text-sm">Total Jam Kerja</p>
                             <p class="text-2xl font-bold text-white">
-                                {{ \App\Helpers\TimeHelper::formatDuration($summary['total_hours']) }}</p>
+                                {{ \App\Helpers\TimeHelper::formatDuration($summary['total_hours']) }}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -123,7 +125,8 @@
                         <div>
                             <p class="text-gray-300 text-sm">Rata-rata/Hari</p>
                             <p class="text-2xl font-bold text-white">
-                                {{ \App\Helpers\TimeHelper::formatDuration($summary['average_hours']) }}</p>
+                                {{ \App\Helpers\TimeHelper::formatDuration($summary['average_hours']) }}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -174,7 +177,8 @@
                                         Laporan Absensi Harian
                                     </h3>
                                     <p class="text-gray-300 text-sm">Detail absensi per hari untuk periode
-                                        {{ $filters['date_from'] }} - {{ $filters['date_to'] }}</p>
+                                        {{ $filters['date_from'] }} - {{ $filters['date_to'] }}
+                                    </p>
                                 </div>
                                 <div class="mt-4 sm:mt-0">
                                     <a href="{{ route('admin.attendance-reports.index', array_merge(request()->query(), ['export' => 'csv', 'period' => 'daily'])) }}"
@@ -191,877 +195,806 @@
                                     <thead class="bg-black/30">
                                         <tr>
                                             <th
-                                                class="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                                Tanggal</th>
-                                            <th
-                                                class="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                                Staf</th>
-                                            <th
-                                                class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                                Clock In</th>
-                                            <th
-                                                class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                                Clock Out</th>
-                                            <th
-                                                class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                                Durasi Terjadwal</th>
-                                            <th
-                                                class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                                Waktu Tersisa/Berjalan</th>
-                                            <th
-                                                class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                                Total Jam</th>
-                                            <th
-                                                class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                                Status</th>
-                                            <th
-                                                class="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                                Catatan</th>
-                                            <th
-                                                class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                                Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-white/10">
-                                        @foreach($attendances as $attendance)
-                                            <tr class="table-row-hover transition-all duration-200">
-                                                <td class="px-4 py-4">
-                                                    <div class="text-white font-medium">
-                                                        {{ $attendance->work_date->format('d/m/Y') }}</div>
-                                                    <div class="text-gray-400 text-sm">{{ $attendance->work_date->format('l') }}
-                                                    </div>
-                                                </td>
-                                                <td class="px-4 py-4">
-                                                    <div class="flex items-center">
-                                                        <div
-                                                            class="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mr-3">
-                                                            <i class="fas fa-user text-white text-sm"></i>
-                                                        </div>
-                                                        <div>
-                                                            <p class="text-white font-semibold">
-                                                                {{ $attendance->user->name ?? 'User #' . $attendance->user_id }}</p>
-                                                            <p class="text-sky-300 text-xs">{{ $attendance->user->role->display_name ?? '-' }}</p>
-                                                            <span class="inline-flex items-center px-2 py-0.5 mt-1 rounded text-xs font-medium {{ $attendance->session_type === 'meeting' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-green-500/20 text-green-300 border border-green-500/30' }}">
-                                                                <i class="fas {{ $attendance->session_type === 'meeting' ? 'fa-users' : 'fa-briefcase' }} mr-1 text-[10px]"></i>
-                                                                {{ $attendance->session_type === 'meeting' ? 'Meeting' : 'Kerja' }}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td class="px-4 py-4 text-center">
-                                                    @if($attendance->clock_in)
-                                                        <div class="text-white font-medium">
-                                                            {{ $attendance->clock_in->setTimezone('Asia/Jakarta')->format('H:i') }}
-                                                        </div>
-                                                        <div class="text-gray-400 text-sm">WIB</div>
-                                                    @else
-                                                        <span class="text-gray-400">-</span>
-                                                    @endif
-                                                </td>
-                                                <td class="px-4 py-4 text-center">
-                                                    @if($attendance->clock_out)
-                                                        <div class="text-white font-medium">
-                                                            {{ $attendance->clock_out->setTimezone('Asia/Jakarta')->format('H:i') }}
-                                                        </div>
-                                                        <div class="text-gray-400 text-sm">WIB</div>
-                                                    @else
-                                                        <span class="text-gray-400">-</span>
-                                                    @endif
-                                                </td>
-                                                <td class="px-4 py-4 text-center">
-                                                    @if($attendance->scheduled_duty_minutes)
-                                                        <div class="text-white font-medium">{{ $attendance->scheduled_duty_minutes }}
-                                                            menit</div>
-                                                        <div class="text-gray-400 text-xs">Terjadwal</div>
-                                                    @else
-                                                        <span class="text-gray-400 text-sm">-</span>
-                                                    @endif
-                                                </td>
-                                                <td class="px-4 py-4 text-center">
-                                                    @if($attendance->scheduled_duty_minutes && $attendance->is_active)
-                                                        @php
-                                                            $remainingTime = $attendance->getRemainingTime();
-                                                        @endphp
-                                                        @if($remainingTime !== null && $remainingTime > 0)
-                                                            <div class="text-yellow-300 font-medium"
-                                                                id="remaining-time-{{ $attendance->id }}"
-                                                                data-end-time="{{ $attendance->scheduled_end_time ? $attendance->scheduled_end_time->toISOString() : '' }}">
-                                                                {{ \App\Helpers\TimeHelper::formatDuration($remainingTime) }}
+                                                class="px-2 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Tanggal</th>
+                                                    <th class="px-2 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Staf</th>
+                                                    <th class="px-2 py-3 text-center text-xs font-medium text-gray-300 uppercase tracking-wider">Waktu (In/Out)</th>
+                                                    <th class="px-2 py-3 text-center text-xs font-medium text-gray-300 uppercase tracking-wider">Durasi & Jadwal</th>
+                                                    <th class="px-2 py-3 text-center text-xs font-medium text-gray-300 uppercase tracking-wider">Status & Total</th>
+                                                    <th class="px-2 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Catatan</th>
+                                                    <th class="px-2 py-3 text-center text-xs font-medium text-gray-300 uppercase tracking-wider">Aksi</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-white/10">
+                                                @foreach($attendances as $attendance)
+                                                    <tr class="table-row-hover transition-all duration-200">
+                                                        <td class="px-2 py-3">
+                                                            <div class="text-white text-sm font-medium">{{ $attendance->work_date->format('d/m/y') }}</div>
+                                                            <div class="text-gray-400 text-[10px] uppercase">{{ $attendance->work_date->format('D') }}</div>
+                                                        </td>
+                                                        <td class="px-2 py-3">
+                                                            <div class="flex items-center">
+                                                                <div class="hidden sm:flex w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-500 rounded flex items-center justify-center mr-2">
+                                                                    <i class="fas fa-user text-white text-[10px]"></i>
+                                                                </div>
+                                                                <div class="max-w-[120px]">
+                                                                    <p class="text-white text-xs font-semibold truncate" title="{{ $attendance->user->name ?? 'User #' . $attendance->user_id }}">
+                                                                        {{ $attendance->user->name ?? 'User #' . $attendance->user_id }}
+                                                                    </p>
+                                                                    <div class="flex items-center gap-1 mt-0.5">
+                                                                        <span class="inline-flex items-center px-1 py-0.5 rounded text-[9px] font-medium {{ $attendance->session_type === 'meeting' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-green-500/20 text-green-300 border border-green-500/30' }}">
+                                                                            {{ $attendance->session_type === 'meeting' ? 'MTG' : 'KERJA' }}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                            <div class="text-yellow-400 text-xs">Tersisa</div>
-                                                        @else
-                                                            <div class="text-red-300 font-medium">00:00:00</div>
-                                                            <div class="text-red-400 text-xs">Habis</div>
-                                                        @endif
-                                                    @elseif($attendance->scheduled_duty_minutes && $attendance->clock_out)
-                                                        @php
-                                                            $elapsedTime = $attendance->clock_in->diffInSeconds($attendance->clock_out);
-                                                        @endphp
-                                                        <div class="text-white font-medium">
-                                                            {{ \App\Helpers\TimeHelper::formatDuration($elapsedTime) }}</div>
-                                                        <div class="text-gray-400 text-xs">Berjalan</div>
-                                                    @elseif($attendance->is_active && !$attendance->scheduled_duty_minutes)
-                                                        @php
-                                                            $elapsedTime = $attendance->clock_in->diffInSeconds(\Carbon\Carbon::now('Asia/Jakarta'));
-                                                        @endphp
-                                                        <div class="text-white font-medium" id="elapsed-time-{{ $attendance->id }}"
-                                                            data-clock-in="{{ $attendance->clock_in->toISOString() }}">
-                                                            {{ \App\Helpers\TimeHelper::formatDuration($elapsedTime) }}
-                                                        </div>
-                                                        <div class="text-gray-400 text-xs">Berjalan</div>
-                                                    @else
-                                                        <span class="text-gray-400 text-sm">-</span>
-                                                    @endif
-                                                </td>
-                                                <td class="px-4 py-4 text-center">
-                                                    <div class="text-white font-medium">
-                                                        @if($attendance->session_duration)
-                                                            {{ \App\Helpers\TimeHelper::formatDuration($attendance->session_duration) }}
-                                                        @else
-                                                            {{ \App\Helpers\TimeHelper::formatDuration($attendance->total_hours * 60) }}
-                                                        @endif
-                                                    </div>
-                                                </td>
-                                                <td class="px-4 py-4 text-center">
-                                                    @if($attendance->clock_out)
-                                                        <span
-                                                            class="status-badge inline-flex items-center px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-sm font-medium border border-green-500/30">
-                                                            <i class="fas fa-check-circle mr-1"></i>Selesai
-                                                        </span>
-                                                    @else
-                                                        <span
-                                                            class="status-badge inline-flex items-center px-3 py-1 bg-yellow-500/20 text-yellow-300 rounded-full text-sm font-medium border border-yellow-500/30">
-                                                            <i class="fas fa-clock mr-1"></i>Belum Selesai
-                                                        </span>
-                                                    @endif
-                                                </td>
-                                                <td class="px-4 py-4">
-                                                    @if($attendance->notes)
-                                                        <div x-data="{ expanded: false }">
-                                                            <div class="text-white text-sm max-w-[200px]" 
-                                                                 :class="expanded ? '' : 'line-clamp-2'" 
-                                                                 title="{{ $attendance->notes }}">
-                                                                {{ $attendance->notes }}
+                                                        </td>
+                                                        <td class="px-2 py-3 text-center">
+                                                            <div class="text-white text-xs font-medium">
+                                                                {{ $attendance->clock_in ? $attendance->clock_in->setTimezone('Asia/Jakarta')->format('H:i') : '--:--' }}
+                                                                -
+                                                                {{ $attendance->clock_out ? $attendance->clock_out->setTimezone('Asia/Jakarta')->format('H:i') : '--:--' }}
                                                             </div>
-                                                            @if(strlen($attendance->notes) > 50)
-                                                                <button @click="expanded = !expanded" 
-                                                                        class="text-xs text-sky-400 hover:text-sky-300 mt-1 focus:outline-none hover:underline">
-                                                                    <span x-text="expanded ? 'Sembunyikan' : 'Selengkapnya'"></span>
-                                                                </button>
+                                                            <div class="text-gray-400 text-[10px]">WIB</div>
+                                                        </td>
+                                                        <td class="px-2 py-3 text-center">
+                                                            @if($attendance->scheduled_duty_minutes)
+                                                                <div class="text-sky-300 text-[10px] whitespace-nowrap">Jadwal: {{ $attendance->scheduled_duty_minutes }}m</div>
                                                             @endif
-                                                        </div>
-                                                    @else
-                                                        <span class="text-gray-500">-</span>
-                                                    @endif
-                                                </td>
-                                                <td class="px-4 py-4 text-center">
-                                                    <div class="flex flex-col items-center justify-center gap-2">
-                                                        @if(!$attendance->clock_out)
-                                                            <button
-                                                                onclick="forceCheckOut(event, {{ $attendance->id }}, {{ json_encode($attendance->user->name ?? 'User #' . $attendance->user_id) }})"
-                                                                class="force-checkout-btn w-full inline-flex items-center justify-center px-2 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-red-200 rounded-lg text-xs font-medium border border-red-500/30 hover:border-red-500/50 transition-all duration-200"
-                                                                title="Force Check Out">
-                                                                <i class="fas fa-power-off mr-1"></i>Force
-                                                            </button>
-                                                        @endif
-                                                        <button
-                                                            onclick="openEditModal({{ $attendance->id }}, '{{ $attendance->clock_in->format('H:i') }}', '{{ $attendance->clock_out ? $attendance->clock_out->format('H:i') : '' }}', {{ json_encode($attendance->user->name ?? 'User #' . $attendance->user_id) }}, '{{ $attendance->work_date->format('d/m/Y') }}')"
-                                                            class="w-full inline-flex items-center justify-center px-2 py-1.5 bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 hover:text-sky-200 rounded-lg text-xs font-medium border border-sky-500/30 hover:border-sky-500/50 transition-all duration-200"
-                                                            title="Edit Jam Kerja">
-                                                            <i class="fas fa-edit mr-1"></i>Edit
-                                                        </button>
-                                                        <button
-                                                            onclick="deleteAttendance({{ $attendance->id }}, {{ json_encode($attendance->user->name ?? 'User #' . $attendance->user_id) }})"
-                                                            class="w-full inline-flex items-center justify-center px-2 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-red-200 rounded-lg text-xs font-medium border border-red-500/30 hover:border-red-500/50 transition-all duration-200"
-                                                            title="Hapus Data">
-                                                            <i class="fas fa-trash mr-1"></i>Hapus
-                                                        </button>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
 
-                            <!-- Pagination Links -->
-                            @if($attendances->hasPages())
-                                <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-                                    <div class="text-sm text-gray-300">
-                                        Menampilkan {{ $attendances->firstItem() }} - {{ $attendances->lastItem() }} dari
-                                        {{ $attendances->total() }} data
+                                                            @if($attendance->is_active)
+                                                                @php
+                                                                    $remainingTime = $attendance->getRemainingTime();
+                                                                    $elapsedTime = $attendance->clock_in->diffInSeconds(\Carbon\Carbon::now('Asia/Jakarta'));
+                                                                @endphp
+                                                                @if($remainingTime !== null)
+                                                                    <div class="text-{{ $remainingTime > 0 ? 'yellow' : 'red' }}-300 text-xs font-bold font-mono whitespace-nowrap"
+                                                                        id="remaining-time-{{ $attendance->id }}"
+                                                                        data-end-time="{{ $attendance->scheduled_end_time ? $attendance->scheduled_end_time->toISOString() : '' }}">
+                                                                        {{ \App\Helpers\TimeHelper::formatDuration(max(0, $remainingTime)) }}
+                                                                    </div>
+                                                                @else
+                                                                    <div class="text-white text-xs font-mono font-bold whitespace-nowrap" id="elapsed-time-{{ $attendance->id }}"
+                                                                        data-clock-in="{{ $attendance->clock_in->toISOString() }}">
+                                                                        {{ \App\Helpers\TimeHelper::formatDuration($elapsedTime) }}
+                                                                    </div>
+                                                                @endif
+                                                            @else
+                                                                <div class="text-gray-400 text-xs">-</div>
+                                                            @endif
+                                                        </td>
+                                                        <td class="px-2 py-3 text-center">
+                                                            <div class="text-white text-xs font-bold mb-1">
+                                                                @if($attendance->session_duration)
+                                                                    {{ \App\Helpers\TimeHelper::formatDuration($attendance->session_duration) }}
+                                                                @else
+                                                                    {{ \App\Helpers\TimeHelper::formatDuration($attendance->total_hours * 60) }}
+                                                                @endif
+                                                            </div>
+                                                            @if($attendance->clock_out)
+                                                                <span class="inline-flex items-center px-1.5 py-0.5 bg-green-500/20 text-green-300 rounded text-[9px] font-medium border border-green-500/30">
+                                                                    DONE
+                                                                </span>
+                                                            @else
+                                                                <span class="inline-flex items-center px-1.5 py-0.5 bg-yellow-500/20 text-yellow-300 rounded text-[9px] font-medium border border-yellow-500/30">
+                                                                    ACTIVE
+                                                                </span>
+                                                            @endif
+                                                        </td>
+                                                        <td class="px-2 py-3">
+                                                            @if($attendance->notes)
+                                                                <div class="text-white text-[10px] max-w-[120px] line-clamp-2" title="{{ $attendance->notes }}">
+                                                                    {{ $attendance->notes }}
+                                                                </div>
+                                                            @else
+                                                                <span class="text-gray-500">-</span>
+                                                            @endif
+                                                        </td>
+                                                        <td class="px-2 py-3 text-center">
+                                                            <div class="flex flex-col items-center justify-center gap-1">
+                                                                @if(!$attendance->clock_out)
+                                                                    <button
+                                                                        onclick="forceCheckOut(event, {{ $attendance->id }}, {{ json_encode($attendance->user->name ?? 'User #' . $attendance->user_id) }})"
+                                                                        class="force-checkout-btn w-full inline-flex items-center justify-center px-1.5 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded border border-red-500/30 text-[10px]"
+                                                                        title="Force Check Out">
+                                                                        FORCE
+                                                                    </button>
+                                                                @endif
+                                                                <button
+                                                                    onclick="openEditModal({{ $attendance->id }}, '{{ $attendance->clock_in->format('H:i') }}', '{{ $attendance->clock_out ? $attendance->clock_out->format('H:i') : '' }}', {{ json_encode($attendance->user->name ?? 'User #' . $attendance->user_id) }}, '{{ $attendance->work_date->format('d/m/Y') }}')"
+                                                                    class="w-full inline-flex items-center justify-center px-1.5 py-1 bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 rounded border border-sky-500/30 text-[10px]">
+                                                                    EDIT
+                                                                </button>
+                                                                <button
+                                                                    onclick="deleteAttendance({{ $attendance->id }}, {{ json_encode($attendance->user->name ?? 'User #' . $attendance->user_id) }})"
+                                                                    class="w-full inline-flex items-center justify-center px-1.5 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded border border-red-500/30 text-[10px]">
+                                                                    HAPUS
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
                                     </div>
-                                    <div class="flex items-center space-x-2">
-                                        @if($attendances->onFirstPage())
-                                            <span class="px-3 py-2 bg-white/10 text-gray-400 rounded-lg cursor-not-allowed">
-                                                <i class="fas fa-chevron-left"></i>
-                                            </span>
-                                        @else
-                                            <a href="{{ $attendances->previousPageUrl() }}"
-                                                class="px-3 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-all">
-                                                <i class="fas fa-chevron-left"></i>
-                                            </a>
-                                        @endif
 
-                                        <span class="px-4 py-2 bg-sky-500/30 text-white rounded-lg font-medium">
-                                            {{ $attendances->currentPage() }} / {{ $attendances->lastPage() }}
-                                        </span>
+                                    <!-- Pagination Links -->
+                                    @if($attendances->hasPages())
+                                        <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                                            <div class="text-sm text-gray-300">
+                                                Menampilkan {{ $attendances->firstItem() }} - {{ $attendances->lastItem() }} dari
+                                                {{ $attendances->total() }} data
+                                            </div>
+                                            <div class="flex items-center space-x-2">
+                                                @if($attendances->onFirstPage())
+                                                    <span class="px-3 py-2 bg-white/10 text-gray-400 rounded-lg cursor-not-allowed">
+                                                        <i class="fas fa-chevron-left"></i>
+                                                    </span>
+                                                @else
+                                                    <a href="{{ $attendances->previousPageUrl() }}"
+                                                        class="px-3 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-all">
+                                                        <i class="fas fa-chevron-left"></i>
+                                                    </a>
+                                                @endif
 
-                                        @if($attendances->hasMorePages())
-                                            <a href="{{ $attendances->nextPageUrl() }}"
-                                                class="px-3 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-all">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </a>
-                                        @else
-                                            <span class="px-3 py-2 bg-white/10 text-gray-400 rounded-lg cursor-not-allowed">
-                                                <i class="fas fa-chevron-right"></i>
-                                            </span>
-                                        @endif
+                                                <span class="px-4 py-2 bg-sky-500/30 text-white rounded-lg font-medium">
+                                                    {{ $attendances->currentPage() }} / {{ $attendances->lastPage() }}
+                                                </span>
+
+                                                @if($attendances->hasMorePages())
+                                                    <a href="{{ $attendances->nextPageUrl() }}"
+                                                        class="px-3 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-all">
+                                                        <i class="fas fa-chevron-right"></i>
+                                                    </a>
+                                                @else
+                                                    <span class="px-3 py-2 bg-white/10 text-gray-400 rounded-lg cursor-not-allowed">
+                                                        <i class="fas fa-chevron-right"></i>
+                                                    </span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endif
+                        @else
+                                <div class="text-center py-12">
+                                    <div
+                                        class="w-16 h-16 bg-sky-700/40 rounded-full flex items-center justify-center mx-auto mb-4 border border-sky-400/30">
+                                        <i class="fas fa-calendar-times text-white text-2xl"></i>
                                     </div>
+                                    <h3 class="text-xl font-semibold text-white mb-2">Tidak Ada Data</h3>
+                                    <p class="text-sky-200">Tidak ada data absensi untuk periode yang dipilih</p>
                                 </div>
                             @endif
-                        @else
-                            <div class="text-center py-12">
-                                <div
-                                    class="w-16 h-16 bg-sky-700/40 rounded-full flex items-center justify-center mx-auto mb-4 border border-sky-400/30">
-                                    <i class="fas fa-calendar-times text-white text-2xl"></i>
-                                </div>
-                                <h3 class="text-xl font-semibold text-white mb-2">Tidak Ada Data</h3>
-                                <p class="text-sky-200">Tidak ada data absensi untuk periode yang dipilih</p>
-                            </div>
-                        @endif
-                    </div>
-
-                    <!-- Weekly Report Tab -->
-                    <div id="weekly-content" class="tab-content hidden">
-                        <div class="mb-6">
-                            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
-                                <div>
-                                    <h3 class="text-xl font-bold text-white mb-2 flex items-center">
-                                        <i class="fas fa-calendar-week mr-2 text-sky-400"></i>
-                                        Laporan Absensi Mingguan
-                                    </h3>
-                                    <p class="text-gray-300 text-sm">Rekap absensi per minggu untuk periode
-                                        {{ $filters['date_from'] }} - {{ $filters['date_to'] }}</p>
-                                </div>
-                                <div class="mt-4 sm:mt-0">
-                                    <a href="{{ route('admin.attendance-reports.index', array_merge(request()->query(), ['export' => 'weekly'])) }}"
-                                        class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg text-sm">
-                                        <i class="fas fa-download mr-2"></i>Export Mingguan
-                                    </a>
-                                </div>
-                            </div>
                         </div>
 
-                        @php
-                            $weeklyData = $attendances->groupBy(function ($attendance) {
-                                return $attendance->work_date->startOfWeek()->format('Y-m-d');
-                            });
-                        @endphp
+                        <!-- Weekly Report Tab -->
+                        <div id="weekly-content" class="tab-content hidden">
+                            <div class="mb-6">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
+                                    <div>
+                                        <h3 class="text-xl font-bold text-white mb-2 flex items-center">
+                                            <i class="fas fa-calendar-week mr-2 text-sky-400"></i>
+                                            Laporan Absensi Mingguan
+                                        </h3>
+                                        <p class="text-gray-300 text-sm">Rekap absensi per minggu untuk periode
+                                            {{ $filters['date_from'] }} - {{ $filters['date_to'] }}</p>
+                                    </div>
+                                    <div class="mt-4 sm:mt-0">
+                                        <a href="{{ route('admin.attendance-reports.index', array_merge(request()->query(), ['export' => 'weekly'])) }}"
+                                            class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg text-sm">
+                                            <i class="fas fa-download mr-2"></i>Export Mingguan
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
 
-                        @if($weeklyData->count() > 0)
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full bg-white/5 rounded-lg overflow-hidden">
-                                    <thead class="bg-black/30">
-                                        <tr>
-                                            <th
-                                                class="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                                Minggu</th>
-                                            <th
-                                                class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                                Total Hari</th>
-                                            <th
-                                                class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                                Total Jam</th>
-                                            <th
-                                                class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                                Rata-rata/Hari</th>
-                                            <th
-                                                class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                                Staf Aktif</th>
-                                            <th
-                                                class="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                                Per Staf (Total Jam)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-white/10">
-                                        @foreach($weeklyData as $weekStart => $weekAttendances)
-                                            @php
-                                                $weekEnd = \Carbon\Carbon::parse($weekStart)->endOfWeek();
-                                                $totalHours = $weekAttendances->sum('session_duration');
-                                                $totalDays = $weekAttendances->count();
-                                                $averageHours = $totalDays > 0 ? $totalHours / $totalDays : 0;
-                                                $activeStaff = $weekAttendances->pluck('user_id')->unique()->count();
-                                            @endphp
-                                            <tr class="table-row-hover transition-all duration-200">
-                                                <td class="px-4 py-4">
-                                                    <div class="text-white font-medium">
-                                                        {{ \Carbon\Carbon::parse($weekStart)->format('d/m') }} -
-                                                        {{ $weekEnd->format('d/m/Y') }}
-                                                    </div>
-                                                    <div class="text-gray-400 text-sm">Minggu
-                                                        ke-{{ \Carbon\Carbon::parse($weekStart)->weekOfYear }}</div>
-                                                </td>
-                                                <td class="px-4 py-4 text-center">
-                                                    <div class="text-white font-medium text-lg">{{ $totalDays }}</div>
-                                                </td>
-                                                <td class="px-4 py-4 text-center">
-                                                    <div class="text-white font-medium text-lg">
-                                                        {{ \App\Helpers\TimeHelper::formatDuration($totalHours) }}</div>
-                                                </td>
-                                                <td class="px-4 py-4 text-center">
-                                                    <div class="text-white font-medium text-lg">
-                                                        {{ \App\Helpers\TimeHelper::formatDuration($averageHours) }}</div>
-                                                </td>
-                                                <td class="px-4 py-4 text-center">
-                                                    <div class="text-white font-medium text-lg">{{ $activeStaff }}</div>
-                                                </td>
-                                                <td class="px-4 py-4">
-                                                    @php
-                                                        $byUser = $weekAttendances->groupBy('user_id');
-                                                    @endphp
-                                                    <div class="space-y-2">
-                                                        @foreach($byUser as $userId => $items)
-                                                            @php
-                                                                $uTotal = $items->sum('session_duration');
-                                                                $u = $items->first()->user;
-                                                                $uDays = $items->count();
-                                                                $uAvg = $uDays > 0 ? $uTotal / $uDays : 0;
-                                                            @endphp
-                                                            <div class="bg-white/5 rounded-lg p-3 border border-white/10">
-                                                                <div class="flex items-center justify-between mb-1">
-                                                                    <span
-                                                                        class="font-semibold text-white text-sm">{{ $u?->name ?? 'User #' . $userId }}</span>
-                                                                    <span class="text-xs text-gray-400">{{ $uDays }} hari</span>
-                                                                </div>
-                                                                <div class="text-xs text-gray-300">
-                                                                    Total: <span
-                                                                        class="text-white font-medium">{{ \App\Helpers\TimeHelper::formatDuration($uTotal) }}</span>
-                                                                    | Rata: <span
-                                                                        class="text-white font-medium">{{ \App\Helpers\TimeHelper::formatDuration($uAvg) }}</span>
-                                                                </div>
-                                                            </div>
-                                                        @endforeach
-                                                    </div>
-                                                </td>
+                            @php
+                                $weeklyData = $attendances->groupBy(function ($attendance) {
+                                    return $attendance->work_date->startOfWeek()->format('Y-m-d');
+                                });
+                            @endphp
+
+                            @if($weeklyData->count() > 0)
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full bg-white/5 rounded-lg overflow-hidden">
+                                        <thead class="bg-black/30">
+                                            <tr>
+                                                <th
+                                                    class="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">
+                                                    Minggu</th>
+                                                <th
+                                                    class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
+                                                    Total Hari</th>
+                                                <th
+                                                    class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
+                                                    Total Jam</th>
+                                                <th
+                                                    class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
+                                                    Rata-rata/Hari</th>
+                                                <th
+                                                    class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
+                                                    Staf Aktif</th>
+                                                <th
+                                                    class="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">
+                                                    Per Staf (Total Jam)</th>
                                             </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        @else
-                            <div class="text-center py-12">
-                                <div
-                                    class="w-16 h-16 bg-sky-700/40 rounded-full flex items-center justify-center mx-auto mb-4 border border-sky-400/30">
-                                    <i class="fas fa-calendar-times text-white text-2xl"></i>
+                                        </thead>
+                                        <tbody class="divide-y divide-white/10">
+                                            @foreach($weeklyData as $weekStart => $weekAttendances)
+                                                @php
+                                                    $weekEnd = \Carbon\Carbon::parse($weekStart)->endOfWeek();
+                                                    $totalHours = $weekAttendances->sum('session_duration');
+                                                    $totalDays = $weekAttendances->count();
+                                                    $averageHours = $totalDays > 0 ? $totalHours / $totalDays : 0;
+                                                    $activeStaff = $weekAttendances->pluck('user_id')->unique()->count();
+                                                @endphp
+                                                <tr class="table-row-hover transition-all duration-200">
+                                                    <td class="px-4 py-4">
+                                                        <div class="text-white font-medium">
+                                                            {{ \Carbon\Carbon::parse($weekStart)->format('d/m') }} -
+                                                            {{ $weekEnd->format('d/m/Y') }}
+                                                        </div>
+                                                        <div class="text-gray-400 text-sm">Minggu
+                                                            ke-{{ \Carbon\Carbon::parse($weekStart)->weekOfYear }}</div>
+                                                    </td>
+                                                    <td class="px-4 py-4 text-center">
+                                                        <div class="text-white font-medium text-lg">{{ $totalDays }}</div>
+                                                    </td>
+                                                    <td class="px-4 py-4 text-center">
+                                                        <div class="text-white font-medium text-lg">
+                                                            {{ \App\Helpers\TimeHelper::formatDuration($totalHours) }}</div>
+                                                    </td>
+                                                    <td class="px-4 py-4 text-center">
+                                                        <div class="text-white font-medium text-lg">
+                                                            {{ \App\Helpers\TimeHelper::formatDuration($averageHours) }}</div>
+                                                    </td>
+                                                    <td class="px-4 py-4 text-center">
+                                                        <div class="text-white font-medium text-lg">{{ $activeStaff }}</div>
+                                                    </td>
+                                                    <td class="px-4 py-4">
+                                                        @php
+                                                            $byUser = $weekAttendances->groupBy('user_id');
+                                                        @endphp
+                                                        <div class="space-y-2">
+                                                            @foreach($byUser as $userId => $items)
+                                                                @php
+                                                                    $uTotal = $items->sum('session_duration');
+                                                                    $u = $items->first()->user;
+                                                                    $uDays = $items->count();
+                                                                    $uAvg = $uDays > 0 ? $uTotal / $uDays : 0;
+                                                                @endphp
+                                                                <div class="bg-white/5 rounded-lg p-3 border border-white/10">
+                                                                    <div class="flex items-center justify-between mb-1">
+                                                                        <span
+                                                                            class="font-semibold text-white text-sm">{{ $u?->name ?? 'User #' . $userId }}</span>
+                                                                        <span class="text-xs text-gray-400">{{ $uDays }} hari</span>
+                                                                    </div>
+                                                                    <div class="text-xs text-gray-300">
+                                                                        Total: <span
+                                                                            class="text-white font-medium">{{ \App\Helpers\TimeHelper::formatDuration($uTotal) }}</span>
+                                                                        | Rata: <span
+                                                                            class="text-white font-medium">{{ \App\Helpers\TimeHelper::formatDuration($uAvg) }}</span>
+                                                                    </div>
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
                                 </div>
-                                <h3 class="text-xl font-semibold text-white mb-2">Tidak Ada Data</h3>
-                                <p class="text-sky-200">Tidak ada data absensi untuk periode yang dipilih</p>
-                            </div>
-                        @endif
-                    </div>
-
-                    <!-- Monthly Report Tab -->
-                    <div id="monthly-content" class="tab-content hidden">
-                        <div class="mb-6">
-                            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
-                                <div>
-                                    <h3 class="text-xl font-bold text-white mb-2 flex items-center">
-                                        <i class="fas fa-calendar-alt mr-2 text-sky-400"></i>
-                                        Laporan Absensi Bulanan
-                                    </h3>
-                                    <p class="text-gray-300 text-sm">Rekap absensi per bulan untuk periode
-                                        {{ $filters['date_from'] }} - {{ $filters['date_to'] }}</p>
+                            @else
+                                <div class="text-center py-12">
+                                    <div
+                                        class="w-16 h-16 bg-sky-700/40 rounded-full flex items-center justify-center mx-auto mb-4 border border-sky-400/30">
+                                        <i class="fas fa-calendar-times text-white text-2xl"></i>
+                                    </div>
+                                    <h3 class="text-xl font-semibold text-white mb-2">Tidak Ada Data</h3>
+                                    <p class="text-sky-200">Tidak ada data absensi untuk periode yang dipilih</p>
                                 </div>
-                                <div class="mt-4 sm:mt-0">
-                                    <a href="{{ route('admin.attendance-reports.index', array_merge(request()->query(), ['export' => 'csv', 'period' => 'monthly'])) }}"
-                                        class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg text-sm">
-                                        <i class="fas fa-download mr-2"></i>Export Bulanan
-                                    </a>
-                                </div>
-                            </div>
+                            @endif
                         </div>
 
-                        @php
-                            $monthlyData = $attendances->groupBy(function ($attendance) {
-                                return $attendance->work_date->format('Y-m');
-                            });
-                        @endphp
-
-                        @if($monthlyData->count() > 0)
-                            <div class="overflow-x-auto">
-                                <table class="min-w-full bg-white/5 rounded-lg overflow-hidden">
-                                    <thead class="bg-black/30">
-                                        <tr>
-                                            <th
-                                                class="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                                Bulan</th>
-                                            <th
-                                                class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                                Total Hari</th>
-                                            <th
-                                                class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                                Total Jam</th>
-                                            <th
-                                                class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                                Rata-rata/Hari</th>
-                                            <th
-                                                class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                                Staf Aktif</th>
-                                            <th
-                                                class="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                                Per Staf (Total Jam)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-white/10">
-                                        @foreach($monthlyData as $month => $monthAttendances)
-                                            @php
-                                                $totalHours = $monthAttendances->sum('session_duration');
-                                                $uniqueDaysCount = $monthAttendances->unique('work_date')->count();
-                                                $averageHours = $uniqueDaysCount > 0 ? $totalHours / $uniqueDaysCount : 0;
-                                                $activeStaff = $monthAttendances->pluck('user_id')->unique()->count();
-                                            @endphp
-                                            <tr class="table-row-hover transition-all duration-200">
-                                                <td class="px-4 py-4">
-                                                    <div class="text-white font-medium text-lg">
-                                                        {{ \Carbon\Carbon::createFromFormat('Y-m', $month)->format('F Y') }}
-                                                    </div>
-                                                    <div class="text-gray-400 text-sm">
-                                                        {{ \Carbon\Carbon::createFromFormat('Y-m', $month)->format('M Y') }}
-                                                    </div>
-                                                </td>
-                                                <td class="px-4 py-4 text-center">
-                                                    <div class="text-white font-medium text-lg">{{ $monthAttendances->count() }}
-                                                    </div>
-                                                </td>
-                                                <td class="px-4 py-4 text-center">
-                                                    <div class="text-white font-medium text-lg">
-                                                        {{ \App\Helpers\TimeHelper::formatDuration($totalHours) }}</div>
-                                                </td>
-                                                <td class="px-4 py-4 text-center">
-                                                    <div class="text-white font-medium text-lg">
-                                                        {{ \App\Helpers\TimeHelper::formatDuration($averageHours) }}</div>
-                                                </td>
-                                                <td class="px-4 py-4 text-center">
-                                                    <div class="text-white font-medium text-lg">{{ $activeStaff }}</div>
-                                                </td>
-                                                <td class="px-4 py-4">
-                                                    @php
-                                                        $byUser = $monthAttendances->groupBy('user_id');
-                                                    @endphp
-                                                    <div class="space-y-2">
-                                                        @foreach($byUser as $userId => $items)
-                                                            @php
-                                                                $uTotal = $items->sum('session_duration');
-                                                                $u = $items->first()->user;
-                                                                $uDays = $items->count();
-                                                                $uAvg = $uDays > 0 ? $uTotal / $uDays : 0;
-                                                            @endphp
-                                                            <div class="bg-white/5 rounded-lg p-3 border border-white/10">
-                                                                <div class="flex items-center justify-between mb-1">
-                                                                    <span
-                                                                        class="font-semibold text-white text-sm">{{ $u?->name ?? 'User #' . $userId }}</span>
-                                                                    <span class="text-xs text-gray-400">{{ $uDays }} hari</span>
-                                                                </div>
-                                                                <div class="text-xs text-gray-300">
-                                                                    Total: <span
-                                                                        class="text-white font-medium">{{ \App\Helpers\TimeHelper::formatDuration($uTotal) }}</span>
-                                                                    | Rata: <span
-                                                                        class="text-white font-medium">{{ \App\Helpers\TimeHelper::formatDuration($uAvg) }}</span>
-                                                                </div>
-                                                            </div>
-                                                        @endforeach
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        @else
-                            <div class="text-center py-12">
-                                <div
-                                    class="w-16 h-16 bg-sky-700/40 rounded-full flex items-center justify-center mx-auto mb-4 border border-sky-400/30">
-                                    <i class="fas fa-calendar-times text-white text-2xl"></i>
+                        <!-- Monthly Report Tab -->
+                        <div id="monthly-content" class="tab-content hidden">
+                            <div class="mb-6">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
+                                    <div>
+                                        <h3 class="text-xl font-bold text-white mb-2 flex items-center">
+                                            <i class="fas fa-calendar-alt mr-2 text-sky-400"></i>
+                                            Laporan Absensi Bulanan
+                                        </h3>
+                                        <p class="text-gray-300 text-sm">Rekap absensi per bulan untuk periode
+                                            {{ $filters['date_from'] }} - {{ $filters['date_to'] }}</p>
+                                    </div>
+                                    <div class="mt-4 sm:mt-0">
+                                        <a href="{{ route('admin.attendance-reports.index', array_merge(request()->query(), ['export' => 'csv', 'period' => 'monthly'])) }}"
+                                            class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg text-sm">
+                                            <i class="fas fa-download mr-2"></i>Export Bulanan
+                                        </a>
+                                    </div>
                                 </div>
-                                <h3 class="text-xl font-semibold text-white mb-2">Tidak Ada Data</h3>
-                                <p class="text-sky-200">Tidak ada data absensi untuk periode yang dipilih</p>
                             </div>
-                        @endif
+
+                            @php
+                                $monthlyData = $attendances->groupBy(function ($attendance) {
+                                    return $attendance->work_date->format('Y-m');
+                                });
+                            @endphp
+
+                            @if($monthlyData->count() > 0)
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full bg-white/5 rounded-lg overflow-hidden">
+                                        <thead class="bg-black/30">
+                                            <tr>
+                                                <th
+                                                    class="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">
+                                                    Bulan</th>
+                                                <th
+                                                    class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
+                                                    Total Hari</th>
+                                                <th
+                                                    class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
+                                                    Total Jam</th>
+                                                <th
+                                                    class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
+                                                    Rata-rata/Hari</th>
+                                                <th
+                                                    class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
+                                                    Staf Aktif</th>
+                                                <th
+                                                    class="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">
+                                                    Per Staf (Total Jam)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-white/10">
+                                            @foreach($monthlyData as $month => $monthAttendances)
+                                                @php
+                                                    $totalHours = $monthAttendances->sum('session_duration');
+                                                    $uniqueDaysCount = $monthAttendances->unique('work_date')->count();
+                                                    $averageHours = $uniqueDaysCount > 0 ? $totalHours / $uniqueDaysCount : 0;
+                                                    $activeStaff = $monthAttendances->pluck('user_id')->unique()->count();
+                                                @endphp
+                                                <tr class="table-row-hover transition-all duration-200">
+                                                    <td class="px-4 py-4">
+                                                        <div class="text-white font-medium text-lg">
+                                                            {{ \Carbon\Carbon::createFromFormat('Y-m', $month)->format('F Y') }}
+                                                        </div>
+                                                        <div class="text-gray-400 text-sm">
+                                                            {{ \Carbon\Carbon::createFromFormat('Y-m', $month)->format('M Y') }}
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-4 text-center">
+                                                        <div class="text-white font-medium text-lg">{{ $monthAttendances->count() }}
+                                                        </div>
+                                                    </td>
+                                                    <td class="px-4 py-4 text-center">
+                                                        <div class="text-white font-medium text-lg">
+                                                            {{ \App\Helpers\TimeHelper::formatDuration($totalHours) }}</div>
+                                                    </td>
+                                                    <td class="px-4 py-4 text-center">
+                                                        <div class="text-white font-medium text-lg">
+                                                            {{ \App\Helpers\TimeHelper::formatDuration($averageHours) }}</div>
+                                                    </td>
+                                                    <td class="px-4 py-4 text-center">
+                                                        <div class="text-white font-medium text-lg">{{ $activeStaff }}</div>
+                                                    </td>
+                                                    <td class="px-4 py-4">
+                                                        @php
+                                                            $byUser = $monthAttendances->groupBy('user_id');
+                                                        @endphp
+                                                        <div class="space-y-2">
+                                                            @foreach($byUser as $userId => $items)
+                                                                @php
+                                                                    $uTotal = $items->sum('session_duration');
+                                                                    $u = $items->first()->user;
+                                                                    $uDays = $items->count();
+                                                                    $uAvg = $uDays > 0 ? $uTotal / $uDays : 0;
+                                                                @endphp
+                                                                <div class="bg-white/5 rounded-lg p-3 border border-white/10">
+                                                                    <div class="flex items-center justify-between mb-1">
+                                                                        <span
+                                                                            class="font-semibold text-white text-sm">{{ $u?->name ?? 'User #' . $userId }}</span>
+                                                                        <span class="text-xs text-gray-400">{{ $uDays }} hari</span>
+                                                                    </div>
+                                                                    <div class="text-xs text-gray-300">
+                                                                        Total: <span
+                                                                            class="text-white font-medium">{{ \App\Helpers\TimeHelper::formatDuration($uTotal) }}</span>
+                                                                        | Rata: <span
+                                                                            class="text-white font-medium">{{ \App\Helpers\TimeHelper::formatDuration($uAvg) }}</span>
+                                                                    </div>
+                                                                </div>
+                                                            @endforeach
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @else
+                                <div class="text-center py-12">
+                                    <div
+                                        class="w-16 h-16 bg-sky-700/40 rounded-full flex items-center justify-center mx-auto mb-4 border border-sky-400/30">
+                                        <i class="fas fa-calendar-times text-white text-2xl"></i>
+                                    </div>
+                                    <h3 class="text-xl font-semibold text-white mb-2">Tidak Ada Data</h3>
+                                    <p class="text-sky-200">Tidak ada data absensi untuk periode yang dipilih</p>
+                                </div>
+                            @endif
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- User Statistics -->
-            @if($summary['user_stats']->count() > 0)
-                <div class="glass-effect rounded-2xl elegant-shadow-lg p-6 mb-8">
-                    <h3 class="text-xl font-bold text-white mb-6 flex items-center">
-                        <i class="fas fa-chart-bar mr-2 text-sky-400"></i>
-                        Statistik per Staf
-                    </h3>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white/5 rounded-lg overflow-hidden">
-                            <thead class="bg-black/30">
-                                <tr>
-                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                        Staf</th>
-                                    <th
-                                        class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                        Total Hari</th>
-                                    <th
-                                        class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                        Total Jam</th>
-                                    <th
-                                        class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                        Rata-rata/Hari</th>
-                                    <th
-                                        class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
-                                        Periode</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-white/10">
-                                @foreach($summary['user_stats'] as $userStat)
-                                    <tr class="hover:bg-white/5 transition-colors duration-200">
-                                        <td class="px-4 py-4">
-                                            <div class="flex items-center">
-                                                <div
-                                                    class="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mr-3">
-                                                    <i class="fas fa-user text-white text-sm"></i>
-                                                </div>
-                                                <div>
-                                                    <p class="text-white font-semibold">{{ $userStat['user']->name }}</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-4 py-4 text-center text-white font-medium">{{ $userStat['total_days'] }}</td>
-                                        <td class="px-4 py-4 text-center text-white font-medium">
-                                            {{ \App\Helpers\TimeHelper::formatDuration($userStat['total_hours']) }}</td>
-                                        <td class="px-4 py-4 text-center text-white font-medium">
-                                            {{ \App\Helpers\TimeHelper::formatDuration($userStat['average_hours']) }}</td>
-                                        <td class="px-4 py-4 text-center text-gray-300 text-sm">
-                                            {{ \Carbon\Carbon::parse($userStat['first_attendance'])->format('d/m') }} -
-                                            {{ \Carbon\Carbon::parse($userStat['last_attendance'])->format('d/m/Y') }}
-                                        </td>
+                <!-- User Statistics -->
+                @if($summary['user_stats']->count() > 0)
+                    <div class="glass-effect rounded-2xl elegant-shadow-lg p-6 mb-8">
+                        <h3 class="text-xl font-bold text-white mb-6 flex items-center">
+                            <i class="fas fa-chart-bar mr-2 text-sky-400"></i>
+                            Statistik per Staf
+                        </h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full bg-white/5 rounded-lg overflow-hidden">
+                                <thead class="bg-black/30">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">
+                                            Staf</th>
+                                        <th
+                                            class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
+                                            Total Hari</th>
+                                        <th
+                                            class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
+                                            Total Jam</th>
+                                        <th
+                                            class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
+                                            Rata-rata/Hari</th>
+                                        <th
+                                            class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
+                                            Periode</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            @endif
-
-            <!-- Manual Entry Modal -->
-            <div id="manualEntryModal"
-                class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                <div
-                    class="bg-gradient-to-br from-sky-900 to-sky-800 rounded-2xl shadow-2xl max-w-2xl w-full border-2 border-sky-400/60">
-                    <!-- Modal Header -->
-                    <div class="p-6 border-b border-sky-400/20">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-2xl font-bold text-white flex items-center">
-                                <i class="fas fa-clock mr-3 text-sky-400"></i>
-                                Tambah Jam Kerja Manual
-                            </h3>
-                            <button onclick="closeManualEntryModal()"
-                                class="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center transition-all">
-                                <i class="fas fa-times text-white"></i>
-                            </button>
+                                </thead>
+                                <tbody class="divide-y divide-white/10">
+                                    @foreach($summary['user_stats'] as $userStat)
+                                        <tr class="hover:bg-white/5 transition-colors duration-200">
+                                            <td class="px-4 py-4">
+                                                <div class="flex items-center">
+                                                    <div
+                                                        class="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mr-3">
+                                                        <i class="fas fa-user text-white text-sm"></i>
+                                                    </div>
+                                                    <div>
+                                                        <p class="text-white font-semibold">{{ $userStat['user']->name }}</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-4 py-4 text-center text-white font-medium">{{ $userStat['total_days'] }}</td>
+                                            <td class="px-4 py-4 text-center text-white font-medium">
+                                                {{ \App\Helpers\TimeHelper::formatDuration($userStat['total_hours']) }}</td>
+                                            <td class="px-4 py-4 text-center text-white font-medium">
+                                                {{ \App\Helpers\TimeHelper::formatDuration($userStat['average_hours']) }}</td>
+                                            <td class="px-4 py-4 text-center text-gray-300 text-sm">
+                                                {{ \Carbon\Carbon::parse($userStat['first_attendance'])->format('d/m') }} -
+                                                {{ \Carbon\Carbon::parse($userStat['last_attendance'])->format('d/m/Y') }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     </div>
+                @endif
 
-                    <!-- Modal Body -->
-                    <form id="manualEntryForm" class="p-6 space-y-4">
-                        @csrf
-
-                        <!-- Staff Selection -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-2">
-                                <i class="fas fa-user mr-1"></i> Pilih Staff
-                            </label>
-                            <select name="user_id" id="user_id" required
-                                class="w-full bg-white/20 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400">
-                                <option value="" class="bg-slate-800">-- Pilih Staff --</option>
-                                @foreach($users as $user)
-                                    <option value="{{ $user->id }}" class="bg-slate-800">{{ $user->name }}</option>
-                                @endforeach
-                            </select>
-                            <p class="text-red-400 text-sm mt-1 hidden" id="error-user_id"></p>
-                        </div>
-
-                        <!-- Date -->
-                        <div>
-                            <label class="block text-sm font-medium text-gray-300 mb-2">
-                                <i class="fas fa-calendar mr-1"></i> Tanggal
-                            </label>
-                            <input type="date" name="work_date" id="work_date" required
-                                class="w-full bg-white/20 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400">
-                            <p class="text-red-400 text-sm mt-1 hidden" id="error-work_date"></p>
-                        </div>
-
-                        <!-- Time Range -->
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-300 mb-2">
-                                    <i class="fas fa-sign-in-alt mr-1"></i> Waktu Mulai
-                                </label>
-                                <input type="time" name="clock_in_time" id="clock_in_time" required
-                                    class="w-full bg-white/20 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
-                                    onchange="calculateDuration()">
-                                <p class="text-red-400 text-sm mt-1 hidden" id="error-clock_in_time"></p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-300 mb-2">
-                                    <i class="fas fa-sign-out-alt mr-1"></i> Waktu Berakhir
-                                </label>
-                                <input type="time" name="clock_out_time" id="clock_out_time" required
-                                    class="w-full bg-white/20 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
-                                    onchange="calculateDuration()">
-                                <p class="text-red-400 text-sm mt-1 hidden" id="error-clock_out_time"></p>
-                            </div>
-                        </div>
-
-                        <!-- Duration Preview -->
-                        <div id="durationPreview" class="hidden bg-sky-500/20 border border-sky-400/40 rounded-lg p-4">
+                <!-- Manual Entry Modal -->
+                <div id="manualEntryModal"
+                    class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div
+                        class="bg-gradient-to-br from-sky-900 to-sky-800 rounded-2xl shadow-2xl max-w-2xl w-full border-2 border-sky-400/60">
+                        <!-- Modal Header -->
+                        <div class="p-6 border-b border-sky-400/20">
                             <div class="flex items-center justify-between">
-                                <span class="text-gray-300">Durasi:</span>
-                                <span class="text-xl font-bold text-white" id="durationText">-</span>
+                                <h3 class="text-2xl font-bold text-white flex items-center">
+                                    <i class="fas fa-clock mr-3 text-sky-400"></i>
+                                    Tambah Jam Kerja Manual
+                                </h3>
+                                <button onclick="closeManualEntryModal()"
+                                    class="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center transition-all">
+                                    <i class="fas fa-times text-white"></i>
+                                </button>
                             </div>
                         </div>
 
-                        <!-- Session Type (Hidden - defaults to work) -->
-                        <input type="hidden" name="session_type" id="session_type" value="work">
+                        <!-- Modal Body -->
+                        <form id="manualEntryForm" class="p-6 space-y-4">
+                            @csrf
 
-                        <!-- Notes -->
+                            <!-- Staff Selection -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">
+                                    <i class="fas fa-user mr-1"></i> Pilih Staff
+                                </label>
+                                <select name="user_id" id="user_id" required
+                                    class="w-full bg-white/20 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400">
+                                    <option value="" class="bg-slate-800">-- Pilih Staff --</option>
+                                    @foreach($users as $user)
+                                        <option value="{{ $user->id }}" class="bg-slate-800">{{ $user->name }}</option>
+                                    @endforeach
+                                </select>
+                                <p class="text-red-400 text-sm mt-1 hidden" id="error-user_id"></p>
+                            </div>
+
+                            <!-- Date -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">
+                                    <i class="fas fa-calendar mr-1"></i> Tanggal
+                                </label>
+                                <input type="date" name="work_date" id="work_date" required
+                                    class="w-full bg-white/20 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400">
+                                <p class="text-red-400 text-sm mt-1 hidden" id="error-work_date"></p>
+                            </div>
+
+                            <!-- Time Range -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                                        <i class="fas fa-sign-in-alt mr-1"></i> Waktu Mulai
+                                    </label>
+                                    <input type="time" name="clock_in_time" id="clock_in_time" required
+                                        class="w-full bg-white/20 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+                                        onchange="calculateDuration()">
+                                    <p class="text-red-400 text-sm mt-1 hidden" id="error-clock_in_time"></p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-2">
+                                        <i class="fas fa-sign-out-alt mr-1"></i> Waktu Berakhir
+                                    </label>
+                                    <input type="time" name="clock_out_time" id="clock_out_time" required
+                                        class="w-full bg-white/20 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+                                        onchange="calculateDuration()">
+                                    <p class="text-red-400 text-sm mt-1 hidden" id="error-clock_out_time"></p>
+                                </div>
+                            </div>
+
+                            <!-- Duration Preview -->
+                            <div id="durationPreview" class="hidden bg-sky-500/20 border border-sky-400/40 rounded-lg p-4">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-300">Durasi:</span>
+                                    <span class="text-xl font-bold text-white" id="durationText">-</span>
+                                </div>
+                            </div>
+
+                            <!-- Session Type (Hidden - defaults to work) -->
+                            <input type="hidden" name="session_type" id="session_type" value="work">
+
+                            <!-- Notes -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-2">
+                                    <i class="fas fa-sticky-note mr-1"></i> Catatan (Opsional)
+                                </label>
+                                <textarea name="notes" id="notes" rows="3"
+                                    class="w-full bg-white/20 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+                                    placeholder="Contoh: Lupa clock in/out"></textarea>
+                            </div>
+
+                            <!-- Error Message -->
+                            <div id="formError"
+                                class="hidden bg-red-500/20 border border-red-400/40 rounded-lg p-4 text-red-300 text-sm"></div>
+
+                            <!-- Buttons -->
+                            <div class="flex gap-3 pt-4">
+                                <button type="button" onclick="closeManualEntryModal()"
+                                    class="flex-1 px-6 py-3 bg-white/10 text-white rounded-lg font-semibold hover:bg-white/20 transition-all duration-300 border-2 border-sky-400/40">
+                                    Batal
+                                </button>
+                                <button type="submit" id="submitBtn"
+                                    class="flex-1 px-6 py-3 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg">
+                                    <i class="fas fa-save mr-2"></i>Simpan
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Attendance Modal -->
+        <div id="editModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div class="bg-gradient-to-br from-sky-900 to-sky-800 rounded-2xl shadow-2xl max-w-lg w-full border-2 border-sky-400/60">
+                <!-- Modal Header -->
+                <div class="p-6 border-b border-sky-400/20">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-2xl font-bold text-white flex items-center">
+                            <i class="fas fa-edit mr-3 text-sky-400"></i>
+                            Edit Jam Kerja
+                        </h3>
+                        <button onclick="closeEditModal()" class="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center transition-all">
+                            <i class="fas fa-times text-white"></i>
+                        </button>
+                    </div>
+                    <p class="text-sky-200 mt-2" id="editModalInfo">-</p>
+                </div>
+
+                <!-- Modal Body -->
+                <form id="editForm" class="p-6 space-y-4">
+                    <input type="hidden" id="editAttendanceId" name="attendance_id">
+
+                    <!-- Time Range -->
+                    <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-300 mb-2">
-                                <i class="fas fa-sticky-note mr-1"></i> Catatan (Opsional)
+                                <i class="fas fa-sign-in-alt mr-1"></i> Waktu Mulai
                             </label>
-                            <textarea name="notes" id="notes" rows="3"
-                                class="w-full bg-white/20 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
-                                placeholder="Contoh: Lupa clock in/out"></textarea>
+                            <input type="time" name="clock_in_time" id="edit_clock_in_time" required
+                                   class="w-full bg-white/20 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+                                   onchange="calculateEditDuration()">
                         </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">
+                                <i class="fas fa-sign-out-alt mr-1"></i> Waktu Berakhir
+                            </label>
+                            <input type="time" name="clock_out_time" id="edit_clock_out_time" required
+                                   class="w-full bg-white/20 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+                                   onchange="calculateEditDuration()">
+                        </div>
+                    </div>
 
-                        <!-- Error Message -->
-                        <div id="formError"
-                            class="hidden bg-red-500/20 border border-red-400/40 rounded-lg p-4 text-red-300 text-sm"></div>
+                    <!-- Duration Preview -->
+                    <div id="editDurationPreview" class="bg-sky-500/20 border border-sky-400/40 rounded-lg p-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-300">Durasi Baru:</span>
+                            <span class="text-xl font-bold text-white" id="editDurationText">-</span>
+                        </div>
+                    </div>
 
-                        <!-- Buttons -->
-                        <div class="flex gap-3 pt-4">
-                            <button type="button" onclick="closeManualEntryModal()"
+                    <!-- Warning -->
+                    <div class="bg-yellow-500/20 border border-yellow-400/40 rounded-lg p-4 text-yellow-300 text-sm">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        Perubahan akan tercatat di audit log. Durasi payroll akan dihitung ulang.
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex gap-3 pt-4">
+                        <button type="button" onclick="closeEditModal()"
                                 class="flex-1 px-6 py-3 bg-white/10 text-white rounded-lg font-semibold hover:bg-white/20 transition-all duration-300 border-2 border-sky-400/40">
-                                Batal
-                            </button>
-                            <button type="submit" id="submitBtn"
+                            Batal
+                        </button>
+                        <button type="submit" id="editSubmitBtn"
                                 class="flex-1 px-6 py-3 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg">
-                                <i class="fas fa-save mr-2"></i>Simpan
-                            </button>
-                        </div>
-                    </form>
+                            <i class="fas fa-save mr-2"></i>Simpan Perubahan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div id="deleteModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div class="bg-gradient-to-br from-red-900 to-red-800 rounded-2xl shadow-2xl max-w-md w-full border-2 border-red-400/60">
+                <div class="p-6 text-center">
+                    <div class="w-16 h-16 bg-red-500/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-trash-alt text-3xl text-red-300"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Hapus Data Absensi?</h3>
+                    <p class="text-red-200 mb-6" id="deleteModalInfo">Data ini akan dihapus permanen.</p>
+                    <input type="hidden" id="deleteAttendanceId">
+
+                    <div class="flex gap-3">
+                        <button type="button" onclick="closeDeleteModal()"
+                                class="flex-1 px-6 py-3 bg-white/10 text-white rounded-lg font-semibold hover:bg-white/20 transition-all duration-300 border-2 border-red-400/40">
+                            Batal
+                        </button>
+                        <button type="button" onclick="confirmDelete()" id="deleteConfirmBtn"
+                                class="flex-1 px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg">
+                            <i class="fas fa-trash mr-2"></i>Hapus
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Edit Attendance Modal -->
-    <div id="editModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div class="bg-gradient-to-br from-sky-900 to-sky-800 rounded-2xl shadow-2xl max-w-lg w-full border-2 border-sky-400/60">
-            <!-- Modal Header -->
-            <div class="p-6 border-b border-sky-400/20">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-2xl font-bold text-white flex items-center">
-                        <i class="fas fa-edit mr-3 text-sky-400"></i>
-                        Edit Jam Kerja
-                    </h3>
-                    <button onclick="closeEditModal()" class="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center transition-all">
-                        <i class="fas fa-times text-white"></i>
-                    </button>
-                </div>
-                <p class="text-sky-200 mt-2" id="editModalInfo">-</p>
-            </div>
+        <!-- Toast Notification Container -->
+        <div id="toastContainer" class="fixed top-6 left-1/2 transform -translate-x-1/2 z-[99999] flex flex-col items-center gap-3 pointer-events-none"></div>
 
-            <!-- Modal Body -->
-            <form id="editForm" class="p-6 space-y-4">
-                <input type="hidden" id="editAttendanceId" name="attendance_id">
-
-                <!-- Time Range -->
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">
-                            <i class="fas fa-sign-in-alt mr-1"></i> Waktu Mulai
-                        </label>
-                        <input type="time" name="clock_in_time" id="edit_clock_in_time" required
-                               class="w-full bg-white/20 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
-                               onchange="calculateEditDuration()">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-2">
-                            <i class="fas fa-sign-out-alt mr-1"></i> Waktu Berakhir
-                        </label>
-                        <input type="time" name="clock_out_time" id="edit_clock_out_time" required
-                               class="w-full bg-white/20 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
-                               onchange="calculateEditDuration()">
-                    </div>
-                </div>
-
-                <!-- Duration Preview -->
-                <div id="editDurationPreview" class="bg-sky-500/20 border border-sky-400/40 rounded-lg p-4">
-                    <div class="flex items-center justify-between">
-                        <span class="text-gray-300">Durasi Baru:</span>
-                        <span class="text-xl font-bold text-white" id="editDurationText">-</span>
-                    </div>
-                </div>
-
-                <!-- Warning -->
-                <div class="bg-yellow-500/20 border border-yellow-400/40 rounded-lg p-4 text-yellow-300 text-sm">
-                    <i class="fas fa-exclamation-triangle mr-2"></i>
-                    Perubahan akan tercatat di audit log. Durasi payroll akan dihitung ulang.
-                </div>
-
-                <!-- Buttons -->
-                <div class="flex gap-3 pt-4">
-                    <button type="button" onclick="closeEditModal()"
-                            class="flex-1 px-6 py-3 bg-white/10 text-white rounded-lg font-semibold hover:bg-white/20 transition-all duration-300 border-2 border-sky-400/40">
-                        Batal
-                    </button>
-                    <button type="submit" id="editSubmitBtn"
-                            class="flex-1 px-6 py-3 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg">
-                        <i class="fas fa-save mr-2"></i>Simpan Perubahan
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div class="bg-gradient-to-br from-red-900 to-red-800 rounded-2xl shadow-2xl max-w-md w-full border-2 border-red-400/60">
-            <div class="p-6 text-center">
-                <div class="w-16 h-16 bg-red-500/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fas fa-trash-alt text-3xl text-red-300"></i>
-                </div>
-                <h3 class="text-2xl font-bold text-white mb-2">Hapus Data Absensi?</h3>
-                <p class="text-red-200 mb-6" id="deleteModalInfo">Data ini akan dihapus permanen.</p>
-                <input type="hidden" id="deleteAttendanceId">
-
-                <div class="flex gap-3">
-                    <button type="button" onclick="closeDeleteModal()"
-                            class="flex-1 px-6 py-3 bg-white/10 text-white rounded-lg font-semibold hover:bg-white/20 transition-all duration-300 border-2 border-red-400/40">
-                        Batal
-                    </button>
-                    <button type="button" onclick="confirmDelete()" id="deleteConfirmBtn"
-                            class="flex-1 px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg">
-                        <i class="fas fa-trash mr-2"></i>Hapus
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notification Container -->
-    <div id="toastContainer" class="fixed top-6 left-1/2 transform -translate-x-1/2 z-[99999] flex flex-col items-center gap-3 pointer-events-none"></div>
-
-    <!-- Toast Template Styles -->
-    <style>
-    .toast {
-        pointer-events: auto;
-        min-width: 320px;
-        max-width: 450px;
-        padding: 1rem 1.25rem;
-        border-radius: 1rem;
-        backdrop-filter: blur(20px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
-        animation: toastSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        display: flex;
-        align-items: flex-start;
-        gap: 0.75rem;
-    }
-    .toast.hiding {
-        animation: toastSlideOut 0.3s ease-in forwards;
-    }
-    .toast-success {
-        background: linear-gradient(135deg, rgba(16, 185, 129, 0.95), rgba(5, 150, 105, 0.95));
-        border: 2px solid rgba(52, 211, 153, 0.5);
-    }
-    .toast-error {
-        background: linear-gradient(135deg, rgba(239, 68, 68, 0.95), rgba(220, 38, 38, 0.95));
-        border: 2px solid rgba(248, 113, 113, 0.5);
-    }
-    .toast-warning {
-        background: linear-gradient(135deg, rgba(245, 158, 11, 0.95), rgba(217, 119, 6, 0.95));
-        border: 2px solid rgba(251, 191, 36, 0.5);
-    }
-    .toast-info {
-        background: linear-gradient(135deg, rgba(14, 165, 233, 0.95), rgba(6, 182, 212, 0.95));
-        border: 2px solid rgba(56, 189, 248, 0.5);
-    }
-    .toast-icon {
-        width: 2.5rem;
-        height: 2.5rem;
-        border-radius: 0.75rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(255, 255, 255, 0.2);
-        flex-shrink: 0;
-    }
-    .toast-content {
-        flex: 1;
-    }
-    .toast-title {
-        font-weight: 700;
-        font-size: 1rem;
-        color: white;
-        margin-bottom: 0.25rem;
-    }
-    .toast-message {
-        font-size: 0.875rem;
-        color: rgba(255, 255, 255, 0.9);
-        line-height: 1.4;
-    }
-    .toast-close {
-        width: 1.75rem;
-        height: 1.75rem;
-        border-radius: 0.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(255, 255, 255, 0.15);
-        color: white;
-        cursor: pointer;
-        transition: background 0.2s;
-        flex-shrink: 0;
-    }
-    .toast-close:hover {
-        background: rgba(255, 255, 255, 0.3);
-    }
-    .toast-progress {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: rgba(255, 255, 255, 0.3);
-        border-radius: 0 0 1rem 1rem;
-        overflow: hidden;
-    }
-    .toast-progress-bar {
-        height: 100%;
-        background: rgba(255, 255, 255, 0.6);
-        animation: toastProgress var(--duration) linear forwards;
-    }
-    @keyframes toastSlideIn {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-    @keyframes toastSlideOut {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(100%); opacity: 0; }
-    }
-    @keyframes toastProgress {
-        from { width: 100%; }
-        to { width: 0%; }
-    }
-    </style>
+        <!-- Toast Template Styles -->
+        <style>
+        .toast {
+            pointer-events: auto;
+            min-width: 320px;
+            max-width: 450px;
+            padding: 1rem 1.25rem;
+            border-radius: 1rem;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
+            animation: toastSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        .toast.hiding {
+            animation: toastSlideOut 0.3s ease-in forwards;
+        }
+        .toast-success {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.95), rgba(5, 150, 105, 0.95));
+            border: 2px solid rgba(52, 211, 153, 0.5);
+        }
+        .toast-error {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.95), rgba(220, 38, 38, 0.95));
+            border: 2px solid rgba(248, 113, 113, 0.5);
+        }
+        .toast-warning {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.95), rgba(217, 119, 6, 0.95));
+            border: 2px solid rgba(251, 191, 36, 0.5);
+        }
+        .toast-info {
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.95), rgba(6, 182, 212, 0.95));
+            border: 2px solid rgba(56, 189, 248, 0.5);
+        }
+        .toast-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+        }
+        .toast-content {
+            flex: 1;
+        }
+        .toast-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: white;
+            margin-bottom: 0.25rem;
+        }
+        .toast-message {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.4;
+        }
+        .toast-close {
+            width: 1.75rem;
+            height: 1.75rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            cursor: pointer;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+        .toast-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        .toast-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 0 0 1rem 1rem;
+            overflow: hidden;
+        }
+        .toast-progress-bar {
+            height: 100%;
+            background: rgba(255, 255, 255, 0.6);
+            animation: toastProgress var(--duration) linear forwards;
+        }
+        @keyframes toastSlideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes toastSlideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        @keyframes toastProgress {
+            from { width: 100%; }
+            to { width: 0%; }
+        }
+        </style>
 @endsection
 
 @push('scripts')
@@ -1111,12 +1044,12 @@
     function openEditModal(attendanceId, clockIn, clockOut, userName, workDate) {
         document.getElementById('editModal').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
-        
+
         document.getElementById('editAttendanceId').value = attendanceId;
         document.getElementById('edit_clock_in_time').value = clockIn;
         document.getElementById('edit_clock_out_time').value = clockOut || '';
         document.getElementById('editModalInfo').textContent = `${userName} - ${workDate}`;
-        
+
         calculateEditDuration();
     }
 
@@ -1128,20 +1061,20 @@
     function calculateEditDuration() {
         const clockIn = document.getElementById('edit_clock_in_time').value;
         const clockOut = document.getElementById('edit_clock_out_time').value;
-        
+
         if (clockIn && clockOut) {
             const [inHours, inMinutes] = clockIn.split(':').map(Number);
             const [outHours, outMinutes] = clockOut.split(':').map(Number);
-            
+
             let durationMinutes = (outHours * 60 + outMinutes) - (inHours * 60 + inMinutes);
-            
+
             if (durationMinutes < 0) {
                 durationMinutes += 24 * 60;
             }
-            
+
             const hours = Math.floor(durationMinutes / 60);
             const minutes = durationMinutes % 60;
-            
+
             document.getElementById('editDurationText').textContent = `${hours} jam ${minutes} menit`;
         } else {
             document.getElementById('editDurationText').textContent = '-';
@@ -1151,18 +1084,18 @@
     // Edit Form Submission
     document.getElementById('editForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-        
+
         const submitBtn = document.getElementById('editSubmitBtn');
         const originalText = submitBtn.innerHTML;
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Menyimpan...';
-        
+
         const attendanceId = document.getElementById('editAttendanceId').value;
         const data = {
             clock_in_time: document.getElementById('edit_clock_in_time').value,
             clock_out_time: document.getElementById('edit_clock_out_time').value
         };
-        
+
         try {
             const response = await fetch(`/admin/attendance-reports/${attendanceId}`, {
                 method: 'PUT',
@@ -1173,9 +1106,9 @@
                 },
                 body: JSON.stringify(data)
             });
-            
+
             const result = await response.json();
-            
+
             if (result.success) {
                 showToast('success', 'Berhasil!', `${result.message}\nDurasi baru: ${result.data.duration}`);
                 closeEditModal();
@@ -1208,9 +1141,9 @@
         const originalText = deleteBtn.innerHTML;
         deleteBtn.disabled = true;
         deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Menghapus...';
-        
+
         const attendanceId = document.getElementById('deleteAttendanceId').value;
-        
+
         try {
             const response = await fetch(`/admin/attendance-reports/${attendanceId}`, {
                 method: 'DELETE',
@@ -1220,9 +1153,9 @@
                     'Accept': 'application/json'
                 }
             });
-            
+
             const result = await response.json();
-            
+
             if (result.success) {
                 showToast('success', 'Berhasil!', result.message);
                 closeDeleteModal();
