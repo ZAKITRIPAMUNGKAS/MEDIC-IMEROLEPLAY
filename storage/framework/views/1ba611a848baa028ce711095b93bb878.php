@@ -334,7 +334,7 @@
                                                     <?php endif; ?>
                                                 </td>
                                                 <td class="px-4 py-4">
-                                                    <div class="text-white text-sm max-w-[200px] truncate" title="<?php echo e($attendance->notes); ?>">
+                                                    <div class="text-white text-sm max-w-[200px] line-clamp-4" title="<?php echo e($attendance->notes); ?>">
                                                         <?php echo e($attendance->notes ?? '-'); ?>
 
                                                     </div>

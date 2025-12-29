@@ -24,7 +24,8 @@ class AttendanceReportController extends Controller
             'clock_in_only' => $request->get('clock_in_only'),
             'export' => $request->get('export'),
             // support multiple export periods: daily, weekly, monthly
-            'period' => $request->get('period', 'daily')
+            'period' => $request->get('period', 'daily'),
+            'hospital' => $request->get('hospital'),
         ];
 
         // Build query + search by name only (email removed for privacy)
@@ -46,6 +47,27 @@ class AttendanceReportController extends Controller
         if ($request->filled('clock_in_only') && $request->get('clock_in_only') == '1') {
             $query->where('is_active', true)
                 ->whereNull('clock_out');
+        }
+
+        // Filter by Hospital (Alta/Roxwood)
+        if ($request->filled('hospital')) {
+            $hospital = $request->get('hospital');
+            $query->whereHas('user', function ($q) use ($hospital) {
+                if ($hospital === 'roxwood') {
+                    $q->where(function ($sub) {
+                        $sub->where('name', 'like', '%rh%')
+                            ->orWhere('name', 'like', '%roxwood%')
+                            ->orWhere('staff_id', 'like', '%rh%');
+                    });
+                } elseif ($hospital === 'alta') {
+                    $q->where(function ($sub) {
+                        $sub->where('name', 'not like', '%rh%')
+                            ->where('name', 'not like', '%roxwood%')
+                            ->where('staff_id', 'not like', '%rh%')
+                            ->orWhereNull('staff_id'); // Include null staff_id in Alta (default)
+                    });
+                }
+            });
         }
 
         // Get attendances
