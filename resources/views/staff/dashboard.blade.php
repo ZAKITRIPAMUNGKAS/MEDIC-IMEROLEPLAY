@@ -1342,24 +1342,24 @@
 
         @keyframes toastSlideIn {
             from {
-                transform: translateX(100%);
+                transform: translateY(-20px);
                 opacity: 0;
             }
 
             to {
-                transform: translateX(0);
+                transform: translateY(0);
                 opacity: 1;
             }
         }
 
         @keyframes toastSlideOut {
             from {
-                transform: translateX(0);
+                transform: translateY(0);
                 opacity: 1;
             }
 
             to {
-                transform: translateX(100%);
+                transform: translateY(-20px);
                 opacity: 0;
             }
         }
@@ -1394,20 +1394,20 @@
             toast.className = `toast toast-${type}`;
             toast.style.setProperty('--duration', `${duration}ms`);
             toast.innerHTML = `
-                                <div class="toast-icon">
-                                    <i class="fas ${icons[type]} text-white text-lg"></i>
-                                </div>
-                                <div class="toast-content">
-                                    <div class="toast-title">${title}</div>
-                                    <div class="toast-message">${message}</div>
-                                </div>
-                                <button class="toast-close" onclick="closeToast(this.parentElement)">
-                                    <i class="fas fa-times text-sm"></i>
-                                </button>
-                                <div class="toast-progress">
-                                    <div class="toast-progress-bar"></div>
-                                </div>
-                            `;
+                                    <div class="toast-icon">
+                                        <i class="fas ${icons[type]} text-white text-lg"></i>
+                                    </div>
+                                    <div class="toast-content">
+                                        <div class="toast-title">${title}</div>
+                                        <div class="toast-message">${message}</div>
+                                    </div>
+                                    <button class="toast-close" onclick="closeToast(this.parentElement)">
+                                        <i class="fas fa-times text-sm"></i>
+                                    </button>
+                                    <div class="toast-progress">
+                                        <div class="toast-progress-bar"></div>
+                                    </div>
+                                `;
 
             container.appendChild(toast);
             setTimeout(() => closeToast(toast), duration);
