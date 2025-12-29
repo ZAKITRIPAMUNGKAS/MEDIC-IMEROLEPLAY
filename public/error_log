@@ -1,0 +1,221 @@
+[11-Nov-2025 20:24:02 Asia/Jakarta] PHP Fatal error:  Uncaught ReflectionException: Class "config" does not exist in /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php:1118
+Stack trace:
+#0 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(1118): ReflectionClass->__construct()
+#1 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(933): Illuminate\Container\Container->build()
+#2 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1077): Illuminate\Container\Container->resolve()
+#3 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(864): Illuminate\Foundation\Application->resolve()
+#4 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1057): Illuminate\Container\Container->make()
+#5 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/helpers.php(126): Illuminate\Foundation\Application->make()
+#6 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/helpers.php(317): app()
+#7 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(839): config()
+#8 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(739): Illuminate\Foundation\Exceptions\Handler->prepareResponse()
+#9 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(627): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse()
+#10 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(219): Illuminate\Foundation\Exceptions\Handler->render()
+#11 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(196): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse()
+#12 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(256): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException()
+#13 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->{closure:Illuminate\Foundation\Bootstrap\HandleExceptions::forwardsTo():255}()
+#14 {main}
+
+Next Illuminate\Contracts\Container\BindingResolutionException: Target class [config] does not exist. in /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php:1120
+Stack trace:
+#0 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(933): Illuminate\Container\Container->build()
+#1 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1077): Illuminate\Container\Container->resolve()
+#2 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(864): Illuminate\Foundation\Application->resolve()
+#3 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1057): Illuminate\Container\Container->make()
+#4 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/helpers.php(126): Illuminate\Foundation\Application->make()
+#5 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/helpers.php(317): app()
+#6 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(839): config()
+#7 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(739): Illuminate\Foundation\Exceptions\Handler->prepareResponse()
+#8 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(627): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse()
+#9 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(219): Illuminate\Foundation\Exceptions\Handler->render()
+#10 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(196): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse()
+#11 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(256): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException()
+#12 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->{closure:Illuminate\Foundation\Bootstrap\HandleExceptions::forwardsTo():255}()
+#13 {main}
+  thrown in /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php on line 1120
+[11-Nov-2025 20:24:02 Asia/Jakarta] PHP Fatal error:  Uncaught ReflectionException: Class "config" does not exist in /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php:1118
+Stack trace:
+#0 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(1118): ReflectionClass->__construct()
+#1 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(933): Illuminate\Container\Container->build()
+#2 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1077): Illuminate\Container\Container->resolve()
+#3 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(864): Illuminate\Foundation\Application->resolve()
+#4 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1057): Illuminate\Container\Container->make()
+#5 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/helpers.php(126): Illuminate\Foundation\Application->make()
+#6 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/helpers.php(317): app()
+#7 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(839): config()
+#8 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(739): Illuminate\Foundation\Exceptions\Handler->prepareResponse()
+#9 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(627): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse()
+#10 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(219): Illuminate\Foundation\Exceptions\Handler->render()
+#11 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(196): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse()
+#12 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(256): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException()
+#13 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->{closure:Illuminate\Foundation\Bootstrap\HandleExceptions::forwardsTo():255}()
+#14 {main}
+
+Next Illuminate\Contracts\Container\BindingResolutionException: Target class [config] does not exist. in /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php:1120
+Stack trace:
+#0 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(933): Illuminate\Container\Container->build()
+#1 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1077): Illuminate\Container\Container->resolve()
+#2 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(864): Illuminate\Foundation\Application->resolve()
+#3 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1057): Illuminate\Container\Container->make()
+#4 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/helpers.php(126): Illuminate\Foundation\Application->make()
+#5 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/helpers.php(317): app()
+#6 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(839): config()
+#7 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(739): Illuminate\Foundation\Exceptions\Handler->prepareResponse()
+#8 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(627): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse()
+#9 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(219): Illuminate\Foundation\Exceptions\Handler->render()
+#10 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(196): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse()
+#11 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(256): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException()
+#12 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->{closure:Illuminate\Foundation\Bootstrap\HandleExceptions::forwardsTo():255}()
+#13 {main}
+  thrown in /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php on line 1120
+[11-Nov-2025 20:24:05 Asia/Jakarta] PHP Fatal error:  Uncaught ReflectionException: Class "config" does not exist in /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php:1118
+Stack trace:
+#0 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(1118): ReflectionClass->__construct()
+#1 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(933): Illuminate\Container\Container->build()
+#2 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1077): Illuminate\Container\Container->resolve()
+#3 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(864): Illuminate\Foundation\Application->resolve()
+#4 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1057): Illuminate\Container\Container->make()
+#5 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/helpers.php(126): Illuminate\Foundation\Application->make()
+#6 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/helpers.php(317): app()
+#7 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(839): config()
+#8 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(739): Illuminate\Foundation\Exceptions\Handler->prepareResponse()
+#9 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(627): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse()
+#10 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(219): Illuminate\Foundation\Exceptions\Handler->render()
+#11 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(196): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse()
+#12 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(256): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException()
+#13 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->{closure:Illuminate\Foundation\Bootstrap\HandleExceptions::forwardsTo():255}()
+#14 {main}
+
+Next Illuminate\Contracts\Container\BindingResolutionException: Target class [config] does not exist. in /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php:1120
+Stack trace:
+#0 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(933): Illuminate\Container\Container->build()
+#1 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1077): Illuminate\Container\Container->resolve()
+#2 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(864): Illuminate\Foundation\Application->resolve()
+#3 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1057): Illuminate\Container\Container->make()
+#4 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/helpers.php(126): Illuminate\Foundation\Application->make()
+#5 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/helpers.php(317): app()
+#6 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(839): config()
+#7 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(739): Illuminate\Foundation\Exceptions\Handler->prepareResponse()
+#8 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(627): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse()
+#9 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(219): Illuminate\Foundation\Exceptions\Handler->render()
+#10 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(196): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse()
+#11 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(256): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException()
+#12 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->{closure:Illuminate\Foundation\Bootstrap\HandleExceptions::forwardsTo():255}()
+#13 {main}
+  thrown in /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php on line 1120
+[11-Nov-2025 20:24:08 Asia/Jakarta] PHP Fatal error:  Uncaught ReflectionException: Class "config" does not exist in /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php:1118
+Stack trace:
+#0 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(1118): ReflectionClass->__construct()
+#1 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(933): Illuminate\Container\Container->build()
+#2 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1077): Illuminate\Container\Container->resolve()
+#3 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(864): Illuminate\Foundation\Application->resolve()
+#4 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1057): Illuminate\Container\Container->make()
+#5 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/helpers.php(126): Illuminate\Foundation\Application->make()
+#6 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/helpers.php(317): app()
+#7 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(839): config()
+#8 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(739): Illuminate\Foundation\Exceptions\Handler->prepareResponse()
+#9 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(627): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse()
+#10 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(219): Illuminate\Foundation\Exceptions\Handler->render()
+#11 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(196): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse()
+#12 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(256): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException()
+#13 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->{closure:Illuminate\Foundation\Bootstrap\HandleExceptions::forwardsTo():255}()
+#14 {main}
+
+Next Illuminate\Contracts\Container\BindingResolutionException: Target class [config] does not exist. in /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php:1120
+Stack trace:
+#0 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(933): Illuminate\Container\Container->build()
+#1 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1077): Illuminate\Container\Container->resolve()
+#2 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php(864): Illuminate\Foundation\Application->resolve()
+#3 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1057): Illuminate\Container\Container->make()
+#4 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/helpers.php(126): Illuminate\Foundation\Application->make()
+#5 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/helpers.php(317): app()
+#6 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(839): config()
+#7 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(739): Illuminate\Foundation\Exceptions\Handler->prepareResponse()
+#8 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(627): Illuminate\Foundation\Exceptions\Handler->renderExceptionResponse()
+#9 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(219): Illuminate\Foundation\Exceptions\Handler->render()
+#10 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(196): Illuminate\Foundation\Bootstrap\HandleExceptions->renderHttpResponse()
+#11 /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(256): Illuminate\Foundation\Bootstrap\HandleExceptions->handleException()
+#12 [internal function]: Illuminate\Foundation\Bootstrap\HandleExceptions->{closure:Illuminate\Foundation\Bootstrap\HandleExceptions::forwardsTo():255}()
+#13 {main}
+  thrown in /home/medz5778/public_html/vendor/laravel/framework/src/Illuminate/Container/Container.php on line 1120
+[11-Nov-2025 23:15:57 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[11-Nov-2025 23:19:52 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[11-Nov-2025 23:23:12 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[11-Nov-2025 23:25:51 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 00:13:19 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 00:20:32 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 00:27:38 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 00:28:16 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 00:31:03 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 03:06:16 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 04:19:01 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 06:25:11 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 08:26:35 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 08:48:29 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 09:02:19 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 09:11:58 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 09:12:21 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 09:12:29 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 09:13:55 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 09:22:36 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 09:58:09 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 10:24:46 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 11:15:23 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 11:33:31 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 11:39:49 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 11:45:32 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 11:45:34 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 11:51:33 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 12:08:53 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 12:08:58 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 12:09:04 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 12:09:11 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 12:17:47 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 12:48:36 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 13:24:18 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 14:14:17 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 14:14:20 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 14:14:27 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 14:26:17 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 14:54:45 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 14:56:35 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 14:58:11 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 15:01:24 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 15:01:28 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 15:02:28 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 15:02:31 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 15:02:34 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 15:03:12 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 15:13:08 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 15:13:12 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 15:13:29 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 15:21:58 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 15:27:08 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 16:22:26 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 16:40:37 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 16:40:39 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 16:56:17 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 17:32:51 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 17:36:41 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 17:36:56 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 17:36:58 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 17:40:23 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 17:58:39 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 17:59:33 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 17:59:35 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[12-Nov-2025 17:59:37 Asia/Jakarta] PHP Fatal error:  Cannot declare class App\Http\Controllers\Admin\PayrollController, because the name is already in use in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[13-Nov-2025 05:47:13 Asia/Jakarta] PHP Fatal error:  The "yield" expression can only be used inside a function in /home/medz5778/public_html/storage/framework/views/117f5c02eaec7f488737001b829bff85.php on line 21
+[13-Nov-2025 05:47:17 Asia/Jakarta] PHP Fatal error:  The "yield" expression can only be used inside a function in /home/medz5778/public_html/storage/framework/views/117f5c02eaec7f488737001b829bff85.php on line 21
+[13-Nov-2025 05:47:26 Asia/Jakarta] PHP Fatal error:  The "yield" expression can only be used inside a function in /home/medz5778/public_html/storage/framework/views/117f5c02eaec7f488737001b829bff85.php on line 21
+[16-Nov-2025 20:52:35 Asia/Jakarta] PHP Fatal error:  Cannot redeclare class App\Http\Controllers\Admin\PayrollController (previously declared in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php:15) in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[16-Nov-2025 20:52:37 Asia/Jakarta] PHP Fatal error:  Cannot redeclare class App\Http\Controllers\Admin\PayrollController (previously declared in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php:15) in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[16-Nov-2025 20:53:42 Asia/Jakarta] PHP Fatal error:  Cannot redeclare class App\Http\Controllers\Admin\PayrollController (previously declared in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php:15) in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[16-Nov-2025 20:53:45 Asia/Jakarta] PHP Fatal error:  Cannot redeclare class App\Http\Controllers\Admin\PayrollController (previously declared in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php:15) in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[16-Nov-2025 20:56:58 Asia/Jakarta] PHP Fatal error:  Cannot redeclare class App\Http\Controllers\Admin\PayrollController (previously declared in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php:15) in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[16-Nov-2025 20:57:01 Asia/Jakarta] PHP Fatal error:  Cannot redeclare class App\Http\Controllers\Admin\PayrollController (previously declared in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php:15) in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[16-Nov-2025 20:57:13 Asia/Jakarta] PHP Fatal error:  Cannot redeclare class App\Http\Controllers\Admin\PayrollController (previously declared in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php:15) in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[16-Nov-2025 20:57:16 Asia/Jakarta] PHP Fatal error:  Cannot redeclare class App\Http\Controllers\Admin\PayrollController (previously declared in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php:15) in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[16-Nov-2025 20:57:20 Asia/Jakarta] PHP Fatal error:  Cannot redeclare class App\Http\Controllers\Admin\PayrollController (previously declared in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php:15) in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[16-Nov-2025 20:57:21 Asia/Jakarta] PHP Fatal error:  Cannot redeclare class App\Http\Controllers\Admin\PayrollController (previously declared in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php:15) in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[16-Nov-2025 20:57:23 Asia/Jakarta] PHP Fatal error:  Cannot redeclare class App\Http\Controllers\Admin\PayrollController (previously declared in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php:15) in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15
+[16-Nov-2025 20:57:26 Asia/Jakarta] PHP Fatal error:  Cannot redeclare class App\Http\Controllers\Admin\PayrollController (previously declared in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php:15) in /home/medz5778/public_html/app/Http/Controllers/Staff/PayrollController.php on line 15

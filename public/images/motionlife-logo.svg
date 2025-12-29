@@ -1,0 +1,24 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Vertical bar (dark blue) -->
+  <rect x="30" y="8" width="4" height="48" rx="2" fill="#1E40AF" />
+  
+  <!-- Left ribbon (blue gradient) -->
+  <path d="M8 32 Q16 28 24 32 Q20 36 12 36 Q8 34 8 32 Z" fill="url(#blueGradient)" />
+  
+  <!-- Right ribbon (green gradient) -->
+  <path d="M56 32 Q48 28 40 32 Q44 36 52 36 Q56 34 56 32 Z" fill="url(#greenGradient)" />
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="blueGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#60A5FA;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#93C5FD;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#DBEAFE;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="greenGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#DBEAFE;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#6EE7B7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#34D399;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>

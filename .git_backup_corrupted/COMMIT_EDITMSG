@@ -1,0 +1,8 @@
+feat: Add leaderboard star system, form validation, and dashboard improvements
+
+- Add star badge system for users who have been #1 in weekly leaderboard
+- Implement daily form submission limit per character (once per day per form type)
+- Add error notifications with alert box and JavaScript alerts
+- Remove streak section from dashboard, keep only total hours cards
+- Improve form error handling and user feedback
+- Add case-insensitive character name validation
