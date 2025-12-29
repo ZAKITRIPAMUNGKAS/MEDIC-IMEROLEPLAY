@@ -20,28 +20,32 @@ class AttendanceHelper
         $endOfWeek = now()->endOfWeek();
 
         return User::with(['role'])
-            ->whereHas('attendances', function($query) use ($startOfWeek, $endOfWeek) {
+            ->whereHas('attendances', function ($query) use ($startOfWeek, $endOfWeek) {
                 $query->whereBetween('work_date', [$startOfWeek, $endOfWeek])
-                      ->where('session_type', 'work')
-                      ->whereNotNull('session_duration')
-                      ->where('session_duration', '>', 0);
+                    ->where('session_type', 'work')
+                    ->whereNotNull('session_duration')
+                    ->where('session_duration', '>', 0);
             })
-            ->withCount(['attendances' => function($query) use ($startOfWeek, $endOfWeek) {
-                $query->whereBetween('work_date', [$startOfWeek, $endOfWeek])
-                      ->where('session_type', 'work')
-                      ->whereNotNull('session_duration')
-                      ->where('session_duration', '>', 0);
-            }])
-            ->withSum(['attendances' => function($query) use ($startOfWeek, $endOfWeek) {
-                $query->whereBetween('work_date', [$startOfWeek, $endOfWeek])
-                      ->where('session_type', 'work')
-                      ->whereNotNull('session_duration')
-                      ->where('session_duration', '>', 0);
-            }], 'session_duration')
+            ->withCount([
+                'attendances' => function ($query) use ($startOfWeek, $endOfWeek) {
+                    $query->whereBetween('work_date', [$startOfWeek, $endOfWeek])
+                        ->where('session_type', 'work')
+                        ->whereNotNull('session_duration')
+                        ->where('session_duration', '>', 0);
+                }
+            ])
+            ->withSum([
+                'attendances' => function ($query) use ($startOfWeek, $endOfWeek) {
+                    $query->whereBetween('work_date', [$startOfWeek, $endOfWeek])
+                        ->where('session_type', 'work')
+                        ->whereNotNull('session_duration')
+                        ->where('session_duration', '>', 0);
+                }
+            ], 'session_duration')
             ->orderBy('attendances_sum_session_duration', 'desc')
             ->limit($limit)
             ->get()
-            ->map(function($user) use ($startOfWeek, $endOfWeek) {
+            ->map(function ($user) use ($startOfWeek, $endOfWeek) {
                 // Add unique work days count
                 $uniqueWorkDays = Attendance::where('user_id', $user->id)
                     ->whereBetween('work_date', [$startOfWeek, $endOfWeek])
@@ -50,11 +54,11 @@ class AttendanceHelper
                     ->where('session_duration', '>', 0)
                     ->distinct('work_date')
                     ->count('work_date');
-                    
+
                 $user->unique_work_days = $uniqueWorkDays;
                 $user->total_hours_formatted = TimeHelper::formatDuration($user->attendances_sum_session_duration);
                 $user->total_hours_decimal = TimeHelper::secondsToHours($user->attendances_sum_session_duration);
-                
+
                 return $user;
             });
     }
@@ -66,83 +70,154 @@ class AttendanceHelper
      * @param string|null $userHospital Filter by hospital (alta/roxwood) or null for all
      * @return int
      */
+    /**
+     * Get total number of times a user has been #1 in weekly leaderboard
+     * Optimized with Caching
+     *
+     * @param int $userId
+     * @param string|null $userHospital Filter by hospital (alta/roxwood) or null for all
+     * @return int
+     */
     public static function getTotalJuara1Count(int $userId, ?string $userHospital = null): int
     {
-        // Get all distinct weeks from attendance data
+        $cacheKey = "weekly_stats_history_" . ($userHospital ?? 'all');
+
+        // 1. Get History (Past Weeks) - Cached for 24 hours
+        // Returns array of user_ids who won in past weeks
+        $historicalWinners = \Illuminate\Support\Facades\Cache::remember($cacheKey, 60 * 60 * 24, function () use ($userHospital) {
+            return self::calculateHistoricalWinners($userHospital);
+        });
+
+        // 2. Get Current Week Winner - Cached for 1 hour (updates more frequently)
+        $currentWeekKey = "weekly_stats_current_" . ($userHospital ?? 'all') . "_" . now()->format('Y_W');
+        $currentWinner = \Illuminate\Support\Facades\Cache::remember($currentWeekKey, 60 * 60, function () use ($userHospital) {
+            return self::calculateCurrentWeekWinner($userHospital);
+        });
+
+        // 3. Count occurrences
+        $count = 0;
+
+        // Count from history
+        foreach ($historicalWinners as $winnerId) {
+            if ($winnerId == $userId) {
+                $count++;
+            }
+        }
+
+        // Count current week
+        if ($currentWinner && $currentWinner == $userId) {
+            $count++;
+        }
+
+        return $count;
+    }
+
+    /**
+     * Calculate winners for all past completed weeks
+     */
+    private static function calculateHistoricalWinners($userHospital)
+    {
+        $winners = [];
+
+        // Get all distinct weeks EXCLUDING current week
+        // Using YEARWEEK mode 1 (Monday-Sunday)
+        $currentYearWeek = now()->format('oW'); // ISO YearWeek
+
         $weeks = Attendance::selectRaw('YEARWEEK(work_date, 1) as week_year, MIN(work_date) as week_start')
             ->where('session_type', 'work')
             ->whereNotNull('session_duration')
             ->where('session_duration', '>', 0)
+            ->whereRaw('YEARWEEK(work_date, 1) < ?', [$currentYearWeek]) // Only past weeks
             ->groupBy('week_year')
             ->orderBy('week_year', 'desc')
             ->get();
-
-        $juara1Count = 0;
 
         foreach ($weeks as $week) {
             $weekStart = Carbon::parse($week->week_start)->startOfWeek();
             $weekEnd = $weekStart->copy()->endOfWeek();
 
-            // Build query for top user with hospital filter if needed
-            $topUserQuery = User::whereHas('attendances', function($query) use ($weekStart, $weekEnd) {
-                    $query->whereBetween('work_date', [$weekStart, $weekEnd])
-                          ->where('session_type', 'work')
-                          ->whereNotNull('session_duration')
-                          ->where('session_duration', '>', 0);
-                });
+            $winnerId = self::getWinnerForPeriod($weekStart, $weekEnd, $userHospital);
 
-            // Apply hospital filter if provided
-            if ($userHospital) {
-                if ($userHospital === 'alta') {
-                    $topUserQuery->where(function($q) {
-                        $q->whereRaw('LOWER(name) NOT LIKE ?', ['%rh%'])
-                          ->whereRaw('LOWER(name) NOT LIKE ?', ['%roxwood%'])
-                          ->whereRaw('LOWER(name) NOT LIKE ?', ['%rh -%'])
-                          ->whereRaw('LOWER(name) NOT LIKE ?', ['%rh-%'])
-                          ->where(function($sq) {
-                              $sq->whereNull('staff_id')
-                                 ->orWhere(function($ssq) {
-                                     $ssq->whereRaw('LOWER(staff_id) NOT LIKE ?', ['%rh%'])
-                                        ->whereRaw('LOWER(staff_id) NOT LIKE ?', ['%rh -%'])
-                                        ->whereRaw('LOWER(staff_id) NOT LIKE ?', ['%rh-%']);
-                                 });
-                          });
-                    });
-                } else {
-                    $topUserQuery->where(function($q) {
-                        $q->whereRaw('LOWER(name) LIKE ?', ['%rh%'])
-                          ->orWhereRaw('LOWER(name) LIKE ?', ['%roxwood%'])
-                          ->orWhereRaw('LOWER(name) LIKE ?', ['%rh -%'])
-                          ->orWhereRaw('LOWER(name) LIKE ?', ['%rh-%'])
-                          ->orWhere(function($sq) {
-                              $sq->whereNotNull('staff_id')
-                                 ->where(function($ssq) {
-                                     $ssq->whereRaw('LOWER(staff_id) LIKE ?', ['%rh%'])
-                                        ->orWhereRaw('LOWER(staff_id) LIKE ?', ['%rh -%'])
-                                        ->orWhereRaw('LOWER(staff_id) LIKE ?', ['%rh-%']);
-                                 });
-                          });
-                    });
-                }
-            }
-
-            // Get top user for this week
-            $topUser = $topUserQuery
-                ->withSum(['attendances' => function($query) use ($weekStart, $weekEnd) {
-                    $query->whereBetween('work_date', [$weekStart, $weekEnd])
-                          ->where('session_type', 'work')
-                          ->whereNotNull('session_duration')
-                          ->where('session_duration', '>', 0);
-                }], 'session_duration')
-                ->orderBy('attendances_sum_session_duration', 'desc')
-                ->first();
-
-            if ($topUser && $topUser->id === $userId) {
-                $juara1Count++;
+            if ($winnerId) {
+                $winners[] = $winnerId;
             }
         }
 
-        return $juara1Count;
+        return $winners;
+    }
+
+    /**
+     * Calculate winner for the current active week
+     */
+    private static function calculateCurrentWeekWinner($userHospital)
+    {
+        $startOfWeek = now()->startOfWeek();
+        $endOfWeek = now()->endOfWeek();
+
+        return self::getWinnerForPeriod($startOfWeek, $endOfWeek, $userHospital);
+    }
+
+    /**
+     * Helper to find winner ID for a specific date range
+     */
+    private static function getWinnerForPeriod($startDate, $endDate, $userHospital)
+    {
+        // Build query for top user
+        $topUserQuery = User::whereHas('attendances', function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('work_date', [$startDate, $endDate])
+                ->where('session_type', 'work')
+                ->whereNotNull('session_duration')
+                ->where('session_duration', '>', 0);
+        });
+
+        // Apply hospital filter
+        if ($userHospital) {
+            if ($userHospital === 'alta') {
+                $topUserQuery->where(function ($q) {
+                    $q->whereRaw('LOWER(name) NOT LIKE ?', ['%rh%'])
+                        ->whereRaw('LOWER(name) NOT LIKE ?', ['%roxwood%'])
+                        ->whereRaw('LOWER(name) NOT LIKE ?', ['%rh -%'])
+                        ->whereRaw('LOWER(name) NOT LIKE ?', ['%rh-%'])
+                        ->where(function ($sq) {
+                            $sq->whereNull('staff_id')
+                                ->orWhere(function ($ssq) {
+                                    $ssq->whereRaw('LOWER(staff_id) NOT LIKE ?', ['%rh%'])
+                                        ->whereRaw('LOWER(staff_id) NOT LIKE ?', ['%rh -%'])
+                                        ->whereRaw('LOWER(staff_id) NOT LIKE ?', ['%rh-%']);
+                                });
+                        });
+                });
+            } else {
+                $topUserQuery->where(function ($q) {
+                    $q->whereRaw('LOWER(name) LIKE ?', ['%rh%'])
+                        ->orWhereRaw('LOWER(name) LIKE ?', ['%roxwood%'])
+                        ->orWhereRaw('LOWER(name) LIKE ?', ['%rh -%'])
+                        ->orWhereRaw('LOWER(name) LIKE ?', ['%rh-%'])
+                        ->orWhere(function ($sq) {
+                            $sq->whereNotNull('staff_id')
+                                ->where(function ($ssq) {
+                                    $ssq->whereRaw('LOWER(staff_id) LIKE ?', ['%rh%'])
+                                        ->orWhereRaw('LOWER(staff_id) LIKE ?', ['%rh -%'])
+                                        ->orWhereRaw('LOWER(staff_id) LIKE ?', ['%rh-%']);
+                                });
+                        });
+                });
+            }
+        }
+
+        $topUser = $topUserQuery
+            ->withSum([
+                'attendances' => function ($query) use ($startDate, $endDate) {
+                    $query->whereBetween('work_date', [$startDate, $endDate])
+                        ->where('session_type', 'work')
+                        ->whereNotNull('session_duration')
+                        ->where('session_duration', '>', 0);
+                }
+            ], 'session_duration')
+            ->orderBy('attendances_sum_session_duration', 'desc')
+            ->first();
+
+        return $topUser ? $topUser->id : null;
     }
 
     /**
@@ -210,7 +285,7 @@ class AttendanceHelper
     public static function getDailySummary(int $userId, ?string $date = null): array
     {
         $date = $date ?? today();
-        
+
         $sessions = Attendance::getTodaySessions($userId);
         $activeSession = Attendance::getActiveSession($userId, $date);
         $totalHours = Attendance::getDailyTotalHours($userId, $date);
@@ -264,7 +339,7 @@ class AttendanceHelper
                 if ($clockOut->isFuture()) {
                     $errors[] = 'Clock out time cannot be in the future';
                 }
-                
+
                 if (!empty($data['clock_in'])) {
                     $clockIn = Carbon::parse($data['clock_in']);
                     if ($clockOut->lt($clockIn)) {
@@ -288,12 +363,12 @@ class AttendanceHelper
     public static function getLongDutySessions(int $thresholdHours = 8)
     {
         $thresholdSeconds = TimeHelper::hoursToSeconds($thresholdHours);
-        
+
         return Attendance::where('is_active', true)
             ->where('clock_in', '<=', now()->subSeconds($thresholdSeconds))
             ->with('user')
             ->get()
-            ->map(function($session) {
+            ->map(function ($session) {
                 $session->duration_seconds = $session->calculateTotalHours();
                 $session->duration_formatted = TimeHelper::formatDuration($session->duration_seconds);
                 $session->duration_hours = TimeHelper::secondsToHours($session->duration_seconds);
@@ -349,7 +424,7 @@ class AttendanceHelper
     public static function canClockIn(int $userId): array
     {
         $anyActiveSession = Attendance::getAnyActiveSession($userId);
-        
+
         if ($anyActiveSession) {
             return [
                 'can_clock_in' => false,
@@ -382,12 +457,12 @@ class AttendanceHelper
     public static function canClockOut(int $userId, ?string $date = null): array
     {
         $date = $date ?? today();
-        
+
         $activeSession = Attendance::getActiveSession($userId, $date);
-        
+
         if (!$activeSession) {
             $anyActiveSession = Attendance::getAnyActiveSession($userId);
-            
+
             if ($anyActiveSession) {
                 return [
                     'can_clock_out' => true,
@@ -396,7 +471,7 @@ class AttendanceHelper
                     'message' => 'Menggunakan sesi aktif dari hari sebelumnya'
                 ];
             }
-            
+
             return [
                 'can_clock_out' => false,
                 'reason' => 'no_active_session',

@@ -46,6 +46,44 @@ class Attendance extends Model
         static::saving(function ($attendance) {
             $attendance->validateAttendanceData();
         });
+
+        // Cache Invalidation after save (create/update)
+        static::saved(function ($attendance) {
+            self::clearAttendanceCache($attendance);
+        });
+
+        // Cache Invalidation after delete
+        static::deleted(function ($attendance) {
+            self::clearAttendanceCache($attendance);
+        });
+    }
+
+    /**
+     * Clear relevant caches for attendance
+     */
+    protected static function clearAttendanceCache($attendance)
+    {
+        $userId = $attendance->user_id;
+        $workDate = $attendance->work_date;
+        $year = $workDate ? $workDate->year : now()->year;
+        $yearWeek = $workDate ? $workDate->format('Y_W') : now()->format('Y_W');
+
+        // 1. Clear Heatmap Cache
+        \Illuminate\Support\Facades\Cache::forget("user_heatmap_{$userId}_{$year}");
+
+        // 2. Clear Weekly Leaderboard Cache (Current Week)
+        // Since we don't know the hospital context easily here without loading user relation,
+        // we clear all potential hospital keys
+        \Illuminate\Support\Facades\Cache::forget("weekly_stats_current_all_{$yearWeek}");
+        \Illuminate\Support\Facades\Cache::forget("weekly_stats_current_alta_{$yearWeek}");
+        \Illuminate\Support\Facades\Cache::forget("weekly_stats_current_roxwood_{$yearWeek}");
+
+        // 3. Clear Historical Cache if the change is in the past
+        // (Just to be safe, though history rarely changes)
+        \Illuminate\Support\Facades\Cache::forget("weekly_stats_history_all");
+        \Illuminate\Support\Facades\Cache::forget("weekly_stats_history_alta");
+        \Illuminate\Support\Facades\Cache::forget("weekly_stats_history_roxwood");
+
     }
 
     /**
@@ -68,7 +106,7 @@ class Attendance extends Model
         if ($this->clock_in && $this->work_date) {
             $clockInDate = $this->clock_in->toDateString();
             $workDate = $this->work_date->toDateString();
-            
+
             // For cross-day sessions, work_date should match clock_in date
             if ($clockInDate !== $workDate) {
                 \Log::warning('Work date mismatch detected', [
@@ -77,7 +115,7 @@ class Attendance extends Model
                     'work_date' => $workDate,
                     'auto_fixing' => true
                 ]);
-                
+
                 // Auto-fix: Set work_date to match clock_in date
                 $this->work_date = $clockInDate;
             }
@@ -86,13 +124,13 @@ class Attendance extends Model
         // Validate session duration if both clock_in and clock_out exist
         if ($this->clock_in && $this->clock_out && !$this->is_active) {
             $calculatedDuration = $this->clock_in->diffInSeconds($this->clock_out);
-            
+
             // If session_duration is set, validate it matches calculated duration
             // EXCEPT for auto checkout with timer - use scheduled time, not calculated time
             // EXCEPT for manual checkout with timer - use elapsed time, not calculated time
             $isAutoCheckout = $this->auto_checked_out ?? false;
             $hasScheduledTimer = $this->scheduled_duty_minutes && $this->scheduled_duty_minutes > 0;
-            
+
             // CRITICAL: Never override duration for auto checkout - it uses scheduled time exactly
             if ($isAutoCheckout && $hasScheduledTimer) {
                 // For auto checkout with timer: session_duration MUST be scheduled_duty_minutes * 60
@@ -106,7 +144,7 @@ class Attendance extends Model
                         'scheduled_duty_minutes' => $this->scheduled_duty_minutes,
                         'auto_fixing' => true
                     ]);
-                    
+
                     // Force fix: Use scheduled time (exact), not calculated time
                     $this->session_duration = $expectedScheduledSeconds;
                     $this->total_hours = max(1, $this->scheduled_duty_minutes);
@@ -114,7 +152,7 @@ class Attendance extends Model
                 // Don't validate against calculated duration - it may differ due to delay
                 return;
             }
-            
+
             // Only validate if not auto checkout and not manual checkout with timer
             if ($this->session_duration && !$isAutoCheckout && !$hasScheduledTimer) {
                 // For normal mode only: validate it matches calculated duration
@@ -125,7 +163,7 @@ class Attendance extends Model
                         'stored_duration' => $this->session_duration,
                         'auto_fixing' => true
                     ]);
-                    
+
                     // Auto-fix: Update session_duration to match calculated duration (only for normal mode)
                     $this->session_duration = $calculatedDuration;
                 }
@@ -222,7 +260,7 @@ class Attendance extends Model
             ->forDate($date)
             ->orderBy('session_number', 'desc')
             ->first();
-        
+
         return $lastSession ? $lastSession->session_number + 1 : 1;
     }
 
@@ -270,10 +308,10 @@ class Attendance extends Model
 
         // Use explicit timezone to ensure consistency
         $clockOutTime = Carbon::now('Asia/Jakarta');
-        
+
         // Ensure clock_in is also Carbon with Asia/Jakarta timezone
         $clockInTime = $this->clock_in->setTimezone('Asia/Jakarta');
-        
+
         // Validate: Clock out tidak boleh sebelum clock in
         if ($clockOutTime->lt($clockInTime)) {
             \Log::error('Clock out time is before clock in time', [
@@ -288,31 +326,31 @@ class Attendance extends Model
 
         $this->clock_out = $clockOutTime;
         $this->is_active = false;
-        
+
         // Check if this is manual checkout with scheduled duty timer
         $isManualCheckoutWithTimer = false;
         if ($this->scheduled_duty_minutes && $this->scheduled_duty_minutes > 0 && !$this->auto_checked_out) {
             $isManualCheckoutWithTimer = true;
         }
-        
+
         // Calculate session duration in SECONDS (for accuracy) - use timezone-aware times
         $durationSeconds = $clockInTime->diffInSeconds($clockOutTime);
         $durationHours = $durationSeconds / 3600;
         $durationMinutes = floor($durationSeconds / 60);
-        
+
         // Check if this is a cross-day session
         $isCrossDay = $clockInTime->toDateString() !== $clockOutTime->toDateString();
-        
+
         // Prepare notes
         $additionalNotes = [];
-        
+
         // If manual checkout with timer: use elapsed time (not scheduled time)
         // This matches Example 1: Clock in 60 min, manual checkout after 40 min = 40 min duty time
         if ($isManualCheckoutWithTimer) {
             // Manual checkout: gunakan waktu yang sudah berlalu (elapsed time)
             $this->session_duration = $durationSeconds;
             $this->total_hours = max(1, $durationMinutes);
-            
+
             // Tambahkan catatan tentang manual checkout
             $additionalNotes[] = sprintf(
                 '[Manual checkout - scheduled: %d min, actual: %d min]',
@@ -325,14 +363,14 @@ class Attendance extends Model
             $this->session_duration = $durationSeconds;
             $this->total_hours = max(1, $durationMinutes);
         }
-        
+
         if ($isCrossDay) {
             $additionalNotes[] = sprintf(
                 '[Cross-Day Session: %s → %s]',
                 $clockInTime->format('Y-m-d H:i'),
                 $clockOutTime->format('Y-m-d H:i')
             );
-            
+
             \Log::info('Cross-day session detected', [
                 'attendance_id' => $this->id,
                 'clock_in' => $clockInTime->toDateTimeString(),
@@ -340,14 +378,14 @@ class Attendance extends Model
                 'duration_hours' => round($durationHours, 2)
             ]);
         }
-        
+
         // Validate: Durasi maksimum 48 jam (untuk detect anomali - lebih toleran untuk cross-day)
         if ($durationHours > 48) {
             $additionalNotes[] = sprintf(
                 '[WARNING: Durasi %.1f jam melebihi 48 jam - Mohon verifikasi]',
                 $durationHours
             );
-            
+
             \Log::warning('Session duration exceeds 48 hours', [
                 'attendance_id' => $this->id,
                 'duration_hours' => $durationHours,
@@ -362,7 +400,7 @@ class Attendance extends Model
                 '[INFO: Durasi %.1f jam dalam satu hari - Kemungkinan lupa clock out]',
                 $durationHours
             );
-            
+
             \Log::warning('Long session in single day (possible forgot to clock out)', [
                 'attendance_id' => $this->id,
                 'duration_hours' => $durationHours,
@@ -370,19 +408,19 @@ class Attendance extends Model
                 'clock_out' => $clockOutTime->toDateTimeString()
             ]);
         }
-        
+
         // Append additional notes if any
         if (!empty($additionalNotes)) {
             $currentNotes = trim($this->notes ?? '');
             $newNotes = implode("\n", $additionalNotes);
             $this->notes = $currentNotes ? $currentNotes . "\n" . $newNotes : $newNotes;
         }
-        
+
         // Duration sudah di-set di atas (baik untuk manual checkout dengan timer maupun normal mode)
         // Tidak perlu set ulang di sini untuk menghindari duplikasi
-        
+
         $this->save();
-        
+
         // Auto-split cross-boundary sessions after saving
         // Hanya split jika data valid (clock_out > clock_in dan tanggal berbeda dengan benar)
         if ($isCrossDay) {
@@ -394,10 +432,10 @@ class Attendance extends Model
                     'clock_in' => $clockInTime->format('Y-m-d H:i:s'),
                     'clock_out' => $clockOutTime->format('Y-m-d H:i:s')
                 ]);
-                
+
                 // Split cross-day session automatically
                 $splitResult = $this->splitCrossDaySession();
-                
+
                 if (!$splitResult) {
                     \Log::warning('Auto-split cross-day session failed, but session was saved', [
                         'attendance_id' => $this->id,
@@ -413,18 +451,18 @@ class Attendance extends Model
                 ]);
             }
         }
-        
+
         // Check for cross-week and split if needed
         if ($this->isCrossWeek()) {
             \Log::info('Auto-splitting cross-week session', [
                 'attendance_id' => $this->id,
                 'user_id' => $this->user_id
             ]);
-            
+
             // Split cross-week session automatically
             $this->splitCrossWeekSession();
         }
-        
+
         \Log::info('Session closed successfully', [
             'attendance_id' => $this->id,
             'user_id' => $this->user_id,
@@ -433,7 +471,7 @@ class Attendance extends Model
             'duration_hours' => round($durationHours, 2),
             'is_cross_day' => $isCrossDay
         ]);
-        
+
         return true;
     }
 
@@ -443,12 +481,12 @@ class Attendance extends Model
     public static function fixInconsistentData()
     {
         $fixed = 0;
-        
+
         // Fix records where session_duration is null but clock_out exists
         $records = self::whereNotNull('clock_out')
             ->whereNull('session_duration')
             ->get();
-            
+
         foreach ($records as $record) {
             $durationSeconds = $record->clock_in->diffInSeconds($record->clock_out);
             $record->session_duration = $durationSeconds;
@@ -456,7 +494,7 @@ class Attendance extends Model
             $record->save();
             $fixed++;
         }
-        
+
         return $fixed;
     }
 
@@ -470,26 +508,26 @@ class Attendance extends Model
         if ($this->session_duration) {
             return $this->session_duration;
         }
-        
+
         // Priority 2: Jika masih aktif, hitung real-time dengan timezone yang benar
         if ($this->is_active && $this->clock_in) {
             $now = Carbon::now('Asia/Jakarta');
             return $this->clock_in->diffInSeconds($now);
         }
-        
+
         // Priority 3: Jika ada clock_out, hitung dari clock_in ke clock_out
         if ($this->clock_out && $this->clock_in) {
             return $this->clock_in->diffInSeconds($this->clock_out);
         }
-        
+
         // Priority 4: total_hours (legacy field, convert to seconds for backward compatibility)
         if ($this->total_hours) {
             return $this->total_hours * 60;
         }
-        
+
         return 0;
     }
-    
+
     /**
      * Get formatted duration (HH:MM:SS)
      */
@@ -498,7 +536,7 @@ class Attendance extends Model
         $seconds = $this->calculateTotalHours();
         return \App\Helpers\TimeHelper::formatDuration($seconds);
     }
-    
+
     /**
      * Get duration in hours (decimal)
      */
@@ -507,7 +545,7 @@ class Attendance extends Model
         $seconds = $this->calculateTotalHours();
         return \App\Helpers\TimeHelper::secondsToHours($seconds);
     }
-    
+
     /**
      * Check if session crosses day boundary
      */
@@ -516,10 +554,10 @@ class Attendance extends Model
         if (!$this->clock_out) {
             return false;
         }
-        
+
         return $this->clock_in->toDateString() !== $this->clock_out->toDateString();
     }
-    
+
     /**
      * Get session info for cross-day sessions
      */
@@ -528,7 +566,7 @@ class Attendance extends Model
         if (!$this->isCrossDay()) {
             return null;
         }
-        
+
         // Validasi: pastikan clock_out > clock_in
         if ($this->clock_out->lte($this->clock_in)) {
             \Log::warning('Invalid cross-day session: clock_out <= clock_in', [
@@ -538,15 +576,15 @@ class Attendance extends Model
             ]);
             return null;
         }
-        
+
         // Pastikan timezone konsisten
         $clockIn = $this->clock_in->copy()->setTimezone('Asia/Jakarta');
         $clockOut = $this->clock_out->copy()->setTimezone('Asia/Jakarta');
-        
+
         // Pastikan second_day > first_day
         $firstDay = $clockIn->toDateString();
         $secondDay = $clockOut->toDateString();
-        
+
         if ($secondDay <= $firstDay) {
             \Log::warning('Invalid cross-day session: second_day <= first_day', [
                 'attendance_id' => $this->id,
@@ -557,17 +595,17 @@ class Attendance extends Model
             ]);
             return null;
         }
-        
+
         // Hitung end of day untuk hari pertama
         $firstDayEnd = $clockIn->copy()->endOfDay();
-        
+
         // Hitung start of day untuk hari kedua
         $secondDayStart = $clockOut->copy()->startOfDay();
-        
+
         // Hitung durasi dalam detik (lebih akurat)
         $firstDaySeconds = $clockIn->diffInSeconds($firstDayEnd);
         $secondDaySeconds = $secondDayStart->diffInSeconds($clockOut);
-        
+
         // Validasi: durasi harus positif
         if ($firstDaySeconds <= 0 || $secondDaySeconds <= 0) {
             \Log::warning('Invalid cross-day session: invalid duration calculation', [
@@ -577,7 +615,7 @@ class Attendance extends Model
             ]);
             return null;
         }
-        
+
         return [
             'is_cross_day' => true,
             'first_day' => $firstDay,
@@ -589,7 +627,7 @@ class Attendance extends Model
             'total_minutes' => $this->session_duration ? floor($this->session_duration / 60) : null
         ];
     }
-    
+
     /**
      * Check if session crosses week boundary
      */
@@ -598,14 +636,14 @@ class Attendance extends Model
         if (!$this->clock_out) {
             return false;
         }
-        
+
         // Use copy() to avoid modifying the original Carbon instance
         $clockInWeek = $this->clock_in->copy()->startOfWeek();
         $clockOutWeek = $this->clock_out->copy()->startOfWeek();
-        
+
         return $clockInWeek->ne($clockOutWeek);
     }
-    
+
     /**
      * Get session info for cross-week sessions
      */
@@ -614,25 +652,25 @@ class Attendance extends Model
         if (!$this->isCrossWeek()) {
             return null;
         }
-        
+
         // Use copy() to avoid modifying the original Carbon instance
         $clockInWeek = $this->clock_in->copy()->startOfWeek();
         $clockOutWeek = $this->clock_out->copy()->startOfWeek();
-        
+
         // Calculate duration for each week
         $weekInfo = [];
         $currentWeek = $clockInWeek->copy();
-        
+
         while ($currentWeek->lte($clockOutWeek)) {
             $weekStart = $currentWeek->copy();
             $weekEnd = $currentWeek->copy()->endOfWeek();
-            
+
             // Determine actual start and end times for this week
             $actualStart = $this->clock_in->gt($weekStart) ? $this->clock_in : $weekStart;
             $actualEnd = $this->clock_out->lt($weekEnd) ? $this->clock_out : $weekEnd;
-            
+
             $durationSeconds = $actualStart->diffInSeconds($actualEnd);
-            
+
             $weekInfo[] = [
                 'week_start' => $weekStart->toDateString(),
                 'week_end' => $weekEnd->toDateString(),
@@ -641,17 +679,17 @@ class Attendance extends Model
                 'duration_seconds' => $durationSeconds,
                 'duration_hours' => round($durationSeconds / 3600, 2)
             ];
-            
+
             $currentWeek->addWeek();
         }
-        
+
         return [
             'is_cross_week' => true,
             'weeks' => $weekInfo,
             'total_duration' => $this->session_duration
         ];
     }
-    
+
     /**
      * Split cross-day session into daily sessions
      */
@@ -660,7 +698,7 @@ class Attendance extends Model
         if (!$this->isCrossDay()) {
             return false;
         }
-        
+
         // CRITICAL VALIDATION: Pastikan clock_out > clock_in sebelum split
         if ($this->clock_out->lte($this->clock_in)) {
             \Log::error('Cannot split cross-day session: clock_out must be after clock_in', [
@@ -670,12 +708,12 @@ class Attendance extends Model
             ]);
             return false;
         }
-        
+
         $info = $this->getCrossDayInfo();
         if (!$info) {
             return false;
         }
-        
+
         // Validasi tambahan: pastikan second_day > first_day
         if ($info['second_day'] <= $info['first_day']) {
             \Log::error('Cannot split cross-day session: second_day must be after first_day', [
@@ -687,18 +725,18 @@ class Attendance extends Model
             ]);
             return false;
         }
-        
+
         try {
             \DB::beginTransaction();
-            
+
             // Pastikan timezone konsisten
             $clockIn = $this->clock_in->copy()->setTimezone('Asia/Jakarta');
             $clockOut = $this->clock_out->copy()->setTimezone('Asia/Jakarta');
-            
+
             // Update original record untuk hari pertama (sampai end of day)
             // endOfDay() akan menghasilkan 23:59:59 pada tanggal yang sama dengan clock_in
             $firstDayEnd = $clockIn->copy()->endOfDay();
-            
+
             // Validasi: firstDayEnd harus <= clockOut
             if ($firstDayEnd->gt($clockOut)) {
                 \Log::error('Cannot split: first day end is after clock out', [
@@ -710,21 +748,21 @@ class Attendance extends Model
                 \DB::rollBack();
                 return false;
             }
-            
+
             // Hitung durasi hari pertama (dari clock_in sampai end of day)
             $firstDayDuration = $clockIn->diffInSeconds($firstDayEnd);
-            
+
             $this->update([
                 'clock_out' => $firstDayEnd,
                 'session_duration' => $firstDayDuration,
                 'total_hours' => max(1, floor($firstDayDuration / 60)), // Keep minutes for compatibility
                 'notes' => ($this->notes ?? '') . "\n[Split: Day 1 of cross-day session]"
             ]);
-            
+
             // Buat record baru untuk hari kedua (dari start of day kedua sampai clock out asli)
             // startOfDay() akan menghasilkan 00:00:00 pada tanggal clock_out
             $secondDayStart = $clockOut->copy()->startOfDay();
-            
+
             // Validasi: secondDayStart harus < clockOut
             if ($secondDayStart->gte($clockOut)) {
                 \Log::error('Cannot split: second day start is not before clock out', [
@@ -735,10 +773,10 @@ class Attendance extends Model
                 \DB::rollBack();
                 return false;
             }
-            
+
             // Hitung durasi hari kedua (dari start of day sampai clock_out)
             $secondDayDuration = $secondDayStart->diffInSeconds($clockOut);
-            
+
             // Validasi: durasi harus positif
             if ($secondDayDuration <= 0) {
                 \Log::error('Cannot split: second day duration is invalid', [
@@ -750,9 +788,9 @@ class Attendance extends Model
                 \DB::rollBack();
                 return false;
             }
-            
+
             $nextSessionNumber = self::getNextSessionNumber($this->user_id, $info['second_day']);
-            
+
             self::create([
                 'user_id' => $this->user_id,
                 'clock_in' => $secondDayStart,
@@ -765,9 +803,9 @@ class Attendance extends Model
                 'total_hours' => max(1, floor($secondDayDuration / 60)), // Keep minutes for compatibility
                 'notes' => ($this->notes ?? '') . "\n[Split: Day 2 of cross-day session]"
             ]);
-            
+
             \DB::commit();
-            
+
             \Log::info('Cross-day session split successfully', [
                 'attendance_id' => $this->id,
                 'first_day' => $info['first_day'],
@@ -775,9 +813,9 @@ class Attendance extends Model
                 'first_day_duration' => $firstDayDuration,
                 'second_day_duration' => $secondDayDuration
             ]);
-            
+
             return true;
-            
+
         } catch (\Exception $e) {
             \DB::rollBack();
             \Log::error('Failed to split cross-day session', [
@@ -788,7 +826,7 @@ class Attendance extends Model
             return false;
         }
     }
-    
+
     /**
      * Split cross-week session into weekly sessions
      */
@@ -797,17 +835,17 @@ class Attendance extends Model
         if (!$this->isCrossWeek()) {
             return false;
         }
-        
+
         $info = $this->getCrossWeekInfo();
         if (!$info) {
             return false;
         }
-        
+
         try {
             \DB::beginTransaction();
-            
+
             $createdSessions = [];
-            
+
             foreach ($info['weeks'] as $index => $week) {
                 if ($index === 0) {
                     // Update original record for first week
@@ -820,7 +858,7 @@ class Attendance extends Model
                 } else {
                     // Create new record for subsequent weeks
                     $sessionNumber = self::getNextSessionNumber($this->user_id, $week['actual_start']->toDateString());
-                    
+
                     $newSession = self::create([
                         'user_id' => $this->user_id,
                         'clock_in' => $week['actual_start'],
@@ -833,14 +871,14 @@ class Attendance extends Model
                         'total_hours' => floor($week['duration_seconds'] / 60), // Convert to minutes for compatibility
                         'notes' => ($this->notes ?? '') . "\n[Split: Week " . ($index + 1) . " of cross-week session]"
                     ]);
-                    
+
                     $createdSessions[] = $newSession;
                 }
             }
-            
+
             \DB::commit();
             return $createdSessions;
-            
+
         } catch (\Exception $e) {
             \DB::rollBack();
             \Log::error('Failed to split cross-week session', [
@@ -850,7 +888,7 @@ class Attendance extends Model
             return false;
         }
     }
-    
+
     /**
      * Fix cross-day sessions (split into separate daily sessions)
      */
@@ -858,13 +896,13 @@ class Attendance extends Model
     {
         $fixed = 0;
         $skipped = 0;
-        
+
         // Find sessions that cross days - using safe date comparison
         $records = self::whereNotNull('clock_out')
             ->whereRaw('DATE(clock_in) != DATE(clock_out)')
             ->where('is_active', false)
             ->get();
-            
+
         foreach ($records as $record) {
             // Validasi: pastikan clock_out > clock_in sebelum mencoba split
             if ($record->clock_out->lte($record->clock_in)) {
@@ -877,7 +915,7 @@ class Attendance extends Model
                 ]);
                 continue;
             }
-            
+
             if ($record->splitCrossDaySession()) {
                 $fixed++;
                 \Log::info('Cross-day session split successfully', [
@@ -886,7 +924,7 @@ class Attendance extends Model
                 ]);
             }
         }
-        
+
         if ($skipped > 0) {
             \Log::info('Cross-day sessions fix completed', [
                 'fixed' => $fixed,
@@ -894,25 +932,25 @@ class Attendance extends Model
                 'total_processed' => $records->count()
             ]);
         }
-        
+
         return $fixed;
     }
-    
+
     /**
      * Fix cross-week sessions (split into separate weekly sessions)
      */
     public static function fixCrossWeekSessions()
     {
         $fixed = 0;
-        
+
         // Find sessions that cross weeks
         $records = self::whereNotNull('clock_out')
             ->where('is_active', false)
             ->get()
-            ->filter(function($record) {
+            ->filter(function ($record) {
                 return $record->isCrossWeek();
             });
-            
+
         foreach ($records as $record) {
             if ($record->splitCrossWeekSession()) {
                 $fixed++;
@@ -922,10 +960,10 @@ class Attendance extends Model
                 ]);
             }
         }
-        
+
         return $fixed;
     }
-    
+
     /**
      * Fix all cross-boundary sessions (both day and week)
      */
@@ -933,19 +971,19 @@ class Attendance extends Model
     {
         $dayFixed = self::fixCrossDaySessions();
         $weekFixed = self::fixCrossWeekSessions();
-        
+
         \Log::info('Cross-boundary sessions fixed', [
             'cross_day_fixed' => $dayFixed,
             'cross_week_fixed' => $weekFixed
         ]);
-        
+
         return [
             'cross_day_fixed' => $dayFixed,
             'cross_week_fixed' => $weekFixed,
             'total_fixed' => $dayFixed + $weekFixed
         ];
     }
-    
+
     /**
      * Get sessions for today (only sessions that actually started today)
      */
@@ -958,7 +996,7 @@ class Attendance extends Model
             ->orderBy('session_number')
             ->get();
     }
-    
+
     /**
      * Get active session for today
      */
@@ -1018,7 +1056,7 @@ class Attendance extends Model
 
         // Reload to ensure we have latest data
         $this->refresh();
-        
+
         // Double check session is still active after refresh
         if (!$this->is_active || !$this->scheduled_duty_minutes) {
             \Log::warning('Session is no longer active or scheduled_duty_minutes is missing after refresh', [
@@ -1057,7 +1095,7 @@ class Attendance extends Model
 
         // Log dengan informasi lengkap untuk debugging
         $actualDurationFromTimes = $clockInTime->diffInSeconds($clockOutTime);
-        
+
         \Log::info('Auto checkout completed', [
             'attendance_id' => $this->id,
             'user_id' => $this->user_id,

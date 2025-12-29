@@ -17,85 +17,89 @@ class AttendanceHeatmapHelper
     public static function generateHeatmapData($userId, $year = null)
     {
         $year = $year ?: now()->year;
-        $startDate = Carbon::create($year, 1, 1);
-        $endDate = Carbon::create($year, 12, 31);
-        
-        // Get all attendance records for the year
-        $attendances = Attendance::where('user_id', $userId)
-            ->whereBetween('work_date', [$startDate, $endDate])
-            ->whereNotNull('clock_in')
-            ->get()
-            ->groupBy(function ($attendance) {
-                return $attendance->work_date->format('Y-m-d');
-            });
-        
-        
-        // Calculate daily work hours
-        $dailyData = [];
-        $currentDate = $startDate->copy();
-        
-        while ($currentDate->lte($endDate)) {
-            $dateKey = $currentDate->format('Y-m-d');
-            $dayAttendances = $attendances->get($dateKey, collect());
-            
-            // Calculate total hours from session_duration or total_hours
-            $totalHours = 0;
-            foreach ($dayAttendances as $attendance) {
-                if ($attendance->session_duration && $attendance->session_duration > 0) {
-                    $totalHours += $attendance->session_duration;
-                } elseif ($attendance->total_hours && $attendance->total_hours > 0) {
-                    $totalHours += $attendance->total_hours;
-                } elseif ($attendance->clock_out) {
-                    // Calculate from clock_in and clock_out if session_duration is not set
-                    try {
-                        $clockIn = Carbon::parse($attendance->clock_in);
-                        $clockOut = Carbon::parse($attendance->clock_out);
-                        $totalHours += $clockOut->diffInSeconds($clockIn);
-                    } catch (\Exception $e) {
-                        // Skip if date parsing fails
-                        continue;
+        $cacheKey = "user_heatmap_{$userId}_{$year}";
+
+        return \Illuminate\Support\Facades\Cache::remember($cacheKey, 60 * 60 * 3, function () use ($userId, $year) {
+            $startDate = Carbon::create($year, 1, 1);
+            $endDate = Carbon::create($year, 12, 31);
+
+            // Get all attendance records for the year
+            $attendances = Attendance::where('user_id', $userId)
+                ->whereBetween('work_date', [$startDate, $endDate])
+                ->whereNotNull('clock_in')
+                ->get()
+                ->groupBy(function ($attendance) {
+                    return $attendance->work_date->format('Y-m-d');
+                });
+
+
+            // Calculate daily work hours
+            $dailyData = [];
+            $currentDate = $startDate->copy();
+
+            while ($currentDate->lte($endDate)) {
+                $dateKey = $currentDate->format('Y-m-d');
+                $dayAttendances = $attendances->get($dateKey, collect());
+
+                // Calculate total hours from session_duration or total_hours
+                $totalHours = 0;
+                foreach ($dayAttendances as $attendance) {
+                    if ($attendance->session_duration && $attendance->session_duration > 0) {
+                        $totalHours += $attendance->session_duration;
+                    } elseif ($attendance->total_hours && $attendance->total_hours > 0) {
+                        $totalHours += $attendance->total_hours;
+                    } elseif ($attendance->clock_out) {
+                        // Calculate from clock_in and clock_out if session_duration is not set
+                        try {
+                            $clockIn = Carbon::parse($attendance->clock_in);
+                            $clockOut = Carbon::parse($attendance->clock_out);
+                            $totalHours += $clockOut->diffInSeconds($clockIn);
+                        } catch (\Exception $e) {
+                            // Skip if date parsing fails
+                            continue;
+                        }
+                    } else {
+                        // If only clock_in exists (no clock_out), count as 1 hour minimum
+                        $totalHours += 3600; // 1 hour
                     }
-                } else {
-                    // If only clock_in exists (no clock_out), count as 1 hour minimum
-                    $totalHours += 3600; // 1 hour
                 }
+
+                $sessionCount = $dayAttendances->count();
+
+                $dailyData[] = [
+                    'date' => $currentDate->format('Y-m-d'),
+                    'day' => $currentDate->format('d'),
+                    'month' => $currentDate->format('M'),
+                    'weekday' => $currentDate->format('D'),
+                    'total_hours' => $totalHours,
+                    'session_count' => $sessionCount,
+                    'level' => self::getContributionLevel($totalHours),
+                    'is_today' => $currentDate->isToday(),
+                    'is_weekend' => $currentDate->isWeekend(),
+                ];
+
+                $currentDate->addDay();
             }
-            
-            $sessionCount = $dayAttendances->count();
-            
-            $dailyData[] = [
-                'date' => $currentDate->format('Y-m-d'),
-                'day' => $currentDate->format('d'),
-                'month' => $currentDate->format('M'),
-                'weekday' => $currentDate->format('D'),
-                'total_hours' => $totalHours,
-                'session_count' => $sessionCount,
-                'level' => self::getContributionLevel($totalHours),
-                'is_today' => $currentDate->isToday(),
-                'is_weekend' => $currentDate->isWeekend(),
+
+            // Calculate streaks
+            $streaks = self::calculateStreaks($dailyData);
+
+            return [
+                'year' => $year,
+                'total_days' => count($dailyData),
+                'work_days' => collect($dailyData)->where('total_hours', '>', 0)->count(),
+                'total_hours' => collect($dailyData)->sum('total_hours'),
+                'daily_data' => $dailyData,
+                'weeks_data' => self::organizeDataByWeeks($dailyData, $year),
+                'months' => self::getMonthLabels($year),
+                'weekdays' => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                'streaks' => $streaks,
+                'current_streak' => $streaks['current'],
+                'longest_streak' => $streaks['longest'],
             ];
-            
-            $currentDate->addDay();
-        }
-        
-        // Calculate streaks
-        $streaks = self::calculateStreaks($dailyData);
-        
-        return [
-            'year' => $year,
-            'total_days' => count($dailyData),
-            'work_days' => collect($dailyData)->where('total_hours', '>', 0)->count(),
-            'total_hours' => collect($dailyData)->sum('total_hours'),
-            'daily_data' => $dailyData,
-            'weeks_data' => self::organizeDataByWeeks($dailyData, $year),
-            'months' => self::getMonthLabels($year),
-            'weekdays' => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-            'streaks' => $streaks,
-            'current_streak' => $streaks['current'],
-            'longest_streak' => $streaks['longest'],
-        ];
+        });
     }
-    
+
     /**
      * Get contribution level based on work hours
      *
@@ -105,15 +109,20 @@ class AttendanceHeatmapHelper
     private static function getContributionLevel($totalHours)
     {
         $hours = $totalHours / 3600; // Convert to hours
-        
-        if ($hours == 0) return 0;
-        if ($hours < 2) return 1;
-        if ($hours < 4) return 2;
-        if ($hours < 6) return 3;
-        if ($hours < 8) return 4;
+
+        if ($hours == 0)
+            return 0;
+        if ($hours < 2)
+            return 1;
+        if ($hours < 4)
+            return 2;
+        if ($hours < 6)
+            return 3;
+        if ($hours < 8)
+            return 4;
         return 5;
     }
-    
+
     /**
      * Get month labels for the year
      *
@@ -127,7 +136,7 @@ class AttendanceHeatmapHelper
             $date = Carbon::create($year, $i, 1);
             $endDate = $date->copy()->endOfMonth();
             $weeksInMonth = $date->diffInWeeks($endDate) + 1;
-            
+
             $months[] = [
                 'name' => $date->format('M'),
                 'start_day' => $date->dayOfYear,
@@ -137,7 +146,7 @@ class AttendanceHeatmapHelper
         }
         return $months;
     }
-    
+
     /**
      * Get heatmap statistics
      *
@@ -148,7 +157,7 @@ class AttendanceHeatmapHelper
     {
         $dailyData = $heatmapData['daily_data'];
         $workDays = collect($dailyData)->where('total_hours', '>', 0);
-        
+
         return [
             'total_contributions' => $workDays->count(),
             'total_hours' => $workDays->sum('total_hours'),
@@ -158,7 +167,7 @@ class AttendanceHeatmapHelper
             'most_active_month' => self::getMostActiveMonth($dailyData),
         ];
     }
-    
+
     /**
      * Get longest work streak
      *
@@ -169,7 +178,7 @@ class AttendanceHeatmapHelper
     {
         $maxStreak = 0;
         $currentStreak = 0;
-        
+
         foreach ($dailyData as $day) {
             if ($day['total_hours'] > 0) {
                 $currentStreak++;
@@ -178,10 +187,10 @@ class AttendanceHeatmapHelper
                 $currentStreak = 0;
             }
         }
-        
+
         return $maxStreak;
     }
-    
+
     /**
      * Get current work streak
      *
@@ -192,7 +201,7 @@ class AttendanceHeatmapHelper
     {
         $streak = 0;
         $reversedData = array_reverse($dailyData);
-        
+
         foreach ($reversedData as $day) {
             if ($day['total_hours'] > 0) {
                 $streak++;
@@ -200,10 +209,10 @@ class AttendanceHeatmapHelper
                 break;
             }
         }
-        
+
         return $streak;
     }
-    
+
     /**
      * Get most active month
      *
@@ -213,15 +222,15 @@ class AttendanceHeatmapHelper
     private static function getMostActiveMonth($dailyData)
     {
         $monthlyHours = [];
-        
+
         foreach ($dailyData as $day) {
             $month = Carbon::parse($day['date'])->format('M');
             $monthlyHours[$month] = ($monthlyHours[$month] ?? 0) + $day['total_hours'];
         }
-        
+
         return array_search(max($monthlyHours), $monthlyHours) ?: 'None';
     }
-    
+
     /**
      * Organize daily data by weeks for proper heatmap display
      *
@@ -232,48 +241,48 @@ class AttendanceHeatmapHelper
     private static function organizeDataByWeeks($dailyData, $year)
     {
         $weeks = [];
-        
+
         // Create a map of dates to data
         $dateMap = [];
         foreach ($dailyData as $day) {
             $dateMap[$day['date']] = $day;
         }
-        
+
         // Start from January 1st of the year
         $startOfYear = Carbon::create($year, 1, 1);
-        
+
         // Find the Sunday of the week that contains January 1st
         $currentWeek = $startOfYear->copy();
         while ($currentWeek->dayOfWeek != 0) { // 0 = Sunday
             $currentWeek->subDay();
         }
-        
+
         // Generate all weeks that contain days from the year
         $weekNumber = 1;
         $maxWeeks = 53; // Maximum weeks in a year
-        
+
         while ($weekNumber <= $maxWeeks) {
             $weekDays = [];
-            
+
             // Add 7 days for this week
             for ($i = 0; $i < 7; $i++) {
                 $dateKey = $currentWeek->format('Y-m-d');
                 $weekDays[] = $dateMap[$dateKey] ?? null;
                 $currentWeek->addDay();
             }
-            
+
             $weeks[$weekNumber] = $weekDays;
             $weekNumber++;
-            
+
             // Break if we've gone past the year
             if ($currentWeek->year > $year) {
                 break;
             }
         }
-        
+
         return $weeks;
     }
-    
+
     /**
      * Calculate work streaks
      *
@@ -285,7 +294,7 @@ class AttendanceHeatmapHelper
         $currentStreak = 0;
         $longestStreak = 0;
         $tempStreak = 0;
-        
+
         // Calculate current streak (from today backwards)
         $reversedData = array_reverse($dailyData);
         foreach ($reversedData as $day) {
@@ -295,7 +304,7 @@ class AttendanceHeatmapHelper
                 break;
             }
         }
-        
+
         // Calculate longest streak
         foreach ($dailyData as $day) {
             if ($day['total_hours'] > 0) {
@@ -305,11 +314,11 @@ class AttendanceHeatmapHelper
                 $tempStreak = 0;
             }
         }
-        
+
         return [
             'current' => $currentStreak,
             'longest' => $longestStreak,
         ];
     }
-    
+
 }
