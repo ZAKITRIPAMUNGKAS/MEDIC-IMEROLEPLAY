@@ -1546,9 +1546,13 @@
                         // Enable all doctors if no hospital selected, or enable only matching hospital
                         if (!selectedHospital || doctorHospital === selectedHospital) {
                             option.disabled = false;
+                            option.hidden = false;
+                            option.style.display = '';
                             hasVisibleOption = true;
                         } else {
                             option.disabled = true;
+                            option.hidden = true;
+                            option.style.display = 'none';
                         }
                     });
 
