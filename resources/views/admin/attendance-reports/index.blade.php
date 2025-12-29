@@ -21,11 +21,13 @@
                             <p class="text-gray-300 text-sm">Total Data</p>
                             <p class="text-xl sm:text-2xl font-bold text-white">{{ $attendances->count() }}</p>
                         </div>
+                        @if(auth()->user()->isAdmin())
                         <button onclick="openManualEntryModal()"
                             class="w-full sm:w-auto inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg mr-2">
                             <i class="fas fa-plus mr-2"></i><span class="hidden xs:inline">Tambah Manual</span><span
                                 class="xs:hidden">Tambah</span>
                         </button>
+                        @endif
                         <a href="{{ route('admin.attendance-reports.index', array_merge(request()->query(), ['export' => 'csv'])) }}"
                             class="w-full sm:w-auto inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg">
                             <i class="fas fa-download mr-2"></i><span class="hidden xs:inline">Download CSV</span><span
@@ -214,12 +216,14 @@
                                             <th
                                                 class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
                                                 Status</th>
+                                            @if(auth()->user()->isAdmin())
                                             <th
                                                 class="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">
                                                 Catatan</th>
                                             <th
                                                 class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
                                                 Aksi</th>
+                                            @endif
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-white/10">
@@ -335,6 +339,7 @@
                                                         </span>
                                                     @endif
                                                 </td>
+                                                @if(auth()->user()->isAdmin())
                                                 <td class="px-4 py-4">
                                                     @if($attendance->notes)
                                                         <div x-data="{ expanded: false }">
@@ -382,6 +387,7 @@
                                                         </button>
                                                     </div>
                                                 </td>
+                                                @endif
                                             </tr>
                                         @endforeach
                                     </tbody>
