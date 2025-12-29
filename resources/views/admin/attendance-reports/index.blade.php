@@ -355,28 +355,24 @@
                                                     @endif
                                                 </td>
                                                 <td class="px-4 py-4 text-center">
-                                                    <div class="flex items-center justify-center gap-2">
+                                                    <div class="flex flex-col items-center justify-center gap-2">
                                                         @if(!$attendance->clock_out)
                                                             <button
                                                                 onclick="forceCheckOut(event, {{ $attendance->id }}, {{ json_encode($attendance->user->name ?? 'User #' . $attendance->user_id) }})"
-                                                                class="force-checkout-btn inline-flex items-center px-2 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-red-200 rounded-lg text-xs font-medium border border-red-500/30 hover:border-red-500/50 transition-all duration-200"
+                                                                class="force-checkout-btn w-full inline-flex items-center justify-center px-2 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-red-200 rounded-lg text-xs font-medium border border-red-500/30 hover:border-red-500/50 transition-all duration-200"
                                                                 title="Force Check Out">
                                                                 <i class="fas fa-power-off mr-1"></i>Force
                                                             </button>
                                                         @endif
-
-                                                        <!-- Edit Button -->
                                                         <button
                                                             onclick="openEditModal({{ $attendance->id }}, '{{ $attendance->clock_in->format('H:i') }}', '{{ $attendance->clock_out ? $attendance->clock_out->format('H:i') : '' }}', {{ json_encode($attendance->user->name ?? 'User #' . $attendance->user_id) }}, '{{ $attendance->work_date->format('d/m/Y') }}')"
-                                                            class="inline-flex items-center px-2 py-1.5 bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 hover:text-sky-200 rounded-lg text-xs font-medium border border-sky-500/30 hover:border-sky-500/50 transition-all duration-200"
+                                                            class="w-full inline-flex items-center justify-center px-2 py-1.5 bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 hover:text-sky-200 rounded-lg text-xs font-medium border border-sky-500/30 hover:border-sky-500/50 transition-all duration-200"
                                                             title="Edit Jam Kerja">
                                                             <i class="fas fa-edit mr-1"></i>Edit
                                                         </button>
-
-                                                        <!-- Delete Button -->
                                                         <button
                                                             onclick="deleteAttendance({{ $attendance->id }}, {{ json_encode($attendance->user->name ?? 'User #' . $attendance->user_id) }})"
-                                                            class="inline-flex items-center px-2 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-red-200 rounded-lg text-xs font-medium border border-red-500/30 hover:border-red-500/50 transition-all duration-200"
+                                                            class="w-full inline-flex items-center justify-center px-2 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-red-200 rounded-lg text-xs font-medium border border-red-500/30 hover:border-red-500/50 transition-all duration-200"
                                                             title="Hapus Data">
                                                             <i class="fas fa-trash mr-1"></i>Hapus
                                                         </button>
