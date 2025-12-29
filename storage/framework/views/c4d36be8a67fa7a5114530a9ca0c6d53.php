@@ -18,6 +18,35 @@
             /* Prevent scrolling during animation */
         }
 
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .delay-100 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-200 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-300 {
+            animation-delay: 0.3s;
+        }
+
         /* Container for the double slider */
         .container-custom {
             position: relative;
@@ -81,6 +110,15 @@
             grid-template-columns: 15% 85%;
             padding: 0 0.4rem;
             position: relative;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .input-field:focus-within {
+            background-color: #fff;
+            border-color: #3b82f6;
+            /* blue-500 */
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.15);
         }
 
         .input-field i {
@@ -89,6 +127,10 @@
             color: #acacac;
             transition: 0.5s;
             font-size: 1.1rem;
+        }
+
+        .input-field:focus-within i {
+            color: #3b82f6;
         }
 
         .input-field input,
@@ -144,35 +186,42 @@
         }
 
         .panel h3 {
-            font-weight: 600;
-            line-height: 1;
-            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1.1;
+            font-size: 1.75rem;
         }
 
         .panel p {
             font-size: 0.95rem;
             padding: 0.7rem 0;
+            max-width: 300px;
+            margin: 0 auto;
         }
 
         /* Animation Logic */
         .btn.transparent {
             margin: 0;
-            background: none;
-            border: 2px solid #fff;
-            width: 130px;
-            height: 41px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            width: 140px;
+            height: 44px;
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             border-radius: 49px;
             color: #fff;
             cursor: pointer;
-            transition: 0.3s;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         .btn.transparent:hover {
             background: #fff;
             color: #1e3a8a;
             /* blue-900 */
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            border-color: #fff;
         }
 
         .right-panel .image,
@@ -222,15 +271,19 @@
         .container-custom:before {
             content: "";
             position: absolute;
-            height: 2000px;
-            width: 2000px;
-            top: -10%;
+            height: 1800px;
+            /* Reduced from 2000px */
+            width: 1800px;
+            /* Reduced from 2000px */
+            top: -5%;
             right: 48%;
             transform: translateY(-50%);
             background-image: linear-gradient(-45deg, #1e3a8a 0%, #0ea5e9 100%);
             transition: 1.8s ease-in-out;
-            border-radius: 50%;
+            border-radius: 45%;
             z-index: 6;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.2);
+            /* Soft shadow */
         }
 
         /* Responsiveness */
@@ -303,6 +356,7 @@
             .container-custom:before {
                 width: 1500px;
                 height: 1500px;
+                /* Revert for mobile to ensure coverage */
                 transform: translateX(-50%);
                 left: 30%;
                 bottom: 68%;
@@ -370,40 +424,56 @@
 
 <body>
     <div class="container-custom">
+        <!-- Logo / Brand Absolute -->
+        <div class="absolute top-6 right-6 z-50 animate-fade-in-up">
+            <div class="flex items-center gap-3">
+                <span class="text-right hidden sm:block">
+                    <div
+                        class="text-slate-800 font-bold text-lg tracking-tight leading-none bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
+                        EMS Portal</div>
+                    <div class="text-[10px] text-slate-500 font-medium tracking-wider uppercase mt-1 mr-2">Sistem
+                        Internal • Akses Terbatas</div>
+                </span>
+                <img src="/images/motionlife-logo.png" alt="Logo" class="h-10 w-auto drop-shadow-md">
+            </div>
+        </div>
+
         <div class="forms-container">
             <div class="signin-signup">
                 <!-- LOGIN FORM -->
                 <form action="<?php echo e(route('staff.login.post')); ?>" method="POST" class="sign-in-form">
                     <?php echo csrf_field(); ?>
                     <h2 class="text-3xl font-bold text-slate-800 mb-2">Login Staf Medis</h2>
-                    <p class="text-slate-500 mb-6 font-medium text-sm text-center">Akses area privat untuk medis
-                        profesional</p>
+                    <p class="text-slate-500 mb-8 font-medium text-sm text-center max-w-[280px]">Akses area privat untuk
+                        <span class="text-blue-600 font-bold">medis profesional</span>
+                    </p>
 
-                    <div class="input-field shadow-sm">
-                        <i class="fas fa-envelope"></i>
+                    <div class="input-field shadow-sm group">
+                        <i class="fas fa-envelope group-focus-within:text-blue-600"></i>
                         <input type="text" name="email" placeholder="Email" required />
                     </div>
-                    <div class="input-field shadow-sm">
-                        <i class="fas fa-lock"></i>
+                    <div class="input-field shadow-sm group">
+                        <i class="fas fa-lock group-focus-within:text-blue-600"></i>
                         <input type="password" name="password" placeholder="Password" required />
                     </div>
 
-                    <div class="w-full max-w-[380px] flex justify-between items-center mt-2 mb-6 text-sm">
-                        <label class="flex items-center text-slate-600 gap-2 cursor-pointer">
-                            <input type="checkbox" name="remember" class="accent-blue-600 rounded"> Ingat saya
+                    <div class="w-full max-w-[380px] flex justify-between items-center mt-3 mb-8 text-sm">
+                        <label
+                            class="flex items-center text-slate-600 gap-2 cursor-pointer hover:text-blue-600 transition-colors">
+                            <input type="checkbox" name="remember" class="accent-blue-600 rounded w-4 h-4"> Ingat saya
                         </label>
-                        <a href="#" class="text-blue-600 hover:text-blue-800 font-semibold hover:underline">Lupa
+                        <a href="#" class="text-blue-600 hover:text-blue-800 font-bold hover:underline">Lupa
                             password?</a>
                     </div>
 
                     <button type="submit"
-                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full uppercase text-sm tracking-wider shadow-lg hover:scale-105 transition-all duration-300 w-full max-w-[380px]">
-                        Masuk ke Dashboard
+                        class="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-bold py-3.5 px-8 rounded-full uppercase text-xs tracking-widest shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 w-full max-w-[380px] flex items-center justify-center gap-2">
+                        Masuk ke Dashboard <i class="fas fa-arrow-right"></i>
                     </button>
 
-                    <p class="text-slate-600 mt-6 text-sm">
+                    <p class="text-slate-500 mt-8 text-sm font-medium">
                         Belum punya akun? <a href="#" id="sign-up-link"
-                            class="text-blue-600 font-bold hover:underline">Daftar disini</a>
+                            class="text-blue-600 font-extrabold hover:underline transition-all">Daftar disini</a>
                     </p>
                 </form>
 
@@ -424,11 +494,14 @@
                     </div>
                     <div class="input-field shadow-sm">
                         <i class="fas fa-id-badge"></i>
-                        <select name="role_id" required class="w-full bg-transparent outline-none">
+                        <select name="role_id" required class="w-full bg-transparent outline-none cursor-pointer">
                             <option value="" disabled selected>Pilih Peran Staf</option>
                             <?php if(isset($roles)): ?>
                                 <?php $__currentLoopData = $roles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $role): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <option value="<?php echo e($role->id); ?>"><?php echo e(ucfirst(str_replace('_', ' ', $role->name))); ?></option>
+                                    <option value="<?php echo e($role->id); ?>">
+                                        <?php echo e(ucfirst($role->display_name ?? str_replace('_', ' ', (string) $role->name))); ?>
+
+                                    </option>
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             <?php endif; ?>
                         </select>
@@ -444,13 +517,13 @@
                     </div>
 
                     <button type="submit"
-                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full uppercase text-sm tracking-wider shadow-lg hover:scale-105 transition-all duration-300 w-full max-w-[380px] mt-4">
-                        Daftarkan Staf
+                        class="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-bold py-3.5 px-8 rounded-full uppercase text-xs tracking-widest shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 w-full max-w-[380px] mt-4 flex items-center justify-center gap-2">
+                        Daftarkan Staf <i class="fas fa-user-plus"></i>
                     </button>
 
                     <p class="text-slate-600 mt-6 text-sm">
                         Sudah punya akun? <a href="#" id="sign-in-link"
-                            class="text-blue-600 font-bold hover:underline">Login disini</a>
+                            class="text-blue-600 font-extrabold hover:underline">Login disini</a>
                     </p>
                 </form>
             </div>
@@ -466,87 +539,102 @@
 
             <div class="panel left-panel">
                 <div class="content">
-                    <h3 class="mb-4">Bergabung dengan Tim Medis Profesional</h3>
+                    <h3 class="mb-4">Bergabung dengan <br><span class="text-blue-200">Tim Medis Profesional</span></h3>
                     <p>
                         Dapatkan akses ke fitur kolaborasi tim, jenjang karir yang jelas, dan teknologi medis modern.
                     </p>
 
                     <!-- Feature List -->
-                    <div
-                        class="flex flex-col gap-3 text-left w-full max-w-xs mx-auto mt-6 bg-white/10 p-4 rounded-xl backdrop-blur-sm border border-white/20">
-                        <div class="flex items-center gap-3">
+                    <div class="flex flex-col gap-4 text-left w-full max-w-xs mx-auto mt-8 perspective-1000">
+                        <div
+                            class="flex items-center gap-4 bg-white/10 p-4 rounded-xl backdrop-blur-md border border-white/20 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 cursor-default group">
                             <div
-                                class="w-8 h-8 rounded-full bg-blue-500/30 flex items-center justify-center text-white">
-                                <i class="fas fa-users"></i></div>
-                            <span class="text-sm font-medium">Kolaborasi Tim</span>
+                                class="w-10 h-10 rounded-full bg-blue-500/30 flex items-center justify-center text-white text-lg group-hover:scale-110 transition-transform">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-white">Kolaborasi Tim</h4>
+                                <span class="text-xs text-blue-100">Terhubung real-time</span>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-3">
+                        <div
+                            class="flex items-center gap-4 bg-white/10 p-4 rounded-xl backdrop-blur-md border border-white/20 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 cursor-default group">
                             <div
-                                class="w-8 h-8 rounded-full bg-blue-500/30 flex items-center justify-center text-white">
-                                <i class="fas fa-chart-line"></i></div>
-                            <span class="text-sm font-medium">Jenjang Karir</span>
+                                class="w-10 h-10 rounded-full bg-blue-500/30 flex items-center justify-center text-white text-lg group-hover:scale-110 transition-transform">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-sm text-white">Jenjang Karir</h4>
+                                <span class="text-xs text-blue-100">Development yang jelas</span>
+                            </div>
                         </div>
                     </div>
 
-                    <button class="btn transparent mt-8" id="sign-in-btn">
-                        Kembali ke Login
+                    <button class="btn transparent mt-10 flex items-center gap-2 justify-center" id="sign-in-btn">
+                        <i class="fas fa-arrow-left text-xs"></i> Kembali ke Login
                     </button>
 
-                    <div class="mt-8 text-xs text-blue-200">
+                    <div class="mt-8 text-[10px] text-blue-200/60 uppercase tracking-widest font-semibold">
                         *Pastikan Anda memiliki kredensial resmi.
                     </div>
                 </div>
                 <!-- Optional Image -->
-                <div class="image w-[500px] hidden md:flex items-center justify-center">
-                    <i class="fas fa-user-md text-[15rem] text-white opacity-20"></i>
+                <div class="image w-[500px] hidden md:flex items-center justify-center delay-200">
+                    <i class="fas fa-user-md text-[18rem] text-white opacity-30 drop-shadow-2xl"></i>
                 </div>
             </div>
 
             <div class="panel right-panel">
                 <div class="content">
-                    <h3 class="mb-4">Portal Staf Medis Profesional</h3>
+                    <h3 class="mb-4">Portal <br><span class="text-blue-200">Staf Medis Profesional</span></h3>
                     <p>
                         Kelola aktivitas medis Anda dengan efisien. Keamanan data terjamin.
                     </p>
 
                     <!-- Feature List for Login Info -->
-                    <div class="flex flex-col gap-3 text-left w-full max-w-xs mx-auto mt-6">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white"><i
-                                    class="fas fa-calendar-check"></i></div>
+                    <div class="flex flex-col gap-3 text-left w-full max-w-xs mx-auto mt-8">
+                        <div class="flex items-center gap-3 group">
+                            <div
+                                class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white group-hover:bg-white/30 transition-colors">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
                             <span class="text-sm font-medium">Manajemen Absensi</span>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white"><i
-                                    class="fas fa-file-medical"></i></div>
+                        <div class="flex items-center gap-3 group">
+                            <div
+                                class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white group-hover:bg-white/30 transition-colors">
+                                <i class="fas fa-file-medical"></i>
+                            </div>
                             <span class="text-sm font-medium">Formulir Medis</span>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white"><i
-                                    class="fas fa-money-bill-wave"></i></div>
+                        <div class="flex items-center gap-3 group">
+                            <div
+                                class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white group-hover:bg-white/30 transition-colors">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
                             <span class="text-sm font-medium">Sistem Penggajian</span>
                         </div>
                     </div>
 
                     <!-- Small Card -->
                     <div
-                        class="mt-8 bg-black/20 p-4 rounded-lg text-left max-w-xs mx-auto border border-white/10 backdrop-blur-md">
-                        <h4 class="font-bold text-sm mb-2 text-blue-200"><i class="fas fa-shield-alt mr-2"></i>Keamanan
-                            Data</h4>
-                        <ul class="text-xs space-y-1 text-white/80 list-disc list-inside">
-                            <li>Login terenkripsi SSL</li>
+                        class="mt-10 bg-gradient-to-br from-black/30 to-black/10 p-5 rounded-2xl text-left max-w-xs mx-auto border border-white/10 backdrop-blur-md shadow-lg hover:-translate-y-1 transition-transform cursor-default">
+                        <h4 class="font-bold text-sm mb-3 text-blue-200 flex items-center gap-2"><i
+                                class="fas fa-shield-alt text-lg"></i>Keamanan Data</h4>
+                        <ul class="text-xs space-y-2 text-white/80 list-disc list-inside opacity-90">
+                            <li>Login terenkripsi SSL 256-bit</li>
                             <li>Data sesuai standar GDPR</li>
-                            <li>Sistem backup otomatis</li>
+                            <li>Sistem backup otomatis realtime</li>
                         </ul>
                     </div>
 
-                    <button class="btn transparent mt-8" id="sign-up-btn">
+                    <button class="btn transparent mt-10 hover:shadow-xl hover:scale-105" id="sign-up-btn">
                         Daftar Akun Baru
                     </button>
                 </div>
                 <!-- Optional Image -->
-                <div class="image w-[500px] hidden md:flex items-center justify-center">
-                    <i class="fas fa-hospital text-[15rem] text-white opacity-20"></i>
+                <div class="image w-[500px] hidden md:flex items-center justify-center delay-200">
+                    <i class="fas fa-hospital text-[18rem] text-white opacity-30 drop-shadow-2xl"></i>
                 </div>
             </div>
         </div>

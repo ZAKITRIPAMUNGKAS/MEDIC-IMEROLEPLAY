@@ -1829,7 +1829,7 @@
                 let formAction = form.getAttribute('data-action') || form.getAttribute('action');
 
                 // Validate form action - must not contain Blade syntax
-                if (!formAction || formAction.includes('{{') || formAction.includes('route(') || formAction.trim() === '') {
+                if (!formAction || formAction.includes('{' + '{') || formAction.includes('route(') || formAction.trim() === '') {
                     console.error('Invalid form action detected:', formAction);
                     alert('Terjadi kesalahan: Form action tidak valid. Silakan refresh halaman.');
                     return;
@@ -2043,6 +2043,76 @@
                 </div>
             </div>
         </div>
+    </div>
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Toast Notification Component -->
+    <div x-data="{
+        notifications: [],
+        add(message, type = 'success') {
+            const id = Date.now();
+            this.notifications.push({ id, message, type });
+            setTimeout(() => this.remove(id), 5000);
+        },
+        remove(id) {
+            this.notifications = this.notifications.filter(n => n.id !== id);
+        }
+    }" @notify.window="add($event.detail.message, $event.detail.type)"
+        class="fixed top-5 right-5 z-[9999] space-y-3 pointer-events-none" x-init="
+        @if(session('success')) add('{{ session('success') }}', 'success'); @endif
+        @if(session('error')) add('{{ session('error') }}', 'error'); @endif
+        @if(session('warning')) add('{{ session('warning') }}', 'warning'); @endif
+        @if(session('info')) add('{{ session('info') }}', 'info'); @endif
+    ">
+        <template x-for="notification in notifications" :key="notification.id">
+            <div x-show="true" x-transition:enter="transition ease-out duration-300"
+                x-transition:enter-start="opacity-0 transform translate-x-8"
+                x-transition:enter-end="opacity-100 transform translate-x-0"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 transform translate-x-0"
+                x-transition:leave-end="opacity-0 transform translate-x-8"
+                class="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 relative"
+                :class="{
+                     'bg-white': true,
+                 }">
+                <div class="p-4 flex items-start">
+                    <div class="flex-shrink-0">
+                        <!-- Success Icon -->
+                        <i x-show="notification.type === 'success'"
+                            class="fas fa-check-circle text-green-400 text-xl"></i>
+                        <!-- Error Icon -->
+                        <i x-show="notification.type === 'error'" class="fas fa-times-circle text-red-400 text-xl"></i>
+                        <!-- Warning Icon -->
+                        <i x-show="notification.type === 'warning'"
+                            class="fas fa-exclamation-triangle text-yellow-400 text-xl"></i>
+                        <!-- Info Icon -->
+                        <i x-show="notification.type === 'info'" class="fas fa-info-circle text-blue-400 text-xl"></i>
+                    </div>
+                    <div class="ml-3 w-0 flex-1 pt-0.5">
+                        <p class="text-sm font-medium text-gray-900"
+                            x-text="notification.type.charAt(0).toUpperCase() + notification.type.slice(1)"></p>
+                        <p class="mt-1 text-sm text-gray-500" x-text="notification.message"></p>
+                    </div>
+                    <div class="ml-4 flex flex-shrink-0">
+                        <button @click="remove(notification.id)"
+                            class="inline-flex rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                            <span class="sr-only">Close</span>
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- Progress Bar -->
+                <div class="absolute bottom-0 left-0 h-1 bg-gray-200 w-full">
+                    <div class="h-full transition-all duration-[5000ms] ease-linear w-0" :class="{
+                              'bg-green-500': notification.type === 'success',
+                              'bg-red-500': notification.type === 'error',
+                              'bg-yellow-500': notification.type === 'warning',
+                              'bg-blue-500': notification.type === 'info'
+                          }" x-init="setTimeout(() => $el.classList.replace('w-0', 'w-full'), 100)"></div>
+                </div>
+            </div>
+        </template>
     </div>
 </body>
 

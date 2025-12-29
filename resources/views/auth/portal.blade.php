@@ -441,7 +441,7 @@
         <div class="forms-container">
             <div class="signin-signup">
                 <!-- LOGIN FORM -->
-                <form action="{{ route('staff.login.post') }}" method="POST" class="sign-in-form animate-fade-in-up">
+                <form action="{{ route('staff.login.post') }}" method="POST" class="sign-in-form">
                     @csrf
                     <h2 class="text-3xl font-bold text-slate-800 mb-2">Login Staf Medis</h2>
                     <p class="text-slate-500 mb-8 font-medium text-sm text-center max-w-[280px]">Akses area privat untuk
@@ -537,7 +537,7 @@
             -->
 
             <div class="panel left-panel">
-                <div class="content animate-fade-in-up delay-100">
+                <div class="content">
                     <h3 class="mb-4">Bergabung dengan <br><span class="text-blue-200">Tim Medis Profesional</span></h3>
                     <p>
                         Dapatkan akses ke fitur kolaborasi tim, jenjang karir yang jelas, dan teknologi medis modern.
@@ -578,13 +578,13 @@
                     </div>
                 </div>
                 <!-- Optional Image -->
-                <div class="image w-[500px] hidden md:flex items-center justify-center animate-fade-in-up delay-200">
+                <div class="image w-[500px] hidden md:flex items-center justify-center delay-200">
                     <i class="fas fa-user-md text-[18rem] text-white opacity-30 drop-shadow-2xl"></i>
                 </div>
             </div>
 
             <div class="panel right-panel">
-                <div class="content animate-fade-in-up delay-100">
+                <div class="content">
                     <h3 class="mb-4">Portal <br><span class="text-blue-200">Staf Medis Profesional</span></h3>
                     <p>
                         Kelola aktivitas medis Anda dengan efisien. Keamanan data terjamin.
@@ -632,7 +632,7 @@
                     </button>
                 </div>
                 <!-- Optional Image -->
-                <div class="image w-[500px] hidden md:flex items-center justify-center animate-fade-in-up delay-200">
+                <div class="image w-[500px] hidden md:flex items-center justify-center delay-200">
                     <i class="fas fa-hospital text-[18rem] text-white opacity-30 drop-shadow-2xl"></i>
                 </div>
             </div>
