@@ -1187,7 +1187,41 @@
                                 class="xs:hidden">Kirim</span>
                         </button>
                     </div>
-                </form>
+                
+    <script>
+        // Psychology test radio button visual feedback
+        document.addEventListener('DOMContentLoaded', function() {
+            const radioInputs = document.querySelectorAll('input[type="radio"][name^="form_data[bigfive"], input[type="radio"][name^="form_data[stress"], input[type="radio"][name^="form_data[esteem"]');
+            
+            radioInputs.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    // Remove selected state from all siblings
+                    const name = this.getAttribute('name');
+                    document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+                        const box = r.nextElementSibling;
+                        if (box) {
+                            box.classList.remove('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
+                        }
+                    });
+                    
+                    // Add selected state to this one
+                    const box = this.nextElementSibling;
+                    if (box && this.checked) {
+                        box.classList.add('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
+                    }
+                });
+                
+                // Set initial state for checked radios
+                if (radio.checked) {
+                    const box = radio.nextElementSibling;
+                    if (box) {
+                        box.classList.add('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
+                    }
+                }
+            });
+        });
+    </script>
+</form>
             </div>
         </div>
     </div>

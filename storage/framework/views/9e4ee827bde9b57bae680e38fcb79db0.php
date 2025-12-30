@@ -456,9 +456,9 @@ unset($__errorArgs, $__bag); ?>
                                                             <input type="radio" name="form_data[bigfive<?php echo e($i + 1); ?>]" value="<?php echo e($val); ?>" 
                                                                    <?php if(old('form_data.bigfive' . ($i + 1)) == $val): ?> checked <?php endif; ?>
                                                                    class="sr-only peer" required>
-                                                            <div class="flex flex-col items-center justify-center gap-1.5 px-5 py-4 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-gradient-to-br peer-checked:from-sky-500/30 peer-checked:to-cyan-500/20 peer-checked:shadow-lg peer-checked:shadow-sky-500/20 hover:border-white/50 hover:bg-white/10 hover:scale-105 active:scale-95 transition-all duration-200 min-w-[90px] cursor-pointer">
+                                                            <div class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24">
                                                                 <span class="text-2xl font-bold text-white"><?php echo e($val); ?></span>
-                                                                <span class="text-xs text-gray-300 text-center leading-tight"><?php echo e($label); ?></span>
+                                                                <span class="text-[10px] text-gray-300 text-center leading-tight px-1"><?php echo e($label); ?></span>
                                                             </div>
                                                         </label>
                                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
