@@ -2044,6 +2044,429 @@
             </div>
         </div>
     </div>
+
+    <!-- Modern Alert/Confirmation Modal -->
+    <div id="customModal" class="modal-overlay" style="display: none;">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container">
+            <div class="modal-content">
+                <div class="modal-icon-wrapper">
+                    <div class="modal-icon" id="modalIcon">
+                        <i class="fas fa-info-circle"></i>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <h3 class="modal-title" id="modalTitle">Notification</h3>
+                    <p class="modal-message" id="modalMessage"></p>
+                </div>
+                <div class="modal-actions" id="modalActions">
+                    <button class="modal-btn modal-btn-secondary" id="modalCancelBtn">Batal</button>
+                    <button class="modal-btn modal-btn-primary" id="modalConfirmBtn">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 999999999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            animation: modalFadeIn 0.2s ease-out;
+        }
+
+        .modal-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            animation: backdropFadeIn 0.25s ease-out;
+        }
+
+        .modal-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 420px;
+            animation: modalSlideIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+            border-radius: 1.25rem;
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.2),
+                0 8px 24px rgba(0, 0, 0, 0.12),
+                0 0 0 1px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .modal-icon-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-icon {
+            width: 4rem;
+            height: 4rem;
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: iconBounceIn 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .modal-icon i {
+            font-size: 2rem;
+        }
+
+        /* Icon Types */
+        .modal-icon.icon-info {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #0284c7;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
+        }
+
+        .modal-icon.icon-warning {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #d97706;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.25);
+        }
+
+        .modal-icon.icon-error {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #dc2626;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+        }
+
+        .modal-icon.icon-success {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #059669;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+        }
+
+        .modal-body {
+            margin-bottom: 2rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.02em;
+        }
+
+        .modal-message {
+            font-size: 0.9375rem;
+            color: #6b7280;
+            line-height: 1.6;
+            font-weight: 450;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            font-size: 0.9375rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            min-width: 100px;
+        }
+
+        .modal-btn:active {
+            transform: scale(0.96);
+        }
+
+        .modal-btn-secondary {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
+        .modal-btn-secondary:hover {
+            background: #e5e7eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .modal-btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .modal-btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+        }
+
+        .modal-btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .modal-btn-success:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+        }
+
+        .modal-btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .modal-btn-danger:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+        }
+
+        .modal-btn-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .modal-btn-warning:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+        }
+
+        /* Animations */
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes backdropFadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-20px) scale(0.95);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes iconBounceIn {
+            0% {
+                transform: scale(0);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 640px) {
+            .modal-content {
+                padding: 1.5rem;
+            }
+
+            .modal-icon {
+                width: 3.5rem;
+                height: 3.5rem;
+            }
+
+            .modal-icon i {
+                font-size: 1.75rem;
+            }
+
+            .modal-title {
+                font-size: 1.25rem;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+            }
+
+            .modal-btn {
+                width: 100%;
+            }
+        }
+    </style>
+
+    <script>
+        // Custom Alert Function
+        window.showAlert = function (message, type = 'info', title = null) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('customModal');
+                const icon = document.getElementById('modalIcon');
+                const titleEl = document.getElementById('modalTitle');
+                const messageEl = document.getElementById('modalMessage');
+                const actions = document.getElementById('modalActions');
+                const confirmBtn = document.getElementById('modalConfirmBtn');
+
+                // Set icon
+                icon.className = 'modal-icon icon-' + type;
+                const iconClass = {
+                    'info': 'fa-info-circle',
+                    'warning': 'fa-exclamation-triangle',
+                    'error': 'fa-times-circle',
+                    'success': 'fa-check-circle'
+                }[type] || 'fa-info-circle';
+                icon.querySelector('i').className = 'fas ' + iconClass;
+
+                // Set title
+                titleEl.textContent = title || {
+                    'info': 'Informasi',
+                    'warning': 'Perhatian',
+                    'error': 'Error',
+                    'success': 'Berhasil'
+                }[type] || 'Notification';
+
+                // Set message
+                messageEl.textContent = message;
+
+                // Show only OK button
+                actions.innerHTML = '<button class="modal-btn modal-btn-primary" id="modalOkBtn">OK</button>';
+
+                const okBtn = document.getElementById('modalOkBtn');
+                okBtn.onclick = () => {
+                    modal.style.display = 'none';
+                    resolve(true);
+                };
+
+                // Show modal
+                modal.style.display = 'flex';
+
+                // ESC key handler
+                const escHandler = (e) => {
+                    if (e.key === 'Escape') {
+                        modal.style.display = 'none';
+                        document.removeEventListener('keydown', escHandler);
+                        resolve(true);
+                    }
+                };
+                document.addEventListener('keydown', escHandler);
+            });
+        };
+
+        // Custom Confirm Function
+        window.showConfirm = function (message, options = {}) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('customModal');
+                const icon = document.getElementById('modalIcon');
+                const titleEl = document.getElementById('modalTitle');
+                const messageEl = document.getElementById('modalMessage');
+                const actions = document.getElementById('modalActions');
+
+                const {
+                    type = 'warning',
+                    title = 'Konfirmasi',
+                    confirmText = 'Ya',
+                    cancelText = 'Batal',
+                    confirmClass = 'modal-btn-danger'
+                } = options;
+
+                // Set icon
+                icon.className = 'modal-icon icon-' + type;
+                const iconClass = {
+                    'info': 'fa-question-circle',
+                    'warning': 'fa-exclamation-triangle',
+                    'error': 'fa-times-circle',
+                    'success': 'fa-check-circle'
+                }[type] || 'fa-question-circle';
+                icon.querySelector('i').className = 'fas ' + iconClass;
+
+                // Set content
+                titleEl.textContent = title;
+                messageEl.textContent = message;
+
+                // Show both buttons
+                actions.innerHTML = `
+                    <button class="modal-btn modal-btn-secondary" id="modalCancelBtn">${cancelText}</button>
+                    <button class="modal-btn ${confirmClass}" id="modalConfirmBtn">${confirmText}</button>
+                `;
+
+                const cancelBtn = document.getElementById('modalCancelBtn');
+                const confirmBtn = document.getElementById('modalConfirmBtn');
+
+                cancelBtn.onclick = () => {
+                    modal.style.display = 'none';
+                    resolve(false);
+                };
+
+                confirmBtn.onclick = () => {
+                    modal.style.display = 'none';
+                    resolve(true);
+                };
+
+                // Show modal
+                modal.style.display = 'flex';
+
+                // ESC key handler
+                const escHandler = (e) => {
+                    if (e.key === 'Escape') {
+                        modal.style.display = 'none';
+                        document.removeEventListener('keydown', escHandler);
+                        resolve(false);
+                    }
+                };
+                document.addEventListener('keydown', escHandler);
+
+                // Backdrop click handler
+                modal.querySelector('.modal-backdrop').onclick = () => {
+                    modal.style.display = 'none';
+                    resolve(false);
+                };
+            });
+        };
+
+        // Backward compatibility - override native alert
+        window.alert = function (message) {
+            showAlert(message, 'info');
+        };
+
+        // Backward compatibility - override native confirm
+        window.confirm = function (message) {
+            return showConfirm(message);
+        };
+    </script>
+
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
