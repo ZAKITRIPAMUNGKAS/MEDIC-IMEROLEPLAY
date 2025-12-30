@@ -1348,6 +1348,12 @@
                                         <i class="fas fa-users-cog mr-2"></i>
                                         <span>Staf</span>
                                     </a>
+
+                                    <a href="{{ route('admin.chat.index') }}"
+                                        class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
+                                        <i class="fas fa-comments mr-2"></i>
+                                        <span>Live Chat</span>
+                                    </a>
                                 @endif
 
 
@@ -1545,7 +1551,7 @@
                     </div>
                 </div>
                 <div class="mt-6 pt-4 border-t border-white border-opacity-10">
-                    <p class="text-gray-400 text-xs">&copy; 2025 Portal Medis MOTIONLIFE. Semua hak dilindungi develop
+                    <p class="text-gray-400 text-xs">&copy; 2026 Portal Medis iMe. Semua hak dilindungi develop
                         by tepe-dev.</p>
                 </div>
             </div>
@@ -2457,24 +2463,24 @@
         };
 
         // Backward compatibility - override native alert
-        window.alert = function(message) {
+        window.alert = function (message) {
             showAlert(message, 'info');
         };
 
         // DON'T override confirm() - it won't work with onsubmit="return confirm()"
         // Instead, intercept form submissions with confirm()
-        
-        document.addEventListener('DOMContentLoaded', function() {
+
+        document.addEventListener('DOMContentLoaded', function () {
             // Intercept all form submissions
-            document.addEventListener('submit', async function(e) {
+            document.addEventListener('submit', async function (e) {
                 const form = e.target;
                 const onsubmit = form.getAttribute('onsubmit');
-                
+
                 // Check if form has onsubmit with confirm()
                 if (onsubmit && onsubmit.includes('confirm(')) {
                     e.preventDefault();
                     e.stopPropagation();
-                    
+
                     // Extract message from confirm('message')
                     const match = onsubmit.match(/confirm\s*\(\s*['"`]([\s\S]+?)['"`]\s*\)/);
                     if (match) {
@@ -2482,7 +2488,7 @@
                             .replace(/\\n/g, '\n')
                             .replace(/\\'/g, "'")
                             .replace(/\\"/g, '"');
-                        
+
                         // Show custom confirm modal
                         const result = await showConfirm(message, {
                             type: 'warning',
@@ -2491,7 +2497,7 @@
                             cancelText: 'Batal',
                             confirmClass: 'modal-btn-danger'
                         });
-                        
+
                         if (result) {
                             // User confirmed - remove onsubmit and submit
                             form.removeAttribute('onsubmit');
@@ -2504,10 +2510,9 @@
         });
     </script>
 
-    <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
 
+    @livewire('chat-widget')
 </body>
 
 </html>

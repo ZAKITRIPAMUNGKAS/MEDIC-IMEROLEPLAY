@@ -19,7 +19,7 @@ class StaffController extends Controller
     }
     public function showLoginForm()
     {
-        return view('staff.login');
+        return view('auth.portal', ['mode' => 'login']);
     }
 
     public function login(Request $request)
@@ -44,16 +44,16 @@ class StaffController extends Controller
         if (Auth::attempt($credentials, $remember)) {
             // Regenerate session ID untuk keamanan
             $request->session()->regenerate();
-            
+
             $user = Auth::user();
-            
+
             // Log successful authentication
             \Log::info('Auth successful', [
                 'user_id' => $user->id,
                 'email' => $user->email,
                 'role_id' => $user->role_id
             ]);
-            
+
             // Check if user is staff
             if (!Auth::user()->isStaff()) {
                 \Log::warning('User is not staff', ['user_id' => $user->id, 'role_id' => $user->role_id]);
@@ -67,7 +67,7 @@ class StaffController extends Controller
 
             // Clear intended URL to prevent redirect loop
             session()->forget('url.intended');
-            
+
             // Log successful login and redirect
             \Log::info('Login successful, redirecting to dashboard', [
                 'user_id' => $user->id,
@@ -76,7 +76,7 @@ class StaffController extends Controller
                 'is_staff' => $user->isStaff(),
                 'session_id' => $request->session()->getId()
             ]);
-            
+
             // Redirect to dashboard dengan status 302 untuk memastikan redirect berfungsi
             return redirect()->route('staff.dashboard')
                 ->with('success', 'Login berhasil!')
@@ -113,7 +113,7 @@ class StaffController extends Controller
         $roles = StaffRole::whereIn('name', $allowedRoles)
             ->orderBy('level', 'asc')
             ->get();
-        return view('staff.register', compact('roles'));
+        return view('auth.portal', compact('roles'))->with('mode', 'register');
     }
 
     public function register(Request $request)
@@ -121,7 +121,7 @@ class StaffController extends Controller
         // Validasi role_id harus salah satu dari role yang diizinkan
         $allowedRoles = ['trainee', 'perawat', 'co_ass', 'dokter_umum', 'dokter_spesialis'];
         $allowedRoleIds = StaffRole::whereIn('name', $allowedRoles)->pluck('id')->toArray();
-        
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -197,11 +197,11 @@ class StaffController extends Controller
                 'file_size' => $request->file('profile_image')->getSize(),
                 'current_profile_image' => $user->profile_image
             ]);
-            
+
             // Hapus gambar lama jika ada
             if ($user->profile_image) {
                 $oldImagePath = null;
-                
+
                 // Check if it's a storage path or public path
                 if (str_starts_with($user->profile_image, 'uploads/')) {
                     // Public path
@@ -210,23 +210,23 @@ class StaffController extends Controller
                     // Storage path
                     $oldImagePath = storage_path('app/public/' . $user->profile_image);
                 }
-                
+
                 if (file_exists($oldImagePath)) {
                     unlink($oldImagePath);
                     \Log::info('Old profile image deleted', ['path' => $oldImagePath]);
                 }
             }
-            
+
             // For hosting compatibility, always use public directory
             $fileName = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $request->file('profile_image')->getClientOriginalName());
             $publicPath = public_path('uploads/profile-images');
             $destinationPath = $publicPath . '/' . $fileName;
-            
+
             // Create directory if it doesn't exist
             if (!is_dir($publicPath)) {
                 mkdir($publicPath, 0755, true);
             }
-            
+
             // Compress and save image (max 500x500, quality 85)
             $compressed = ImageHelper::compressUploadedImage(
                 $request->file('profile_image'),
@@ -235,14 +235,14 @@ class StaffController extends Controller
                 500, // max height
                 85   // quality
             );
-            
+
             // If compression failed, use original file
             if (!$compressed) {
                 $request->file('profile_image')->move($publicPath, $fileName);
             }
-            
+
             $user->profile_image = 'uploads/profile-images/' . $fileName;
-            
+
             \Log::info('Profile image uploaded to public directory', [
                 'path' => $user->profile_image,
                 'full_path' => public_path($user->profile_image),

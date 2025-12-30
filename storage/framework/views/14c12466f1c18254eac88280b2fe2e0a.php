@@ -1006,6 +1006,155 @@
         </div>
     </div>
 
+    <!-- Hospital Service Hours Section - Sky Blue Theme -->
+    <div class="relative py-16 sm:py-20 bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700 overflow-hidden">
+        <!-- Background Effects -->
+        <div class="absolute inset-0">
+            <div class="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Header with Clock Icon -->
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center justify-center gap-3 mb-6">
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center shadow-2xl animate-pulse">
+                        <i class="fas fa-clock text-white text-3xl"></i>
+                    </div>
+                    <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-white drop-shadow-lg">
+                        <i class="fas fa-clock mr-3 text-cyan-300"></i>
+                        LAYANAN RUMAH SAKIT
+                        <i class="fas fa-clock ml-3 text-cyan-300"></i>
+                    </h2>
+                </div>
+                <div
+                    class="max-w-4xl mx-auto bg-red-500/20 backdrop-blur-md border-2 border-red-400/40 rounded-2xl p-6 mb-8">
+                    <p class="text-xl sm:text-2xl font-bold text-white mb-3">
+                        <i class="fas fa-exclamation-triangle mr-2 text-yellow-300 animate-pulse"></i>
+                        MOHON DIBACA DENGAN SAKSAMA
+                    </p>
+                    <p class="text-base sm:text-lg text-amber-50 leading-relaxed">
+                        Pelayanan rumah sakit akan dilayani <span class="font-bold text-yellow-300">APABILA ADA TENAGA
+                            MEDIS</span> yang bersangkutan,
+                        <span class="font-bold text-yellow-300">BERSEDIA</span>, dan
+                        <span class="font-bold text-yellow-300">AVAILABLE (ON DUTY)</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Service Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+                <!-- OPLAS Card -->
+                <div
+                    class="group bg-white/10 backdrop-blur-xl rounded-3xl border-2 border-white/20 p-8 hover:bg-white/15 hover:border-amber-400/50 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-amber-500/30">
+                    <div class="text-center mb-6">
+                        <div
+                            class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl shadow-xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-user-md text-white text-3xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-black text-white mb-2">JAM PELAYANAN OPLAS</h3>
+                        <div class="w-16 h-1 bg-gradient-to-r from-purple-400 to-pink-400 mx-auto rounded-full"></div>
+                    </div>
+                    <div class="space-y-4">
+                        <div
+                            class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-cyan-300 font-bold text-lg">Shift 1</span>
+                                <span
+                                    class="text-xs bg-purple-500/30 text-purple-200 px-3 py-1 rounded-full font-semibold">Siang</span>
+                            </div>
+                            <p class="text-white text-xl font-black">13:00 - 16:00 WIB</p>
+                        </div>
+                        <div
+                            class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-cyan-300 font-bold text-lg">Shift 2</span>
+                                <span
+                                    class="text-xs bg-indigo-500/30 text-indigo-200 px-3 py-1 rounded-full font-semibold">Malam</span>
+                            </div>
+                            <p class="text-white text-xl font-black">20:00 - 22:00 WIB</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SURAT-SURATAN Card -->
+                <div
+                    class="group bg-white/10 backdrop-blur-xl rounded-3xl border-2 border-white/20 p-8 hover:bg-white/15 hover:border-amber-400/50 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-amber-500/30">
+                    <div class="text-center mb-6">
+                        <div
+                            class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl shadow-xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-file-alt text-white text-3xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-black text-white mb-2">JAM PELAYANAN SURAT-SURATAN</h3>
+                        <div class="w-16 h-1 bg-gradient-to-r from-blue-400 to-cyan-400 mx-auto rounded-full"></div>
+                    </div>
+                    <div class="space-y-4">
+                        <div
+                            class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-cyan-300 font-bold text-lg">Shift 1</span>
+                                <span
+                                    class="text-xs bg-blue-500/30 text-blue-200 px-3 py-1 rounded-full font-semibold">Siang</span>
+                            </div>
+                            <p class="text-white text-xl font-black">13:00 - 17:00 WIB</p>
+                        </div>
+                        <div
+                            class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-cyan-300 font-bold text-lg">Shift 2</span>
+                                <span
+                                    class="text-xs bg-cyan-500/30 text-cyan-200 px-3 py-1 rounded-full font-semibold">Malam</span>
+                            </div>
+                            <p class="text-white text-xl font-black">19:00 - 22:00 WIB</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FARMASI Card -->
+                <div
+                    class="group bg-white/10 backdrop-blur-xl rounded-3xl border-2 border-white/20 p-8 hover:bg-white/15 hover:border-amber-400/50 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-amber-500/30">
+                    <div class="text-center mb-6">
+                        <div
+                            class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl shadow-xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-pills text-white text-3xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-black text-white mb-2">JAM PELAYANAN FARMASI</h3>
+                        <div class="w-16 h-1 bg-gradient-to-r from-green-400 to-emerald-400 mx-auto rounded-full"></div>
+                    </div>
+                    <div
+                        class="bg-gradient-to-br from-green-500/20 to-emerald-500/20 backdrop-blur-sm rounded-2xl p-6 border-2 border-green-400/30 relative overflow-hidden">
+                        <!-- Animated glow -->
+                        <div
+                            class="absolute inset-0 bg-gradient-to-r from-green-400/0 via-green-400/20 to-green-400/0 animate-pulse">
+                        </div>
+
+                        <div class="relative z-10 text-center">
+                            <div class="flex items-center justify-center gap-3 mb-4">
+                                <i class="fas fa-check-circle text-green-300 text-4xl animate-bounce"></i>
+                                <h4 class="text-3xl font-black text-white">BUKA 24 JAM</h4>
+                            </div>
+                            <div class="space-y-2">
+                                <p class="text-green-100 text-base font-semibold leading-relaxed">
+                                    Farmasi membuka layanan
+                                </p>
+                                <p class="text-white text-xl font-black">
+                                    24 JAM NON-STOP
+                                </p>
+                                <div class="mt-4 pt-4 border-t border-green-400/30">
+                                    <p class="text-sm text-green-200/90 leading-relaxed">
+                                        <i class="fas fa-info-circle mr-2"></i>
+                                        Apabila ada tenaga medis yang bersedia menjaga secara bergantian
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Services Section - Dark Theme -->
     <div class="relative py-20 sm:py-24 bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700 overflow-hidden"
         id="services">
@@ -1135,52 +1284,62 @@
     </div>
 
     <!-- Testimonial Section - Premium Dark Theme -->
-    <div class="relative py-24 sm:py-32 bg-[#0f172a] overflow-hidden">
+    <div class="relative py-24 sm:py-32 bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700 overflow-hidden">
         <!-- Background Effects -->
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
-            <div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-cyan-500/10 rounded-full blur-[100px] animate-pulse">
+            <div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-cyan-500/20 rounded-full blur-[100px] animate-pulse">
             </div>
-            <div class="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-sky-500/10 rounded-full blur-[100px]"
+            <div class="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-sky-500/20 rounded-full blur-[100px]"
                 style="animation-delay: 2s;"></div>
             <div
-                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150">
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 brightness-100 contrast-150">
             </div>
         </div>
 
         <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Section Header -->
-            <div class="text-center mb-20">
+            <div class="text-center mb-20 animate-fade-in-up">
                 <div
-                    class="inline-flex items-center justify-center p-1 rounded-full bg-gradient-to-r from-sky-500/20 to-cyan-500/20 border border-sky-500/30 backdrop-blur-md mb-6 animate-fade-in-up">
-                    <span class="px-4 py-1.5 text-sm font-bold text-sky-300 tracking-wide uppercase">Testimonials</span>
+                    class="inline-flex items-center justify-center p-1 rounded-full bg-gradient-to-r from-sky-500/20 to-cyan-500/20 border border-sky-500/30 backdrop-blur-md mb-6 shadow-[0_0_15px_rgba(14,165,233,0.3)]">
+                    <span class="px-5 py-2 text-sm font-bold text-sky-300 tracking-wide uppercase flex items-center gap-2">
+                        <i class="fas fa-heart text-sky-400 animate-pulse"></i> Testimonials
+                    </span>
                 </div>
-                <h2 class="text-4xl sm:text-5xl md:text-6xl font-black text-white mb-6 drop-shadow-2xl tracking-tight leading-tight animate-fade-in-up filter drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]"
-                    style="animation-delay: 0.1s; text-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+
+                <h2 class="text-5xl sm:text-6xl md:text-7xl font-black text-white mb-6 drop-shadow-2xl tracking-tight leading-tight"
+                    style="text-shadow: 0 4px 20px rgba(0,0,0,0.5);">
                     Apa Kata <span
-                        class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-cyan-400 filter drop-shadow-none">Pasien
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-cyan-300 to-blue-400 filter drop-shadow-[0_0_10px_rgba(14,165,233,0.5)]">Pasien
                         Kami</span>
                 </h2>
-                <p class="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed font-light animate-fade-in-up"
-                    style="animation-delay: 0.2s;">
+
+                <p class="text-lg sm:text-xl text-sky-100/90 max-w-2xl mx-auto leading-relaxed font-light mb-8">
                     Kami bangga dapat memberikan pelayanan terbaik bagi komunitas dengan standar profesional tertinggi.
                 </p>
-                <div class="flex items-center justify-center gap-2 mt-6 animate-fade-in-up" style="animation-delay: 0.3s;">
-                    <span class="flex items-center gap-1 text-amber-400 text-lg">
-                        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
-                            class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
-                    </span>
-                    <span class="text-slate-400 font-medium text-sm border-l border-slate-700 pl-3 ml-1">4.9 dari 1.200+
-                        Ulasan Asli</span>
+
+                <!-- New Statistics Badge -->
+                <div
+                    class="inline-flex items-center gap-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-full px-6 py-3 shadow-lg hover:bg-white/10 transition-colors cursor-default group">
+                    <div class="flex items-center gap-1">
+                        <i
+                            class="fas fa-star text-amber-400 text-lg drop-shadow-[0_0_5px_rgba(251,191,36,0.5)] group-hover:scale-110 transition-transform"></i>
+                        <span class="text-2xl font-bold text-white ml-1">4.9</span>
+                    </div>
+                    <div class="h-8 w-px bg-white/20"></div>
+                    <div class="text-left">
+                        <div class="text-[10px] text-sky-200 uppercase tracking-wider font-semibold">Rating Rata-rata</div>
+                        <div class="text-sm font-bold text-white">dari 1.200+ Ulasan Asli</div>
+                    </div>
                 </div>
             </div>
 
-            <?php if(isset($testimonials) && $testimonials->count() > 0): ?>
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($testimonials) && $testimonials->count() > 0): ?>
                 <!-- Single Testimonial Carousel -->
                 <div class="relative max-w-5xl mx-auto px-4">
                     <!-- Testimonial Card Container -->
                     <div class="overflow-hidden rounded-3xl">
                         <div id="testimonialTrack" class="flex transition-transform duration-700 ease-in-out">
-                            <?php $__currentLoopData = $testimonials; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $testimoniItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $testimonials; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $testimoniItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <div class="w-full flex-shrink-0">
                                     <div
                                         class="bg-white/10 backdrop-blur-xl border-2 border-white/20 rounded-3xl p-8 md:p-12 relative overflow-hidden">
@@ -1198,10 +1357,10 @@
                                         <div class="relative z-10">
                                             <!-- Stars -->
                                             <div class="flex items-center gap-1 mb-6">
-                                                <?php for($i = 1; $i <= 5; $i++): ?>
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php for($i = 1; $i <= 5; $i++): ?>
                                                     <i
                                                         class="fas fa-star text-2xl <?php echo e($i <= $testimoniItem->rating ? 'text-amber-400' : 'text-white/20'); ?>"></i>
-                                                <?php endfor; ?>
+                                                <?php endfor; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                             </div>
 
                                             <!-- Testimonial Text -->
@@ -1239,7 +1398,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
                     </div>
 
@@ -1255,16 +1414,16 @@
 
                     <!-- Dots Indicator -->
                     <div id="dotsContainer" class="flex justify-center gap-3 mt-10">
-                        <?php $__currentLoopData = $testimonials; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $testimonials; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <button
                                 class="testimonial-dot w-2.5 h-2.5 rounded-full bg-white/40 hover:bg-sky-400 transition-all duration-300"
                                 data-index="<?php echo e($index); ?>"></button>
-                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
                 </div>
             <?php else: ?>
                 <div class="text-center text-sky-200/60 py-12 text-lg">Belum ada testimoni.</div>
-            <?php endif; ?>
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
     </div>
 
@@ -1408,78 +1567,78 @@
 
 <?php $__env->startPush('scripts'); ?>
     <script>     // --- Regulation Modal Functions ---     function showRegulationModal() {         const modal = document.getElementById('regulationModal');         if (modal) {             modal.style.display = 'flex';             document.body.style.overflow = 'hidden';         }     }
-         function closeRegulationModal() {         const modal = document.getElementById('regulationModal');         if (modal) {             modal.style.display = 'none';             document.body.style.overflow = 'auto';         }     }
-         function handleModalClick(event) {         const modal = document.getElementById('regulationModal');         if (event.target === modal) {             closeRegulationModal();         }     }
-         function demoSuccess() { showNotification('Data berhasil disimpan!', 'success'); }     function demoError() { showNotification('Terjadi kesalahan saat menyimpan data!', 'error'); }     function demoWarning() { showNotification('Perhatian! Pastikan data yang diisi sudah benar.', 'warning'); }     function demoInfo() { showNotification('Informasi: Form akan otomatis tersimpan setiap 30 detik.', 'info'); }
-         document.addEventListener('DOMContentLoaded', function () {         // Modal Listeners         const modal = document.getElementById('regulationModal');         if (modal) {             modal.addEventListener('click', handleModalClick);             document.addEventListener('keydown', function (event) {                 if (event.key === 'Escape') closeRegulationModal();             });         }
+          function closeRegulationModal() { const modal = document.getElementById('regulationModal'); if (modal) { modal.style.display = 'none'; document.body.style.overflow = 'auto'; } }
+            function handleModalClick(event) { const modal = document.getElementById('regulationModal'); if (event.target === modal) { closeRegulationModal(); } }
+            function demoSuccess() { showNotification('Data berhasil disimpan!', 'success'); } function demoError() { showNotification('Terjadi kesalahan saat menyimpan data!', 'error'); } function demoWarning() { showNotification('Perhatian! Pastikan data yang diisi sudah benar.', 'warning'); } function demoInfo() { showNotification('Informasi: Form akan otomatis tersimpan setiap 30 detik.', 'info'); }
+            document.addEventListener('DOMContentLoaded', function () {         // Modal Listeners         const modal = document.getElementById('regulationModal');         if (modal) {             modal.addEventListener('click', handleModalClick);             document.addEventListener('keydown', function (event) {                 if (event.key === 'Escape') closeRegulationModal();             });         }
 
 
 
-            // --- Testimonial Carousel ---
-            var carouselTrack = document.getElementById('testimonialTrack');
-            var carouselPrevBtn = document.getElementById('prevBtn');
-            var carouselNextBtn = document.getElementById('nextBtn');
-            var carouselDots = document.querySelectorAll('.testimonial-dot');
-            var carouselIndex = 0;
-            var carouselTotal = 0;
+                // --- Testimonial Carousel ---
+                var carouselTrack = document.getElementById('testimonialTrack');
+                var carouselPrevBtn = document.getElementById('prevBtn');
+                var carouselNextBtn = document.getElementById('nextBtn');
+                var carouselDots = document.querySelectorAll('.testimonial-dot');
+                var carouselIndex = 0;
+                var carouselTotal = 0;
 
-            if (carouselTrack) {
-                carouselTotal = carouselTrack.children.length;
+                if (carouselTrack) {
+                    carouselTotal = carouselTrack.children.length;
 
-                if (carouselTotal > 0) {
-                    // Initial state
-                    if (carouselDots.length > 0) {
-                        carouselDots[0].classList.add('!w-8', '!bg-sky-400', '!shadow-lg', '!shadow-sky-400/50');
-                    }
+                    if (carouselTotal > 0) {
+                        // Initial state
+                        if (carouselDots.length > 0) {
+                            carouselDots[0].classList.add('!w-8', '!bg-sky-400', '!shadow-lg', '!shadow-sky-400/50');
+                        }
 
-                    // Functions
-                    function updateCarousel() {
-                        var offset = carouselIndex * -100;
-                        carouselTrack.style.transform = 'translateX(' + offset + '%)';
+                        // Functions
+                        function updateCarousel() {
+                            var offset = carouselIndex * -100;
+                            carouselTrack.style.transform = 'translateX(' + offset + '%)';
 
-                        for (var i = 0; i < carouselDots.length; i++) {
-                            if (i === carouselIndex) {
-                               carouselDots[ i].classList .add('!w-8', '!bg-sky-400', '!shadow-lg', '!shadow-sky-400/50');
-                            } else {
-                                carouselDots[i].classList.remove('!w-8', '!bg-sky-400', '!shadow-lg', '!shadow-sky-400/50');
+                            for (var i = 0; i < carouselDots.length; i++) {
+                                if (i === carouselIndex) {
+                                    carouselDots[i].classList.add('!w-8', '!bg-sky-400', '!shadow-lg', '!shadow-sky-400/50');
+                                } else {
+                                    carouselDots[i].classList.remove('!w-8', '!bg-sky-400', '!shadow-lg', '!shadow-sky-400/50');
+                                }
                             }
                         }
-                    }
 
-                    function nextSlide() {
-                        carouselIndex = (carouselIndex + 1) % carouselTotal;
-                        updateCarousel();
-                    }
+                        function nextSlide() {
+                            carouselIndex = (carouselIndex + 1) % carouselTotal;
+                            updateCarousel();
+                        }
 
-                    function prevSlide() {
-                        carouselIndex = (carouselIndex - 1 + carouselTotal) % carouselTotal;
-                        updateCarousel()              ;
-                    }
+                        function prevSlide() {
+                            carouselIndex = (carouselIndex - 1 + carouselTotal) % carouselTotal;
+                            updateCarousel();
+                        }
 
-                    function goToSlide(index) {
-                        carouselIndex = index;
-                        updateCarousel();
-                    }
+                        function goToSlide(index) {
+                            carouselIndex = index;
+                            updateCarousel();
+                        }
 
-                    // Event listeners
-                    if (carouselPrevBtn) {
-                        carouselPrevBtn.addEventListener('click', prevSlide);
-                    }
-                    if (carouselNextBtn) {
-                        carouselNextBtn.addEventListener('click', nextSlide);
-                    }
-                    for (var i = 0; i < carouselDots.length; i++) {
-                        (function(idx) {
-                            carouselDots[idx].addEventListener('click', function() {
-                                goToSlide(idx);
-                            });
-                        })(i);
-                    }
+                        // Event listeners
+                        if (carouselPrevBtn) {
+                            carouselPrevBtn.addEventListener('click', prevSlide);
+                        }
+                        if (carouselNextBtn) {
+                            carouselNextBtn.addEventListener('click', nextSlide);
+                        }
+                        for (var i = 0; i < carouselDots.length; i++) {
+                            (function (idx) {
+                                carouselDots[idx].addEventListener('click', function () {
+                                    goToSlide(idx);
+                                });
+                            })(i);
+                        }
 
-                    // Auto-play
-                    setInterval(nextSlide, 6000);
+                        // Auto-play
+                        setInterval(nextSlide, 6000);
+                    }
                 }
-            }
 
             }); // Close DOMContentLoaded
 

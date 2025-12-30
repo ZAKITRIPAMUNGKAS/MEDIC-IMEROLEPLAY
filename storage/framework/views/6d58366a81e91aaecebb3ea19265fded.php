@@ -1309,16 +1309,16 @@
                     </button>
                 </div>
                 <div class="hidden sm:flex items-center space-x-2 sm:space-x-4" id="desktop-menu">
-                    <?php if(auth()->guard()->guest()): ?>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->guest()): ?>
                         <!-- Show Recruitment button only when not logged in -->
                         <button onclick="openRecruitmentModal()"
                             class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center mr-2">
                             <i class="fas fa-user-plus mr-2"></i>
                             <span>Recruitment</span>
                         </button>
-                    <?php endif; ?>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                    <?php if(auth()->guard()->check()): ?>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->check()): ?>
                         <!-- User Info -->
                         <div class="flex items-center space-x-4">
                             <div class="text-right">
@@ -1343,13 +1343,19 @@
                                     <span>Profil</span>
                                 </a>
 
-                                <?php if(auth()->user()->hasPermission('manage_users')): ?>
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->hasPermission('manage_users')): ?>
                                     <a href="<?php echo e(route('admin.staff.index')); ?>"
                                         class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
                                         <i class="fas fa-users-cog mr-2"></i>
                                         <span>Staf</span>
                                     </a>
-                                <?php endif; ?>
+
+                                    <a href="<?php echo e(route('admin.chat.index')); ?>"
+                                        class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
+                                        <i class="fas fa-comments mr-2"></i>
+                                        <span>Live Chat</span>
+                                    </a>
+                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
 
                                 <?php if(auth()->user()->hasPermission('view_reports')): ?>
@@ -1358,7 +1364,7 @@
                                         <i class="fas fa-chart-bar mr-2"></i>
                                         <span>Laporan</span>
                                     </a>
-                                <?php endif; ?>
+                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
 
                             <!-- Payroll Menu Dropdown -->
@@ -1391,7 +1397,7 @@
                                                 <i class="fas fa-list mr-2"></i>
                                                 Gaji Saya
                                             </a>
-                                        <?php endif; ?>
+                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
                                 </div>
                             </div>
@@ -1406,14 +1412,14 @@
                                 </button>
                             </form>
                         </div>
-                    <?php endif; ?>
-                    <?php if(auth()->guard()->guest()): ?>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->guest()): ?>
                         <a href="<?php echo e(route('staff.login')); ?>"
                             class="bg-white bg-opacity-10 text-white px-4 py-2 sm:px-6 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-xs sm:text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
                             <i class="fas fa-user-md mr-2"></i>
                             <span>Login Staf</span>
                         </a>
-                    <?php endif; ?>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </div>
             </div>
         </div>
@@ -1421,15 +1427,15 @@
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="sm:hidden hidden">
             <div class="px-2 pt-2 pb-3 space-y-1">
-                <?php if(auth()->guard()->guest()): ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->guest()): ?>
                     <!-- Show Recruitment button only when not logged in -->
                     <button onclick="openRecruitmentModal()"
                         class="w-full text-left text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
                         <i class="fas fa-user-plus w-6 mr-2"></i>Recruitment
                     </button>
-                <?php endif; ?>
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                <?php if(auth()->guard()->check()): ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->check()): ?>
                     <div class="text-white text-sm font-medium px-3 py-2">Selamat datang, <?php echo e(auth()->user()->name); ?></div>
                     <a href="<?php echo e(route('staff.dashboard')); ?>"
                         class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
@@ -1437,16 +1443,16 @@
                     <a href="<?php echo e(route('staff.profile')); ?>"
                         class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                             class="fas fa-user-cog w-6 mr-2"></i>Profil</a>
-                    <?php if(auth()->user()->hasPermission('manage_users')): ?>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->hasPermission('manage_users')): ?>
                         <a href="<?php echo e(route('admin.staff.index')); ?>"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-users-cog w-6 mr-2"></i>Staf</a>
-                    <?php endif; ?>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     <?php if(auth()->user()->hasPermission('view_reports')): ?>
                         <a href="<?php echo e(route('admin.attendance-reports.index')); ?>"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-chart-bar w-6 mr-2"></i>Laporan</a>
-                    <?php endif; ?>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     <?php if(auth()->user()->hasPermission('manage_payroll')): ?>
                         <a href="<?php echo e(route('admin.payroll.index')); ?>"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
@@ -1458,7 +1464,7 @@
                         <a href="<?php echo e(route('staff.payroll.index')); ?>"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-dollar-sign w-6 mr-2"></i>Gaji Saya</a>
-                    <?php endif; ?>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     <form method="POST" action="<?php echo e(route('staff.logout')); ?>" class="block">
                         <?php echo csrf_field(); ?>
                         <button type="submit"
@@ -1466,13 +1472,13 @@
                             <i class="fas fa-sign-out-alt w-6 mr-2"></i>Logout
                         </button>
                     </form>
-                <?php endif; ?>
-                <?php if(auth()->guard()->guest()): ?>
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->guest()): ?>
                     <a href="<?php echo e(route('staff.login')); ?>"
                         class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
                         <i class="fas fa-user-md w-6 mr-2"></i>Login Staf
                     </a>
-                <?php endif; ?>
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             </div>
         </div>
     </nav>
@@ -1546,7 +1552,7 @@
                     </div>
                 </div>
                 <div class="mt-6 pt-4 border-t border-white border-opacity-10">
-                    <p class="text-gray-400 text-xs">&copy; 2025 Portal Medis MOTIONLIFE. Semua hak dilindungi develop
+                    <p class="text-gray-400 text-xs">&copy; 2026 Portal Medis iMe. Semua hak dilindungi develop
                         by tepe-dev.</p>
                 </div>
             </div>
@@ -2458,24 +2464,24 @@
         };
 
         // Backward compatibility - override native alert
-        window.alert = function(message) {
+        window.alert = function (message) {
             showAlert(message, 'info');
         };
 
         // DON'T override confirm() - it won't work with onsubmit="return confirm()"
         // Instead, intercept form submissions with confirm()
-        
-        document.addEventListener('DOMContentLoaded', function() {
+
+        document.addEventListener('DOMContentLoaded', function () {
             // Intercept all form submissions
-            document.addEventListener('submit', async function(e) {
+            document.addEventListener('submit', async function (e) {
                 const form = e.target;
                 const onsubmit = form.getAttribute('onsubmit');
-                
+
                 // Check if form has onsubmit with confirm()
                 if (onsubmit && onsubmit.includes('confirm(')) {
                     e.preventDefault();
                     e.stopPropagation();
-                    
+
                     // Extract message from confirm('message')
                     const match = onsubmit.match(/confirm\s*\(\s*['"`]([\s\S]+?)['"`]\s*\)/);
                     if (match) {
@@ -2483,7 +2489,7 @@
                             .replace(/\\n/g, '\n')
                             .replace(/\\'/g, "'")
                             .replace(/\\"/g, '"');
-                        
+
                         // Show custom confirm modal
                         const result = await showConfirm(message, {
                             type: 'warning',
@@ -2492,7 +2498,7 @@
                             cancelText: 'Batal',
                             confirmClass: 'modal-btn-danger'
                         });
-                        
+
                         if (result) {
                             // User confirmed - remove onsubmit and submit
                             form.removeAttribute('onsubmit');
@@ -2505,10 +2511,28 @@
         });
     </script>
 
-    <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
 
+    <?php
+$__split = function ($name, $params = []) {
+    return [$name, $params];
+};
+[$__name, $__params] = $__split('chat-widget');
+
+$key = null;
+
+$key ??= \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::generateKey('lw-527234286-0', null);
+
+$__html = app('livewire')->mount($__name, $__params, $key);
+
+echo $__html;
+
+unset($__html);
+unset($__name);
+unset($__params);
+unset($__split);
+if (isset($__slots)) unset($__slots);
+?>
 </body>
 
 </html><?php /**PATH D:\website\EMS-IME\public_html\resources\views/layouts/app.blade.php ENDPATH**/ ?>

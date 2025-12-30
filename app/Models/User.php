@@ -256,6 +256,17 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if user can reply to live chat (Manager level and above)
+     *
+     * @return bool
+     */
+    public function canReplyChat(): bool
+    {
+        // Level 5 (Staff Manager) and above
+        return $this->role && $this->role->level >= 5;
+    }
+
+    /**
      * Check if user belongs to Roxwood Hospital
      * User is considered Roxwood if name or staff_id contains "RH", "roxwood", etc.
      *

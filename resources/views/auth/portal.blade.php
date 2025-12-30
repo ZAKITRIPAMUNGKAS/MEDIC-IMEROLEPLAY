@@ -6,57 +6,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Staf Medis - Login & Register</title>
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Tailwind CSS (CDN for prototype, ideally compiled in production) -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
             overflow: hidden;
-            /* Prevent scrolling during animation */
+            /* Important for the sliding effect */
         }
 
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        /* Input Styles */
+        .form-input {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #334155;
+            /* Slate-700 for better readability on white/light bg of the form side */
+            transition: all 0.3s ease;
         }
 
-        .animate-fade-in-up {
-            animation: fadeInUp 0.6s ease-out forwards;
+        .form-input:focus {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: rgba(14, 165, 233, 0.5);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
         }
 
-        .delay-100 {
-            animation-delay: 0.1s;
+        .form-input::placeholder {
+            color: #94a3b8;
+            /* Slate-400 */
         }
 
-        .delay-200 {
-            animation-delay: 0.2s;
-        }
-
-        .delay-300 {
-            animation-delay: 0.3s;
-        }
-
-        /* Container for the double slider */
+        /* Container & Animation Logic */
         .container-custom {
             position: relative;
             width: 100%;
             min-height: 100vh;
-            background-color: #fff;
             overflow: hidden;
         }
 
-        /* Forms Container */
         .forms-container {
             position: absolute;
             width: 100%;
@@ -70,6 +61,7 @@
             top: 50%;
             transform: translate(-50%, -50%);
             left: 75%;
+            /* Initial Position: Right Side (Login) */
             width: 50%;
             transition: 1s 0.7s ease-in-out;
             display: grid;
@@ -89,6 +81,7 @@
             grid-row: 1 / 2;
         }
 
+        /* Form Visibility Logic */
         form.sign-in-form {
             z-index: 2;
         }
@@ -96,57 +89,6 @@
         form.sign-up-form {
             z-index: 1;
             opacity: 0;
-        }
-
-        /* Input Styles */
-        .input-field {
-            max-width: 380px;
-            width: 100%;
-            background-color: #f0f4f8;
-            margin: 10px 0;
-            height: 55px;
-            border-radius: 55px;
-            display: grid;
-            grid-template-columns: 15% 85%;
-            padding: 0 0.4rem;
-            position: relative;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-
-        .input-field:focus-within {
-            background-color: #fff;
-            border-color: #3b82f6;
-            /* blue-500 */
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.15);
-        }
-
-        .input-field i {
-            text-align: center;
-            line-height: 55px;
-            color: #acacac;
-            transition: 0.5s;
-            font-size: 1.1rem;
-        }
-
-        .input-field:focus-within i {
-            color: #3b82f6;
-        }
-
-        .input-field input,
-        .input-field select {
-            background: none;
-            outline: none;
-            border: none;
-            line-height: 1;
-            font-weight: 500;
-            font-size: 1.1rem;
-            color: #333;
-        }
-
-        .input-field input::placeholder {
-            color: #aaa;
-            font-weight: 500;
         }
 
         /* Panels (The colored side) */
@@ -185,63 +127,38 @@
             transition-delay: 0.6s;
         }
 
-        .panel h3 {
-            font-weight: 700;
-            line-height: 1.1;
-            font-size: 1.75rem;
+        /* The Moving Background Blob */
+        .container-custom:before {
+            content: "";
+            position: absolute;
+            height: 3500px;
+            /* Increased from 2000px */
+            width: 3500px;
+            /* Increased from 2000px */
+            top: -10%;
+            right: 45%;
+            /* Adjusted for larger size */
+            transform: translateY(-50%);
+            /* Sky/Cyan Gradient matching branding */
+            background-image: linear-gradient(-45deg, #0c4a6e 0%, #0284c7 100%);
+            transition: 1.8s ease-in-out;
+            border-radius: 50%;
+            z-index: 6;
         }
 
-        .panel p {
-            font-size: 0.95rem;
-            padding: 0.7rem 0;
-            max-width: 300px;
-            margin: 0 auto;
-        }
-
-        /* Animation Logic */
-        .btn.transparent {
-            margin: 0;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(5px);
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            width: 140px;
-            height: 44px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            border-radius: 49px;
-            color: #fff;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn.transparent:hover {
-            background: #fff;
-            color: #1e3a8a;
-            /* blue-900 */
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            border-color: #fff;
-        }
-
-        .right-panel .image,
-        .right-panel .content {
-            transform: translateX(800px);
-        }
-
-        /* ANIMATION MODE */
+        /* Register Mode (Sign Up Mode) Styles */
         .container-custom.sign-up-mode:before {
             transform: translate(100%, -50%);
             right: 52%;
         }
 
-        .container-custom.sign-up-mode .left-panel .image,
         .container-custom.sign-up-mode .left-panel .content {
             transform: translateX(-800px);
         }
 
         .container-custom.sign-up-mode .signin-signup {
             left: 25%;
+            /* Moves to Left Size */
         }
 
         .container-custom.sign-up-mode form.sign-up-form {
@@ -254,9 +171,12 @@
             z-index: 1;
         }
 
-        .container-custom.sign-up-mode .right-panel .image,
         .container-custom.sign-up-mode .right-panel .content {
             transform: translateX(0%);
+        }
+
+        .right-panel .content {
+            transform: translateX(800px);
         }
 
         .container-custom.sign-up-mode .left-panel {
@@ -267,26 +187,7 @@
             pointer-events: all;
         }
 
-        /* Solid Color Background Blob / Slider */
-        .container-custom:before {
-            content: "";
-            position: absolute;
-            height: 1800px;
-            /* Reduced from 2000px */
-            width: 1800px;
-            /* Reduced from 2000px */
-            top: -5%;
-            right: 48%;
-            transform: translateY(-50%);
-            background-image: linear-gradient(-45deg, #1e3a8a 0%, #0ea5e9 100%);
-            transition: 1.8s ease-in-out;
-            border-radius: 45%;
-            z-index: 6;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.2);
-            /* Soft shadow */
-        }
-
-        /* Responsiveness */
+        /* Mobile Responsiveness */
         @media (max-width: 870px) {
             .container-custom {
                 min-height: 800px;
@@ -298,10 +199,6 @@
                 top: 95%;
                 transform: translate(-50%, -100%);
                 transition: 1s 0.8s ease-in-out;
-            }
-
-            .signin-signup,
-            .container-custom.sign-up-mode .signin-signup {
                 left: 50%;
             }
 
@@ -326,37 +223,15 @@
                 grid-row: 1 / 2;
             }
 
-            .image {
-                width: 200px;
-                transition: transform 0.9s ease-in-out;
-                transition-delay: 0.6s;
-            }
-
             .panel .content {
-                padding-right: 15%;
+                padding-right: 0;
                 transition: transform 0.9s ease-in-out;
                 transition-delay: 0.8s;
-            }
-
-            .panel h3 {
-                font-size: 1.2rem;
-            }
-
-            .panel p {
-                font-size: 0.7rem;
-                padding: 0.5rem 0;
-            }
-
-            .btn.transparent {
-                width: 110px;
-                height: 35px;
-                font-size: 0.7rem;
             }
 
             .container-custom:before {
                 width: 1500px;
                 height: 1500px;
-                /* Revert for mobile to ensure coverage */
                 transform: translateX(-50%);
                 left: 30%;
                 bottom: 68%;
@@ -371,282 +246,261 @@
                 right: initial;
             }
 
-            .container-custom.sign-up-mode .left-panel .image,
             .container-custom.sign-up-mode .left-panel .content {
                 transform: translateY(-300px);
             }
 
-            .container-custom.sign-up-mode .right-panel .image,
             .container-custom.sign-up-mode .right-panel .content {
                 transform: translateY(0px);
             }
 
-            .right-panel .image,
             .right-panel .content {
                 transform: translateY(300px);
             }
 
-            .signin-signup {
+            .container-custom.sign-up-mode .signin-signup {
                 top: 5%;
                 transform: translate(-50%, 0);
-            }
-        }
-
-        @media (max-width: 570px) {
-            form {
-                padding: 0 1.5rem;
-            }
-
-            .image {
-                display: none;
-            }
-
-            .panel .content {
-                padding: 0.5rem 1rem;
-            }
-
-            .container-custom {
-                padding: 1.5rem;
-            }
-
-            .container-custom:before {
-                bottom: 72%;
-                left: 50%;
-            }
-
-            .container-custom.sign-up-mode:before {
-                bottom: 28%;
-                left: 50%;
             }
         }
     </style>
 </head>
 
-<body>
-    <div class="container-custom">
-        <!-- Logo / Brand Absolute -->
-        <div class="absolute top-6 right-6 z-50 animate-fade-in-up">
-            <div class="flex items-center gap-3">
-                <span class="text-right hidden sm:block">
-                    <div
-                        class="text-slate-800 font-bold text-lg tracking-tight leading-none bg-white/80 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
-                        EMS Portal</div>
-                    <div class="text-[10px] text-slate-500 font-medium tracking-wider uppercase mt-1 mr-2">Sistem
-                        Internal • Akses Terbatas</div>
-                </span>
-                <img src="/images/motionlife-logo.png" alt="Logo" class="h-10 w-auto drop-shadow-md">
-            </div>
-        </div>
+<body class="bg-slate-50 min-h-screen">
 
+    <div class="container-custom {{ (isset($mode) && $mode === 'register') ? 'sign-up-mode' : '' }}">
+        <!-- Forms Container -->
         <div class="forms-container">
             <div class="signin-signup">
+
                 <!-- LOGIN FORM -->
-                <form action="{{ route('staff.login.post') }}" method="POST" class="sign-in-form">
+                <form action="{{ route('staff.login.post') }}" method="POST"
+                    class="sign-in-form w-full max-w-md mx-auto">
                     @csrf
-                    <h2 class="text-3xl font-bold text-slate-800 mb-2">Login Staf Medis</h2>
-                    <p class="text-slate-500 mb-8 font-medium text-sm text-center max-w-[280px]">Akses area privat untuk
-                        <span class="text-blue-600 font-bold">medis profesional</span>
-                    </p>
-
-                    <div class="input-field shadow-sm group">
-                        <i class="fas fa-envelope group-focus-within:text-blue-600"></i>
-                        <input type="text" name="email" placeholder="Email" required />
-                    </div>
-                    <div class="input-field shadow-sm group">
-                        <i class="fas fa-lock group-focus-within:text-blue-600"></i>
-                        <input type="password" name="password" placeholder="Password" required />
+                    <div class="text-center mb-8">
+                        <img src="/images/motionlife-logo.png" alt="Logo" class="h-16 mx-auto mb-4 drop-shadow-md">
+                        <h2 class="text-3xl font-bold text-slate-800 mb-2">Welcome Back</h2>
+                        <p class="text-slate-500 text-sm">Masuk ke portal EMS iMe</p>
                     </div>
 
-                    <div class="w-full max-w-[380px] flex justify-between items-center mt-3 mb-8 text-sm">
+                    <div class="w-full space-y-4">
+                        <div class="relative group">
+                            <div
+                                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-sky-500 transition-colors">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <input type="text" name="email"
+                                class="form-input w-full pl-11 pr-4 py-4 rounded-xl text-sm bg-slate-100 border-transparent focus:bg-white"
+                                placeholder="Email Address" required>
+                        </div>
+
+                        <div class="relative group" x-data="{ show: false }">
+                            <div
+                                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-sky-500 transition-colors">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <input :type="show ? 'text' : 'password'" name="password"
+                                class="form-input w-full pl-11 pr-12 py-4 rounded-xl text-sm bg-slate-100 border-transparent focus:bg-white"
+                                placeholder="Password" required>
+                            <button type="button" @click="show = !show"
+                                class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-sky-500 transition-colors focus:outline-none">
+                                <i class="fas" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="w-full flex justify-between items-center mt-4 mb-8 text-xs font-medium">
                         <label
-                            class="flex items-center text-slate-600 gap-2 cursor-pointer hover:text-blue-600 transition-colors">
-                            <input type="checkbox" name="remember" class="accent-blue-600 rounded w-4 h-4"> Ingat saya
+                            class="flex items-center gap-2 cursor-pointer text-slate-600 hover:text-sky-600 transition-colors">
+                            <input type="checkbox" name="remember" class="accent-sky-600 rounded"> Ingat saya
                         </label>
-                        <a href="#" class="text-blue-600 hover:text-blue-800 font-bold hover:underline">Lupa
-                            password?</a>
+                        <a href="#" class="text-sky-600 hover:text-sky-800">Lupa Password?</a>
                     </div>
 
                     <button type="submit"
-                        class="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-bold py-3.5 px-8 rounded-full uppercase text-xs tracking-widest shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 w-full max-w-[380px] flex items-center justify-center gap-2">
-                        Masuk ke Dashboard <i class="fas fa-arrow-right"></i>
+                        class="w-full py-4 bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 text-white font-bold rounded-xl shadow-lg hover:shadow-sky-500/30 transform hover:-translate-y-0.5 transition-all duration-300">
+                        LOGIN
                     </button>
 
-                    <p class="text-slate-500 mt-8 text-sm font-medium">
-                        Belum punya akun? <a href="#" id="sign-up-link"
-                            class="text-blue-600 font-extrabold hover:underline transition-all">Daftar disini</a>
+                    <!-- Mobile only switch (hidden on desktop generally, but useful fallback) -->
+                    <p class="mt-8 text-sm text-slate-500 md:hidden">
+                        Belum punya akun? <a href="#" id="mobile-sign-up-btn" class="text-sky-600 font-bold">Daftar</a>
                     </p>
                 </form>
 
                 <!-- REGISTER FORM -->
-                <form action="{{ route('staff.register.post') }}" method="POST" class="sign-up-form">
+                <form action="{{ route('staff.register.post') }}" method="POST"
+                    class="sign-up-form w-full max-w-md mx-auto">
                     @csrf
-                    <h2 class="text-3xl font-bold text-slate-800 mb-2">Pendaftaran Staf</h2>
-                    <p class="text-slate-500 mb-6 font-medium text-sm text-center">Buat akun untuk anggota tim medis
-                        baru</p>
+                    <div class="text-center mb-6">
+                        <h2 class="text-3xl font-bold text-slate-800 mb-2">Create Account</h2>
+                        <p class="text-slate-500 text-sm">Bergabung dengan tim medis kami</p>
+                    </div>
 
-                    <div class="input-field shadow-sm">
-                        <i class="fas fa-user"></i>
-                        <input type="text" name="name" placeholder="Nama Lengkap" required />
-                    </div>
-                    <div class="input-field shadow-sm">
-                        <i class="fas fa-envelope"></i>
-                        <input type="email" name="email" placeholder="Email" required />
-                    </div>
-                    <div class="input-field shadow-sm">
-                        <i class="fas fa-id-badge"></i>
-                        <select name="role_id" required class="w-full bg-transparent outline-none cursor-pointer">
-                            <option value="" disabled selected>Pilih Peran Staf</option>
-                            @if(isset($roles))
-                                @foreach($roles as $role)
-                                    <option value="{{ $role->id }}">
-                                        {{ ucfirst($role->display_name ?? str_replace('_', ' ', (string) $role->name)) }}
-                                    </option>
-                                @endforeach
-                            @endif
-                        </select>
-                    </div>
-                    <div class="input-field shadow-sm">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" name="password" placeholder="Password" required />
-                    </div>
-                    <div class="input-field shadow-sm">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" name="password_confirmation" placeholder="Konfirmasi Password"
-                            required />
+                    <div class="w-full space-y-3">
+                        <div class="relative group">
+                            <div
+                                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-sky-500 transition-colors">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <input type="text" name="name"
+                                class="form-input w-full pl-11 pr-4 py-3 rounded-xl text-sm bg-slate-100 border-transparent focus:bg-white"
+                                placeholder="Nama Lengkap" required>
+                        </div>
+
+                        <div class="relative group">
+                            <div
+                                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-sky-500 transition-colors">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <input type="email" name="email"
+                                class="form-input w-full pl-11 pr-4 py-3 rounded-xl text-sm bg-slate-100 border-transparent focus:bg-white"
+                                placeholder="Email Address" required>
+                        </div>
+
+                        <div class="relative group">
+                            <div
+                                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-sky-500 transition-colors">
+                                <i class="fas fa-user-tag"></i>
+                            </div>
+                            <select name="role_id" required
+                                class="form-input w-full pl-11 pr-4 py-3 rounded-xl text-sm bg-slate-100 border-transparent focus:bg-white appearance-none cursor-pointer text-slate-600">
+                                <option value="" disabled selected>Pilih Peran Staf</option>
+                                @if(isset($roles))
+                                    @foreach($roles as $role)
+                                        <option value="{{ $role->id }}">
+                                            {{ ucfirst($role->display_name ?? str_replace('_', ' ', (string) $role->name)) }}
+                                        </option>
+                                    @endforeach
+                                @endif
+                            </select>
+                            <div
+                                class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400">
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
+
+                        <div class="relative group" x-data="{ show: false }">
+                            <div
+                                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-sky-500 transition-colors">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <input :type="show ? 'text' : 'password'" name="password"
+                                class="form-input w-full pl-11 pr-12 py-3 rounded-xl text-sm bg-slate-100 border-transparent focus:bg-white"
+                                placeholder="Password" required>
+                            <button type="button" @click="show = !show"
+                                class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-sky-500 transition-colors focus:outline-none">
+                                <i class="fas" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+                            </button>
+                        </div>
+
+                        <div class="relative group" x-data="{ show: false }">
+                            <div
+                                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-sky-500 transition-colors">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <input :type="show ? 'text' : 'password'" name="password_confirmation"
+                                class="form-input w-full pl-11 pr-12 py-3 rounded-xl text-sm bg-slate-100 border-transparent focus:bg-white"
+                                placeholder="Confirm Password" required>
+                            <button type="button" @click="show = !show"
+                                class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-sky-500 transition-colors focus:outline-none">
+                                <i class="fas" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+                            </button>
+                        </div>
                     </div>
 
                     <button type="submit"
-                        class="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-bold py-3.5 px-8 rounded-full uppercase text-xs tracking-widest shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 w-full max-w-[380px] mt-4 flex items-center justify-center gap-2">
-                        Daftarkan Staf <i class="fas fa-user-plus"></i>
+                        class="w-full py-4 bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 text-white font-bold rounded-xl shadow-lg hover:shadow-cyan-500/30 transform hover:-translate-y-0.5 transition-all duration-300 mt-6">
+                        REGISTER
                     </button>
 
-                    <p class="text-slate-600 mt-6 text-sm">
-                        Sudah punya akun? <a href="#" id="sign-in-link"
-                            class="text-blue-600 font-extrabold hover:underline">Login disini</a>
+                    <p class="mt-6 text-sm text-slate-500 md:hidden">
+                        Sudah punya akun? <a href="#" id="mobile-sign-in-btn" class="text-sky-600 font-bold">Login</a>
                     </p>
                 </form>
             </div>
         </div>
 
+        <!-- Panels Container -->
         <div class="panels-container">
-            <!-- LEFT PANEL (Shows when Login is active, displays info for Register) -->
-            <!-- Wait, logic: When 'sign-up-mode' is NOT active, we see Left Panel Content on the Left? No. 
-                 Standard Mode (Login Form Visible on Left): 
-                 - Left Panel (Solid Blue Overlay? No, form is white).
-                 - Right Panel (Solid Blue Overlay? Yes).
-            -->
 
+            <!-- LEFT PANEL: Visible when in Login Mode (Right side blob covers Right Panel, Form is on Right) 
+                 Wait, logically:
+                 Standard Mode: Form is on Right. Blob is on Left. 
+                 So Left Panel should be visible on the Left side.
+            -->
             <div class="panel left-panel">
                 <div class="content">
-                    <h3 class="mb-4">Bergabung dengan <br><span class="text-blue-200">Tim Medis Profesional</span></h3>
-                    <p>
-                        Dapatkan akses ke fitur kolaborasi tim, jenjang karir yang jelas, dan teknologi medis modern.
+                    <h3 class="text-4xl font-bold mb-4">Belum Punya Akun?</h3>
+                    <p class="text-sky-100 text-lg mb-8 max-w-sm mx-auto">
+                        Bergabunglah dengan tim medis profesional iMe. Akses dashboard lengkap, manajemen gaji,
+                        dan jadwal dinas.
                     </p>
-
-                    <!-- Feature List -->
-                    <div class="flex flex-col gap-4 text-left w-full max-w-xs mx-auto mt-8 perspective-1000">
-                        <div
-                            class="flex items-center gap-4 bg-white/10 p-4 rounded-xl backdrop-blur-md border border-white/20 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 cursor-default group">
-                            <div
-                                class="w-10 h-10 rounded-full bg-blue-500/30 flex items-center justify-center text-white text-lg group-hover:scale-110 transition-transform">
-                                <i class="fas fa-users"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-sm text-white">Kolaborasi Tim</h4>
-                                <span class="text-xs text-blue-100">Terhubung real-time</span>
-                            </div>
-                        </div>
-                        <div
-                            class="flex items-center gap-4 bg-white/10 p-4 rounded-xl backdrop-blur-md border border-white/20 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 cursor-default group">
-                            <div
-                                class="w-10 h-10 rounded-full bg-blue-500/30 flex items-center justify-center text-white text-lg group-hover:scale-110 transition-transform">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-sm text-white">Jenjang Karir</h4>
-                                <span class="text-xs text-blue-100">Development yang jelas</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <button class="btn transparent mt-10 flex items-center gap-2 justify-center" id="sign-in-btn">
-                        <i class="fas fa-arrow-left text-xs"></i> Kembali ke Login
+                    <button
+                        class="bg-transparent border-2 border-white text-white font-bold py-3 px-8 rounded-full hover:bg-white hover:text-sky-700 transition-all duration-300"
+                        id="sign-up-btn">
+                        DAFTAR SEKARANG
                     </button>
 
-                    <div class="mt-8 text-[10px] text-blue-200/60 uppercase tracking-widest font-semibold">
-                        *Pastikan Anda memiliki kredensial resmi.
+                    <div class="mt-12 grid grid-cols-2 gap-4 max-w-md mx-auto text-left">
+                        <div class="bg-white/10 p-4 rounded-xl backdrop-blur-sm border border-white/10">
+                            <i class="fas fa-user-md text-2xl mb-2 text-sky-300"></i>
+                            <div class="text-sm font-bold">Karir Jelas</div>
+                        </div>
+                        <div class="bg-white/10 p-4 rounded-xl backdrop-blur-sm border border-white/10">
+                            <i class="fas fa-calendar-check text-2xl mb-2 text-sky-300"></i>
+                            <div class="text-sm font-bold">Jadwal Fleksibel</div>
+                        </div>
+                        <div class="bg-white/10 p-4 rounded-xl backdrop-blur-sm border border-white/10">
+                            <i class="fas fa-heart text-2xl mb-2 text-sky-300"></i>
+                            <div class="text-sm font-bold">Banyak Teman</div>
+                            <div class="text-[10px] text-sky-200">(Besa Jadi Pasangan)</div>
+                        </div>
+                        <div class="bg-white/10 p-4 rounded-xl backdrop-blur-sm border border-white/10">
+                            <i class="fas fa-money-bill-wave text-2xl mb-2 text-sky-300"></i>
+                            <div class="text-sm font-bold">Gaji Pasti</div>
+                            <div class="text-[10px] text-sky-200">(Yang Penting Happy Duty)</div>
+                        </div>
                     </div>
-                </div>
-                <!-- Optional Image -->
-                <div class="image w-[500px] hidden md:flex items-center justify-center delay-200">
-                    <i class="fas fa-user-md text-[18rem] text-white opacity-30 drop-shadow-2xl"></i>
                 </div>
             </div>
 
+            <!-- RIGHT PANEL: Visible when in Register Mode (Form moves to Left, Blob moves to Right) -->
             <div class="panel right-panel">
                 <div class="content">
-                    <h3 class="mb-4">Portal <br><span class="text-blue-200">Staf Medis Profesional</span></h3>
-                    <p>
-                        Kelola aktivitas medis Anda dengan efisien. Keamanan data terjamin.
+                    <h3 class="text-4xl font-bold mb-4">Sudah Bergabung?</h3>
+                    <p class="text-sky-100 text-lg mb-8 max-w-sm mx-auto">
+                        Silakan login untuk mengakses dashboard personal Anda dan mulai beraktivitas.
                     </p>
-
-                    <!-- Feature List for Login Info -->
-                    <div class="flex flex-col gap-3 text-left w-full max-w-xs mx-auto mt-8">
-                        <div class="flex items-center gap-3 group">
-                            <div
-                                class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white group-hover:bg-white/30 transition-colors">
-                                <i class="fas fa-calendar-check"></i>
-                            </div>
-                            <span class="text-sm font-medium">Manajemen Absensi</span>
-                        </div>
-                        <div class="flex items-center gap-3 group">
-                            <div
-                                class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white group-hover:bg-white/30 transition-colors">
-                                <i class="fas fa-file-medical"></i>
-                            </div>
-                            <span class="text-sm font-medium">Formulir Medis</span>
-                        </div>
-                        <div class="flex items-center gap-3 group">
-                            <div
-                                class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white group-hover:bg-white/30 transition-colors">
-                                <i class="fas fa-money-bill-wave"></i>
-                            </div>
-                            <span class="text-sm font-medium">Sistem Penggajian</span>
-                        </div>
-                    </div>
-
-                    <!-- Small Card -->
-                    <div
-                        class="mt-10 bg-gradient-to-br from-black/30 to-black/10 p-5 rounded-2xl text-left max-w-xs mx-auto border border-white/10 backdrop-blur-md shadow-lg hover:-translate-y-1 transition-transform cursor-default">
-                        <h4 class="font-bold text-sm mb-3 text-blue-200 flex items-center gap-2"><i
-                                class="fas fa-shield-alt text-lg"></i>Keamanan Data</h4>
-                        <ul class="text-xs space-y-2 text-white/80 list-disc list-inside opacity-90">
-                            <li>Login terenkripsi SSL 256-bit</li>
-                            <li>Data sesuai standar GDPR</li>
-                            <li>Sistem backup otomatis realtime</li>
-                        </ul>
-                    </div>
-
-                    <button class="btn transparent mt-10 hover:shadow-xl hover:scale-105" id="sign-up-btn">
-                        Daftar Akun Baru
+                    <button
+                        class="bg-transparent border-2 border-white text-white font-bold py-3 px-8 rounded-full hover:bg-white hover:text-sky-700 transition-all duration-300"
+                        id="sign-in-btn">
+                        LOGIN STAFF
                     </button>
-                </div>
-                <!-- Optional Image -->
-                <div class="image w-[500px] hidden md:flex items-center justify-center delay-200">
-                    <i class="fas fa-hospital text-[18rem] text-white opacity-30 drop-shadow-2xl"></i>
+
+                    <div class="mt-12 flex flex-col gap-4 max-w-xs mx-auto text-left">
+                        <div class="flex items-center gap-3 bg-white/10 p-3 rounded-lg backdrop-blur-sm">
+                            <i class="fas fa-check-circle text-sky-300"></i>
+                            <span class="text-sm font-medium">Akses Dashboard</span>
+                        </div>
+                        <div class="flex items-center gap-3 bg-white/10 p-3 rounded-lg backdrop-blur-sm">
+                            <i class="fas fa-check-circle text-sky-300"></i>
+                            <span class="text-sm font-medium">Laporan Harian</span>
+                        </div>
+                    </div>
                 </div>
             </div>
+
         </div>
     </div>
 
     <script>
         const sign_in_btn = document.querySelector("#sign-in-btn");
         const sign_up_btn = document.querySelector("#sign-up-btn");
+        const mobile_sign_in_btn = document.querySelector("#mobile-sign-in-btn");
+        const mobile_sign_up_btn = document.querySelector("#mobile-sign-up-btn");
         const container = document.querySelector(".container-custom");
-        const sign_in_link = document.querySelector("#sign-in-link");
-        const sign_up_link = document.querySelector("#sign-up-link");
 
-        // Main Toggle Logic
         sign_up_btn.addEventListener("click", () => {
             container.classList.add("sign-up-mode");
         });
@@ -655,16 +509,20 @@
             container.classList.remove("sign-up-mode");
         });
 
-        // Link Triggers (for mobile or alternate access)
-        sign_up_link.addEventListener("click", (e) => {
-            e.preventDefault();
-            container.classList.add("sign-up-mode");
-        });
+        // Mobile fallback listeners
+        if (mobile_sign_up_btn) {
+            mobile_sign_up_btn.addEventListener("click", (e) => {
+                e.preventDefault();
+                container.classList.add("sign-up-mode");
+            });
+        }
 
-        sign_in_link.addEventListener("click", (e) => {
-            e.preventDefault();
-            container.classList.remove("sign-up-mode");
-        });
+        if (mobile_sign_in_btn) {
+            mobile_sign_in_btn.addEventListener("click", (e) => {
+                e.preventDefault();
+                container.classList.remove("sign-up-mode");
+            });
+        }
     </script>
 </body>
 

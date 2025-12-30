@@ -213,4 +213,9 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
         ->middleware('permission:manage_payroll')->name('salary-settings.bulk-create');
     Route::post('/salary-settings/{salarySetting}/toggle-status', [\App\Http\Controllers\Admin\SalarySettingController::class, 'toggleStatus'])
         ->middleware('permission:manage_payroll')->name('salary-settings.toggle-status');
+
+    // Live Chat (Managers Only)
+    Route::get('/chat', function () {
+        return view('admin.chat.index');
+    })->middleware('permission:manage_users')->name('chat.index');
 });
