@@ -1416,6 +1416,8 @@
                 });
             }
 
+        }); // Close DOMContentLoaded
+
         // --- REDESIGNED TESTIMONIAL CAROUSEL ENGINE ---
         // (Removed: Switched to Grid Layout for better visibility of 10+ reviews)
         // const container = document.getElementById('testimonial-container');
