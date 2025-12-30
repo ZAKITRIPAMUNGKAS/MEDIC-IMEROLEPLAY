@@ -1235,8 +1235,9 @@
         style="z-index: 9999999999;">
     </div>
 
-    <!-- Toast Template Styles -->
-    <style>
+    <!-- Toast Template Styles - Updated 2025-12-30 11:50 -->
+    <style id="toastStyles-v2">
+        /* MODERN WHITE CARD DESIGN */
         .toast {
             pointer-events: auto;
             min-width: 280px;
@@ -1413,20 +1414,20 @@
             toast.className = `toast toast-${type}`;
             toast.style.setProperty('--duration', `${duration}ms`);
             toast.innerHTML = `
-                                                <div class="toast-icon">
-                                                    <i class="fas ${icons[type]} text-white text-lg"></i>
-                                                </div>
-                                                <div class="toast-content">
-                                                    <div class="toast-title">${title}</div>
-                                                    <div class="toast-message">${message}</div>
-                                                </div>
-                                                <button class="toast-close" onclick="closeToast(this.parentElement)">
-                                                    <i class="fas fa-times text-sm"></i>
-                                                </button>
-                                                <div class="toast-progress">
-                                                    <div class="toast-progress-bar"></div>
-                                                </div>
-                                            `;
+                                                    <div class="toast-icon">
+                                                        <i class="fas ${icons[type]} text-white text-lg"></i>
+                                                    </div>
+                                                    <div class="toast-content">
+                                                        <div class="toast-title">${title}</div>
+                                                        <div class="toast-message">${message}</div>
+                                                    </div>
+                                                    <button class="toast-close" onclick="closeToast(this.parentElement)">
+                                                        <i class="fas fa-times text-sm"></i>
+                                                    </button>
+                                                    <div class="toast-progress">
+                                                        <div class="toast-progress-bar"></div>
+                                                    </div>
+                                                `;
 
             container.appendChild(toast);
             setTimeout(() => closeToast(toast), duration);
