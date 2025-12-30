@@ -51,21 +51,21 @@ class PayrollController extends Controller
                 try {
                     if ($filters['hospital'] === 'roxwood') {
                         // Roxwood: name atau staff_id mengandung "rh"
-                        $query->whereHas('user', function($sub) {
-                            $sub->where(function($q) {
+                        $query->whereHas('user', function ($sub) {
+                            $sub->where(function ($q) {
                                 $q->whereRaw('LOWER(name) LIKE ?', ['%rh%'])
-                                  ->orWhereRaw('LOWER(staff_id) LIKE ?', ['%rh%']);
+                                    ->orWhereRaw('LOWER(staff_id) LIKE ?', ['%rh%']);
                             });
                         });
                     } else if ($filters['hospital'] === 'alta') {
                         // Alta: name dan staff_id TIDAK mengandung "rh"
-                        $query->whereHas('user', function($sub) {
-                            $sub->where(function($q) {
+                        $query->whereHas('user', function ($sub) {
+                            $sub->where(function ($q) {
                                 $q->whereRaw('LOWER(name) NOT LIKE ?', ['%rh%'])
-                                  ->where(function($sid) {
-                                      $sid->whereNull('staff_id')
-                                          ->orWhereRaw('LOWER(staff_id) NOT LIKE ?', ['%rh%']);
-                                  });
+                                    ->where(function ($sid) {
+                                        $sid->whereNull('staff_id')
+                                            ->orWhereRaw('LOWER(staff_id) NOT LIKE ?', ['%rh%']);
+                                    });
                             });
                         });
                     }
@@ -86,7 +86,7 @@ class PayrollController extends Controller
             // Filter by staff name (search by name)
             if ($filters['staff_name']) {
                 $staffName = trim($filters['staff_name']);
-                $query->whereHas('user', function($sub) use ($staffName) {
+                $query->whereHas('user', function ($sub) use ($staffName) {
                     $sub->where('name', 'like', "%$staffName%");
                 });
             }
@@ -97,7 +97,7 @@ class PayrollController extends Controller
                     $weekDate = Carbon::parse($filters['week']);
                     $startOfWeek = $weekDate->copy()->startOfWeek();
                     $endOfWeek = $weekDate->copy()->endOfWeek();
-                    
+
                     $query->whereBetween('period_start', [$startOfWeek->format('Y-m-d'), $endOfWeek->format('Y-m-d')]);
                 } catch (\Exception $e) {
                     Log::warning('Error parsing week filter', [
@@ -107,7 +107,7 @@ class PayrollController extends Controller
                     // If parsing fails, default to current week
                     $currentWeek = now()->startOfWeek();
                     $query->whereBetween('period_start', [
-                        $currentWeek->format('Y-m-d'), 
+                        $currentWeek->format('Y-m-d'),
                         $currentWeek->copy()->endOfWeek()->format('Y-m-d')
                     ]);
                 }
@@ -115,7 +115,7 @@ class PayrollController extends Controller
                 // Default: show current week if no week filter selected
                 $currentWeek = now()->startOfWeek();
                 $query->whereBetween('period_start', [
-                    $currentWeek->format('Y-m-d'), 
+                    $currentWeek->format('Y-m-d'),
                     $currentWeek->copy()->endOfWeek()->format('Y-m-d')
                 ]);
             }
@@ -124,7 +124,7 @@ class PayrollController extends Controller
             // Search by user name or email (if staff_name not provided)
             if ($filters['search'] && !$filters['staff_name']) {
                 $search = trim($filters['search']);
-                $query->whereHas('user', function($sub) use ($search) {
+                $query->whereHas('user', function ($sub) use ($search) {
                     $sub->where('name', 'like', "%$search%")
                         ->orWhere('email', 'like', "%$search%");
                 });
@@ -132,7 +132,7 @@ class PayrollController extends Controller
 
             // Filter by who paid the payroll
             if (!empty($filters['paid_by']) && is_numeric($filters['paid_by'])) {
-                $query->where('paid_by', (int)$filters['paid_by']);
+                $query->where('paid_by', (int) $filters['paid_by']);
             }
 
             // Get payrolls grouped by week
@@ -149,14 +149,17 @@ class PayrollController extends Controller
                         ->orderBy('user_id')
                         ->get();
                 }
-                
+
                 // Load relationships separately to avoid N+1 but with error handling
                 try {
-                    $payrollsCollection->load(['user' => function($q) {
-                        $q->select('id', 'name', 'email', 'staff_id');
-                    }, 'paidBy' => function($q) {
-                        $q->select('id', 'name');
-                    }]);
+                    $payrollsCollection->load([
+                        'user' => function ($q) {
+                            $q->select('id', 'name', 'email', 'staff_id');
+                        },
+                        'paidBy' => function ($q) {
+                            $q->select('id', 'name');
+                        }
+                    ]);
                 } catch (\Exception $e) {
                     Log::warning('Error loading relationships', [
                         'error' => $e->getMessage()
@@ -170,7 +173,7 @@ class PayrollController extends Controller
                         ]);
                     }
                 }
-                
+
                 // Group by week with error handling
                 $groupedPayrolls = collect([]);
                 foreach ($payrollsCollection as $payroll) {
@@ -180,7 +183,7 @@ class PayrollController extends Controller
                         } else {
                             $weekKey = Carbon::parse($payroll->period_start)->startOfWeek()->format('Y-m-d');
                         }
-                        
+
                         if (!$groupedPayrolls->has($weekKey)) {
                             $groupedPayrolls->put($weekKey, collect([]));
                         }
@@ -233,7 +236,7 @@ class PayrollController extends Controller
                     ->unique()
                     ->values()
                     ->toArray();
-                
+
                 $paidByUsers = collect([]);
                 if (!empty($paidByUserIds)) {
                     $paidByUsers = User::whereIn('id', $paidByUserIds)
@@ -280,7 +283,7 @@ class PayrollController extends Controller
             // Auto-generate runs every Sunday at 23:59, so from Monday onwards, manual generate should be disabled
             $lastWeekStart = now()->subWeek()->startOfWeek();
             $lastWeekEnd = now()->subWeek()->endOfWeek();
-            
+
             // Check if there are any payrolls for last week
             $lastWeekPayrollExists = Payroll::whereBetween('period_start', [
                 $lastWeekStart->format('Y-m-d'),
@@ -289,8 +292,8 @@ class PayrollController extends Controller
 
             // Disable manual generate if it's Monday or later and last week payroll already exists
             try {
-                $isAfterSunday = now()->isMonday() || now()->isTuesday() || now()->isWednesday() || 
-                                now()->isThursday() || now()->isFriday() || now()->isSaturday();
+                $isAfterSunday = now()->isMonday() || now()->isTuesday() || now()->isWednesday() ||
+                    now()->isThursday() || now()->isFriday() || now()->isSaturday();
                 $canGenerateManually = !($isAfterSunday && $lastWeekPayrollExists);
             } catch (\Exception $e) {
                 Log::warning('Error determining canGenerateManually', [
@@ -319,17 +322,17 @@ class PayrollController extends Controller
             $weeks = $availableWeeks;
 
             return view('admin.payroll.index', compact(
-                'payrolls', 
-                'users', 
-                'paidByUsers', 
-                'filters', 
-                'summary', 
-                'availableWeeks', 
+                'payrolls',
+                'users',
+                'paidByUsers',
+                'filters',
+                'summary',
+                'availableWeeks',
                 'weeks', // Added this to fix the error from your log
-                'canGenerateManually', 
+                'canGenerateManually',
                 'lastWeekPayrollExists'
             ));
-            
+
         } catch (\Exception $e) {
             Log::error('Error in payroll index', [
                 'error' => $e->getMessage(),
@@ -339,12 +342,12 @@ class PayrollController extends Controller
                 'request' => $request->all(),
                 'filters' => $filters ?? []
             ]);
-            
+
             // Return error view instead of redirect to see the actual error in debug mode
             if (config('app.debug')) {
                 throw $e;
             }
-            
+
             return redirect()->route('admin.payroll.index')
                 ->with('error', 'Terjadi kesalahan saat memuat data gaji. Silakan cek log untuk detail lebih lanjut.');
         }
@@ -364,7 +367,7 @@ class PayrollController extends Controller
                 ->limit(100) // Get more to ensure we have enough weeks
                 ->get()
                 ->pluck('period_start')
-                ->map(function($date) {
+                ->map(function ($date) {
                     try {
                         if (!$date) {
                             return null;
@@ -378,7 +381,7 @@ class PayrollController extends Controller
                 ->filter()
                 ->unique()
                 ->take(12) // Last 12 unique weeks
-                ->map(function($weekStart) {
+                ->map(function ($weekStart) {
                     try {
                         $weekStartCarbon = Carbon::parse($weekStart);
                         return [
@@ -413,7 +416,7 @@ class PayrollController extends Controller
     public function show(Payroll $payroll)
     {
         $payroll->load(['user.role', 'paidBy', 'notifications']);
-        
+
         return view('admin.payroll.show', compact('payroll'));
     }
 
@@ -438,9 +441,9 @@ class PayrollController extends Controller
         ])->exists();
 
         // Disable manual generate if it's Monday or later and last week payroll already exists
-        $isAfterSunday = now()->isMonday() || now()->isTuesday() || now()->isWednesday() || 
-                        now()->isThursday() || now()->isFriday() || now()->isSaturday();
-        
+        $isAfterSunday = now()->isMonday() || now()->isTuesday() || now()->isWednesday() ||
+            now()->isThursday() || now()->isFriday() || now()->isSaturday();
+
         if ($isAfterSunday && $lastWeekPayrollExists) {
             return redirect()->back()->with('error', 'Generate gaji sudah dilakukan secara otomatis pada hari Minggu jam 23:59. Tidak dapat melakukan generate manual setelah auto-generate.');
         }
@@ -452,7 +455,7 @@ class PayrollController extends Controller
         // Get users to process - ordered by name
         $users = User::where('is_active', true)
             ->whereHas('role')
-            ->when($userIds, function($query) use ($userIds) {
+            ->when($userIds, function ($query) use ($userIds) {
                 return $query->whereIn('id', $userIds);
             })
             ->orderBy('name')
@@ -480,7 +483,7 @@ class PayrollController extends Controller
                 // Use toDateString() to ensure consistent date format
                 $attendances = Attendance::where('user_id', $user->id)
                     ->whereBetween('work_date', [
-                        $periodStart->toDateString(), 
+                        $periodStart->toDateString(),
                         $periodEnd->toDateString()
                     ])
                     ->where('session_type', 'work')
@@ -534,7 +537,7 @@ class PayrollController extends Controller
                 if ($existingPayroll) {
                     // Check if payroll is already paid before update
                     $wasPaid = $existingPayroll->isPaid();
-                    
+
                     // Update existing payroll
                     // Preserve paid status, paid_at, and paid_by if already paid
                     if (!$wasPaid) {
@@ -543,10 +546,10 @@ class PayrollController extends Controller
                         // Remove status from update data if already paid to preserve it
                         unset($payrollData['status']);
                     }
-                    
+
                     $existingPayroll->update($payrollData);
                     $payroll = $existingPayroll->fresh(); // Refresh to get updated attributes
-                    
+
                     // Send notification when payroll is updated (only if not paid)
                     if (!$wasPaid) {
                         $this->sendSalaryPendingNotification($payroll, true);
@@ -556,7 +559,7 @@ class PayrollController extends Controller
                     // Create new payroll record
                     $payrollData['status'] = 'pending';
                     $payroll = Payroll::create($payrollData);
-                    
+
                     // Send notification when payroll is generated
                     $this->sendSalaryPendingNotification($payroll, false);
                     $generatedCount++;
@@ -599,7 +602,7 @@ class PayrollController extends Controller
         try {
             // Mark payroll as paid
             $payroll->markAsPaid(auth()->id());
-            
+
             if ($request->notes) {
                 $payroll->update(['notes' => $request->notes]);
             }
@@ -643,7 +646,7 @@ class PayrollController extends Controller
         try {
             // Delete related notifications first
             $payroll->notifications()->delete();
-            
+
             // Delete the payroll
             $payroll->delete();
 
@@ -660,7 +663,7 @@ class PayrollController extends Controller
     {
         try {
             $force = $request->has('force');
-            
+
             // Find duplicates: same user_id, period_start, and period_end
             $duplicates = Payroll::select('user_id', 'period_start', 'period_end', DB::raw('COUNT(*) as count'))
                 ->groupBy('user_id', 'period_start', 'period_end')
@@ -703,7 +706,7 @@ class PayrollController extends Controller
                         try {
                             // Delete related notifications first
                             $payroll->notifications()->delete();
-                            
+
                             // Delete the payroll
                             $payroll->delete();
                             $totalDeleted++;
@@ -753,69 +756,63 @@ class PayrollController extends Controller
         if ($filters['status']) {
             $query->where('status', $filters['status']);
         }
-        
+
         // Filter by hospital
         if ($filters['hospital']) {
-            $query->whereHas('user', function($sub) use ($filters) {
+            $query->whereHas('user', function ($sub) use ($filters) {
                 if ($filters['hospital'] === 'roxwood') {
                     // Roxwood: name atau staff_id mengandung "rh"
-                    $sub->where(function($q) {
+                    $sub->where(function ($q) {
                         $q->whereRaw('LOWER(name) LIKE ?', ['%rh%'])
-                          ->orWhereRaw('LOWER(staff_id) LIKE ?', ['%rh%']);
+                            ->orWhereRaw('LOWER(staff_id) LIKE ?', ['%rh%']);
                     });
                 } else if ($filters['hospital'] === 'alta') {
                     // Alta: name dan staff_id TIDAK mengandung "rh"
-                    $sub->where(function($q) {
+                    $sub->where(function ($q) {
                         $q->whereRaw('LOWER(name) NOT LIKE ?', ['%rh%'])
-                          ->where(function($sid) {
-                              $sid->whereNull('staff_id')
-                                  ->orWhereRaw('LOWER(staff_id) NOT LIKE ?', ['%rh%']);
-                          });
+                            ->where(function ($sid) {
+                                $sid->whereNull('staff_id')
+                                    ->orWhereRaw('LOWER(staff_id) NOT LIKE ?', ['%rh%']);
+                            });
                     });
                 }
             });
         }
-        
+
         if ($filters['user_id']) {
             $query->where('user_id', $filters['user_id']);
         }
-        
+
         // Filter by staff name
         if ($filters['staff_name']) {
             $staffName = trim($filters['staff_name']);
-            $query->whereHas('user', function($sub) use ($staffName) {
+            $query->whereHas('user', function ($sub) use ($staffName) {
                 $sub->where('name', 'like', "%$staffName%");
             });
         }
-        
+
         // Filter by week
         if ($filters['week'] && $filters['week'] !== 'all') {
             $weekDate = Carbon::parse($filters['week']);
             $startOfWeek = $weekDate->copy()->startOfWeek();
             $endOfWeek = $weekDate->copy()->endOfWeek();
-            
+
             $query->whereBetween('period_start', [$startOfWeek->format('Y-m-d'), $endOfWeek->format('Y-m-d')]);
-        } else if (!$filters['week']) {
-            // Default: show current week if no week filter selected
-            $currentWeek = now()->startOfWeek();
-            $query->whereBetween('period_start', [
-                $currentWeek->format('Y-m-d'), 
-                $currentWeek->copy()->endOfWeek()->format('Y-m-d')
-            ]);
         }
+        // If week is not set or is 'all', export all data (no filter applied)
 
         // Filter by who paid the payroll
         if (!empty($filters['paid_by']) && is_numeric($filters['paid_by'])) {
-            $query->where('paid_by', (int)$filters['paid_by']);
+            $query->where('paid_by', (int) $filters['paid_by']);
         }
 
         $payrolls = $query->orderBy('period_start', 'desc')->get();
 
         $filename = 'payroll_export_' . now()->format('Y-m-d_H-i-s') . '.csv';
 
-        $callback = function() use ($payrolls) {
+        $callback = function () use ($payrolls) {
             $file = fopen('php://output', 'w');
-            
+
             // CSV headers
             fputcsv($file, [
                 'Nama Staf',
@@ -872,56 +869,56 @@ class PayrollController extends Controller
         if ($filters['user_id']) {
             $query->where('user_id', $filters['user_id']);
         }
-        
+
         // Filter by hospital
         if ($filters['hospital']) {
-            $query->whereHas('user', function($sub) use ($filters) {
+            $query->whereHas('user', function ($sub) use ($filters) {
                 if ($filters['hospital'] === 'roxwood') {
                     // Roxwood: name atau staff_id mengandung "rh"
-                    $sub->where(function($q) {
+                    $sub->where(function ($q) {
                         $q->whereRaw('LOWER(name) LIKE ?', ['%rh%'])
-                          ->orWhereRaw('LOWER(staff_id) LIKE ?', ['%rh%']);
+                            ->orWhereRaw('LOWER(staff_id) LIKE ?', ['%rh%']);
                     });
                 } else if ($filters['hospital'] === 'alta') {
                     // Alta: name dan staff_id TIDAK mengandung "rh"
-                    $sub->where(function($q) {
+                    $sub->where(function ($q) {
                         $q->whereRaw('LOWER(name) NOT LIKE ?', ['%rh%'])
-                          ->where(function($sid) {
-                              $sid->whereNull('staff_id')
-                                  ->orWhereRaw('LOWER(staff_id) NOT LIKE ?', ['%rh%']);
-                          });
+                            ->where(function ($sid) {
+                                $sid->whereNull('staff_id')
+                                    ->orWhereRaw('LOWER(staff_id) NOT LIKE ?', ['%rh%']);
+                            });
                     });
                 }
             });
         }
-        
+
         // Filter by staff name
         if ($filters['staff_name']) {
             $staffName = trim($filters['staff_name']);
-            $query->whereHas('user', function($sub) use ($staffName) {
+            $query->whereHas('user', function ($sub) use ($staffName) {
                 $sub->where('name', 'like', "%$staffName%");
             });
         }
-        
+
         // Filter by week
         if ($filters['week'] && $filters['week'] !== 'all') {
             $weekDate = Carbon::parse($filters['week']);
             $startOfWeek = $weekDate->copy()->startOfWeek();
             $endOfWeek = $weekDate->copy()->endOfWeek();
-            
+
             $query->whereBetween('period_start', [$startOfWeek->format('Y-m-d'), $endOfWeek->format('Y-m-d')]);
         } else if (!$filters['week']) {
             // Default: show current week if no week filter selected
             $currentWeek = now()->startOfWeek();
             $query->whereBetween('period_start', [
-                $currentWeek->format('Y-m-d'), 
+                $currentWeek->format('Y-m-d'),
                 $currentWeek->copy()->endOfWeek()->format('Y-m-d')
             ]);
         }
 
         // Filter by who paid the payroll
         if (!empty($filters['paid_by']) && is_numeric($filters['paid_by'])) {
-            $query->where('paid_by', (int)$filters['paid_by']);
+            $query->where('paid_by', (int) $filters['paid_by']);
         }
 
         return [
@@ -940,7 +937,7 @@ class PayrollController extends Controller
     {
         try {
             // Create notification record
-            $message = $isUpdate 
+            $message = $isUpdate
                 ? "Gaji Anda untuk periode {$payroll->period_description} telah di-update sebesar {$payroll->formatted_salary}. Status: Pending"
                 : "Gaji Anda untuk periode {$payroll->period_description} telah di-generate sebesar {$payroll->formatted_salary}. Status: Pending";
 
@@ -966,7 +963,7 @@ class PayrollController extends Controller
                 'user_id' => $payroll->user_id,
                 'error' => $e->getMessage()
             ]);
-            
+
             // Mark notification as failed if there's an exception
             if (isset($notification)) {
                 $notification->markAsFailed();
@@ -1002,7 +999,7 @@ class PayrollController extends Controller
                 'user_id' => $payroll->user_id,
                 'error' => $e->getMessage()
             ]);
-            
+
             // Mark notification as failed if there's an exception
             if (isset($notification)) {
                 $notification->markAsFailed();

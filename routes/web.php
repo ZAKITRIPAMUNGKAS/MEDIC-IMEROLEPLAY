@@ -191,20 +191,20 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
     // Payroll management
     Route::get('/payroll', [\App\Http\Controllers\Admin\PayrollController::class, 'index'])
         ->middleware('permission:manage_payroll')->name('payroll.index');
-    Route::get('/payroll/{payroll}', [\App\Http\Controllers\Admin\PayrollController::class, 'show'])
-        ->middleware('permission:manage_payroll')->name('payroll.show');
+    Route::get('/payroll/export', [\App\Http\Controllers\Admin\PayrollController::class, 'export'])
+        ->middleware('permission:manage_payroll')->name('payroll.export');
     Route::post('/payroll/generate', [\App\Http\Controllers\Admin\PayrollController::class, 'generate'])
         ->middleware('permission:manage_payroll')->name('payroll.generate');
+    Route::post('/payroll/remove-duplicates', [\App\Http\Controllers\Admin\PayrollController::class, 'removeDuplicates'])
+        ->middleware('permission:manage_payroll')->name('payroll.remove-duplicates');
+    Route::get('/payroll/{payroll}', [\App\Http\Controllers\Admin\PayrollController::class, 'show'])
+        ->middleware('permission:manage_payroll')->name('payroll.show');
     Route::post('/payroll/{payroll}/mark-paid', [\App\Http\Controllers\Admin\PayrollController::class, 'markAsPaid'])
         ->middleware('permission:manage_payroll')->name('payroll.mark-paid');
     Route::post('/payroll/{payroll}/cancel', [\App\Http\Controllers\Admin\PayrollController::class, 'cancel'])
         ->middleware('permission:manage_payroll')->name('payroll.cancel');
     Route::delete('/payroll/{payroll}', [\App\Http\Controllers\Admin\PayrollController::class, 'destroy'])
         ->middleware('permission:manage_payroll')->name('payroll.destroy');
-    Route::post('/payroll/remove-duplicates', [\App\Http\Controllers\Admin\PayrollController::class, 'removeDuplicates'])
-        ->middleware('permission:manage_payroll')->name('payroll.remove-duplicates');
-    Route::get('/payroll/export', [\App\Http\Controllers\Admin\PayrollController::class, 'export'])
-        ->middleware('permission:manage_payroll')->name('admin.payroll.export');
 
     // Salary settings management
     Route::resource('salary-settings', \App\Http\Controllers\Admin\SalarySettingController::class)
