@@ -2457,14 +2457,51 @@
         };
 
         // Backward compatibility - override native alert
-        window.alert = function (message) {
+        window.alert = function(message) {
             showAlert(message, 'info');
         };
 
-        // Backward compatibility - override native confirm
-        window.confirm = function (message) {
-            return showConfirm(message);
-        };
+        // DON'T override confirm() - it won't work with onsubmit="return confirm()"
+        // Instead, intercept form submissions with confirm()
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Intercept all form submissions
+            document.addEventListener('submit', async function(e) {
+                const form = e.target;
+                const onsubmit = form.getAttribute('onsubmit');
+                
+                // Check if form has onsubmit with confirm()
+                if (onsubmit && onsubmit.includes('confirm(')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Extract message from confirm('message')
+                    const match = onsubmit.match(/confirm\s*\(\s*['"`]([\s\S]+?)['"`]\s*\)/);
+                    if (match) {
+                        const message = match[1]
+                            .replace(/\\n/g, '\n')
+                            .replace(/\\'/g, "'")
+                            .replace(/\\"/g, '"');
+                        
+                        // Show custom confirm modal
+                        const result = await showConfirm(message, {
+                            type: 'warning',
+                            title: 'Konfirmasi',
+                            confirmText: 'Ya',
+                            cancelText: 'Batal',
+                            confirmClass: 'modal-btn-danger'
+                        });
+                        
+                        if (result) {
+                            // User confirmed - remove onsubmit and submit
+                            form.removeAttribute('onsubmit');
+                            form.submit();
+                        }
+                        // If cancelled, do nothing (form won't submit)
+                    }
+                }
+            }, true); // Use capture phase to intercept early
+        });
     </script>
 
     <!-- Alpine.js -->
