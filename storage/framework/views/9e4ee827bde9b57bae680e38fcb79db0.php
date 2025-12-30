@@ -456,7 +456,7 @@ unset($__errorArgs, $__bag); ?>
                                                             <input type="radio" name="form_data[bigfive<?php echo e($i + 1); ?>]" value="<?php echo e($val); ?>" 
                                                                    <?php if(old('form_data.bigfive' . ($i + 1)) == $val): ?> checked <?php endif; ?>
                                                                    class="sr-only peer" required>
-                                                            <div class="flex flex-col items-center gap-1 px-4 py-3 rounded-lg border-2 border-white/20 peer-checked:border-sky-400 peer-checked:bg-sky-500/20 hover:border-sky-300/50 transition-all duration-200 min-w-[80px]">
+                                                            <div class="flex flex-col items-center justify-center gap-1.5 px-5 py-4 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-gradient-to-br peer-checked:from-sky-500/30 peer-checked:to-cyan-500/20 peer-checked:shadow-lg peer-checked:shadow-sky-500/20 hover:border-white/50 hover:bg-white/10 hover:scale-105 active:scale-95 transition-all duration-200 min-w-[90px] cursor-pointer">
                                                                 <span class="text-2xl font-bold text-white"><?php echo e($val); ?></span>
                                                                 <span class="text-xs text-gray-300 text-center leading-tight"><?php echo e($label); ?></span>
                                                             </div>

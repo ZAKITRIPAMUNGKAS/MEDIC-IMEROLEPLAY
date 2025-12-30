@@ -342,15 +342,7 @@
                                             <div
                                                 class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
                                                 <p class="text-white mb-4 font-medium text-lg">{{ $i + 1 }}. {{ $question }}</p>
-                                                <select name="form_data[stress{{ $i + 1 }}]" class="form-select w-full" required>
-                                                    <option value="">-- Pilih Jawaban --</option>
-                                                    @foreach($stress_scale as $val => $label)
-                                                        <option value="{{ $val }}" @if(old('form_data.stress' . ($i + 1)) == $val)
-                                                        selected @endif class="bg-slate-900 text-white font-bold">
-                                                            {{ $val }} - {{ $label }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
+                                                <div class="flex flex-wrap items-center gap-3">@foreach($stress_scale as $val => $label)<label class="flex items-center cursor-pointer group"><input type="radio" name="form_data[stress{{ $i + 1 }}]" value="{{ $val }}" @if(old('form_data.stress' . ($i + 1)) == $val) checked @endif class="sr-only peer" required><div class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24"><span class="text-2xl font-bold text-white">{{ $val }}</span><span class="text-xs text-gray-300 text-center leading-tight px-1">{{ $label }}</span></div></label>@endforeach</div>
                                             </div>
                                         @endforeach
                                     </div>
@@ -387,15 +379,7 @@
                                             <div
                                                 class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
                                                 <p class="text-white mb-4 font-medium text-lg">{{ $i + 1 }}. {{ $question }}</p>
-                                                <select name="form_data[esteem{{ $i + 1 }}]" class="form-select w-full" required>
-                                                    <option value="">-- Pilih Jawaban --</option>
-                                                    @foreach($esteem_scale as $val => $label)
-                                                        <option value="{{ $val }}" @if(old('form_data.esteem' . ($i + 1)) == $val)
-                                                        selected @endif class="bg-slate-900 text-white font-bold">
-                                                            {{ $val }} - {{ $label }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
+                                                <div class="flex flex-wrap items-center gap-3">@foreach($esteem_scale as $val => $label)<label class="flex items-center cursor-pointer group"><input type="radio" name="form_data[esteem{{ $i + 1 }}]" value="{{ $val }}" @if(old('form_data.esteem' . ($i + 1)) == $val) checked @endif class="sr-only peer" required><div class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24"><span class="text-2xl font-bold text-white">{{ $val }}</span><span class="text-xs text-gray-300 text-center leading-tight px-1">{{ $label }}</span></div></label>@endforeach</div>
                                             </div>
                                         @endforeach
                                     </div>
