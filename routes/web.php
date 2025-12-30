@@ -203,7 +203,7 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/payroll/remove-duplicates', [\App\Http\Controllers\Admin\PayrollController::class, 'removeDuplicates'])
         ->middleware('permission:manage_payroll')->name('payroll.remove-duplicates');
     Route::get('/payroll/export', [\App\Http\Controllers\Admin\PayrollController::class, 'export'])
-        ->middleware('permission:manage_payroll')->name('payroll.export');
+        ->middleware('permission:manage_payroll')->name('admin.payroll.export');
 
     // Salary settings management
     Route::resource('salary-settings', \App\Http\Controllers\Admin\SalarySettingController::class)
