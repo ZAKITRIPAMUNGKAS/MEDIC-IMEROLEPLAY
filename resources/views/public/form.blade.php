@@ -146,7 +146,7 @@
                             <div>
                                 <label for="phone_number"
                                     class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                    No. HP <span class="text-red-400">*</span>
+                                    No HP (IC) <span class="text-red-400">*</span>
                                 </label>
                                 <input type="text" id="phone_number" name="form_data[phone_number]"
                                     value="{{ old('form_data.phone_number') }}"
