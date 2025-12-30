@@ -1441,21 +1441,37 @@
             toast.style.setProperty('--duration', `${duration}ms`);
             console.log('🎨 NEW TOAST DESIGN v2 - White Card Design');
             toast.innerHTML = `
-                    <div class="toast-icon">
-                        <i class="fas ${icons[type]} text-sm"></i>
-                    </div>
-                    <div class="toast-content">
-                        <div class="toast-title">${title}</div>
-                        <div class="toast-message">${message}</div>
-                    </div>
-                    <button class="toast-close" onclick="closeToast(this.parentElement)">
-                        <i class="fas fa-times text-xs"></i>
-                    </button>
-                `;
+                        <div class="toast-icon">
+                            <i class="fas ${icons[type]} text-sm"></i>
+                        </div>
+                        <div class="toast-content">
+                            <div class="toast-title">${title}</div>
+                            <div class="toast-message">${message}</div>
+                        </div>
+                        <button class="toast-close" onclick="closeToast(this.parentElement)">
+                            <i class="fas fa-times text-xs"></i>
+                        </button>
+                    `;
 
             container.appendChild(toast);
             setTimeout(() => closeToast(toast), duration);
         }
+
+        // Check for session messages on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            <?php if(session('success')): ?>
+                showToast('success', 'Berhasil!', '<?php echo e(session('success')); ?>');
+            <?php endif; ?>
+            <?php if(session('error')): ?>
+                showToast('error', 'Error!', '<?php echo e(session('error')); ?>');
+            <?php endif; ?>
+            <?php if(session('warning')): ?>
+                showToast('warning', 'Perhatian!', '<?php echo e(session('warning')); ?>');
+            <?php endif; ?>
+            <?php if(session('info')): ?>
+                showToast('info', 'Informasi', '<?php echo e(session('info')); ?>');
+            <?php endif; ?>
+            });
 
         function closeToast(toast) {
             if (!toast || toast.classList.contains('hiding')) return;

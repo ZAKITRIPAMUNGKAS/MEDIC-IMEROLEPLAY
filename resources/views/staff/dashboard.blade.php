@@ -1235,73 +1235,135 @@
         style="z-index: 9999999999;">
     </div>
 
-    <!-- Toast Template Styles - Updated 2025-12-30 11:50 -->
-    <style id="toastStyles-v2">
-        /* MODERN WHITE CARD DESIGN */
+    <!-- Toast Template Styles - Modern Premium Design v3 -->
+    <style id="toastStyles-v3">
+        /* MODERN PREMIUM DESIGN */
         .toast {
             pointer-events: auto;
-            min-width: 280px;
-            max-width: 380px;
-            padding: 0.875rem 1rem;
-            border-radius: 0.75rem;
-            background: white;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
-            animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            min-width: 320px;
+            max-width: 400px;
+            padding: 1rem 1.25rem;
+            border-radius: 1rem;
+            background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+            box-shadow:
+                0 10px 40px rgba(0, 0, 0, 0.12),
+                0 4px 12px rgba(0, 0, 0, 0.08),
+                0 0 0 1px rgba(0, 0, 0, 0.04);
+            animation: toastSlideIn 0.4s cubic-bezier(0.22, 1, 0.36, 1);
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.875rem;
             position: relative;
-            border-left: 4px solid;
+            overflow: hidden;
+            transition: transform 0.2s ease;
+        }
+
+        .toast:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 12px 48px rgba(0, 0, 0, 0.15),
+                0 6px 16px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Animated gradient accent */
+        .toast::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--accent-light) 0%, var(--accent-dark) 100%);
+            animation: accentPulse 2s ease-in-out infinite;
         }
 
         .toast.hiding {
-            animation: toastSlideOut 0.25s ease-in forwards;
+            animation: toastSlideOut 0.3s cubic-bezier(0.4, 0, 1, 1) forwards;
         }
 
         .toast-success {
-            border-left-color: #10b981;
+            --accent-light: #10b981;
+            --accent-dark: #059669;
         }
 
         .toast-error {
-            border-left-color: #ef4444;
+            --accent-light: #ef4444;
+            --accent-dark: #dc2626;
         }
 
         .toast-warning {
-            border-left-color: #f59e0b;
+            --accent-light: #f59e0b;
+            --accent-dark: #d97706;
         }
 
         .toast-info {
-            border-left-color: #0ea5e9;
+            --accent-light: #0ea5e9;
+            --accent-dark: #0284c7;
         }
 
         .toast-icon {
-            width: 1.75rem;
-            height: 1.75rem;
-            border-radius: 50%;
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 0.625rem;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            position: relative;
+            animation: iconBounce 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        @keyframes iconBounce {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.15);
+            }
         }
 
         .toast-success .toast-icon {
-            background: #d1fae5;
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
             color: #059669;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
         }
 
         .toast-error .toast-icon {
-            background: #fee2e2;
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
             color: #dc2626;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
         }
 
         .toast-warning .toast-icon {
-            background: #fef3c7;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
             color: #d97706;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
         }
 
         .toast-info .toast-icon {
-            background: #dbeafe;
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
             color: #0284c7;
+            box-shadow: 0 2px 8px rgba(14, 165, 233, 0.2);
+        }
+
+        .toast-icon i {
+            animation: iconRotate 0.5s ease-out 0.2s;
+        }
+
+        @keyframes iconRotate {
+            0% {
+                transform: rotate(-10deg);
+                opacity: 0;
+            }
+
+            100% {
+                transform: rotate(0deg);
+                opacity: 1;
+            }
         }
 
         .toast-content {
@@ -1310,59 +1372,48 @@
         }
 
         .toast-title {
-            font-weight: 600;
-            font-size: 0.875rem;
+            font-weight: 700;
+            font-size: 0.9375rem;
             color: #111827;
-            margin-bottom: 0.125rem;
+            margin-bottom: 0.25rem;
+            letter-spacing: -0.01em;
         }
 
         .toast-message {
             font-size: 0.8125rem;
             color: #6b7280;
-            line-height: 1.4;
+            line-height: 1.5;
+            font-weight: 450;
         }
 
         .toast-close {
-            width: 1.5rem;
-            height: 1.5rem;
-            border-radius: 0.375rem;
+            width: 1.75rem;
+            height: 1.75rem;
+            border-radius: 0.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
             background: transparent;
             color: #9ca3af;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             flex-shrink: 0;
             border: none;
         }
 
         .toast-close:hover {
             background: #f3f4f6;
-            color: #374151;
-            transform: scale(1.1);
+            color: #4b5563;
+            transform: scale(1.1) rotate(90deg);
         }
 
-        .toast-progress {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 0 0 1rem 1rem;
-            overflow: hidden;
-        }
-
-        .toast-progress-bar {
-            height: 100%;
-            background: rgba(255, 255, 255, 0.7);
-            animation: toastProgress var(--duration) linear forwards;
+        .toast-close:active {
+            transform: scale(0.95) rotate(90deg);
         }
 
         @keyframes toastSlideIn {
             from {
-                transform: translateY(-30px) scale(0.95);
+                transform: translateY(-24px) scale(0.94);
                 opacity: 0;
             }
 
@@ -1398,468 +1449,468 @@
 
 @push('scripts')
     <script>
-        // Toast Notification System
-        function showToast(type, title, message, duration = 5000) {
-            const container = document.getElementById('toastContainer');
-            if (!container) return;
+            // Toast Notification System
+            function         showToast(type, title, message, duration = 5000) {
+                const container = document.getElementById('toastContainer');
+                if (!container) return;
 
-            const icons = {
-                success: 'fa-check-circle',
-                error: 'fa-times-circle',
-                warning: 'fa-exclamation-triangle',
-                info: 'fa-info-circle'
-            };
+                const icons = {
+                    success: 'fa-check-circle',
+                    error: 'fa-times-circle',
+                    warning: 'fa-exclamation-triangle',
+                    info: 'fa-info-circle'
+                };
 
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-            toast.style.setProperty('--duration', `${duration}ms`);
-            console.log('🎨 NEW TOAST DESIGN v2 - White Card Design');
-            toast.innerHTML = `
-                        <div class="toast-icon">
-                            <i class="fas ${icons[type]} text-sm"></i>
-                        </div>
-                        <div class="toast-content">
-                            <div class="toast-title">${title}</div>
-                            <div class="toast-message">${message}</div>
-                        </div>
-                        <button class="toast-close" onclick="closeToast(this.parentElement)">
-                            <i class="fas fa-times text-xs"></i>
-                        </button>
-                    `;
+                const toast = document.createElement('div');
+                toast.className = `toast toast-${type}`;
+                toast.style.setProperty('--duration', `${duration}ms`);
+                console.log('🎨 NEW TOAST DESIGN v2 - White Card Design');
+                toast.innerHTML = `
+                            <div class="toast-icon">
+                                <i class="fas ${icons[type]} text-sm"></i>
+                            </div>
+                            <div class="toast-content">
+                                <div class="toast-title">${title}</div>
+                                <div class="toast-message">${message}</div>
+                            </div>
+                            <button class="toast-close" onclick="closeToast(this.parentElement)">
+                                <i class="fas fa-times text-xs"></i>
+                            </button>
+                        `;
 
-            container.appendChild(toast);
-            setTimeout(() => closeToast(toast), duration);
-        }
+                container.appendChild(toast);
+                setTimeout(() => closeToast(toast), duration);
+            }
 
-        // Check for session messages on page load
-        document.addEventListener('DOMContentLoaded', function () {
-            @if(session('success'))
-                showToast('success', 'Berhasil!', '{{ session('success') }}');
-            @endif
-            @if(session('error'))
-                showToast('error', 'Error!', '{{ session('error') }}');
-            @endif
-            @if(session('warning'))
-                showToast('warning', 'Perhatian!', '{{ session('warning') }}');
-            @endif
-            @if(session('info'))
-                showToast('info', 'Informasi', '{{ session('info') }}');
-            @endif
-            });
-
-        function closeToast(toast) {
-            if (!toast || toast.classList.contains('hiding')) return;
-            toast.classList.add('hiding');
-            setTimeout(() => toast.remove(), 300);
-        }
-
-        // Approve Form via AJAX
-        async function approveForm(formId, button, isAppointment = false) {
-            const originalHtml = button.innerHTML;
-            button.disabled = true;
-            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Memproses...';
-
-            try {
-                const response = await fetch(`/staff/forms/${formId}/approve`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'Accept': 'application/json'
-                    }
+            // Check for session messages on page load
+            document.addEventListener('DOMContentLoaded', function () {
+                @if(session('success'))
+                    showToast('success', 'Berhasil!', '{{ session('success') }}');
+                @endif
+                @if(session('error'))
+                    showToast('error', 'Error!', '{{ session('error') }}');
+                @endif
+                @if(session('warning'))
+                    showToast('warning', 'Perhatian!', '{{ session('warning') }}');
+                @endif
+                @if(session('info'))
+                    showToast('info', 'Informasi', '{{ session('info') }}');
+                @endif
                 });
 
-                if (response.ok) {
-                    const label = isAppointment ? 'Janji temu ditandai sudah ditemui' : 'Formulir berhasil disetujui';
-                    showToast('success', 'Berhasil!', label);
-
-                    // Update UI - hide action buttons and show status
-                    const td = button.closest('td');
-                    if (td) {
-                        td.innerHTML = '<span class="text-green-300 font-medium">Selesai</span>';
-                    }
-
-                    // Update status badge in the same row
-                    const row = button.closest('tr');
-                    if (row) {
-                        const statusTd = row.querySelectorAll('td')[isAppointment ? 4 : 3];
-                        if (statusTd) {
-                            statusTd.innerHTML = `<span class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-green-500/20 text-green-300 border border-green-400/30">${isAppointment ? 'Sudah Ditemui' : 'Disetujui'}</span>`;
-                        }
-                    }
-                } else {
-                    throw new Error('Gagal memproses permintaan');
-                }
-            } catch (error) {
-                showToast('error', 'Gagal', error.message || 'Terjadi kesalahan');
-                button.disabled = false;
-                button.innerHTML = originalHtml;
+            function closeToast(toast) {
+                if (!toast || toast.classList.contains('hiding')) return;
+                toast.classList.add('hiding');
+                setTimeout(() => toast.remove(), 300);
             }
-        }
 
-        // Reject Form via AJAX
-        async function rejectForm(formId, button, isAppointment = false) {
-            const originalHtml = button.innerHTML;
-            button.disabled = true;
-            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Memproses...';
+            // Approve Form via AJAX
+            async function approveForm(formId, button, isAppointment = false) {
+                const originalHtml = button.innerHTML;
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Memproses...';
 
-            try {
-                const response = await fetch(`/staff/forms/${formId}/reject`, {
+                try {
+                    const response = await fetch(`/staff/forms/${formId}/approve`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        const label = isAppointment ? 'Janji temu ditandai sudah ditemui' : 'Formulir berhasil disetujui';
+                        showToast('success', 'Berhasil!', label);
+
+                        // Update UI - hide action buttons and show status
+                        const td = button.closest('td');
+                        if (td) {
+                            td.innerHTML = '<span class="text-green-300 font-medium">Selesai</span>';
+                        }
+
+                        // Update status badge in the same row
+                        const row = button.closest('tr');
+                        if (row) {
+                            const statusTd = row.querySelectorAll('td')[isAppointment ? 4 : 3];
+                            if (statusTd) {
+                                statusTd.innerHTML = `<span class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-green-500/20 text-green-300 border border-green-400/30">${isAppointment ? 'Sudah Ditemui' : 'Disetujui'}</span>`;
+                            }
+                        }
+                    } else {
+                        throw new Error('Gagal memproses permintaan');
+                    }
+                } catch (error) {
+                    showToast('error', 'Gagal', error.message || 'Terjadi kesalahan');
+                    button.disabled = false;
+                    button.innerHTML = originalHtml;
+                }
+            }
+
+            // Reject Form via AJAX
+            async function rejectForm(formId, button, isAppointment = false) {
+                const originalHtml = button.innerHTML;
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Memproses...';
+
+                try {
+                    const response = await fetch(`/staff/forms/${formId}/reject`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        showToast('warning', 'Ditolak', isAppointment ? 'Janji temu ditolak' : 'Formulir ditolak');
+
+                        // Update UI
+                        const td = button.closest('td');
+                        if (td) {
+                            td.innerHTML = '<span class="text-red-300 font-medium">Selesai</span>';
+                        }
+
+                        // Update status badge
+                        const row = button.closest('tr');
+                        if (row) {
+                            const statusTd = row.querySelectorAll('td')[isAppointment ? 4 : 3];
+                            if (statusTd) {
+                                statusTd.innerHTML = '<span class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-red-500/20 text-red-300 border border-red-400/30">Ditolak</span>';
+                            }
+                        }
+                    } else {
+                        throw new Error('Gagal memproses permintaan');
+                    }
+                } catch (error) {
+                    showToast('error', 'Gagal', error.message || 'Terjadi kesalahan');
+                    button.disabled = false;
+                    button.innerHTML = originalHtml;
+                }
+            }
+
+            // Real-time duration update sudah ditangani oleh script di bagian atas halaman
+
+            // Auto checkout function for expired sessions
+            function autoCheckoutExpiredSession() {
+                // Get clock out form
+                const clockOutForm = document.getElementById('activeSessionClockOutForm');
+
+                if (!clockOutForm) {
+                    console.warn('Clock out form not found, refreshing page...');
+                    setTimeout(() => location.reload(), 2000);
+                    return;
+                }
+
+                // Create form data
+                const formData = new FormData(clockOutForm);
+                const formAction = clockOutForm.getAttribute('action') || clockOutForm.getAttribute('data-action');
+
+                if (!formAction) {
+                    console.error('Form action not found');
+                    setTimeout(() => location.reload(), 2000);
+                    return;
+                }
+
+                // Get CSRF token
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
+                    document.querySelector('input[name="_token"]')?.value;
+
+                if (!csrfToken) {
+                    console.error('CSRF token not found');
+                    setTimeout(() => location.reload(), 2000);
+                    return;
+                }
+
+                // Show notification
+                console.log('Waktu habis! Melakukan auto checkout...');
+
+                // Submit clock out
+                fetch(formAction, {
                     method: 'POST',
+                    body: formData,
                     headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'Accept': 'application/json'
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': csrfToken
                     }
-                });
-
-                if (response.ok) {
-                    showToast('warning', 'Ditolak', isAppointment ? 'Janji temu ditolak' : 'Formulir ditolak');
-
-                    // Update UI
-                    const td = button.closest('td');
-                    if (td) {
-                        td.innerHTML = '<span class="text-red-300 font-medium">Selesai</span>';
-                    }
-
-                    // Update status badge
-                    const row = button.closest('tr');
-                    if (row) {
-                        const statusTd = row.querySelectorAll('td')[isAppointment ? 4 : 3];
-                        if (statusTd) {
-                            statusTd.innerHTML = '<span class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-red-500/20 text-red-300 border border-red-400/30">Ditolak</span>';
+                })
+                    .then(response => {
+                        if (response.ok || response.redirected) {
+                            console.log('Auto checkout berhasil!');
+                            // Reload page to show updated state
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1000);
+                        } else {
+                            throw new Error('Auto checkout failed');
                         }
-                    }
-                } else {
-                    throw new Error('Gagal memproses permintaan');
-                }
-            } catch (error) {
-                showToast('error', 'Gagal', error.message || 'Terjadi kesalahan');
-                button.disabled = false;
-                button.innerHTML = originalHtml;
-            }
-        }
-
-        // Real-time duration update sudah ditangani oleh script di bagian atas halaman
-
-        // Auto checkout function for expired sessions
-        function autoCheckoutExpiredSession() {
-            // Get clock out form
-            const clockOutForm = document.getElementById('activeSessionClockOutForm');
-
-            if (!clockOutForm) {
-                console.warn('Clock out form not found, refreshing page...');
-                setTimeout(() => location.reload(), 2000);
-                return;
-            }
-
-            // Create form data
-            const formData = new FormData(clockOutForm);
-            const formAction = clockOutForm.getAttribute('action') || clockOutForm.getAttribute('data-action');
-
-            if (!formAction) {
-                console.error('Form action not found');
-                setTimeout(() => location.reload(), 2000);
-                return;
-            }
-
-            // Get CSRF token
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
-                document.querySelector('input[name="_token"]')?.value;
-
-            if (!csrfToken) {
-                console.error('CSRF token not found');
-                setTimeout(() => location.reload(), 2000);
-                return;
-            }
-
-            // Show notification
-            console.log('Waktu habis! Melakukan auto checkout...');
-
-            // Submit clock out
-            fetch(formAction, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': csrfToken
-                }
-            })
-                .then(response => {
-                    if (response.ok || response.redirected) {
-                        console.log('Auto checkout berhasil!');
-                        // Reload page to show updated state
+                    })
+                    .catch(error => {
+                        console.error('Auto checkout error:', error);
+                        // Fallback: reload page after 3 seconds (scheduler might handle it)
                         setTimeout(() => {
                             location.reload();
-                        }, 1000);
-                    } else {
-                        throw new Error('Auto checkout failed');
-                    }
-                })
-                .catch(error => {
-                    console.error('Auto checkout error:', error);
-                    // Fallback: reload page after 3 seconds (scheduler might handle it)
-                    setTimeout(() => {
-                        location.reload();
-                    }, 3000);
-                });
-        }
-
-        // Dashboard Clock In & Clock Out Form Handler
-        document.addEventListener('DOMContentLoaded', function () {
-            // Clock In Form Handler - Simplified
-            const dashboardClockInForm = document.getElementById('dashboardClockInForm');
-            const dashboardClockInBtn = document.getElementById('dashboardClockInBtn');
-
-            if (dashboardClockInForm && dashboardClockInBtn) {
-                dashboardClockInForm.addEventListener('submit', function (e) {
-                    // Allow form to submit normally, just update button state
-                    dashboardClockInBtn.disabled = true;
-                    dashboardClockInBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i>Memproses...';
-
-                    // Form will submit normally - no need to preventDefault
-                    // This ensures CSRF and all form data is handled correctly by Laravel
-                });
+                        }, 3000);
+                    });
             }
 
-            // Clock Out Form Handler (for previous day session)
-            const dashboardClockOutForm = document.getElementById('dashboardClockOutForm');
-            const dashboardClockOutBtn = document.getElementById('dashboardClockOutBtn');
+            // Dashboard Clock In & Clock Out Form Handler
+            document.addEventListener('DOMContentLoaded', function () {
+                // Clock In Form Handler - Simplified
+                const dashboardClockInForm = document.getElementById('dashboardClockInForm');
+                const dashboardClockInBtn = document.getElementById('dashboardClockInBtn');
 
-            if (dashboardClockOutForm && dashboardClockOutBtn) {
-                dashboardClockOutForm.addEventListener('submit', function (e) {
-                    e.preventDefault();
+                if (dashboardClockInForm && dashboardClockInBtn) {
+                    dashboardClockInForm.addEventListener('submit', function (e) {
+                        // Allow form to submit normally, just update button state
+                        dashboardClockInBtn.disabled = true;
+                        dashboardClockInBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i>Memproses...';
 
-                    // Show loading state
-                    const btnText = dashboardClockOutBtn.querySelector('.btn-text');
-                    const btnLoading = dashboardClockOutBtn.querySelector('.btn-loading');
-
-                    if (btnText) btnText.classList.add('hidden');
-                    if (btnLoading) btnLoading.classList.remove('hidden');
-                    dashboardClockOutBtn.disabled = true;
-
-                    // Submit form with retry mechanism
-                    if (typeof submitDashboardClockOutForm === 'function') {
-                        submitDashboardClockOutForm();
-                    } else {
-                        dashboardClockOutForm.submit();
-                    }
-                });
-            }
-
-            // Clock Out Form Handler (for active session today)
-            const activeSessionClockOutForm = document.getElementById('activeSessionClockOutForm');
-            const activeSessionClockOutBtn = document.getElementById('activeSessionClockOutBtn');
-
-            if (activeSessionClockOutForm && activeSessionClockOutBtn) {
-                activeSessionClockOutForm.addEventListener('submit', function (e) {
-                    e.preventDefault();
-
-                    // Show loading state
-                    const btnText = activeSessionClockOutBtn.querySelector('.btn-text');
-                    const btnLoading = activeSessionClockOutBtn.querySelector('.btn-loading');
-
-                    if (btnText) btnText.classList.add('hidden');
-                    if (btnLoading) btnLoading.classList.remove('hidden');
-                    activeSessionClockOutBtn.disabled = true;
-
-                    // Submit form with retry mechanism
-                    if (typeof submitActiveSessionClockOutForm === 'function') {
-                        submitActiveSessionClockOutForm();
-                    } else {
-                        activeSessionClockOutForm.submit();
-                    }
-                });
-            }
-
-            function submitDashboardClockOutForm(retryCount = 0) {
-                const form = document.getElementById('dashboardClockOutForm');
-                if (!form) {
-                    console.error('Form dashboardClockOutForm not found');
-                    return;
+                        // Form will submit normally - no need to preventDefault
+                        // This ensures CSRF and all form data is handled correctly by Laravel
+                    });
                 }
 
-                // Get action from data-action attribute first (more reliable), fallback to action attribute
-                let formAction = form.getAttribute('data-action') || form.getAttribute('action');
+                // Clock Out Form Handler (for previous day session)
+                const dashboardClockOutForm = document.getElementById('dashboardClockOutForm');
+                const dashboardClockOutBtn = document.getElementById('dashboardClockOutBtn');
 
-                // Debug logging
-                console.log('[Clock Out - Previous Day] Form action (from action attr):', form.getAttribute('action'));
-                console.log('[Clock Out - Previous Day] Form action (from data-action attr):', form.getAttribute('data-action'));
-                console.log('[Clock Out - Previous Day] Form action (final):', formAction);
+                if (dashboardClockOutForm && dashboardClockOutBtn) {
+                    dashboardClockOutForm.addEventListener('submit', function (e) {
+                        e.preventDefault();
 
-                // Validate form action
-                if (!formAction || formAction.includes('{{') || formAction.includes('route(') || formAction.trim() === '') {
-                    console.error('[Clock Out - Previous Day] Invalid form action:', formAction);
-                    console.error('[Clock Out - Previous Day] Form HTML:', form.outerHTML);
-                    alert('Terjadi kesalahan: Form action tidak valid. Silakan refresh halaman.');
-                    return;
-                }
+                        // Show loading state
+                        const btnText = dashboardClockOutBtn.querySelector('.btn-text');
+                        const btnLoading = dashboardClockOutBtn.querySelector('.btn-loading');
 
-                const formData = new FormData(form);
+                        if (btnText) btnText.classList.add('hidden');
+                        if (btnLoading) btnLoading.classList.remove('hidden');
+                        dashboardClockOutBtn.disabled = true;
 
-                fetch(formAction, {
-                    method: 'POST',
-                    credentials: 'same-origin', // Include cookies for same-origin requests
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    redirect: 'follow'
-                })
-                    .then(response => {
-                        if (response.status === 419) {
-                            // CSRF token expired
-                            if (retryCount < 2) {
-                                console.log('CSRF token expired, refreshing and retrying...');
-                                return refreshCsrfToken().then(() => {
-                                    return submitDashboardClockOutForm(retryCount + 1);
-                                });
-                            } else {
-                                throw new Error('CSRF token refresh failed after multiple attempts');
-                            }
-                        }
-                        return response;
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            // Success - reload page to show updated state
-                            if (response.redirected) {
-                                window.location.href = response.url;
-                            } else {
-                                window.location.reload();
-                            }
+                        // Submit form with retry mechanism
+                        if (typeof submitDashboardClockOutForm === 'function') {
+                            submitDashboardClockOutForm();
                         } else {
-                            throw new Error('Clock out failed');
+                            dashboardClockOutForm.submit();
                         }
-                    })
-                    .catch(error => {
-                        console.error('Clock out error:', error);
-
-                        // Reset button state
-                        const btn = document.getElementById('dashboardClockOutBtn');
-                        if (btn) {
-                            const btnText = btn.querySelector('.btn-text');
-                            const btnLoading = btn.querySelector('.btn-loading');
-
-                            if (btnText) btnText.classList.remove('hidden');
-                            if (btnLoading) btnLoading.classList.add('hidden');
-                            btn.disabled = false;
-                        }
-
-                        // Show error message
-                        alert('Terjadi kesalahan saat clock out. Silakan coba lagi atau refresh halaman.');
                     });
-            }
-
-            function submitActiveSessionClockOutForm(retryCount = 0) {
-                const form = document.getElementById('activeSessionClockOutForm');
-                if (!form) {
-                    console.error('Form activeSessionClockOutForm not found');
-                    return;
                 }
 
-                // Get action from data-action attribute first (more reliable), fallback to action attribute
-                let formAction = form.getAttribute('data-action') || form.getAttribute('action');
+                // Clock Out Form Handler (for active session today)
+                const activeSessionClockOutForm = document.getElementById('activeSessionClockOutForm');
+                const activeSessionClockOutBtn = document.getElementById('activeSessionClockOutBtn');
 
-                // Debug logging
-                console.log('[Clock Out - Active Session] Form action (from action attr):', form.getAttribute('action'));
-                console.log('[Clock Out - Active Session] Form action (from data-action attr):', form.getAttribute('data-action'));
-                console.log('[Clock Out - Active Session] Form action (final):', formAction);
+                if (activeSessionClockOutForm && activeSessionClockOutBtn) {
+                    activeSessionClockOutForm.addEventListener('submit', function (e) {
+                        e.preventDefault();
 
-                // Validate form action
-                if (!formAction || formAction.includes('{{') || formAction.includes('route(') || formAction.trim() === '') {
-                    console.error('[Clock Out - Active Session] Invalid form action:', formAction);
-                    console.error('[Clock Out - Active Session] Form HTML:', form.outerHTML);
-                    alert('Terjadi kesalahan: Form action tidak valid. Silakan refresh halaman.');
-                    return;
-                }
+                        // Show loading state
+                        const btnText = activeSessionClockOutBtn.querySelector('.btn-text');
+                        const btnLoading = activeSessionClockOutBtn.querySelector('.btn-loading');
 
-                const formData = new FormData(form);
+                        if (btnText) btnText.classList.add('hidden');
+                        if (btnLoading) btnLoading.classList.remove('hidden');
+                        activeSessionClockOutBtn.disabled = true;
 
-                fetch(formAction, {
-                    method: 'POST',
-                    credentials: 'same-origin', // Include cookies for same-origin requests
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    redirect: 'follow'
-                })
-                    .then(response => {
-                        if (response.status === 419) {
-                            // CSRF token expired
-                            if (retryCount < 2) {
-                                console.log('CSRF token expired, refreshing and retrying active session clock out...');
-                                return refreshCsrfToken().then(() => {
-                                    return submitActiveSessionClockOutForm(retryCount + 1);
-                                });
-                            } else {
-                                throw new Error('CSRF token refresh failed after multiple attempts');
-                            }
-                        }
-                        return response;
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            // Success - reload page to show updated state
-                            if (response.redirected) {
-                                window.location.href = response.url;
-                            } else {
-                                window.location.reload();
-                            }
+                        // Submit form with retry mechanism
+                        if (typeof submitActiveSessionClockOutForm === 'function') {
+                            submitActiveSessionClockOutForm();
                         } else {
-                            throw new Error('Clock out failed');
+                            activeSessionClockOutForm.submit();
                         }
-                    })
-                    .catch(error => {
-                        console.error('Active session clock out error:', error);
-
-                        // Reset button state
-                        const btn = document.getElementById('activeSessionClockOutBtn');
-                        if (btn) {
-                            const btnText = btn.querySelector('.btn-text');
-                            const btnLoading = btn.querySelector('.btn-loading');
-
-                            if (btnText) btnText.classList.remove('hidden');
-                            if (btnLoading) btnLoading.classList.add('hidden');
-                            btn.disabled = false;
-                        }
-
-                        // Show error message
-                        alert('Terjadi kesalahan saat clock out. Silakan coba lagi atau refresh halaman.');
                     });
-            }
+                }
 
-            function refreshCsrfToken() {
-                return fetch('/csrf-token', {
-                    method: 'GET',
-                    credentials: 'same-origin', // Include cookies for same-origin requests
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json'
+                function submitDashboardClockOutForm(retryCount = 0) {
+                    const form = document.getElementById('dashboardClockOutForm');
+                    if (!form) {
+                        console.error('Form dashboardClockOutForm not found');
+                        return;
                     }
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.csrf_token) {
-                            // Update meta tag
-                            const metaTag = document.querySelector('meta[name="csrf-token"]');
-                            if (metaTag) {
-                                metaTag.setAttribute('content', data.csrf_token);
+
+                    // Get action from data-action attribute first (more reliable), fallback to action attribute
+                    let formAction = form.getAttribute('data-action') || form.getAttribute('action');
+
+                    // Debug logging
+                    console.log('[Clock Out - Previous Day] Form action (from action attr):', form.getAttribute('action'));
+                    console.log('[Clock Out - Previous Day] Form action (from data-action attr):', form.getAttribute('data-action'));
+                    console.log('[Clock Out - Previous Day] Form action (final):', formAction);
+
+                    // Validate form action
+                    if (!formAction || formAction.includes('{{') || formAction.includes('route(') || formAction.trim() === '') {
+                        console.error('[Clock Out - Previous Day] Invalid form action:', formAction);
+                        console.error('[Clock Out - Previous Day] Form HTML:', form.outerHTML);
+                        alert('Terjadi kesalahan: Form action tidak valid. Silakan refresh halaman.');
+                        return;
+                    }
+
+                    const formData = new FormData(form);
+
+                    fetch(formAction, {
+                        method: 'POST',
+                        credentials: 'same-origin', // Include cookies for same-origin requests
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        redirect: 'follow'
+                    })
+                        .then(response => {
+                            if (response.status === 419) {
+                                // CSRF token expired
+                                if (retryCount < 2) {
+                                    console.log('CSRF token expired, refreshing and retrying...');
+                                    return refreshCsrfToken().then(() => {
+                                        return submitDashboardClockOutForm(retryCount + 1);
+                                    });
+                                } else {
+                                    throw new Error('CSRF token refresh failed after multiple attempts');
+                                }
+                            }
+                            return response;
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                // Success - reload page to show updated state
+                                if (response.redirected) {
+                                    window.location.href = response.url;
+                                } else {
+                                    window.location.reload();
+                                }
+                            } else {
+                                throw new Error('Clock out failed');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Clock out error:', error);
+
+                            // Reset button state
+                            const btn = document.getElementById('dashboardClockOutBtn');
+                            if (btn) {
+                                const btnText = btn.querySelector('.btn-text');
+                                const btnLoading = btn.querySelector('.btn-loading');
+
+                                if (btnText) btnText.classList.remove('hidden');
+                                if (btnLoading) btnLoading.classList.add('hidden');
+                                btn.disabled = false;
                             }
 
-                            // Update all CSRF token inputs in all forms
-                            const csrfInputs = document.querySelectorAll('input[name="_token"]');
-                            csrfInputs.forEach(input => {
-                                input.value = data.csrf_token;
-                            });
+                            // Show error message
+                            alert('Terjadi kesalahan saat clock out. Silakan coba lagi atau refresh halaman.');
+                        });
+                }
 
-                            console.log('CSRF token refreshed successfully');
+                function submitActiveSessionClockOutForm(retryCount = 0) {
+                    const form = document.getElementById('activeSessionClockOutForm');
+                    if (!form) {
+                        console.error('Form activeSessionClockOutForm not found');
+                        return;
+                    }
+
+                    // Get action from data-action attribute first (more reliable), fallback to action attribute
+                    let formAction = form.getAttribute('data-action') || form.getAttribute('action');
+
+                    // Debug logging
+                    console.log('[Clock Out - Active Session] Form action (from action attr):', form.getAttribute('action'));
+                    console.log('[Clock Out - Active Session] Form action (from data-action attr):', form.getAttribute('data-action'));
+                    console.log('[Clock Out - Active Session] Form action (final):', formAction);
+
+                    // Validate form action
+                    if (!formAction || formAction.includes('{{') || formAction.includes('route(') || formAction.trim() === '') {
+                        console.error('[Clock Out - Active Session] Invalid form action:', formAction);
+                        console.error('[Clock Out - Active Session] Form HTML:', form.outerHTML);
+                        alert('Terjadi kesalahan: Form action tidak valid. Silakan refresh halaman.');
+                        return;
+                    }
+
+                    const formData = new FormData(form);
+
+                    fetch(formAction, {
+                        method: 'POST',
+                        credentials: 'same-origin', // Include cookies for same-origin requests
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        redirect: 'follow'
+                    })
+                        .then(response => {
+                            if (response.status === 419) {
+                                // CSRF token expired
+                                if (retryCount < 2) {
+                                    console.log('CSRF token expired, refreshing and retrying active session clock out...');
+                                    return refreshCsrfToken().then(() => {
+                                        return submitActiveSessionClockOutForm(retryCount + 1);
+                                    });
+                                } else {
+                                    throw new Error('CSRF token refresh failed after multiple attempts');
+                                }
+                            }
+                            return response;
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                // Success - reload page to show updated state
+                                if (response.redirected) {
+                                    window.location.href = response.url;
+                                } else {
+                                    window.location.reload();
+                                }
+                            } else {
+                                throw new Error('Clock out failed');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Active session clock out error:', error);
+
+                            // Reset button state
+                            const btn = document.getElementById('activeSessionClockOutBtn');
+                            if (btn) {
+                                const btnText = btn.querySelector('.btn-text');
+                                const btnLoading = btn.querySelector('.btn-loading');
+
+                                if (btnText) btnText.classList.remove('hidden');
+                                if (btnLoading) btnLoading.classList.add('hidden');
+                                btn.disabled = false;
+                            }
+
+                            // Show error message
+                            alert('Terjadi kesalahan saat clock out. Silakan coba lagi atau refresh halaman.');
+                        });
+                }
+
+                function refreshCsrfToken() {
+                    return fetch('/csrf-token', {
+                        method: 'GET',
+                        credentials: 'same-origin', // Include cookies for same-origin requests
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
                         }
-                    });
-            }
-        });
-    </script>
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.csrf_token) {
+                                // Update meta tag
+                                const metaTag = document.querySelector('meta[name="csrf-token"]');
+                                if (metaTag) {
+                                    metaTag.setAttribute('content', data.csrf_token);
+                                }
+
+                                // Update all CSRF token inputs in all forms
+                                const csrfInputs = document.querySelectorAll('input[name="_token"]');
+                                csrfInputs.forEach(input => {
+                                    input.value = data.csrf_token;
+                                });
+
+                                console.log('CSRF token refreshed successfully');
+                            }
+                        });
+                }
+            });
+        </script>
 @endpush
