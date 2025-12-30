@@ -499,16 +499,7 @@ unset($__errorArgs, $__bag); ?>
                                             <div
                                                 class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
                                                 <p class="text-white mb-4 font-medium text-lg"><?php echo e($i + 1); ?>. <?php echo e($question); ?></p>
-                                                <select name="form_data[stress<?php echo e($i + 1); ?>]" class="form-select w-full" required>
-                                                    <option value="">-- Pilih Jawaban --</option>
-                                                    <?php $__currentLoopData = $stress_scale; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                        <option value="<?php echo e($val); ?>" <?php if(old('form_data.stress' . ($i + 1)) == $val): ?>
-                                                        selected <?php endif; ?> class="bg-slate-900 text-white font-bold">
-                                                            <?php echo e($val); ?> - <?php echo e($label); ?>
-
-                                                        </option>
-                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                                </select>
+                                                <div class="flex flex-wrap items-center gap-3"><?php $__currentLoopData = $stress_scale; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><label class="flex items-center cursor-pointer group"><input type="radio" name="form_data[stress<?php echo e($i + 1); ?>]" value="<?php echo e($val); ?>" <?php if(old('form_data.stress' . ($i + 1)) == $val): ?> checked <?php endif; ?> class="sr-only peer" required><div class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24"><span class="text-2xl font-bold text-white"><?php echo e($val); ?></span><span class="text-xs text-gray-300 text-center leading-tight px-1"><?php echo e($label); ?></span></div></label><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?></div>
                                             </div>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </div>
@@ -545,16 +536,7 @@ unset($__errorArgs, $__bag); ?>
                                             <div
                                                 class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
                                                 <p class="text-white mb-4 font-medium text-lg"><?php echo e($i + 1); ?>. <?php echo e($question); ?></p>
-                                                <select name="form_data[esteem<?php echo e($i + 1); ?>]" class="form-select w-full" required>
-                                                    <option value="">-- Pilih Jawaban --</option>
-                                                    <?php $__currentLoopData = $esteem_scale; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                        <option value="<?php echo e($val); ?>" <?php if(old('form_data.esteem' . ($i + 1)) == $val): ?>
-                                                        selected <?php endif; ?> class="bg-slate-900 text-white font-bold">
-                                                            <?php echo e($val); ?> - <?php echo e($label); ?>
-
-                                                        </option>
-                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                                </select>
+                                                <div class="flex flex-wrap items-center gap-3"><?php $__currentLoopData = $esteem_scale; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><label class="flex items-center cursor-pointer group"><input type="radio" name="form_data[esteem<?php echo e($i + 1); ?>]" value="<?php echo e($val); ?>" <?php if(old('form_data.esteem' . ($i + 1)) == $val): ?> checked <?php endif; ?> class="sr-only peer" required><div class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24"><span class="text-2xl font-bold text-white"><?php echo e($val); ?></span><span class="text-xs text-gray-300 text-center leading-tight px-1"><?php echo e($label); ?></span></div></label><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?></div>
                                             </div>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </div>
