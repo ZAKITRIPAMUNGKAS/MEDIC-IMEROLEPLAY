@@ -1462,7 +1462,7 @@
                 },
                 goTo(index) {
                     this.currentIndex = index;
-                    this.track.style.transform = ranslateX(-${ index * 100} %);
+                    this.track.style.transform = translateX(' + (-index * 100) + '%');
                     this.updateDots();
                 },
                 next() { this.goTo((this.currentIndex + 1) % this.totalSlides); },
