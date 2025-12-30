@@ -61,7 +61,24 @@ class AttendanceReportController extends Controller
             });
         }
 
-        // Get attendances
+        // Handle export - get ALL records without pagination
+        if ($filters['export']) {
+            try {
+                $allAttendances = $query->orderBy('work_date', 'desc')
+                    ->orderBy('user_id')
+                    ->get();
+                $summary = $this->calculateSummary($allAttendances, $filters);
+                return $this->exportToCsv($allAttendances, $summary, $filters);
+            } catch (\Exception $e) {
+                \Log::error('Error exporting attendances', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+                return back()->with('error', 'Gagal melakukan export: ' . $e->getMessage());
+            }
+        }
+
+        // Get attendances with pagination for display
         try {
             $attendances = $query->orderBy('work_date', 'desc')
                 ->orderBy('user_id')
@@ -79,12 +96,6 @@ class AttendanceReportController extends Controller
 
         // Get all users for manual entry form
         $users = User::where('is_active', true)->orderBy('name')->get(['id', 'name']);
-
-
-        // Handle export
-        if ($filters['export']) {
-            return $this->exportToCsv($attendances, $summary, $filters);
-        }
 
         return view('admin.attendance-reports.index', compact(
             'attendances',

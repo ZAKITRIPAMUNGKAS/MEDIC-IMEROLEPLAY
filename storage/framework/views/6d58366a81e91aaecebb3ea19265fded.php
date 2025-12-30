@@ -2060,7 +2060,7 @@
             this.notifications = this.notifications.filter(n => n.id !== id);
         }
     }" @notify.window="add($event.detail.message, $event.detail.type)"
-        class="fixed top-5 right-5 z-[9999] space-y-3 pointer-events-none" x-init="
+        class="fixed top-24 left-0 right-0 z-[100000] space-y-3 pointer-events-none flex flex-col items-center" x-init="
         <?php if(session('success')): ?> add('<?php echo e(session('success')); ?>', 'success'); <?php endif; ?>
         <?php if(session('error')): ?> add('<?php echo e(session('error')); ?>', 'error'); <?php endif; ?>
         <?php if(session('warning')): ?> add('<?php echo e(session('warning')); ?>', 'warning'); <?php endif; ?>
@@ -2068,11 +2068,11 @@
     ">
         <template x-for="notification in notifications" :key="notification.id">
             <div x-show="true" x-transition:enter="transition ease-out duration-300"
-                x-transition:enter-start="opacity-0 transform translate-x-8"
-                x-transition:enter-end="opacity-100 transform translate-x-0"
+                x-transition:enter-start="opacity-0 transform -translate-y-4"
+                x-transition:enter-end="opacity-100 transform translate-y-0"
                 x-transition:leave="transition ease-in duration-200"
-                x-transition:leave-start="opacity-100 transform translate-x-0"
-                x-transition:leave-end="opacity-0 transform translate-x-8"
+                x-transition:leave-start="opacity-100 transform translate-y-0"
+                x-transition:leave-end="opacity-0 transform -translate-y-4"
                 class="pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 relative"
                 :class="{
                      'bg-white': true,
