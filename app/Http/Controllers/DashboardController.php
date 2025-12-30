@@ -18,55 +18,55 @@ class DashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
-        
+
         // Admin bisa melihat semua, staff biasa hanya melihat rumah sakit mereka
         $isAdmin = $user->isAdmin();
         $userHospital = $isAdmin ? null : $user->getHospital();
-        
+
         // Get weekly leaderboard data - filter berdasarkan rumah sakit
         $leaderboard = $this->getWeeklyLeaderboard($isAdmin, $userHospital);
-        
+
         // Get recent forms (non-appointment)
         $recentFormsQuery = MedicalForm::with('processedBy')
             ->whereNotIn('form_type', ['penyakit_dalam', 'spesialis_anak', 'spesialis_bedah', 'spesialis_mata', 'spesialis_saraf', 'spesialis_urologi', 'spesialis_tht', 'spesialis_ortopedi']);
-        
+
         if (!$isAdmin) {
             $recentFormsQuery->where('hospital', $userHospital);
         }
-        
+
         $recentForms = $recentFormsQuery->orderBy('created_at', 'desc')->limit(5)->get();
-            
+
         // Get recent appointments
         $recentAppointmentsQuery = MedicalForm::with('processedBy')
             ->whereIn('form_type', ['penyakit_dalam', 'spesialis_anak', 'spesialis_bedah', 'spesialis_mata', 'spesialis_saraf', 'spesialis_urologi', 'spesialis_tht', 'spesialis_ortopedi']);
-        
+
         if (!$isAdmin) {
             $recentAppointmentsQuery->where('hospital', $userHospital);
         }
-        
+
         $recentAppointments = $recentAppointmentsQuery->orderBy('created_at', 'desc')->limit(5)->get();
-        
+
         // Get statistics
         $statsQuery = MedicalForm::query();
         if (!$isAdmin) {
             $statsQuery->where('hospital', $userHospital);
         }
-        
+
         $stats = [
             'pending_forms' => (clone $statsQuery)->pending()->count(),
             'approved_forms' => (clone $statsQuery)->approved()->count(),
             'rejected_forms' => (clone $statsQuery)->rejected()->count(),
             'total_forms_today' => (clone $statsQuery)->whereDate('created_at', today())->count(),
         ];
-        
+
         // Get user's attendance sessions for today
         // Only include sessions that actually started today (work_date = today)
         $todaySessions = Attendance::getTodaySessions($user->id);
-        
+
         $activeSession = Attendance::getActiveSession($user->id, today());
         $anyActiveSession = Attendance::getAnyActiveSession($user->id);
         $todayTotalHours = Attendance::getDailyTotalHours($user->id, today());
-        
+
         // Get attendance heatmap data
         $year = request('year', now()->year);
         $heatmapData = AttendanceHeatmapHelper::generateHeatmapData($user->id, $year);
@@ -75,7 +75,7 @@ class DashboardController extends Controller
         // Get weekly and accumulated hours for summary card
         $weeklyStats = AttendanceHelper::getUserWeeklyStats($user->id);
         $totalEmsHours = AttendanceHelper::getUserTotalHours($user->id);
-        
+
         // If current user has no attendance data, show demo data or find a user with data
         if ($heatmapData['work_days'] == 0) {
             $userWithData = User::whereHas('attendances')->first();
@@ -104,37 +104,37 @@ class DashboardController extends Controller
     public function forms(Request $request)
     {
         $user = Auth::user();
-        
+
         // Admin bisa melihat semua, staff biasa hanya melihat rumah sakit mereka
         $isAdmin = $user->isAdmin();
         $userHospital = $isAdmin ? null : $user->getHospital();
-        
+
         // Ambil parameter filter
         $search = $request->get('search');
         $status = $request->get('status');
         $type = $request->get('type');
         $category = $request->get('category');
-        
+
         // Query dasar - admin melihat semua, staff hanya rumah sakit mereka
         $query = MedicalForm::with('processedBy');
-        
+
         if (!$isAdmin) {
             $query->where('hospital', $userHospital);
         }
-        
+
         // Filter pencarian
         if ($search) {
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('character_name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
-        
+
         // Filter status
         if ($status && $status !== '') {
             $query->where('status', $status);
         }
-        
+
         // Filter jenis form
         if ($type && $type !== '') {
             if ($type === 'janji_temu') {
@@ -144,7 +144,7 @@ class DashboardController extends Controller
                 $query->where('form_type', $type);
             }
         }
-        
+
         // Filter kategori
         if ($category && $category !== '') {
             if ($category === 'janji_temu') {
@@ -157,16 +157,16 @@ class DashboardController extends Controller
                 $query->where('form_type', 'pendaftaran_karakter');
             }
         }
-        
+
         // Ambil data dengan paginasi
         $forms = $query->orderBy('created_at', 'desc')->paginate(20);
-        
+
         // Hitung statistik secara terpisah untuk efisiensi
         $statsQuery = MedicalForm::query();
         if (!$isAdmin) {
             $statsQuery->where('hospital', $userHospital);
         }
-        
+
         $stats = [
             'total' => (clone $statsQuery)->count(),
             'pending' => (clone $statsQuery)->where('status', 'pending')->count(),
@@ -174,65 +174,65 @@ class DashboardController extends Controller
             'rejected' => (clone $statsQuery)->where('status', 'rejected')->count(),
             'today' => (clone $statsQuery)->whereDate('created_at', today())->count(),
         ];
-        
+
         $user = Auth::user()->load('role');
-            
+
         return view('staff.forms', compact('forms', 'stats', 'user'));
     }
 
     public function formDetail($id)
     {
         $user = Auth::user()->load('role');
-        
+
         // Admin bisa melihat semua, staff biasa hanya melihat rumah sakit mereka
         $isAdmin = $user->isAdmin();
-        
+
         $form = MedicalForm::with('processedBy');
-        
+
         if (!$isAdmin) {
             $userHospital = $user->getHospital();
             $form->where('hospital', $userHospital);
         }
-        
+
         $form = $form->findOrFail($id);
-        
+
         return view('staff.form-detail', compact('form', 'user'));
     }
 
     public function approveForm(Request $request, $id)
     {
         $user = Auth::user()->load('role');
-        
+
         // Admin bisa approve semua, staff biasa hanya approve rumah sakit mereka
         $isAdmin = $user->isAdmin();
-        
+
         $form = MedicalForm::query();
-        
+
         if (!$isAdmin) {
             $userHospital = $user->getHospital();
             $form->where('hospital', $userHospital);
         }
-        
+
         $form = $form->findOrFail($id);
-        
+
         // Validasi level role berdasarkan jenis form
         $userLevel = $user->role->level ?? 0;
         $formType = $form->form_type;
-        
+
         // Surat kesehatan dan surat psikolog: minimal Co-ass (level 2) ke atas
         if (in_array($formType, ['surat_kesehatan', 'tes_psikologi', 'surat_psikolog'])) {
             if ($userLevel < 2) {
                 return back()->with('error', 'Anda tidak memiliki izin untuk menyetujui formulir ini. Minimal level Co-ass (level 2) diperlukan untuk surat kesehatan dan surat psikolog.');
             }
         }
-        
+
         // Surat keterangan oplas (operasi plastik): minimal dokter umum (level 3) ke atas
         if ($formType === 'operasi_plastik') {
             if ($userLevel < 3) {
                 return back()->with('error', 'Anda tidak memiliki izin untuk menyetujui formulir ini. Minimal level Dokter Umum (level 3) diperlukan untuk surat keterangan operasi plastik.');
             }
         }
-        
+
         $form->update([
             'status' => 'approved',
             'processed_by' => Auth::id(),
@@ -246,19 +246,19 @@ class DashboardController extends Controller
     public function rejectForm(Request $request, $id)
     {
         $user = Auth::user();
-        
+
         // Admin bisa reject semua, staff biasa hanya reject rumah sakit mereka
         $isAdmin = $user->isAdmin();
-        
+
         $form = MedicalForm::query();
-        
+
         if (!$isAdmin) {
             $userHospital = $user->getHospital();
             $form->where('hospital', $userHospital);
         }
-        
+
         $form = $form->findOrFail($id);
-        
+
         $form->update([
             'status' => 'rejected',
             'processed_by' => Auth::id(),
@@ -272,7 +272,7 @@ class DashboardController extends Controller
     public function approveTestimoni(Request $request, $id)
     {
         $form = MedicalForm::findOrFail($id);
-        
+
         if (!$form->testimoni) {
             return back()->with('error', 'Formulir ini tidak memiliki testimoni.');
         }
@@ -287,20 +287,20 @@ class DashboardController extends Controller
     public function attendance()
     {
         $user = Auth::user();
-        
+
         // Get user's attendance history (grouped by date)
         $attendanceHistory = Attendance::where('user_id', $user->id)
             ->orderBy('work_date', 'desc')
             ->orderBy('session_number')
             ->paginate(20);
-            
+
         // Get today's sessions (only sessions that started today)
         $todaySessions = Attendance::getTodaySessions($user->id);
-        
+
         $activeSession = Attendance::getActiveSession($user->id, today());
         $anyActiveSession = Attendance::getAnyActiveSession($user->id);
         $todayTotalHours = Attendance::getDailyTotalHours($user->id, today());
-            
+
         // Get weekly stats
         $weeklyStats = $this->getUserWeeklyStats($user->id);
 
@@ -328,10 +328,10 @@ class DashboardController extends Controller
         }
 
         $user = Auth::user();
-        
+
         // Use database transaction for data consistency
         DB::beginTransaction();
-        
+
         try {
             // Cek apakah ada sesi aktif dari hari ini atau hari-hari sebelumnya.
             // Sesuai keinginan Anda, sesi harus berjalan terus sampai di-clock out secara manual.
@@ -339,13 +339,13 @@ class DashboardController extends Controller
             $anyActiveSession = Attendance::getAnyActiveSession($user->id);
             if ($anyActiveSession) {
                 DB::rollBack();
-                
+
                 // Build informative error message
                 $clockInDate = $anyActiveSession->clock_in->format('d/m/Y H:i');
                 $workDate = $anyActiveSession->work_date->format('d/m/Y');
                 $currentDuration = $anyActiveSession->getFormattedDuration();
                 $isCrossDayActive = $anyActiveSession->clock_in->toDateString() !== Carbon::today('Asia/Jakarta')->toDateString();
-                
+
                 $errorMessage = sprintf(
                     'Anda masih memiliki sesi aktif yang belum di-clock out.%s Clock In: %s (Work Date: %s). Durasi saat ini: %s. Silakan clock out terlebih dahulu.',
                     $isCrossDayActive ? ' [CROSS-DAY SESSION!]' : '',
@@ -353,7 +353,7 @@ class DashboardController extends Controller
                     $workDate,
                     $currentDuration
                 );
-                
+
                 return back()->with('error', $errorMessage);
             }
 
@@ -379,14 +379,14 @@ class DashboardController extends Controller
             // Handle scheduled duty minutes (required timer feature)
             $scheduledMinutes = (int) $request->scheduled_duty_minutes;
             $scheduledEndTime = $currentTime->copy()->addMinutes($scheduledMinutes);
-            
+
             $attendanceData['scheduled_duty_minutes'] = $scheduledMinutes;
             $attendanceData['scheduled_end_time'] = $scheduledEndTime;
 
             $attendance = Attendance::create($attendanceData);
-            
+
             DB::commit();
-            
+
             // Log successful clock in
             \Log::info('Clock in successful', [
                 'attendance_id' => $attendance->id,
@@ -396,7 +396,7 @@ class DashboardController extends Controller
                 'session_type' => $sessionType,
                 'session_number' => $sessionNumber
             ]);
-            
+
             // Build success message with session info
             $message = sprintf(
                 'Clock in berhasil pada %s. Sesi #%d (%s) - Work Date: %s',
@@ -405,18 +405,18 @@ class DashboardController extends Controller
                 ucfirst($sessionType),
                 $currentDate->format('d/m/Y')
             );
-            
+
             return back()->with('success', $message);
-            
+
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             \Log::error('Clock in failed', [
                 'user_id' => $user->id,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return back()->with('error', 'Terjadi kesalahan saat clock in. Silakan coba lagi.');
         }
     }
@@ -430,22 +430,22 @@ class DashboardController extends Controller
 
         $user = Auth::user();
         $currentDate = Carbon::today('Asia/Jakarta');
-        
+
         // First check for active session today
         $attendance = Attendance::getActiveSession($user->id, $currentDate);
-        
+
         // If no active session today, check for any active session (from previous days)
         if (!$attendance) {
             $attendance = Attendance::getAnyActiveSession($user->id);
         }
-            
+
         if (!$attendance) {
             return back()->with('error', 'Anda belum melakukan clock in.');
         }
 
         // Use database transaction for data consistency
         DB::beginTransaction();
-        
+
         try {
             // Update notes if provided (before closing session)
             if ($request->filled('notes')) {
@@ -454,21 +454,21 @@ class DashboardController extends Controller
                 $attendance->notes = $currentNotes ? $currentNotes . "\n" . $newNotes : $newNotes;
                 $attendance->save();
             }
-            
+
             // Close the session (this will set clock_out and calculate duration)
             $closeResult = $attendance->closeSession();
-            
+
             if (!$closeResult) {
                 throw new \Exception('Failed to close session');
             }
-            
+
             DB::commit();
-            
+
             // Get session info for success message
             $isCrossDay = $attendance->isCrossDay();
             $duration = $attendance->getFormattedDuration();
             $durationHours = $attendance->getDurationInHours();
-            
+
             // Log successful clock out
             \Log::info('Clock out successful', [
                 'attendance_id' => $attendance->id,
@@ -489,17 +489,17 @@ class DashboardController extends Controller
             );
 
             return back()->with('success', $message);
-            
+
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             \Log::error('Clock out failed', [
                 'attendance_id' => $attendance->id ?? null,
                 'user_id' => $user->id,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return back()->with('error', 'Terjadi kesalahan saat clock out. Silakan coba lagi.');
         }
     }
@@ -507,14 +507,14 @@ class DashboardController extends Controller
     public function reports()
     {
         $user = Auth::user();
-        
+
         // Admin bisa melihat semua, staff biasa hanya melihat rumah sakit mereka
         $isAdmin = $user->isAdmin();
         $userHospital = $isAdmin ? null : $user->getHospital();
-        
+
         // Get weekly leaderboard data for charts - filter berdasarkan rumah sakit
         $leaderboardData = $this->getWeeklyLeaderboard($isAdmin, $userHospital);
-        
+
         // Get form statistics
         $formStats = [
             'daily' => MedicalForm::selectRaw('DATE(created_at) as date, COUNT(*) as count')
@@ -537,15 +537,15 @@ class DashboardController extends Controller
     {
         $startOfWeek = now()->startOfWeek();
         $endOfWeek = now()->endOfWeek();
-        
+
         // Query dasar untuk user yang punya attendance
-        $usersQuery = User::whereHas('attendances', function($query) use ($startOfWeek, $endOfWeek) {
-                $query->whereBetween('work_date', [$startOfWeek, $endOfWeek])
-                      ->where('session_type', 'work')
-                      ->whereNotNull('session_duration')
-                      ->where('session_duration', '>', 0);
-            });
-        
+        $usersQuery = User::whereHas('attendances', function ($query) use ($startOfWeek, $endOfWeek) {
+            $query->whereBetween('work_date', [$startOfWeek, $endOfWeek])
+                ->where('session_type', 'work')
+                ->whereNotNull('session_duration')
+                ->where('session_duration', '>', 0);
+        });
+
         // Filter berdasarkan rumah sakit jika bukan admin
         if (!$isAdmin && $userHospital) {
             // Filter user berdasarkan rumah sakit mereka
@@ -553,56 +553,60 @@ class DashboardController extends Controller
             // Roxwood: user yang merupakan Roxwood
             if ($userHospital === 'alta') {
                 // Exclude user Roxwood (yang namanya mengandung RH, roxwood, dll)
-                $usersQuery->where(function($q) {
+                $usersQuery->where(function ($q) {
                     $q->whereRaw('LOWER(name) NOT LIKE ?', ['%rh%'])
-                      ->whereRaw('LOWER(name) NOT LIKE ?', ['%roxwood%'])
-                      ->whereRaw('LOWER(name) NOT LIKE ?', ['%rh -%'])
-                      ->whereRaw('LOWER(name) NOT LIKE ?', ['%rh-%'])
-                      ->where(function($sq) {
-                          $sq->whereNull('staff_id')
-                             ->orWhere(function($ssq) {
-                                 $ssq->whereRaw('LOWER(staff_id) NOT LIKE ?', ['%rh%'])
-                                    ->whereRaw('LOWER(staff_id) NOT LIKE ?', ['%rh -%'])
-                                    ->whereRaw('LOWER(staff_id) NOT LIKE ?', ['%rh-%']);
-                             });
-                      });
+                        ->whereRaw('LOWER(name) NOT LIKE ?', ['%roxwood%'])
+                        ->whereRaw('LOWER(name) NOT LIKE ?', ['%rh -%'])
+                        ->whereRaw('LOWER(name) NOT LIKE ?', ['%rh-%'])
+                        ->where(function ($sq) {
+                            $sq->whereNull('staff_id')
+                                ->orWhere(function ($ssq) {
+                                    $ssq->whereRaw('LOWER(staff_id) NOT LIKE ?', ['%rh%'])
+                                        ->whereRaw('LOWER(staff_id) NOT LIKE ?', ['%rh -%'])
+                                        ->whereRaw('LOWER(staff_id) NOT LIKE ?', ['%rh-%']);
+                                });
+                        });
                 });
             } else {
                 // Roxwood: user yang namanya mengandung RH, roxwood, dll
-                $usersQuery->where(function($q) {
+                $usersQuery->where(function ($q) {
                     $q->whereRaw('LOWER(name) LIKE ?', ['%rh%'])
-                      ->orWhereRaw('LOWER(name) LIKE ?', ['%roxwood%'])
-                      ->orWhereRaw('LOWER(name) LIKE ?', ['%rh -%'])
-                      ->orWhereRaw('LOWER(name) LIKE ?', ['%rh-%'])
-                      ->orWhere(function($sq) {
-                          $sq->whereNotNull('staff_id')
-                             ->where(function($ssq) {
-                                 $ssq->whereRaw('LOWER(staff_id) LIKE ?', ['%rh%'])
-                                    ->orWhereRaw('LOWER(staff_id) LIKE ?', ['%rh -%'])
-                                    ->orWhereRaw('LOWER(staff_id) LIKE ?', ['%rh-%']);
-                             });
-                      });
+                        ->orWhereRaw('LOWER(name) LIKE ?', ['%roxwood%'])
+                        ->orWhereRaw('LOWER(name) LIKE ?', ['%rh -%'])
+                        ->orWhereRaw('LOWER(name) LIKE ?', ['%rh-%'])
+                        ->orWhere(function ($sq) {
+                            $sq->whereNotNull('staff_id')
+                                ->where(function ($ssq) {
+                                    $ssq->whereRaw('LOWER(staff_id) LIKE ?', ['%rh%'])
+                                        ->orWhereRaw('LOWER(staff_id) LIKE ?', ['%rh -%'])
+                                        ->orWhereRaw('LOWER(staff_id) LIKE ?', ['%rh-%']);
+                                });
+                        });
                 });
             }
         }
-        
+
         $users = $usersQuery
-            ->withCount(['attendances' => function($query) use ($startOfWeek, $endOfWeek) {
-                $query->whereBetween('work_date', [$startOfWeek, $endOfWeek])
-                      ->where('session_type', 'work')
-                      ->whereNotNull('session_duration')
-                      ->where('session_duration', '>', 0);
-            }])
-            ->withSum(['attendances' => function($query) use ($startOfWeek, $endOfWeek) {
-                $query->whereBetween('work_date', [$startOfWeek, $endOfWeek])
-                      ->where('session_type', 'work')
-                      ->whereNotNull('session_duration')
-                      ->where('session_duration', '>', 0);
-            }], 'session_duration')
+            ->withCount([
+                'attendances' => function ($query) use ($startOfWeek, $endOfWeek) {
+                    $query->whereBetween('work_date', [$startOfWeek, $endOfWeek])
+                        ->where('session_type', 'work')
+                        ->whereNotNull('session_duration')
+                        ->where('session_duration', '>', 0);
+                }
+            ])
+            ->withSum([
+                'attendances' => function ($query) use ($startOfWeek, $endOfWeek) {
+                    $query->whereBetween('work_date', [$startOfWeek, $endOfWeek])
+                        ->where('session_type', 'work')
+                        ->whereNotNull('session_duration')
+                        ->where('session_duration', '>', 0);
+                }
+            ], 'session_duration')
             ->orderBy('attendances_sum_session_duration', 'desc')
             ->limit(10)
             ->get();
-            
+
         // Add unique work days count and total juara 1 count for each user
         foreach ($users as $user) {
             $uniqueWorkDays = Attendance::where('user_id', $user->id)
@@ -612,13 +616,13 @@ class DashboardController extends Controller
                 ->where('session_duration', '>', 0)
                 ->distinct('work_date')
                 ->count('work_date');
-                
+
             $user->unique_work_days = $uniqueWorkDays;
-            
+
             // Get total juara 1 count (with hospital filter if applicable)
             $user->total_juara_1_count = \App\Helpers\AttendanceHelper::getTotalJuara1Count($user->id, $userHospital);
         }
-        
+
         return $users;
     }
 

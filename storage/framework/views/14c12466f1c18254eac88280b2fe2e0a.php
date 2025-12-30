@@ -1231,7 +1231,9 @@
                                                         Verified Patient
                                                     </p>
                                                     <p class="text-sky-200/60 text-xs mt-1">
-                                                        <?php echo e($testimoniItem->created_at->diffForHumans()); ?></p>
+                                                        <?php echo e($testimoniItem->created_at->diffForHumans()); ?>
+
+                                                    </p>
                                                 </div>
                                             </div>
                                         </div>
@@ -1405,87 +1407,84 @@
 <?php $__env->stopPush(); ?>
 
 <?php $__env->startPush('scripts'); ?>
-    <script>     // --- Regulation Modal Functions ---
-        function showRegulationModal() {
-            const modal = document.getElementById('regulationModal');
-            if (modal) {
-                modal.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
-            }
-        }
+    <script>     // --- Regulation Modal Functions ---     function showRegulationModal() {         const modal = document.getElementById('regulationModal');         if (modal) {             modal.style.display = 'flex';             document.body.style.overflow = 'hidden';         }     }
+         function closeRegulationModal() {         const modal = document.getElementById('regulationModal');         if (modal) {             modal.style.display = 'none';             document.body.style.overflow = 'auto';         }     }
+         function handleModalClick(event) {         const modal = document.getElementById('regulationModal');         if (event.target === modal) {             closeRegulationModal();         }     }
+         function demoSuccess() { showNotification('Data berhasil disimpan!', 'success'); }     function demoError() { showNotification('Terjadi kesalahan saat menyimpan data!', 'error'); }     function demoWarning() { showNotification('Perhatian! Pastikan data yang diisi sudah benar.', 'warning'); }     function demoInfo() { showNotification('Informasi: Form akan otomatis tersimpan setiap 30 detik.', 'info'); }
+         document.addEventListener('DOMContentLoaded', function () {         // Modal Listeners         const modal = document.getElementById('regulationModal');         if (modal) {             modal.addEventListener('click', handleModalClick);             document.addEventListener('keydown', function (event) {                 if (event.key === 'Escape') closeRegulationModal();             });         }
 
-        function closeRegulationModal() {
-            const modal = document.getElementById('regulationModal');
-            if (modal) {
-                modal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            }
-        }
-
-        function handleModalClick(event) {
-            const modal = document.getElementById('regulationModal');
-            if (event.target === modal) {
-                closeRegulationModal();
-            }
-        }
-
-        function demoSuccess() { showNotification('Data berhasil disimpan!', 'success'); }
-        function demoError() { showNotification('Terjadi kesalahan saat menyimpan data!', 'error'); }
-        function demoWarning() { showNotification('Perhatian! Pastikan data yang diisi sudah benar.', 'warning'); }
-        function demoInfo() { showNotification('Informasi: Form akan otomatis tersimpan setiap 30 detik.', 'info'); }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            // Modal Listeners
-            const modal = document.getElementById('regulationModal');
-            if (modal) {
-                modal.addEventListener('click', handleModalClick);
-                document.addEventListener('keydown', function (event) {
-                    if (event.key === 'Escape') closeRegulationModal();
-                });
-            }
 
 
             // --- Testimonial Carousel ---
-            const testimonialCarousel = {
-                track: document.getElementById('testimonialTrack'),
-                prevBtn: document.getElementById('prevBtn'),
-                nextBtn: document.getElementById('nextBtn'),
-                dots: document.querySelectorAll('.testimonial-dot'),
-                currentIndex: 0,
-                totalSlides: 0,
+            var carouselTrack = document.getElementById('testimonialTrack');
+            var carouselPrevBtn = document.getElementById('prevBtn');
+            var carouselNextBtn = document.getElementById('nextBtn');
+            var carouselDots = document.querySelectorAll('.testimonial-dot');
+            var carouselIndex = 0;
+            var carouselTotal = 0;
 
-                init() {
-                    if (!this.track) return;
-                    this.totalSlides = this.track.children.length;
-                    if (this.totalSlides === 0) return;
-                    if (this.dots.length > 0) this.dots[0].classList.add('!w-8', '!bg-sky-400');
-                    if (this.prevBtn) this.prevBtn.addEventListener('click', () => this.prev());
-                    if (this.nextBtn) this.nextBtn.addEventListener('click', () => this.next());
-                    this.dots.forEach((dot, index) => { dot.addEventListener('click', () => this.goTo(index)); });
-                    this.startAutoPlay();
-                },
-                goTo(index) {
-                    this.currentIndex = index;
-                    this.track.style.transform = translateX(' + (-index * 100) + '%');
-                    this.updateDots();
-                },
-                next() { this.goTo((this.currentIndex + 1) % this.totalSlides); },
-                prev() { this.goTo((this.currentIndex - 1 + this.totalSlides) % this.totalSlides); },
-                updateDots() {
-                    this.dots.forEach((dot, i) => {
-                        if (i === this.currentIndex) dot.classList.add('!w-8', '!bg-sky-400');
-                        else dot.classList.remove('!w-8', '!bg-sky-400');
-                    });
-                },
-                startAutoPlay() { setInterval(() => this.next(), 5000); }
-            };
-            testimonialCarousel.init();
-        }); // Close DOMContentLoaded
+            if (carouselTrack) {
+                carouselTotal = carouselTrack.children.length;
 
-        // --- REDESIGNED TESTIMONIAL CAROUSEL ENGINE ---
-        // (Removed: Switched to Grid Layout for better visibility of 10+ reviews)
-        // const container = document.getElementById('testimonial-container');
-        // ...
-    </script>
+                if (carouselTotal > 0) {
+                    // Initial state
+                    if (carouselDots.length > 0) {
+                        carouselDots[0].classList.add('!w-8', '!bg-sky-400', '!shadow-lg', '!shadow-sky-400/50');
+                    }
+
+                    // Functions
+                    function updateCarousel() {
+                        var offset = carouselIndex * -100;
+                        carouselTrack.style.transform = 'translateX(' + offset + '%)';
+
+                        for (var i = 0; i < carouselDots.length; i++) {
+                            if (i === carouselIndex) {
+                               carouselDots[ i].classList .add('!w-8', '!bg-sky-400', '!shadow-lg', '!shadow-sky-400/50');
+                            } else {
+                                carouselDots[i].classList.remove('!w-8', '!bg-sky-400', '!shadow-lg', '!shadow-sky-400/50');
+                            }
+                        }
+                    }
+
+                    function nextSlide() {
+                        carouselIndex = (carouselIndex + 1) % carouselTotal;
+                        updateCarousel();
+                    }
+
+                    function prevSlide() {
+                        carouselIndex = (carouselIndex - 1 + carouselTotal) % carouselTotal;
+                        updateCarousel()              ;
+                    }
+
+                    function goToSlide(index) {
+                        carouselIndex = index;
+                        updateCarousel();
+                    }
+
+                    // Event listeners
+                    if (carouselPrevBtn) {
+                        carouselPrevBtn.addEventListener('click', prevSlide);
+                    }
+                    if (carouselNextBtn) {
+                        carouselNextBtn.addEventListener('click', nextSlide);
+                    }
+                    for (var i = 0; i < carouselDots.length; i++) {
+                        (function(idx) {
+                            carouselDots[idx].addEventListener('click', function() {
+                                goToSlide(idx);
+                            });
+                        })(i);
+                    }
+
+                    // Auto-play
+                    setInterval(nextSlide, 6000);
+                }
+            }
+
+            }); // Close DOMContentLoaded
+
+            // --- REDESIGNED TESTIMONIAL CAROUSEL ENGINE ---
+            // (Removed: Switched to Grid Layout for better visibility of 10+ reviews)
+        </script>
 <?php $__env->stopPush(); ?>
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\website\EMS-IME\public_html\resources\views/public/index.blade.php ENDPATH**/ ?>
