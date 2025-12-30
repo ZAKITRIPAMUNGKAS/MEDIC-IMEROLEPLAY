@@ -1231,57 +1231,76 @@
     </div>
 
     <!-- Toast Notification Container -->
-    <div id="toastContainer"
-        class="fixed top-4 left-0 right-0 z-[999999] flex flex-col items-center gap-3 pointer-events-none px-4">
+    <div id="toastContainer" class="fixed top-20 left-0 right-0 flex flex-col items-center gap-3 pointer-events-none px-4"
+        style="z-index: 9999999999;">
     </div>
 
     <!-- Toast Template Styles -->
     <style>
         .toast {
             pointer-events: auto;
-            min-width: 300px;
-            max-width: 420px;
-            padding: 1rem;
-            border-radius: 1rem;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            animation: toastSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            min-width: 280px;
+            max-width: 380px;
+            padding: 0.875rem 1rem;
+            border-radius: 0.75rem;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+            animation: toastSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
             display: flex;
             align-items: center;
             gap: 0.75rem;
             position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-left: 4px solid;
         }
 
         .toast.hiding {
-            animation: toastSlideOut 0.3s ease-in forwards;
+            animation: toastSlideOut 0.25s ease-in forwards;
         }
 
         .toast-success {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(5, 150, 105, 0.9));
+            border-left-color: #10b981;
         }
 
         .toast-error {
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.9), rgba(220, 38, 38, 0.9));
+            border-left-color: #ef4444;
         }
 
         .toast-warning {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.9), rgba(217, 119, 6, 0.9));
+            border-left-color: #f59e0b;
         }
 
         .toast-info {
-            background: linear-gradient(135deg, rgba(14, 165, 233, 0.9), rgba(6, 182, 212, 0.9));
+            border-left-color: #0ea5e9;
         }
 
         .toast-icon {
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: 0.75rem;
+            width: 1.75rem;
+            height: 1.75rem;
+            border-radius: 50%;
             display: flex;
             align-items: center;
-            justify-center;
-            background: rgba(255, 255, 255, 0.2);
+            justify-content: center;
             flex-shrink: 0;
+        }
+
+        .toast-success .toast-icon {
+            background: #d1fae5;
+            color: #059669;
+        }
+
+        .toast-error .toast-icon {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .toast-warning .toast-icon {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .toast-info .toast-icon {
+            background: #dbeafe;
+            color: #0284c7;
         }
 
         .toast-content {
@@ -1290,27 +1309,27 @@
         }
 
         .toast-title {
-            font-weight: 700;
-            font-size: 0.95rem;
-            color: white;
-            margin-bottom: 0.2rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: #111827;
+            margin-bottom: 0.125rem;
         }
 
         .toast-message {
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.95);
-            line-height: 1.3;
+            font-size: 0.8125rem;
+            color: #6b7280;
+            line-height: 1.4;
         }
 
         .toast-close {
-            width: 1.75rem;
-            height: 1.75rem;
-            border-radius: 0.5rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 0.375rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
+            background: transparent;
+            color: #9ca3af;
             cursor: pointer;
             transition: all 0.2s;
             flex-shrink: 0;
@@ -1318,7 +1337,8 @@
         }
 
         .toast-close:hover {
-            background: rgba(255, 255, 255, 0.3);
+            background: #f3f4f6;
+            color: #374151;
             transform: scale(1.1);
         }
 
@@ -1393,20 +1413,20 @@
             toast.className = `toast toast-${type}`;
             toast.style.setProperty('--duration', `${duration}ms`);
             toast.innerHTML = `
-                                            <div class="toast-icon">
-                                                <i class="fas ${icons[type]} text-white text-lg"></i>
-                                            </div>
-                                            <div class="toast-content">
-                                                <div class="toast-title">${title}</div>
-                                                <div class="toast-message">${message}</div>
-                                            </div>
-                                            <button class="toast-close" onclick="closeToast(this.parentElement)">
-                                                <i class="fas fa-times text-sm"></i>
-                                            </button>
-                                            <div class="toast-progress">
-                                                <div class="toast-progress-bar"></div>
-                                            </div>
-                                        `;
+                                                <div class="toast-icon">
+                                                    <i class="fas ${icons[type]} text-white text-lg"></i>
+                                                </div>
+                                                <div class="toast-content">
+                                                    <div class="toast-title">${title}</div>
+                                                    <div class="toast-message">${message}</div>
+                                                </div>
+                                                <button class="toast-close" onclick="closeToast(this.parentElement)">
+                                                    <i class="fas fa-times text-sm"></i>
+                                                </button>
+                                                <div class="toast-progress">
+                                                    <div class="toast-progress-bar"></div>
+                                                </div>
+                                            `;
 
             container.appendChild(toast);
             setTimeout(() => closeToast(toast), duration);
