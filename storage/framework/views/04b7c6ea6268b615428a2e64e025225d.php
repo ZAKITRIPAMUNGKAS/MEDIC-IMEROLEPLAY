@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('title', 'Laporan Absensi - Portal Medis MPK-BA'); ?>
 
 <?php $__env->startSection('content'); ?>
@@ -21,11 +19,13 @@
                             <p class="text-gray-300 text-sm">Total Data</p>
                             <p class="text-xl sm:text-2xl font-bold text-white"><?php echo e($attendances->count()); ?></p>
                         </div>
+                        <?php if(auth()->user()->isAdmin()): ?>
                         <button onclick="openManualEntryModal()"
                             class="w-full sm:w-auto inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg mr-2">
                             <i class="fas fa-plus mr-2"></i><span class="hidden xs:inline">Tambah Manual</span><span
                                 class="xs:hidden">Tambah</span>
                         </button>
+                        <?php endif; ?>
                         <a href="<?php echo e(route('admin.attendance-reports.index', array_merge(request()->query(), ['export' => 'csv']))); ?>"
                             class="w-full sm:w-auto inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg">
                             <i class="fas fa-download mr-2"></i><span class="hidden xs:inline">Download CSV</span><span
@@ -59,6 +59,17 @@
                             <option value="" class="bg-slate-800 text-slate-100">Semua</option>
                             <option value="1" <?php if(request('clock_in_only') == '1'): echo 'selected'; endif; ?> class="bg-slate-800 text-slate-100">
                                 Hanya yang Masih Clock In</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Hospital</label>
+                        <select name="hospital"
+                            class="w-full bg-white/30 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 appearance-none text-sm shadow-xl">
+                            <option value="" class="bg-slate-800 text-slate-100">Semua Hospital</option>
+                            <option value="alta" <?php if(request('hospital') == 'alta'): echo 'selected'; endif; ?> class="bg-slate-800 text-slate-100">
+                                Alta Hospital</option>
+                            <option value="roxwood" <?php if(request('hospital') == 'roxwood'): echo 'selected'; endif; ?> class="bg-slate-800 text-slate-100">
+                                Roxwood Hospital</option>
                         </select>
                     </div>
                     <div class="sm:col-span-2 lg:col-span-1 flex gap-2">
@@ -203,9 +214,14 @@
                                             <th
                                                 class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
                                                 Status</th>
+                                            <?php if(auth()->user()->isAdmin()): ?>
+                                            <th
+                                                class="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">
+                                                Catatan</th>
                                             <th
                                                 class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
                                                 Aksi</th>
+                                            <?php endif; ?>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-white/10">
@@ -330,6 +346,27 @@
                                                         </span>
                                                     <?php endif; ?>
                                                 </td>
+                                                <?php if(auth()->user()->isAdmin()): ?>
+                                                <td class="px-4 py-4">
+                                                    <?php if($attendance->notes): ?>
+                                                        <div x-data="{ expanded: false }">
+                                                            <div class="text-white text-sm max-w-[200px]" 
+                                                                 :class="expanded ? '' : 'line-clamp-2'" 
+                                                                 title="<?php echo e($attendance->notes); ?>">
+                                                                <?php echo e($attendance->notes); ?>
+
+                                                            </div>
+                                                            <?php if(strlen($attendance->notes) > 50): ?>
+                                                                <button @click="expanded = !expanded" 
+                                                                        class="text-xs text-sky-400 hover:text-sky-300 mt-1 focus:outline-none hover:underline">
+                                                                    <span x-text="expanded ? 'Sembunyikan' : 'Selengkapnya'"></span>
+                                                                </button>
+                                                            <?php endif; ?>
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <span class="text-gray-500">-</span>
+                                                    <?php endif; ?>
+                                                </td>
                                                 <td class="px-4 py-4 text-center">
                                                     <div class="flex items-center justify-center gap-2">
                                                         <?php if(!$attendance->clock_out): ?>
@@ -358,6 +395,7 @@
                                                         </button>
                                                     </div>
                                                 </td>
+                                                <?php endif; ?>
                                             </tr>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </tbody>
@@ -849,7 +887,7 @@
     </div>
 
     <!-- Edit Attendance Modal -->
-    <div id="editModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div id="editModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
         <div class="bg-gradient-to-br from-sky-900 to-sky-800 rounded-2xl shadow-2xl max-w-lg w-full border-2 border-sky-400/60">
             <!-- Modal Header -->
             <div class="p-6 border-b border-sky-400/20">
@@ -919,7 +957,7 @@
     </div>
 
     <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div id="deleteModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
         <div class="bg-gradient-to-br from-red-900 to-red-800 rounded-2xl shadow-2xl max-w-md w-full border-2 border-red-400/60">
             <div class="p-6 text-center">
                 <div class="w-16 h-16 bg-red-500/30 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -944,7 +982,7 @@
     </div>
 
     <!-- Toast Notification Container -->
-    <div id="toastContainer" class="fixed top-6 left-1/2 transform -translate-x-1/2 z-[99999] flex flex-col items-center gap-3 pointer-events-none"></div>
+    <div id="toastContainer" class="fixed top-32 left-0 right-0 z-[100000] flex flex-col items-center gap-3 pointer-events-none"></div>
 
     <!-- Toast Template Styles -->
     <style>
@@ -1036,12 +1074,12 @@
         animation: toastProgress var(--duration) linear forwards;
     }
     @keyframes toastSlideIn {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
+        from { transform: translateY(-20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
     }
     @keyframes toastSlideOut {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(100%); opacity: 0; }
+        from { transform: translateY(0); opacity: 1; }
+        to { transform: translateY(-20px); opacity: 0; }
     }
     @keyframes toastProgress {
         from { width: 100%; }

@@ -669,4 +669,4 @@
     </script>
 </body>
 
-</html><?php /**PATH D:\website\EMS-IME\public_html\resources\views/auth/portal.blade.php ENDPATH**/ ?>
+</html><?php /**PATH D:\website\EMS-IME\public_html\resources\views\auth\portal.blade.php ENDPATH**/ ?>

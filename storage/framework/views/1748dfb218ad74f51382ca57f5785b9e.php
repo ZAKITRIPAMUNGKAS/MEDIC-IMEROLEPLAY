@@ -1246,14 +1246,14 @@
         .notification-container {
             position: fixed;
             top: 80px;
-            /* Adjusted to be below the navbar (approx 64px + padding) */
-            right: 20px;
+            /* Adjusted to be below the navbar */
+            left: 0;
+            right: 0;
             z-index: 1000;
             display: flex;
             flex-direction: column;
+            align-items: center;
             gap: 10px;
-            max-width: 350px;
-            width: 100%;
             pointer-events: none;
             /* Allow clicking through container */
         }
@@ -1830,7 +1830,7 @@
                 let formAction = form.getAttribute('data-action') || form.getAttribute('action');
 
                 // Validate form action - must not contain Blade syntax
-                if (!formAction || formAction.includes('{{') || formAction.includes('route(') || formAction.trim() === '') {
+                if (!formAction || formAction.includes('{' + '{') || formAction.includes('route(') || formAction.trim() === '') {
                     console.error('Invalid form action detected:', formAction);
                     alert('Terjadi kesalahan: Form action tidak valid. Silakan refresh halaman.');
                     return;
@@ -2045,6 +2045,124 @@
             </div>
         </div>
     </div>
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- Toast Notification Component with Premium Design -->
+    <div x-data="{
+        notifications: [],
+        add(message, type = 'success') {
+            const id = Date.now();
+            this.notifications.push({ id, message, type });
+            setTimeout(() => this.remove(id), 5000);
+        },
+        remove(id) {
+            this.notifications = this.notifications.filter(n => n.id !== id);
+        }
+    }" @notify.window="add($event.detail.message, $event.detail.type)"
+        class="fixed top-24 left-0 right-0 z-[100000] space-y-3 pointer-events-none flex flex-col items-center px-4"
+        x-init="
+        <?php if(session('success')): ?> add('<?php echo e(session('success')); ?>', 'success'); <?php endif; ?>
+        <?php if(session('error')): ?> add('<?php echo e(session('error')); ?>', 'error'); <?php endif; ?>
+        <?php if(session('warning')): ?> add('<?php echo e(session('warning')); ?>', 'warning'); <?php endif; ?>
+        <?php if(session('info')): ?> add('<?php echo e(session('info')); ?>', 'info'); <?php endif; ?>
+    ">
+        <template x-for="notification in notifications" :key="notification.id">
+            <div x-show="true" x-transition:enter="transition ease-out duration-400 transform"
+                x-transition:enter-start="opacity-0 -translate-y-8 scale-95"
+                x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                x-transition:leave="transition ease-in duration-200 transform"
+                x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                x-transition:leave-end="opacity-0 -translate-y-4 scale-95"
+                class="pointer-events-auto w-full max-w-md overflow-hidden rounded-2xl shadow-2xl backdrop-blur-xl border relative transform hover:scale-102 transition-transform duration-200"
+                :class="{
+                    'bg-gradient-to-br from-green-50/95 to-emerald-50/95 border-green-200/50': notification.type === 'success',
+                    'bg-gradient-to-br from-red-50/95 to-rose-50/95 border-red-200/50': notification.type === 'error',
+                    'bg-gradient-to-br from-yellow-50/95 to-amber-50/95 border-yellow-200/50': notification.type === 'warning',
+                    'bg-gradient-to-br from-blue-50/95 to-cyan-50/95 border-blue-200/50': notification.type === 'info'
+                }" style="backdrop-filter: blur(20px);">
+
+                <!-- Gradient Accent Bar -->
+                <div class="absolute top-0 left-0 right-0 h-1 rounded-t-2xl" :class="{
+                        'bg-gradient-to-r from-green-400 via-emerald-500 to-green-400': notification.type === 'success',
+                        'bg-gradient-to-r from-red-400 via-rose-500 to-red-400': notification.type === 'error',
+                        'bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-400': notification.type === 'warning',
+                        'bg-gradient-to-r from-blue-400 via-cyan-500 to-blue-400': notification.type === 'info'
+                    }">
+                </div>
+
+                <div class="p-5 flex items-start gap-4">
+                    <!-- Icon with Gradient Background -->
+                    <div class="flex-shrink-0">
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg" :class="{
+                                'bg-gradient-to-br from-green-400 to-emerald-600': notification.type === 'success',
+                                'bg-gradient-to-br from-red-400 to-rose-600': notification.type === 'error',
+                                'bg-gradient-to-br from-yellow-400 to-amber-600': notification.type === 'warning',
+                                'bg-gradient-to-br from-blue-400 to-cyan-600': notification.type === 'info'
+                            }">
+                            <!-- Success Icon -->
+                            <i x-show="notification.type === 'success'"
+                                class="fas fa-check-circle text-white text-2xl animate-bounce"></i>
+                            <!-- Error Icon -->
+                            <i x-show="notification.type === 'error'"
+                                class="fas fa-times-circle text-white text-2xl animate-pulse"></i>
+                            <!-- Warning Icon -->
+                            <i x-show="notification.type === 'warning'"
+                                class="fas fa-exclamation-triangle text-white text-2xl animate-pulse"></i>
+                            <!-- Info Icon -->
+                            <i x-show="notification.type === 'info'"
+                                class="fas fa-info-circle text-white text-2xl animate-pulse"></i>
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="flex-1 pt-1">
+                        <p class="text-base font-bold mb-1" :class="{
+                                'text-green-900': notification.type === 'success',
+                                'text-red-900': notification.type === 'error',
+                                'text-yellow-900': notification.type === 'warning',
+                                'text-blue-900': notification.type === 'info'
+                            }" x-text="notification.type === 'success' ? 'Berhasil!' : 
+                                    notification.type === 'error' ? 'Error!' :
+                                    notification.type === 'warning' ? 'Perhatian!' :
+                                    'Informasi'"></p>
+                        <p class="text-sm leading-relaxed" :class="{
+                                'text-green-800': notification.type === 'success',
+                                'text-red-800': notification.type === 'error',
+                                'text-yellow-800': notification.type === 'warning',
+                                'text-blue-800': notification.type === 'info'
+                            }" x-text="notification.message"></p>
+                    </div>
+
+                    <!-- Close Button -->
+                    <div class="flex-shrink-0">
+                        <button @click="remove(notification.id)"
+                            class="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-110"
+                            :class="{
+                                'text-green-600 hover:bg-green-100': notification.type === 'success',
+                                'text-red-600 hover:bg-red-100': notification.type === 'error',
+                                'text-yellow-600 hover:bg-yellow-100': notification.type === 'warning',
+                                'text-blue-600 hover:bg-blue-100': notification.type === 'info'
+                            }">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Animated Progress Bar -->
+                <div class="absolute bottom-0 left-0 h-1.5 bg-black/5 w-full rounded-b-2xl overflow-hidden">
+                    <div class="h-full transition-all duration-[5000ms] ease-linear w-0 shadow-lg" :class="{
+                            'bg-gradient-to-r from-green-400 to-emerald-500': notification.type === 'success',
+                            'bg-gradient-to-r from-red-400 to-rose-500': notification.type === 'error',
+                            'bg-gradient-to-r from-yellow-400 to-amber-500': notification.type === 'warning',
+                            'bg-gradient-to-r from-blue-400 to-cyan-500': notification.type === 'info'
+                        }" x-init="setTimeout(() => $el.classList.replace('w-0', 'w-full'), 100)">
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+
 </body>
 
 </html><?php /**PATH D:\website\EMS-IME\public_html\resources\views\layouts\app.blade.php ENDPATH**/ ?>

@@ -1258,148 +1258,147 @@
 
     <!-- Toast Notification Container -->
     <div id="toastContainer"
-        class="fixed top-6 left-1/2 transform -translate-x-1/2 z-[99999] flex flex-col items-center gap-3 pointer-events-none">
-    </div>
+        class="fixed top-20 left-0 right-0 z-[100000] flex flex-col items-center gap-3 pointer-events-none px-4">
+        </div>
 
-    <!-- Toast Template Styles -->
-    <style>
-        .toast {
-            pointer-events: auto;
-            min-width: 320px;
-            max-width: 450px;
-            padding: 1rem 1.25rem;
-            border-radius: 1rem;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
-            animation: toastSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            display: flex;
-            align-items: flex-start;
-            gap: 0.75rem;
-            position: relative;
-        }
-
-        .toast.hiding {
-            animation: toastSlideOut 0.3s ease-in forwards;
-        }
-
-        .toast-success {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.95), rgba(5, 150, 105, 0.95));
-            border: 2px solid rgba(52, 211, 153, 0.5);
-        }
-
-        .toast-error {
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.95), rgba(220, 38, 38, 0.95));
-            border: 2px solid rgba(248, 113, 113, 0.5);
-        }
-
-        .toast-warning {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.95), rgba(217, 119, 6, 0.95));
-            border: 2px solid rgba(251, 191, 36, 0.5);
-        }
-
-        .toast-info {
-            background: linear-gradient(135deg, rgba(14, 165, 233, 0.95), rgba(6, 182, 212, 0.95));
-            border: 2px solid rgba(56, 189, 248, 0.5);
-        }
-
-        .toast-icon {
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: 0.75rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255, 255, 255, 0.2);
-            flex-shrink: 0;
-        }
-
-        .toast-content {
-            flex: 1;
-        }
-
-        .toast-title {
-            font-weight: 700;
-            font-size: 1rem;
-            color: white;
-            margin-bottom: 0.25rem;
-        }
-
-        .toast-message {
-            font-size: 0.875rem;
-            color: rgba(255, 255, 255, 0.9);
-            line-height: 1.4;
-        }
-
-        .toast-close {
-            width: 1.75rem;
-            height: 1.75rem;
-            border-radius: 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
-            cursor: pointer;
-            transition: background 0.2s;
-            flex-shrink: 0;
-            border: none;
-        }
-
-        .toast-close:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .toast-progress {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 0 0 1rem 1rem;
-            overflow: hidden;
-        }
-
-        .toast-progress-bar {
-            height: 100%;
-            background: rgba(255, 255, 255, 0.6);
-            animation: toastProgress var(--duration) linear forwards;
-        }
-
-        @keyframes toastSlideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
+        <!-- Toast Template Styles -->
+        <style>
+            .toast {
+                pointer-events: auto;
+                min-width: 300px;
+                max-width: 420px;
+                padding: 1rem;
+                border-radius: 1rem;
+                backdrop-filter: blur(20px);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                animation: toastSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                position: relative;
+                border: 1px solid rgba(255, 255, 255, 0.2);
             }
 
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes toastSlideOut {
-            from {
-                transform: translateX(0);
-                opacity: 1;
+            .toast.hiding {
+                animation: toastSlideOut 0.3s ease-in forwards;
             }
 
-            to {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-        }
-
-        @keyframes toastProgress {
-            from {
-                width: 100%;
+            .toast-success {
+                background: linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(5, 150, 105, 0.9));
             }
 
-            to {
-                width: 0%;
+            .toast-error {
+                background: linear-gradient(135deg, rgba(239, 68, 68, 0.9), rgba(220, 38, 38, 0.9));
             }
-        }
-    </style>
+
+            .toast-warning {
+                background: linear-gradient(135deg, rgba(245, 158, 11, 0.9), rgba(217, 119, 6, 0.9));
+            }
+
+            .toast-info {
+                background: linear-gradient(135deg, rgba(14, 165, 233, 0.9), rgba(6, 182, 212, 0.9));
+            }
+
+            .toast-icon {
+                width: 2.5rem;
+                height: 2.5rem;
+                border-radius: 0.75rem;
+                display: flex;
+                align-items: center;
+                justify-center;
+                background: rgba(255, 255, 255, 0.2);
+                flex-shrink: 0;
+            }
+
+            .toast-content {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .toast-title {
+                font-weight: 700;
+                font-size: 0.95rem;
+                color: white;
+                margin-bottom: 0.2rem;
+            }
+
+            .toast-message {
+                font-size: 0.85rem;
+                color: rgba(255, 255, 255, 0.95);
+                line-height: 1.3;
+            }
+
+            .toast-close {
+                width: 1.75rem;
+                height: 1.75rem;
+                border-radius: 0.5rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: rgba(255, 255, 255, 0.15);
+                color: white;
+                cursor: pointer;
+                transition: all 0.2s;
+                flex-shrink: 0;
+                border: none;
+            }
+
+            .toast-close:hover {
+                background: rgba(255, 255, 255, 0.3);
+                transform: scale(1.1);
+            }
+
+            .toast-progress {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: rgba(0, 0, 0, 0.2);
+                border-radius: 0 0 1rem 1rem;
+                overflow: hidden;
+            }
+
+            .toast-progress-bar {
+                height: 100%;
+                background: rgba(255, 255, 255, 0.7);
+                animation: toastProgress var(--duration) linear forwards;
+            }
+
+            @keyframes toastSlideIn {
+                from {
+                    transform: translateY(-30px) scale(0.95);
+                    opacity: 0;
+                }
+
+                to {
+                    transform: translateY(0) scale(1);
+                    opacity: 1;
+                }
+            }
+
+            @keyframes toastSlideOut {
+                from {
+                    transform: translateY(0) scale(1);
+                    opacity: 1;
+                }
+
+                to {
+                    transform: translateY(-20px) scale(0.95);
+                    opacity: 0;
+                }
+            }
+
+            @keyframes toastProgress {
+                from {
+                    width: 100%;
+                }
+
+                to {
+                    width: 0%;
+                }
+            }
+        </style>
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startPush('scripts'); ?>
@@ -1420,20 +1419,20 @@
             toast.className = `toast toast-${type}`;
             toast.style.setProperty('--duration', `${duration}ms`);
             toast.innerHTML = `
-                        <div class="toast-icon">
-                            <i class="fas ${icons[type]} text-white text-lg"></i>
-                        </div>
-                        <div class="toast-content">
-                            <div class="toast-title">${title}</div>
-                            <div class="toast-message">${message}</div>
-                        </div>
-                        <button class="toast-close" onclick="closeToast(this.parentElement)">
-                            <i class="fas fa-times text-sm"></i>
-                        </button>
-                        <div class="toast-progress">
-                            <div class="toast-progress-bar"></div>
-                        </div>
-                    `;
+                                        <div class="toast-icon">
+                                            <i class="fas ${icons[type]} text-white text-lg"></i>
+                                        </div>
+                                        <div class="toast-content">
+                                            <div class="toast-title">${title}</div>
+                                            <div class="toast-message">${message}</div>
+                                        </div>
+                                        <button class="toast-close" onclick="closeToast(this.parentElement)">
+                                            <i class="fas fa-times text-sm"></i>
+                                        </button>
+                                        <div class="toast-progress">
+                                            <div class="toast-progress-bar"></div>
+                                        </div>
+                                    `;
 
             container.appendChild(toast);
             setTimeout(() => closeToast(toast), duration);
