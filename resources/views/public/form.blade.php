@@ -293,15 +293,19 @@
                                             <div
                                                 class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
                                                 <p class="text-white mb-4 font-medium text-lg">{{ $i + 1 }}. {{ $question }}</p>
-                                                <select name="form_data[bigfive{{ $i + 1 }}]" class="form-select w-full" required>
-                                                    <option value="">-- Pilih Jawaban --</option>
+                                                <div class="flex flex-wrap items-center gap-3">
                                                     @foreach($bigfive_scale as $val => $label)
-                                                        <option value="{{ $val }}" @if(old('form_data.bigfive' . ($i + 1)) == $val)
-                                                        selected @endif class="bg-slate-900 text-white font-bold">
-                                                            {{ $val }} - {{ $label }}
-                                                        </option>
+                                                        <label class="flex items-center cursor-pointer group">
+                                                            <input type="radio" name="form_data[bigfive{{ $i + 1 }}]" value="{{ $val }}" 
+                                                                   @if(old('form_data.bigfive' . ($i + 1)) == $val) checked @endif
+                                                                   class="sr-only peer" required>
+                                                            <div class="flex flex-col items-center gap-1 px-4 py-3 rounded-lg border-2 border-white/20 peer-checked:border-sky-400 peer-checked:bg-sky-500/20 hover:border-sky-300/50 transition-all duration-200 min-w-[80px]">
+                                                                <span class="text-2xl font-bold text-white">{{ $val }}</span>
+                                                                <span class="text-xs text-gray-300 text-center leading-tight">{{ $label }}</span>
+                                                            </div>
+                                                        </label>
                                                     @endforeach
-                                                </select>
+                                                </div>
                                             </div>
                                         @endforeach
                                     </div>

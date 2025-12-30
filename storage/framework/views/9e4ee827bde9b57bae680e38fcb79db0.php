@@ -231,7 +231,7 @@ unset($__errorArgs, $__bag); ?>
                             <div>
                                 <label for="phone_number"
                                     class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                    No. HP <span class="text-red-400">*</span>
+                                    No HP (IC) <span class="text-red-400">*</span>
                                 </label>
                                 <input type="text" id="phone_number" name="form_data[phone_number]"
                                     value="<?php echo e(old('form_data.phone_number')); ?>"
@@ -450,16 +450,19 @@ unset($__errorArgs, $__bag); ?>
                                             <div
                                                 class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
                                                 <p class="text-white mb-4 font-medium text-lg"><?php echo e($i + 1); ?>. <?php echo e($question); ?></p>
-                                                <select name="form_data[bigfive<?php echo e($i + 1); ?>]" class="form-select w-full" required>
-                                                    <option value="">-- Pilih Jawaban --</option>
+                                                <div class="flex flex-wrap items-center gap-3">
                                                     <?php $__currentLoopData = $bigfive_scale; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                        <option value="<?php echo e($val); ?>" <?php if(old('form_data.bigfive' . ($i + 1)) == $val): ?>
-                                                        selected <?php endif; ?> class="bg-slate-900 text-white font-bold">
-                                                            <?php echo e($val); ?> - <?php echo e($label); ?>
-
-                                                        </option>
+                                                        <label class="flex items-center cursor-pointer group">
+                                                            <input type="radio" name="form_data[bigfive<?php echo e($i + 1); ?>]" value="<?php echo e($val); ?>" 
+                                                                   <?php if(old('form_data.bigfive' . ($i + 1)) == $val): ?> checked <?php endif; ?>
+                                                                   class="sr-only peer" required>
+                                                            <div class="flex flex-col items-center gap-1 px-4 py-3 rounded-lg border-2 border-white/20 peer-checked:border-sky-400 peer-checked:bg-sky-500/20 hover:border-sky-300/50 transition-all duration-200 min-w-[80px]">
+                                                                <span class="text-2xl font-bold text-white"><?php echo e($val); ?></span>
+                                                                <span class="text-xs text-gray-300 text-center leading-tight"><?php echo e($label); ?></span>
+                                                            </div>
+                                                        </label>
                                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                                </select>
+                                                </div>
                                             </div>
                                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                     </div>
