@@ -1175,68 +1175,78 @@
             </div>
 
             <?php if(isset($testimonials) && $testimonials->count() > 0): ?>
-                <!-- Testimoni Grid Design -->
-                <div id="testimonial-container" class="relative max-w-7xl mx-auto">
-                    <div class="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
-                        <?php $__currentLoopData = $testimonials; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $testimoniItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <div class="break-inside-avoid animate-fade-in-up" style="animation-delay: <?php echo e($index * 100); ?>ms">
-                                <div class="relative group">
-                                    <div
-                                        class="absolute -inset-1 bg-gradient-to-r from-sky-500 to-cyan-400 rounded-2xl opacity-20 group-hover:opacity-60 blur transition duration-500">
-                                    </div>
-                                    <div
-                                        class="relative bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl p-6 hover:bg-slate-800/60 transition duration-300">
-                                        <!-- Header: Avatar & Info -->
-                                        <div class="flex items-start gap-4 mb-4">
-                                            <div class="relative flex-shrink-0">
-                                                <div
-                                                    class="w-12 h-12 rounded-full bg-gradient-to-br from-sky-400 to-cyan-300 p-0.5">
-                                                    <div
-                                                        class="w-full h-full rounded-full bg-slate-900 flex items-center justify-center overflow-hidden">
-                                                        <span class="text-lg font-bold text-white">
+                <!-- Single Testimonial Carousel -->
+                <div class="relative max-w-4xl mx-auto">
+                    <!-- Testimonial Card -->
+                    <div id="testimonialCarousel" class="overflow-hidden">
+                        <div id="testimonialTrack" class="flex transition-transform duration-500 ease-out">
+                            <?php $__currentLoopData = $testimonials; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $testimoniItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <div class="w-full flex-shrink-0 px-4">
+                                    <div class="bg-slate-900/60 backdrop-blur-xl border-2 border-white/10 rounded-3xl p-8 md:p-12 relative overflow-hidden hover:border-sky-400/30 transition-all duration-300">
+                                        <!-- Subtle gradient overlay -->
+                                        <div class="absolute inset-0 bg-gradient-to-br from-sky-500/5 to-transparent pointer-events-none"></div>
+                                        
+                                        <!-- Quote Icon -->
+                                        <div class="absolute top-6 right-6 text-sky-500/10">
+                                            <i class="fas fa-quote-right text-6xl"></i>
+                                        </div>
+
+                                        <!-- Content -->
+                                        <div class="relative z-10">
+                                            <!-- Stars -->
+                                            <div class="flex items-center gap-1 mb-6">
+                                                <?php for($i = 1; $i <= 5; $i++): ?>
+                                                    <i class="fas fa-star text-2xl <?php echo e($i <= $testimoniItem->rating ? 'text-amber-400' : 'text-slate-600'); ?>"></i>
+                                                <?php endfor; ?>
+                                            </div>
+
+                                            <!-- Testimonial Text -->
+                                            <blockquote class="text-white text-xl md:text-2xl leading-relaxed mb-8 font-light">
+                                                "<?php echo e($testimoniItem->testimoni); ?>"
+                                            </blockquote>
+
+                                            <!-- Author Info -->
+                                            <div class="flex items-center gap-4 pt-6 border-t border-white/10">
+                                                <div class="w-16 h-16 rounded-full bg-gradient-to-br from-sky-400 to-cyan-300 p-0.5">
+                                                    <div class="w-full h-full rounded-full bg-slate-900 flex items-center justify-center">
+                                                        <span class="text-2xl font-bold text-white">
                                                             <?php echo e(strtoupper(substr($testimoniItem->character_name, 0, 1))); ?>
 
                                                         </span>
                                                     </div>
                                                 </div>
-                                                <div
-                                                    class="absolute -bottom-1 -right-1 bg-blue-500 text-white text-[8px] px-1.5 py-0.5 rounded-full border border-slate-900 flex items-center gap-0.5">
-                                                    <i class="fas fa-check-circle"></i> Verified
+                                                <div>
+                                                    <h4 class="text-white font-bold text-lg"><?php echo e($testimoniItem->character_name); ?></h4>
+                                                    <p class="text-sky-400 text-sm flex items-center gap-2">
+                                                        <i class="fas fa-check-circle text-xs"></i>
+                                                        Warga Los Santos
+                                                    </p>
+                                                    <p class="text-slate-400 text-xs mt-1"><?php echo e($testimoniItem->created_at->diffForHumans()); ?></p>
                                                 </div>
                                             </div>
-                                            <div>
-                                                <h4 class="text-white font-bold text-sm"><?php echo e($testimoniItem->character_name); ?></h4>
-                                                <p class="text-sky-400 text-xs uppercase tracking-wider">Warga Los Santos</p>
-                                                <div class="flex items-center gap-1 mt-1">
-                                                    <?php for($i = 1; $i <= 5; $i++): ?>
-                                                        <i
-                                                            class="fas fa-star text-[10px] <?php echo e($i <= $testimoniItem->rating ? 'text-amber-400' : 'text-slate-600'); ?>"></i>
-                                                    <?php endfor; ?>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Content -->
-                                        <blockquote class="text-slate-300 text-sm leading-relaxed relative z-10">
-                                            <i class="fas fa-quote-left text-sky-500/20 mr-2"></i>
-                                            <?php echo e($testimoniItem->testimoni); ?>
-
-                                            <i class="fas fa-quote-right text-sky-500/20 ml-2"></i>
-                                        </blockquote>
-
-                                        <!-- Footer -->
-                                        <div
-                                            class="mt-4 pt-4 border-t border-white/5 flex items-center justify-between text-xs text-slate-500 font-mono">
-                                            <span><?php echo e($testimoniItem->created_at->diffForHumans()); ?></span>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Arrows -->
+                    <button id="prevBtn" class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-12 h-12 bg-slate-900/80 backdrop-blur-xl border-2 border-white/20 rounded-full flex items-center justify-center text-white hover:border-sky-400 hover:bg-sky-500/20 transition-all duration-300 group">
+                        <i class="fas fa-chevron-left text-lg group-hover:scale-110 transition-transform"></i>
+                    </button>
+                    <button id="nextBtn" class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-12 h-12 bg-slate-900/80 backdrop-blur-xl border-2 border-white/20 rounded-full flex items-center justify-center text-white hover:border-sky-400 hover:bg-sky-500/20 transition-all duration-300 group">
+                        <i class="fas fa-chevron-right text-lg group-hover:scale-110 transition-transform"></i>
+                    </button>
+
+                    <!-- Dots Indicator -->
+                    <div id="dotsContainer" class="flex justify-center gap-2 mt-8">
+                        <?php $__currentLoopData = $testimonials; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <button class="testimonial-dot w-2 h-2 rounded-full bg-white/30 hover:bg-white/50 transition-all duration-300" data-index="<?php echo e($index); ?>"></button>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
                 </div>
             <?php else: ?>
-                <!-- Empty/Fallback State (simplified) -->
                 <div class="text-center text-slate-400 py-12">Belum ada testimoni.</div>
             <?php endif; ?>
         </div>
@@ -1420,6 +1430,42 @@
                 });
             }
 
+
+        // --- Testimonial Carousel ---
+        const testimonialCarousel = {
+            track: document.getElementById('testimonialTrack'),
+            prevBtn: document.getElementById('prevBtn'),
+            nextBtn: document.getElementById('nextBtn'),
+            dots: document.querySelectorAll('.testimonial-dot'),
+            currentIndex: 0,
+            totalSlides: 0,
+
+            init() {
+                if (!this.track) return;
+                this.totalSlides = this.track.children.length;
+                if (this.totalSlides === 0) return;
+                if (this.dots.length > 0) this.dots[0].classList.add('!w-8', '!bg-sky-400');
+                if (this.prevBtn) this.prevBtn.addEventListener('click', () => this.prev());
+                if (this.nextBtn) this.nextBtn.addEventListener('click', () => this.next());
+                this.dots.forEach((dot, index) => { dot.addEventListener('click', () => this.goTo(index)); });
+                this.startAutoPlay();
+            },
+            goTo(index) {
+                this.currentIndex = index;
+                this.track.style.transform = 	ranslateX(-${index * 100}%);
+                this.updateDots();
+            },
+            next() { this.goTo((this.currentIndex + 1) % this.totalSlides); },
+            prev() { this.goTo((this.currentIndex - 1 + this.totalSlides) % this.totalSlides); },
+            updateDots() {
+                this.dots.forEach((dot, i) => {
+                    if (i === this.currentIndex) dot.classList.add('!w-8', '!bg-sky-400');
+                    else dot.classList.remove('!w-8', '!bg-sky-400');
+                });
+            },
+            startAutoPlay() { setInterval(() => this.next(), 5000); }
+        };
+        testimonialCarousel.init();
         }); // Close DOMContentLoaded
 
         // --- REDESIGNED TESTIMONIAL CAROUSEL ENGINE ---
@@ -1428,4 +1474,5 @@
         // ...
     </script>
 <?php $__env->stopPush(); ?>
+
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\website\EMS-IME\public_html\resources\views/public/index.blade.php ENDPATH**/ ?>
