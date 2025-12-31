@@ -270,6 +270,26 @@ class WrappedController extends Controller
     {
         $quotes = [
             [
+                'text' => 'Datang shift dengan doa, pulang dengan cerita. 📖',
+                'author' => null
+            ],
+            [
+                'text' => 'Nggak semua hari happy, tapi kamu tetap hadir. That matters. 🤍',
+                'author' => null
+            ],
+            [
+                'text' => 'Kamu itu bukti kalau kebaikan masih jalan meski dunia ribet. 🌍',
+                'author' => null
+            ],
+            [
+                'text' => 'Tahun ini kamu bukan cuma kerja, tapi literally ngasih harapan. Big W! 🏆',
+                'author' => null
+            ],
+            [
+                'text' => 'Terima kasih sudah jadi manusia baik di dunia yang capek. 🌱',
+                'author' => null
+            ],
+            [
                 'text' => 'Tahun ini kamu literally ngebantu banyak orang. That\'s a flex, bestie! 💪',
                 'author' => null
             ],
