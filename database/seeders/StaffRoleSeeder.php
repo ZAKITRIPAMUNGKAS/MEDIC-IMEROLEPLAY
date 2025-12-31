@@ -26,8 +26,10 @@ class StaffRoleSeeder extends Seeder
                     'manage_users',
                     'view_reports',
                     'manage_attendance',
+                    'manage_attendance_advanced', // Force checkout & manual attendance
                     'manage_settings',
-                    'manage_payroll'
+                    'manage_payroll',
+                    'reply_livechat' // Can reply to live chat as admin
                 ]
             ],
 
@@ -43,8 +45,10 @@ class StaffRoleSeeder extends Seeder
                     'manage_users',
                     'view_reports',
                     'manage_attendance',
+                    'manage_attendance_advanced', // Force checkout & manual attendance
                     'manage_settings',
-                    'manage_payroll'
+                    'manage_payroll',
+                    'reply_livechat' // Can reply to live chat as admin
                 ]
             ],
             // 6 MANAJER
@@ -59,6 +63,7 @@ class StaffRoleSeeder extends Seeder
                     'manage_users',
                     'view_reports',
                     'manage_attendance',
+                    'manage_attendance_advanced', // Force checkout & manual attendance
                     'manage_settings',
                     'manage_payroll'
                 ]
@@ -75,6 +80,7 @@ class StaffRoleSeeder extends Seeder
                     'manage_users',
                     'view_reports',
                     'manage_attendance',
+                    'manage_attendance_advanced', // Force checkout & manual attendance
                     'manage_settings'
                 ]
             ],
@@ -140,18 +146,6 @@ class StaffRoleSeeder extends Seeder
                 ]
             ],
 
-            // Untuk kompatibilitas lama jika ada pengecekan isParamedic()
-            [
-                'name' => 'paramedic',
-                'display_name' => 'Paramedic',
-                'level' => 1, // Setara Perawat
-                'description' => 'Peran lama (kompatibilitas) setara Perawat',
-                'permissions' => [
-                    'view_dashboard',
-                    'manage_forms',
-                    'manage_attendance'
-                ]
-            ],
             [
                 'name' => 'supervisor',
                 'display_name' => 'Supervisor',

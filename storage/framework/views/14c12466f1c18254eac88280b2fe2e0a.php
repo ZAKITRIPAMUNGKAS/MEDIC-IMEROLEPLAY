@@ -810,9 +810,9 @@
                         </a>
 
                         <!-- Secondary Buttons with Glassmorphism -->
-                        <div class="flex flex-col sm:flex-row gap-4">
-                            <button onclick="showRegulationModal()"
-                                class="group inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-xl border-2 border-white/25 text-white font-semibold text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-5 rounded-xl shadow-xl hover:bg-white/20 hover:border-white/40 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]">
+                        <div class="flex flex-col sm:flex-row gap-4 relative z-10">
+                            <button onclick="showRegulationModal()" type="button"
+                                class="relative z-10 group inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-xl border-2 border-white/25 text-white font-semibold text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-5 rounded-xl shadow-xl hover:bg-white/20 hover:border-white/40 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] cursor-pointer">
                                 <i class="fas fa-file-alt text-lg"></i>
                                 <span>Lihat Regulasi</span>
                             </button>
@@ -1566,84 +1566,97 @@
 <?php $__env->stopPush(); ?>
 
 <?php $__env->startPush('scripts'); ?>
-    <script>     // --- Regulation Modal Functions ---     function showRegulationModal() {         const modal = document.getElementById('regulationModal');         if (modal) {             modal.style.display = 'flex';             document.body.style.overflow = 'hidden';         }     }
-          function closeRegulationModal() { const modal = document.getElementById('regulationModal'); if (modal) { modal.style.display = 'none'; document.body.style.overflow = 'auto'; } }
-            function handleModalClick(event) { const modal = document.getElementById('regulationModal'); if (event.target === modal) { closeRegulationModal(); } }
-            function demoSuccess() { showNotification('Data berhasil disimpan!', 'success'); } function demoError() { showNotification('Terjadi kesalahan saat menyimpan data!', 'error'); } function demoWarning() { showNotification('Perhatian! Pastikan data yang diisi sudah benar.', 'warning'); } function demoInfo() { showNotification('Informasi: Form akan otomatis tersimpan setiap 30 detik.', 'info'); }
-            document.addEventListener('DOMContentLoaded', function () {         // Modal Listeners         const modal = document.getElementById('regulationModal');         if (modal) {             modal.addEventListener('click', handleModalClick);             document.addEventListener('keydown', function (event) {                 if (event.key === 'Escape') closeRegulationModal();             });         }
+    <script>
+        // --- Regulation Modal Functions ---
+        function showRegulationModal() {
+            console.log('showRegulationModal called');
+            const modal = document.getElementById('regulationModal');
+            console.log('Modal element:', modal);
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+                console.log('Modal opened successfully');
+            } else {
+                console.error('Modal element not found!');
+            }
+        }
+        function closeRegulationModal() { const modal = document.getElementById('regulationModal'); if (modal) { modal.style.display = 'none'; document.body.style.overflow = 'auto'; } }
+        function handleModalClick(event) { const modal = document.getElementById('regulationModal'); if (event.target === modal) { closeRegulationModal(); } }
+        function demoSuccess() { showNotification('Data berhasil disimpan!', 'success'); } function demoError() { showNotification('Terjadi kesalahan saat menyimpan data!', 'error'); } function demoWarning() { showNotification('Perhatian! Pastikan data yang diisi sudah benar.', 'warning'); } function demoInfo() { showNotification('Informasi: Form akan otomatis tersimpan setiap 30 detik.', 'info'); }
+        document.addEventListener('DOMContentLoaded', function () {         // Modal Listeners         const modal = document.getElementById('regulationModal');         if (modal) {             modal.addEventListener('click', handleModalClick);             document.addEventListener('keydown', function (event) {                 if (event.key === 'Escape') closeRegulationModal();             });         }
 
 
 
-                // --- Testimonial Carousel ---
-                var carouselTrack = document.getElementById('testimonialTrack');
-                var carouselPrevBtn = document.getElementById('prevBtn');
-                var carouselNextBtn = document.getElementById('nextBtn');
-                var carouselDots = document.querySelectorAll('.testimonial-dot');
-                var carouselIndex = 0;
-                var carouselTotal = 0;
+            // --- Testimonial Carousel ---
+            var carouselTrack = document.getElementById('testimonialTrack');
+            var carouselPrevBtn = document.getElementById('prevBtn');
+            var carouselNextBtn = document.getElementById('nextBtn');
+            var carouselDots = document.querySelectorAll('.testimonial-dot');
+            var carouselIndex = 0;
+            var carouselTotal = 0;
 
-                if (carouselTrack) {
-                    carouselTotal = carouselTrack.children.length;
+            if (carouselTrack) {
+                carouselTotal = carouselTrack.children.length;
 
-                    if (carouselTotal > 0) {
-                        // Initial state
-                        if (carouselDots.length > 0) {
-                            carouselDots[0].classList.add('!w-8', '!bg-sky-400', '!shadow-lg', '!shadow-sky-400/50');
-                        }
+                if (carouselTotal > 0) {
+                    // Initial state
+                    if (carouselDots.length > 0) {
+                        carouselDots[0].classList.add('!w-8', '!bg-sky-400', '!shadow-lg', '!shadow-sky-400/50');
+                    }
 
-                        // Functions
-                        function updateCarousel() {
-                            var offset = carouselIndex * -100;
-                            carouselTrack.style.transform = 'translateX(' + offset + '%)';
+                    // Functions
+                    function updateCarousel() {
+                        var offset = carouselIndex * -100;
+                        carouselTrack.style.transform = 'translateX(' + offset + '%)';
 
-                            for (var i = 0; i < carouselDots.length; i++) {
-                                if (i === carouselIndex) {
-                                    carouselDots[i].classList.add('!w-8', '!bg-sky-400', '!shadow-lg', '!shadow-sky-400/50');
-                                } else {
-                                    carouselDots[i].classList.remove('!w-8', '!bg-sky-400', '!shadow-lg', '!shadow-sky-400/50');
-                                }
+                        for (var i = 0; i < carouselDots.length; i++) {
+                            if (i === carouselIndex) {
+                                carouselDots[i].classList.add('!w-8', '!bg-sky-400', '!shadow-lg', '!shadow-sky-400/50');
+                            } else {
+                                carouselDots[i].classList.remove('!w-8', '!bg-sky-400', '!shadow-lg', '!shadow-sky-400/50');
                             }
                         }
-
-                        function nextSlide() {
-                            carouselIndex = (carouselIndex + 1) % carouselTotal;
-                            updateCarousel();
-                        }
-
-                        function prevSlide() {
-                            carouselIndex = (carouselIndex - 1 + carouselTotal) % carouselTotal;
-                            updateCarousel();
-                        }
-
-                        function goToSlide(index) {
-                            carouselIndex = index;
-                            updateCarousel();
-                        }
-
-                        // Event listeners
-                        if (carouselPrevBtn) {
-                            carouselPrevBtn.addEventListener('click', prevSlide);
-                        }
-                        if (carouselNextBtn) {
-                            carouselNextBtn.addEventListener('click', nextSlide);
-                        }
-                        for (var i = 0; i < carouselDots.length; i++) {
-                            (function (idx) {
-                                carouselDots[idx].addEventListener('click', function () {
-                                    goToSlide(idx);
-                                });
-                            })(i);
-                        }
-
-                        // Auto-play
-                        setInterval(nextSlide, 6000);
                     }
+
+                    function nextSlide() {
+                        carouselIndex = (carouselIndex + 1) % carouselTotal;
+                        updateCarousel();
+                    }
+
+                    function prevSlide() {
+                        carouselIndex = (carouselIndex - 1 + carouselTotal) % carouselTotal;
+                        updateCarousel();
+                    }
+
+                    function goToSlide(index) {
+                        carouselIndex = index;
+                        updateCarousel();
+                    }
+
+                    // Event listeners
+                    if (carouselPrevBtn) {
+                        carouselPrevBtn.addEventListener('click', prevSlide);
+                    }
+                    if (carouselNextBtn) {
+                        carouselNextBtn.addEventListener('click', nextSlide);
+                    }
+                    for (var i = 0; i < carouselDots.length; i++) {
+                        (function (idx) {
+                            carouselDots[idx].addEventListener('click', function () {
+                                goToSlide(idx);
+                            });
+                        })(i);
+                    }
+
+                    // Auto-play
+                    setInterval(nextSlide, 6000);
                 }
+            }
 
-            }); // Close DOMContentLoaded
+        }); // Close DOMContentLoaded
 
-            // --- REDESIGNED TESTIMONIAL CAROUSEL ENGINE ---
-            // (Removed: Switched to Grid Layout for better visibility of 10+ reviews)
-        </script>
+        // --- REDESIGNED TESTIMONIAL CAROUSEL ENGINE ---
+        // (Removed: Switched to Grid Layout for better visibility of 10+ reviews)
+    </script>
 <?php $__env->stopPush(); ?>
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\website\EMS-IME\public_html\resources\views/public/index.blade.php ENDPATH**/ ?>

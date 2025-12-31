@@ -1,8 +1,6 @@
-@extends('layouts.app')
+<?php $__env->startSection('title', 'Laporan Absensi - Portal Medis MPK-BA'); ?>
 
-@section('title', 'Laporan Absensi - Portal Medis MPK-BA')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
     <div class="relative min-h-screen py-8 px-4 sm:px-6 lg:px-8">
         <div class="absolute inset-0 bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700"></div>
         <div class="absolute inset-0 bg-black bg-opacity-20"></div>
@@ -19,16 +17,16 @@
                     <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                         <div class="text-right">
                             <p class="text-gray-300 text-sm">Total Data</p>
-                            <p class="text-xl sm:text-2xl font-bold text-white">{{ $attendances->count() }}</p>
+                            <p class="text-xl sm:text-2xl font-bold text-white"><?php echo e($attendances->count()); ?></p>
                         </div>
-                        @if(auth()->user()->hasPermission('manage_attendance_advanced'))
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->hasPermission('manage_attendance_advanced')): ?>
                         <button onclick="openManualEntryModal()"
                             class="w-full sm:w-auto inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg mr-2">
                             <i class="fas fa-plus mr-2"></i><span class="hidden xs:inline">Tambah Manual</span><span
                                 class="xs:hidden">Tambah</span>
                         </button>
-                        @endif
-                        <a href="{{ route('admin.attendance-reports.index', array_merge(request()->query(), ['export' => 'csv'])) }}"
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        <a href="<?php echo e(route('admin.attendance-reports.index', array_merge(request()->query(), ['export' => 'csv']))); ?>"
                             class="w-full sm:w-auto inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg">
                             <i class="fas fa-download mr-2"></i><span class="hidden xs:inline">Download CSV</span><span
                                 class="xs:hidden">Download</span>
@@ -37,21 +35,21 @@
                 </div>
 
                 <!-- Filter Section -->
-                <form method="GET" action="{{ route('admin.attendance-reports.index') }}"
+                <form method="GET" action="<?php echo e(route('admin.attendance-reports.index')); ?>"
                     class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-2">Tanggal Mulai</label>
-                        <input type="date" name="date_from" value="{{ $filters['date_from'] ?? '' }}"
+                        <input type="date" name="date_from" value="<?php echo e($filters['date_from'] ?? ''); ?>"
                             class="w-full bg-white/30 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 text-sm shadow-xl">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-2">Tanggal Selesai</label>
-                        <input type="date" name="date_to" value="{{ $filters['date_to'] ?? '' }}"
+                        <input type="date" name="date_to" value="<?php echo e($filters['date_to'] ?? ''); ?>"
                             class="w-full bg-white/30 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 text-sm shadow-xl">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-2">Cari Staf</label>
-                        <input type="text" name="q" value="{{ request('q') }}" placeholder="Nama staf..."
+                        <input type="text" name="q" value="<?php echo e(request('q')); ?>" placeholder="Nama staf..."
                             class="w-full bg-white/30 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 text-sm shadow-xl">
                     </div>
                     <div>
@@ -59,7 +57,7 @@
                         <select name="clock_in_only"
                             class="w-full bg-white/30 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 appearance-none text-sm shadow-xl">
                             <option value="" class="bg-slate-800 text-slate-100">Semua</option>
-                            <option value="1" @selected(request('clock_in_only') == '1') class="bg-slate-800 text-slate-100">
+                            <option value="1" <?php if(request('clock_in_only') == '1'): echo 'selected'; endif; ?> class="bg-slate-800 text-slate-100">
                                 Hanya yang Masih Clock In</option>
                         </select>
                     </div>
@@ -68,9 +66,9 @@
                         <select name="hospital"
                             class="w-full bg-white/30 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 appearance-none text-sm shadow-xl">
                             <option value="" class="bg-slate-800 text-slate-100">Semua Hospital</option>
-                            <option value="alta" @selected(request('hospital') == 'alta') class="bg-slate-800 text-slate-100">
+                            <option value="alta" <?php if(request('hospital') == 'alta'): echo 'selected'; endif; ?> class="bg-slate-800 text-slate-100">
                                 Alta Hospital</option>
-                            <option value="roxwood" @selected(request('hospital') == 'roxwood') class="bg-slate-800 text-slate-100">
+                            <option value="roxwood" <?php if(request('hospital') == 'roxwood'): echo 'selected'; endif; ?> class="bg-slate-800 text-slate-100">
                                 Roxwood Hospital</option>
                         </select>
                     </div>
@@ -79,7 +77,7 @@
                             class="flex-1 inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white rounded-lg font-semibold transition-all duration-300 text-sm">
                             <i class="fas fa-search mr-2"></i><span class="hidden xs:inline">Filter</span>
                         </button>
-                        <a href="{{ route('admin.attendance-reports.index') }}"
+                        <a href="<?php echo e(route('admin.attendance-reports.index')); ?>"
                             class="inline-flex items-center justify-center px-4 py-3 bg-white/30 text-white rounded-lg border-2 border-sky-400/40 hover:bg-white/40 transition-all duration-300 shadow-xl">
                             <i class="fas fa-times"></i>
                         </a>
@@ -97,7 +95,7 @@
                         </div>
                         <div>
                             <p class="text-gray-300 text-sm">Total Hari Kerja</p>
-                            <p class="text-2xl font-bold text-white">{{ $summary['total_days'] }}</p>
+                            <p class="text-2xl font-bold text-white"><?php echo e($summary['total_days']); ?></p>
                         </div>
                     </div>
                 </div>
@@ -111,7 +109,7 @@
                         <div>
                             <p class="text-gray-300 text-sm">Total Jam Kerja</p>
                             <p class="text-2xl font-bold text-white">
-                                {{ \App\Helpers\TimeHelper::formatDuration($summary['total_hours']) }}</p>
+                                <?php echo e(\App\Helpers\TimeHelper::formatDuration($summary['total_hours'])); ?></p>
                         </div>
                     </div>
                 </div>
@@ -125,7 +123,7 @@
                         <div>
                             <p class="text-gray-300 text-sm">Rata-rata/Hari</p>
                             <p class="text-2xl font-bold text-white">
-                                {{ \App\Helpers\TimeHelper::formatDuration($summary['average_hours']) }}</p>
+                                <?php echo e(\App\Helpers\TimeHelper::formatDuration($summary['average_hours'])); ?></p>
                         </div>
                     </div>
                 </div>
@@ -138,7 +136,7 @@
                         </div>
                         <div>
                             <p class="text-gray-300 text-sm">Staf Aktif</p>
-                            <p class="text-2xl font-bold text-white">{{ $summary['user_stats']->count() }}</p>
+                            <p class="text-2xl font-bold text-white"><?php echo e($summary['user_stats']->count()); ?></p>
                         </div>
                     </div>
                 </div>
@@ -176,10 +174,10 @@
                                         Laporan Absensi Harian
                                     </h3>
                                     <p class="text-gray-300 text-sm">Detail absensi per hari untuk periode
-                                        {{ $filters['date_from'] }} - {{ $filters['date_to'] }}</p>
+                                        <?php echo e($filters['date_from']); ?> - <?php echo e($filters['date_to']); ?></p>
                                 </div>
                                 <div class="mt-4 sm:mt-0">
-                                    <a href="{{ route('admin.attendance-reports.index', array_merge(request()->query(), ['export' => 'csv', 'period' => 'daily'])) }}"
+                                    <a href="<?php echo e(route('admin.attendance-reports.index', array_merge(request()->query(), ['export' => 'csv', 'period' => 'daily']))); ?>"
                                         class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg text-sm">
                                         <i class="fas fa-download mr-2"></i>Export Harian
                                     </a>
@@ -187,7 +185,7 @@
                             </div>
                         </div>
 
-                        @if($attendances->count() > 0)
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($attendances->count() > 0): ?>
                             <div class="overflow-x-auto">
                                 <table class="min-w-full bg-white/5 rounded-lg overflow-hidden">
                                     <thead class="bg-black/30">
@@ -216,23 +214,24 @@
                                             <th
                                                 class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
                                                 Status</th>
-                                            @if(auth()->user()->hasPermission('manage_attendance_advanced'))
+                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->hasPermission('manage_attendance_advanced')): ?>
                                             <th
                                                 class="px-4 py-3 text-left text-sm font-medium text-gray-300 uppercase tracking-wider">
                                                 Catatan</th>
                                             <th
                                                 class="px-4 py-3 text-center text-sm font-medium text-gray-300 uppercase tracking-wider">
                                                 Aksi</th>
-                                            @endif
+                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-white/10">
-                                        @foreach($attendances as $attendance)
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $attendances; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $attendance): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <tr class="table-row-hover transition-all duration-200">
                                                 <td class="px-4 py-4">
                                                     <div class="text-white font-medium">
-                                                        {{ $attendance->work_date->format('d/m/Y') }}</div>
-                                                    <div class="text-gray-400 text-sm">{{ $attendance->work_date->format('l') }}
+                                                        <?php echo e($attendance->work_date->format('d/m/Y')); ?></div>
+                                                    <div class="text-gray-400 text-sm"><?php echo e($attendance->work_date->format('l')); ?>
+
                                                     </div>
                                                 </td>
                                                 <td class="px-4 py-4">
@@ -243,136 +242,145 @@
                                                         </div>
                                                         <div>
                                                             <p class="text-white font-semibold">
-                                                                {{ $attendance->user->name ?? 'User #' . $attendance->user_id }}</p>
-                                                            <p class="text-sky-300 text-xs">{{ $attendance->user->role->display_name ?? '-' }}</p>
-                                                            <span class="inline-flex items-center px-2 py-0.5 mt-1 rounded text-xs font-medium {{ $attendance->session_type === 'meeting' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-green-500/20 text-green-300 border border-green-500/30' }}">
-                                                                <i class="fas {{ $attendance->session_type === 'meeting' ? 'fa-users' : 'fa-briefcase' }} mr-1 text-[10px]"></i>
-                                                                {{ $attendance->session_type === 'meeting' ? 'Meeting' : 'Kerja' }}
+                                                                <?php echo e($attendance->user->name ?? 'User #' . $attendance->user_id); ?></p>
+                                                            <p class="text-sky-300 text-xs"><?php echo e($attendance->user->role->display_name ?? '-'); ?></p>
+                                                            <span class="inline-flex items-center px-2 py-0.5 mt-1 rounded text-xs font-medium <?php echo e($attendance->session_type === 'meeting' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : 'bg-green-500/20 text-green-300 border border-green-500/30'); ?>">
+                                                                <i class="fas <?php echo e($attendance->session_type === 'meeting' ? 'fa-users' : 'fa-briefcase'); ?> mr-1 text-[10px]"></i>
+                                                                <?php echo e($attendance->session_type === 'meeting' ? 'Meeting' : 'Kerja'); ?>
+
                                                             </span>
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td class="px-4 py-4 text-center">
-                                                    @if($attendance->clock_in)
+                                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($attendance->clock_in): ?>
                                                         <div class="text-white font-medium">
-                                                            {{ $attendance->clock_in->setTimezone('Asia/Jakarta')->format('H:i') }}
+                                                            <?php echo e($attendance->clock_in->setTimezone('Asia/Jakarta')->format('H:i')); ?>
+
                                                         </div>
                                                         <div class="text-gray-400 text-sm">WIB</div>
-                                                    @else
+                                                    <?php else: ?>
                                                         <span class="text-gray-400">-</span>
-                                                    @endif
+                                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                 </td>
                                                 <td class="px-4 py-4 text-center">
-                                                    @if($attendance->clock_out)
+                                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($attendance->clock_out): ?>
                                                         <div class="text-white font-medium">
-                                                            {{ $attendance->clock_out->setTimezone('Asia/Jakarta')->format('H:i') }}
+                                                            <?php echo e($attendance->clock_out->setTimezone('Asia/Jakarta')->format('H:i')); ?>
+
                                                         </div>
                                                         <div class="text-gray-400 text-sm">WIB</div>
-                                                    @else
+                                                    <?php else: ?>
                                                         <span class="text-gray-400">-</span>
-                                                    @endif
+                                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                 </td>
                                                 <td class="px-4 py-4 text-center">
-                                                    @if($attendance->scheduled_duty_minutes)
-                                                        <div class="text-white font-medium">{{ $attendance->scheduled_duty_minutes }}
+                                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($attendance->scheduled_duty_minutes): ?>
+                                                        <div class="text-white font-medium"><?php echo e($attendance->scheduled_duty_minutes); ?>
+
                                                             menit</div>
                                                         <div class="text-gray-400 text-xs">Terjadwal</div>
-                                                    @else
+                                                    <?php else: ?>
                                                         <span class="text-gray-400 text-sm">-</span>
-                                                    @endif
+                                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                 </td>
                                                 <td class="px-4 py-4 text-center">
-                                                    @if($attendance->scheduled_duty_minutes && $attendance->is_active)
-                                                        @php
+                                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($attendance->scheduled_duty_minutes && $attendance->is_active): ?>
+                                                        <?php
                                                             $remainingTime = $attendance->getRemainingTime();
-                                                        @endphp
-                                                        @if($remainingTime !== null && $remainingTime > 0)
+                                                        ?>
+                                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($remainingTime !== null && $remainingTime > 0): ?>
                                                             <div class="text-yellow-300 font-medium"
-                                                                id="remaining-time-{{ $attendance->id }}"
-                                                                data-end-time="{{ $attendance->scheduled_end_time ? $attendance->scheduled_end_time->toISOString() : '' }}">
-                                                                {{ \App\Helpers\TimeHelper::formatDuration($remainingTime) }}
+                                                                id="remaining-time-<?php echo e($attendance->id); ?>"
+                                                                data-end-time="<?php echo e($attendance->scheduled_end_time ? $attendance->scheduled_end_time->toISOString() : ''); ?>">
+                                                                <?php echo e(\App\Helpers\TimeHelper::formatDuration($remainingTime)); ?>
+
                                                             </div>
                                                             <div class="text-yellow-400 text-xs">Tersisa</div>
-                                                        @else
+                                                        <?php else: ?>
                                                             <div class="text-red-300 font-medium">00:00:00</div>
                                                             <div class="text-red-400 text-xs">Habis</div>
-                                                        @endif
-                                                    @elseif($attendance->scheduled_duty_minutes && $attendance->clock_out)
-                                                        @php
+                                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                                    <?php elseif($attendance->scheduled_duty_minutes && $attendance->clock_out): ?>
+                                                        <?php
                                                             $elapsedTime = $attendance->clock_in->diffInSeconds($attendance->clock_out);
-                                                        @endphp
+                                                        ?>
                                                         <div class="text-white font-medium">
-                                                            {{ \App\Helpers\TimeHelper::formatDuration($elapsedTime) }}</div>
+                                                            <?php echo e(\App\Helpers\TimeHelper::formatDuration($elapsedTime)); ?></div>
                                                         <div class="text-gray-400 text-xs">Berjalan</div>
-                                                    @elseif($attendance->is_active && !$attendance->scheduled_duty_minutes)
-                                                        @php
+                                                    <?php elseif($attendance->is_active && !$attendance->scheduled_duty_minutes): ?>
+                                                        <?php
                                                             $elapsedTime = $attendance->clock_in->diffInSeconds(\Carbon\Carbon::now('Asia/Jakarta'));
-                                                        @endphp
-                                                        <div class="text-white font-medium" id="elapsed-time-{{ $attendance->id }}"
-                                                            data-clock-in="{{ $attendance->clock_in->toISOString() }}">
-                                                            {{ \App\Helpers\TimeHelper::formatDuration($elapsedTime) }}
+                                                        ?>
+                                                        <div class="text-white font-medium" id="elapsed-time-<?php echo e($attendance->id); ?>"
+                                                            data-clock-in="<?php echo e($attendance->clock_in->toISOString()); ?>">
+                                                            <?php echo e(\App\Helpers\TimeHelper::formatDuration($elapsedTime)); ?>
+
                                                         </div>
                                                         <div class="text-gray-400 text-xs">Berjalan</div>
-                                                    @else
+                                                    <?php else: ?>
                                                         <span class="text-gray-400 text-sm">-</span>
-                                                    @endif
+                                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                 </td>
                                                 <td class="px-4 py-4 text-center">
                                                     <div class="text-white font-medium">
-                                                        @if($attendance->session_duration)
-                                                            {{ \App\Helpers\TimeHelper::formatDuration($attendance->session_duration) }}
-                                                        @else
-                                                            {{ \App\Helpers\TimeHelper::formatDuration($attendance->total_hours * 60) }}
-                                                        @endif
+                                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($attendance->session_duration): ?>
+                                                            <?php echo e(\App\Helpers\TimeHelper::formatDuration($attendance->session_duration)); ?>
+
+                                                        <?php else: ?>
+                                                            <?php echo e(\App\Helpers\TimeHelper::formatDuration($attendance->total_hours * 60)); ?>
+
+                                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                     </div>
                                                 </td>
                                                 <td class="px-4 py-4 text-center">
-                                                    @if($attendance->clock_out)
+                                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($attendance->clock_out): ?>
                                                         <span
                                                             class="status-badge inline-flex items-center px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-sm font-medium border border-green-500/30">
                                                             <i class="fas fa-check-circle mr-1"></i>Selesai
                                                         </span>
-                                                    @else
+                                                    <?php else: ?>
                                                         <span
                                                             class="status-badge inline-flex items-center px-3 py-1 bg-yellow-500/20 text-yellow-300 rounded-full text-sm font-medium border border-yellow-500/30">
                                                             <i class="fas fa-clock mr-1"></i>Belum Selesai
                                                         </span>
-                                                    @endif
+                                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                 </td>
-                                                @if(auth()->user()->hasPermission('manage_attendance_advanced'))
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->hasPermission('manage_attendance_advanced')): ?>
                                                 <td class="px-4 py-4">
-                                                    @if($attendance->notes)
+                                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($attendance->notes): ?>
                                                         <div x-data="{ expanded: false }">
                                                             <div class="text-white text-sm max-w-[200px]" 
                                                                  :class="expanded ? '' : 'line-clamp-2'" 
-                                                                 title="{{ $attendance->notes }}">
-                                                                {{ $attendance->notes }}
+                                                                 title="<?php echo e($attendance->notes); ?>">
+                                                                <?php echo e($attendance->notes); ?>
+
                                                             </div>
-                                                            @if(strlen($attendance->notes) > 50)
+                                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(strlen($attendance->notes) > 50): ?>
                                                                 <button @click="expanded = !expanded" 
                                                                         class="text-xs text-sky-400 hover:text-sky-300 mt-1 focus:outline-none hover:underline">
                                                                     <span x-text="expanded ? 'Sembunyikan' : 'Selengkapnya'"></span>
                                                                 </button>
-                                                            @endif
+                                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                         </div>
-                                                    @else
+                                                    <?php else: ?>
                                                         <span class="text-gray-500">-</span>
-                                                    @endif
+                                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                 </td>
                                                 <td class="px-4 py-4 text-center">
                                                     <div class="flex items-center justify-center gap-2">
-                                                        @if(!$attendance->clock_out)
+                                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!$attendance->clock_out): ?>
                                                             <button
-                                                                onclick="forceCheckOut(event, {{ $attendance->id }}, {{ json_encode($attendance->user->name ?? 'User #' . $attendance->user_id) }})"
+                                                                onclick="forceCheckOut(event, <?php echo e($attendance->id); ?>, <?php echo e(json_encode($attendance->user->name ?? 'User #' . $attendance->user_id)); ?>)"
                                                                 class="force-checkout-btn inline-flex items-center px-2 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-red-200 rounded-lg text-xs font-medium border border-red-500/30 hover:border-red-500/50 transition-all duration-200"
                                                                 title="Force Check Out">
                                                                 <i class="fas fa-power-off mr-1"></i>Force
                                                             </button>
-                                                        @endif
+                                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                                                         <!-- Edit Button -->
                                                         <button
-                                                            onclick="openEditModal({{ $attendance->id }}, '{{ $attendance->clock_in->format('H:i') }}', '{{ $attendance->clock_out ? $attendance->clock_out->format('H:i') : '' }}', {{ json_encode($attendance->user->name ?? 'User #' . $attendance->user_id) }}, '{{ $attendance->work_date->format('d/m/Y') }}')"
+                                                            onclick="openEditModal(<?php echo e($attendance->id); ?>, '<?php echo e($attendance->clock_in->format('H:i')); ?>', '<?php echo e($attendance->clock_out ? $attendance->clock_out->format('H:i') : ''); ?>', <?php echo e(json_encode($attendance->user->name ?? 'User #' . $attendance->user_id)); ?>, '<?php echo e($attendance->work_date->format('d/m/Y')); ?>')"
                                                             class="inline-flex items-center px-2 py-1.5 bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 hover:text-sky-200 rounded-lg text-xs font-medium border border-sky-500/30 hover:border-sky-500/50 transition-all duration-200"
                                                             title="Edit Jam Kerja">
                                                             <i class="fas fa-edit mr-1"></i>Edit
@@ -380,57 +388,58 @@
 
                                                         <!-- Delete Button -->
                                                         <button
-                                                            onclick="deleteAttendance({{ $attendance->id }}, {{ json_encode($attendance->user->name ?? 'User #' . $attendance->user_id) }})"
+                                                            onclick="deleteAttendance(<?php echo e($attendance->id); ?>, <?php echo e(json_encode($attendance->user->name ?? 'User #' . $attendance->user_id)); ?>)"
                                                             class="inline-flex items-center px-2 py-1.5 bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-red-200 rounded-lg text-xs font-medium border border-red-500/30 hover:border-red-500/50 transition-all duration-200"
                                                             title="Hapus Data">
                                                             <i class="fas fa-trash mr-1"></i>Hapus
                                                         </button>
                                                     </div>
                                                 </td>
-                                                @endif
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                             </tr>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </tbody>
                                 </table>
                             </div>
 
                             <!-- Pagination Links -->
-                            @if($attendances->hasPages())
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($attendances->hasPages()): ?>
                                 <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
                                     <div class="text-sm text-gray-300">
-                                        Menampilkan {{ $attendances->firstItem() }} - {{ $attendances->lastItem() }} dari
-                                        {{ $attendances->total() }} data
+                                        Menampilkan <?php echo e($attendances->firstItem()); ?> - <?php echo e($attendances->lastItem()); ?> dari
+                                        <?php echo e($attendances->total()); ?> data
                                     </div>
                                     <div class="flex items-center space-x-2">
-                                        @if($attendances->onFirstPage())
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($attendances->onFirstPage()): ?>
                                             <span class="px-3 py-2 bg-white/10 text-gray-400 rounded-lg cursor-not-allowed">
                                                 <i class="fas fa-chevron-left"></i>
                                             </span>
-                                        @else
-                                            <a href="{{ $attendances->previousPageUrl() }}"
+                                        <?php else: ?>
+                                            <a href="<?php echo e($attendances->previousPageUrl()); ?>"
                                                 class="px-3 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-all">
                                                 <i class="fas fa-chevron-left"></i>
                                             </a>
-                                        @endif
+                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                                         <span class="px-4 py-2 bg-sky-500/30 text-white rounded-lg font-medium">
-                                            {{ $attendances->currentPage() }} / {{ $attendances->lastPage() }}
+                                            <?php echo e($attendances->currentPage()); ?> / <?php echo e($attendances->lastPage()); ?>
+
                                         </span>
 
-                                        @if($attendances->hasMorePages())
-                                            <a href="{{ $attendances->nextPageUrl() }}"
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($attendances->hasMorePages()): ?>
+                                            <a href="<?php echo e($attendances->nextPageUrl()); ?>"
                                                 class="px-3 py-2 bg-white/20 text-white rounded-lg hover:bg-white/30 transition-all">
                                                 <i class="fas fa-chevron-right"></i>
                                             </a>
-                                        @else
+                                        <?php else: ?>
                                             <span class="px-3 py-2 bg-white/10 text-gray-400 rounded-lg cursor-not-allowed">
                                                 <i class="fas fa-chevron-right"></i>
                                             </span>
-                                        @endif
+                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
                                 </div>
-                            @endif
-                        @else
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        <?php else: ?>
                             <div class="text-center py-12">
                                 <div
                                     class="w-16 h-16 bg-sky-700/40 rounded-full flex items-center justify-center mx-auto mb-4 border border-sky-400/30">
@@ -439,7 +448,7 @@
                                 <h3 class="text-xl font-semibold text-white mb-2">Tidak Ada Data</h3>
                                 <p class="text-sky-200">Tidak ada data absensi untuk periode yang dipilih</p>
                             </div>
-                        @endif
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
 
                     <!-- Weekly Report Tab -->
@@ -452,10 +461,10 @@
                                         Laporan Absensi Mingguan
                                     </h3>
                                     <p class="text-gray-300 text-sm">Rekap absensi per minggu untuk periode
-                                        {{ $filters['date_from'] }} - {{ $filters['date_to'] }}</p>
+                                        <?php echo e($filters['date_from']); ?> - <?php echo e($filters['date_to']); ?></p>
                                 </div>
                                 <div class="mt-4 sm:mt-0">
-                                    <a href="{{ route('admin.attendance-reports.index', array_merge(request()->query(), ['export' => 'weekly'])) }}"
+                                    <a href="<?php echo e(route('admin.attendance-reports.index', array_merge(request()->query(), ['export' => 'weekly']))); ?>"
                                         class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg text-sm">
                                         <i class="fas fa-download mr-2"></i>Export Mingguan
                                     </a>
@@ -463,13 +472,13 @@
                             </div>
                         </div>
 
-                        @php
+                        <?php
                             $weeklyData = $attendances->groupBy(function ($attendance) {
                                 return $attendance->work_date->startOfWeek()->format('Y-m-d');
                             });
-                        @endphp
+                        ?>
 
-                        @if($weeklyData->count() > 0)
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($weeklyData->count() > 0): ?>
                             <div class="overflow-x-auto">
                                 <table class="min-w-full bg-white/5 rounded-lg overflow-hidden">
                                     <thead class="bg-black/30">
@@ -495,71 +504,72 @@
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-white/10">
-                                        @foreach($weeklyData as $weekStart => $weekAttendances)
-                                            @php
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $weeklyData; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $weekStart => $weekAttendances): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <?php
                                                 $weekEnd = \Carbon\Carbon::parse($weekStart)->endOfWeek();
                                                 $totalHours = $weekAttendances->sum('session_duration');
                                                 $totalDays = $weekAttendances->count();
                                                 $averageHours = $totalDays > 0 ? $totalHours / $totalDays : 0;
                                                 $activeStaff = $weekAttendances->pluck('user_id')->unique()->count();
-                                            @endphp
+                                            ?>
                                             <tr class="table-row-hover transition-all duration-200">
                                                 <td class="px-4 py-4">
                                                     <div class="text-white font-medium">
-                                                        {{ \Carbon\Carbon::parse($weekStart)->format('d/m') }} -
-                                                        {{ $weekEnd->format('d/m/Y') }}
+                                                        <?php echo e(\Carbon\Carbon::parse($weekStart)->format('d/m')); ?> -
+                                                        <?php echo e($weekEnd->format('d/m/Y')); ?>
+
                                                     </div>
                                                     <div class="text-gray-400 text-sm">Minggu
-                                                        ke-{{ \Carbon\Carbon::parse($weekStart)->weekOfYear }}</div>
+                                                        ke-<?php echo e(\Carbon\Carbon::parse($weekStart)->weekOfYear); ?></div>
                                                 </td>
                                                 <td class="px-4 py-4 text-center">
-                                                    <div class="text-white font-medium text-lg">{{ $totalDays }}</div>
-                                                </td>
-                                                <td class="px-4 py-4 text-center">
-                                                    <div class="text-white font-medium text-lg">
-                                                        {{ \App\Helpers\TimeHelper::formatDuration($totalHours) }}</div>
+                                                    <div class="text-white font-medium text-lg"><?php echo e($totalDays); ?></div>
                                                 </td>
                                                 <td class="px-4 py-4 text-center">
                                                     <div class="text-white font-medium text-lg">
-                                                        {{ \App\Helpers\TimeHelper::formatDuration($averageHours) }}</div>
+                                                        <?php echo e(\App\Helpers\TimeHelper::formatDuration($totalHours)); ?></div>
                                                 </td>
                                                 <td class="px-4 py-4 text-center">
-                                                    <div class="text-white font-medium text-lg">{{ $activeStaff }}</div>
+                                                    <div class="text-white font-medium text-lg">
+                                                        <?php echo e(\App\Helpers\TimeHelper::formatDuration($averageHours)); ?></div>
+                                                </td>
+                                                <td class="px-4 py-4 text-center">
+                                                    <div class="text-white font-medium text-lg"><?php echo e($activeStaff); ?></div>
                                                 </td>
                                                 <td class="px-4 py-4">
-                                                    @php
+                                                    <?php
                                                         $byUser = $weekAttendances->groupBy('user_id');
-                                                    @endphp
+                                                    ?>
                                                     <div class="space-y-2">
-                                                        @foreach($byUser as $userId => $items)
-                                                            @php
+                                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $byUser; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $userId => $items): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                            <?php
                                                                 $uTotal = $items->sum('session_duration');
                                                                 $u = $items->first()->user;
                                                                 $uDays = $items->count();
                                                                 $uAvg = $uDays > 0 ? $uTotal / $uDays : 0;
-                                                            @endphp
+                                                            ?>
                                                             <div class="bg-white/5 rounded-lg p-3 border border-white/10">
                                                                 <div class="flex items-center justify-between mb-1">
                                                                     <span
-                                                                        class="font-semibold text-white text-sm">{{ $u?->name ?? 'User #' . $userId }}</span>
-                                                                    <span class="text-xs text-gray-400">{{ $uDays }} hari</span>
+                                                                        class="font-semibold text-white text-sm"><?php echo e($u?->name ?? 'User #' . $userId); ?></span>
+                                                                    <span class="text-xs text-gray-400"><?php echo e($uDays); ?> hari</span>
                                                                 </div>
                                                                 <div class="text-xs text-gray-300">
                                                                     Total: <span
-                                                                        class="text-white font-medium">{{ \App\Helpers\TimeHelper::formatDuration($uTotal) }}</span>
+                                                                        class="text-white font-medium"><?php echo e(\App\Helpers\TimeHelper::formatDuration($uTotal)); ?></span>
                                                                     | Rata: <span
-                                                                        class="text-white font-medium">{{ \App\Helpers\TimeHelper::formatDuration($uAvg) }}</span>
+                                                                        class="text-white font-medium"><?php echo e(\App\Helpers\TimeHelper::formatDuration($uAvg)); ?></span>
                                                                 </div>
                                                             </div>
-                                                        @endforeach
+                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                     </div>
                                                 </td>
                                             </tr>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </tbody>
                                 </table>
                             </div>
-                        @else
+                        <?php else: ?>
                             <div class="text-center py-12">
                                 <div
                                     class="w-16 h-16 bg-sky-700/40 rounded-full flex items-center justify-center mx-auto mb-4 border border-sky-400/30">
@@ -568,7 +578,7 @@
                                 <h3 class="text-xl font-semibold text-white mb-2">Tidak Ada Data</h3>
                                 <p class="text-sky-200">Tidak ada data absensi untuk periode yang dipilih</p>
                             </div>
-                        @endif
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
 
                     <!-- Monthly Report Tab -->
@@ -581,10 +591,10 @@
                                         Laporan Absensi Bulanan
                                     </h3>
                                     <p class="text-gray-300 text-sm">Rekap absensi per bulan untuk periode
-                                        {{ $filters['date_from'] }} - {{ $filters['date_to'] }}</p>
+                                        <?php echo e($filters['date_from']); ?> - <?php echo e($filters['date_to']); ?></p>
                                 </div>
                                 <div class="mt-4 sm:mt-0">
-                                    <a href="{{ route('admin.attendance-reports.index', array_merge(request()->query(), ['export' => 'csv', 'period' => 'monthly'])) }}"
+                                    <a href="<?php echo e(route('admin.attendance-reports.index', array_merge(request()->query(), ['export' => 'csv', 'period' => 'monthly']))); ?>"
                                         class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg text-sm">
                                         <i class="fas fa-download mr-2"></i>Export Bulanan
                                     </a>
@@ -592,13 +602,13 @@
                             </div>
                         </div>
 
-                        @php
+                        <?php
                             $monthlyData = $attendances->groupBy(function ($attendance) {
                                 return $attendance->work_date->format('Y-m');
                             });
-                        @endphp
+                        ?>
 
-                        @if($monthlyData->count() > 0)
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($monthlyData->count() > 0): ?>
                             <div class="overflow-x-auto">
                                 <table class="min-w-full bg-white/5 rounded-lg overflow-hidden">
                                     <thead class="bg-black/30">
@@ -624,71 +634,74 @@
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-white/10">
-                                        @foreach($monthlyData as $month => $monthAttendances)
-                                            @php
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $monthlyData; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $month => $monthAttendances): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <?php
                                                 $totalHours = $monthAttendances->sum('session_duration');
                                                 $uniqueDaysCount = $monthAttendances->unique('work_date')->count();
                                                 $averageHours = $uniqueDaysCount > 0 ? $totalHours / $uniqueDaysCount : 0;
                                                 $activeStaff = $monthAttendances->pluck('user_id')->unique()->count();
-                                            @endphp
+                                            ?>
                                             <tr class="table-row-hover transition-all duration-200">
                                                 <td class="px-4 py-4">
                                                     <div class="text-white font-medium text-lg">
-                                                        {{ \Carbon\Carbon::createFromFormat('Y-m', $month)->format('F Y') }}
+                                                        <?php echo e(\Carbon\Carbon::createFromFormat('Y-m', $month)->format('F Y')); ?>
+
                                                     </div>
                                                     <div class="text-gray-400 text-sm">
-                                                        {{ \Carbon\Carbon::createFromFormat('Y-m', $month)->format('M Y') }}
+                                                        <?php echo e(\Carbon\Carbon::createFromFormat('Y-m', $month)->format('M Y')); ?>
+
                                                     </div>
                                                 </td>
                                                 <td class="px-4 py-4 text-center">
-                                                    <div class="text-white font-medium text-lg">{{ $monthAttendances->count() }}
+                                                    <div class="text-white font-medium text-lg"><?php echo e($monthAttendances->count()); ?>
+
                                                     </div>
                                                 </td>
                                                 <td class="px-4 py-4 text-center">
                                                     <div class="text-white font-medium text-lg">
-                                                        {{ \App\Helpers\TimeHelper::formatDuration($totalHours) }}</div>
+                                                        <?php echo e(\App\Helpers\TimeHelper::formatDuration($totalHours)); ?></div>
                                                 </td>
                                                 <td class="px-4 py-4 text-center">
                                                     <div class="text-white font-medium text-lg">
-                                                        {{ \App\Helpers\TimeHelper::formatDuration($averageHours) }}</div>
+                                                        <?php echo e(\App\Helpers\TimeHelper::formatDuration($averageHours)); ?></div>
                                                 </td>
                                                 <td class="px-4 py-4 text-center">
-                                                    <div class="text-white font-medium text-lg">{{ $activeStaff }}</div>
+                                                    <div class="text-white font-medium text-lg"><?php echo e($activeStaff); ?></div>
                                                 </td>
                                                 <td class="px-4 py-4">
-                                                    @php
+                                                    <?php
                                                         $byUser = $monthAttendances->groupBy('user_id');
-                                                    @endphp
+                                                    ?>
                                                     <div class="space-y-2">
-                                                        @foreach($byUser as $userId => $items)
-                                                            @php
+                                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $byUser; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $userId => $items): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                            <?php
                                                                 $uTotal = $items->sum('session_duration');
                                                                 $u = $items->first()->user;
                                                                 $uDays = $items->count();
                                                                 $uAvg = $uDays > 0 ? $uTotal / $uDays : 0;
-                                                            @endphp
+                                                            ?>
                                                             <div class="bg-white/5 rounded-lg p-3 border border-white/10">
                                                                 <div class="flex items-center justify-between mb-1">
                                                                     <span
-                                                                        class="font-semibold text-white text-sm">{{ $u?->name ?? 'User #' . $userId }}</span>
-                                                                    <span class="text-xs text-gray-400">{{ $uDays }} hari</span>
+                                                                        class="font-semibold text-white text-sm"><?php echo e($u?->name ?? 'User #' . $userId); ?></span>
+                                                                    <span class="text-xs text-gray-400"><?php echo e($uDays); ?> hari</span>
                                                                 </div>
                                                                 <div class="text-xs text-gray-300">
                                                                     Total: <span
-                                                                        class="text-white font-medium">{{ \App\Helpers\TimeHelper::formatDuration($uTotal) }}</span>
+                                                                        class="text-white font-medium"><?php echo e(\App\Helpers\TimeHelper::formatDuration($uTotal)); ?></span>
                                                                     | Rata: <span
-                                                                        class="text-white font-medium">{{ \App\Helpers\TimeHelper::formatDuration($uAvg) }}</span>
+                                                                        class="text-white font-medium"><?php echo e(\App\Helpers\TimeHelper::formatDuration($uAvg)); ?></span>
                                                                 </div>
                                                             </div>
-                                                        @endforeach
+                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                     </div>
                                                 </td>
                                             </tr>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </tbody>
                                 </table>
                             </div>
-                        @else
+                        <?php else: ?>
                             <div class="text-center py-12">
                                 <div
                                     class="w-16 h-16 bg-sky-700/40 rounded-full flex items-center justify-center mx-auto mb-4 border border-sky-400/30">
@@ -697,13 +710,13 @@
                                 <h3 class="text-xl font-semibold text-white mb-2">Tidak Ada Data</h3>
                                 <p class="text-sky-200">Tidak ada data absensi untuk periode yang dipilih</p>
                             </div>
-                        @endif
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
                 </div>
             </div>
 
             <!-- User Statistics -->
-            @if($summary['user_stats']->count() > 0)
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($summary['user_stats']->count() > 0): ?>
                 <div class="glass-effect rounded-2xl elegant-shadow-lg p-6 mb-8">
                     <h3 class="text-xl font-bold text-white mb-6 flex items-center">
                         <i class="fas fa-chart-bar mr-2 text-sky-400"></i>
@@ -730,7 +743,7 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-white/10">
-                                @foreach($summary['user_stats'] as $userStat)
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $summary['user_stats']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $userStat): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <tr class="hover:bg-white/5 transition-colors duration-200">
                                         <td class="px-4 py-4">
                                             <div class="flex items-center">
@@ -739,26 +752,27 @@
                                                     <i class="fas fa-user text-white text-sm"></i>
                                                 </div>
                                                 <div>
-                                                    <p class="text-white font-semibold">{{ $userStat['user']->name }}</p>
+                                                    <p class="text-white font-semibold"><?php echo e($userStat['user']->name); ?></p>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="px-4 py-4 text-center text-white font-medium">{{ $userStat['total_days'] }}</td>
+                                        <td class="px-4 py-4 text-center text-white font-medium"><?php echo e($userStat['total_days']); ?></td>
                                         <td class="px-4 py-4 text-center text-white font-medium">
-                                            {{ \App\Helpers\TimeHelper::formatDuration($userStat['total_hours']) }}</td>
+                                            <?php echo e(\App\Helpers\TimeHelper::formatDuration($userStat['total_hours'])); ?></td>
                                         <td class="px-4 py-4 text-center text-white font-medium">
-                                            {{ \App\Helpers\TimeHelper::formatDuration($userStat['average_hours']) }}</td>
+                                            <?php echo e(\App\Helpers\TimeHelper::formatDuration($userStat['average_hours'])); ?></td>
                                         <td class="px-4 py-4 text-center text-gray-300 text-sm">
-                                            {{ \Carbon\Carbon::parse($userStat['first_attendance'])->format('d/m') }} -
-                                            {{ \Carbon\Carbon::parse($userStat['last_attendance'])->format('d/m/Y') }}
+                                            <?php echo e(\Carbon\Carbon::parse($userStat['first_attendance'])->format('d/m')); ?> -
+                                            <?php echo e(\Carbon\Carbon::parse($userStat['last_attendance'])->format('d/m/Y')); ?>
+
                                         </td>
                                     </tr>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </tbody>
                         </table>
                     </div>
                 </div>
-            @endif
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
             <!-- Manual Entry Modal -->
             <div id="manualEntryModal"
@@ -781,7 +795,7 @@
 
                     <!-- Modal Body -->
                     <form id="manualEntryForm" class="p-6 space-y-4">
-                        @csrf
+                        <?php echo csrf_field(); ?>
 
                         <!-- Staff Selection -->
                         <div>
@@ -791,9 +805,9 @@
                             <select name="user_id" id="user_id" required
                                 class="w-full bg-white/20 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400">
                                 <option value="" class="bg-slate-800">-- Pilih Staff --</option>
-                                @foreach($users as $user)
-                                    <option value="{{ $user->id }}" class="bg-slate-800">{{ $user->name }}</option>
-                                @endforeach
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($user->id); ?>" class="bg-slate-800"><?php echo e($user->name); ?></option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </select>
                             <p class="text-red-400 text-sm mt-1 hidden" id="error-user_id"></p>
                         </div>
@@ -1072,9 +1086,9 @@
         to { width: 0%; }
     }
     </style>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
     <script>
     // Toast Notification System
     function showToast(type, title, message, duration = 5000) {
@@ -1178,7 +1192,7 @@
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '<?php echo e(csrf_token()); ?>',
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify(data)
@@ -1226,7 +1240,7 @@
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '<?php echo e(csrf_token()); ?>',
                     'Accept': 'application/json'
                 }
             });
@@ -1330,9 +1344,9 @@
 
         try {
             // Get CSRF token from meta tag or use csrf_token() helper
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo e(csrf_token()); ?>';
 
-            const response = await fetch(`{{ route('admin.attendance-reports.force-checkout') }}`, {
+            const response = await fetch(`<?php echo e(route('admin.attendance-reports.force-checkout')); ?>`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1411,7 +1425,7 @@
 
     // Auto-refresh stats every 30 seconds
     setInterval(function() {
-        fetch('{{ route("admin.attendance-reports.stats") }}?period=month')
+        fetch('<?php echo e(route("admin.attendance-reports.stats")); ?>?period=month')
             .then(response => response.json())
             .then(data => {
                 // Update stats if needed
@@ -1498,11 +1512,11 @@
         const data = Object.fromEntries(formData.entries());
 
         try {
-            const response = await fetch('{{ route("admin.attendance-reports.manual") }}', {
+            const response = await fetch('<?php echo e(route("admin.attendance-reports.manual")); ?>', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '<?php echo e(csrf_token()); ?>',
                     'Accept': 'application/json'
                 },
                 body: JSON.stringify(data)
@@ -1542,4 +1556,5 @@
     });
 
     </script>
-@endpush
+<?php $__env->stopPush(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\website\EMS-IME\public_html\resources\views/admin/attendance-reports/index.blade.php ENDPATH**/ ?>

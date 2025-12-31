@@ -19,6 +19,18 @@ class ChatWidget extends Component
     // Renamed from messages to chatMessages to avoid conflict with Livewire validation
     public $chatMessages = [];
 
+    /**
+     * Check if current user can reply to chats (has permission)
+     */
+    public function getCanReplyProperty()
+    {
+        if (!Auth::check()) {
+            return false;
+        }
+
+        return Auth::user()->hasPermission('reply_livechat');
+    }
+
     public function mount()
     {
         // Auto-fill name if logged in

@@ -1343,27 +1343,49 @@
                                     <span>Profil</span>
                                 </a>
 
-                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->hasPermission('manage_users')): ?>
-                                    <a href="<?php echo e(route('admin.staff.index')); ?>"
-                                        class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
-                                        <i class="fas fa-users-cog mr-2"></i>
-                                        <span>Staf</span>
-                                    </a>
+                                
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('view_reports')): ?>
+                                    <div class="relative group">
+                                        <button
+                                            class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
+                                            <i class="fas fa-user-shield mr-2"></i>
+                                            <span>Admin</span>
+                                            <i class="fas fa-chevron-down ml-2 text-xs"></i>
+                                        </button>
 
-                                    <a href="<?php echo e(route('admin.chat.index')); ?>"
-                                        class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
-                                        <i class="fas fa-comments mr-2"></i>
-                                        <span>Live Chat</span>
-                                    </a>
-                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-
-
-                                <?php if(auth()->user()->hasPermission('view_reports')): ?>
-                                    <a href="<?php echo e(route('admin.attendance-reports.index')); ?>"
-                                        class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
-                                        <i class="fas fa-chart-bar mr-2"></i>
-                                        <span>Laporan</span>
-                                    </a>
+                                        
+                                        <div
+                                            class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                                            <div class="py-2">
+                                                <?php if(auth()->user()->hasPermission('manage_users')): ?>
+                                                    <a href="<?php echo e(route('admin.staff.index')); ?>"
+                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                        <i class="fas fa-users-cog mr-3 w-5"></i>
+                                                        Manajemen Staf
+                                                    </a>
+                                                    <a href="<?php echo e(route('admin.chat.index')); ?>"
+                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                        <i class="fas fa-comments mr-3 w-5"></i>
+                                                        Live Chat
+                                                    </a>
+                                                    <a href="<?php echo e(route('admin.roles.permissions')); ?>"
+                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                        <i class="fas fa-shield-alt mr-3 w-5"></i>
+                                                        Role Permissions
+                                                    </a>
+                                                    <div class="border-t border-gray-200 my-1"></div>
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                                
+                                                <?php if(auth()->user()->hasPermission('view_reports')): ?>
+                                                    <a href="<?php echo e(route('admin.attendance-reports.index')); ?>"
+                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                        <i class="fas fa-chart-bar mr-3 w-5"></i>
+                                                        Laporan Absensi
+                                                    </a>
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div>
                                 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
 
@@ -1443,10 +1465,13 @@
                     <a href="<?php echo e(route('staff.profile')); ?>"
                         class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                             class="fas fa-user-cog w-6 mr-2"></i>Profil</a>
-                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->hasPermission('manage_users')): ?>
+                    <?php if(auth()->user()->hasPermission('manage_users')): ?>
                         <a href="<?php echo e(route('admin.staff.index')); ?>"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-users-cog w-6 mr-2"></i>Staf</a>
+                        <a href="<?php echo e(route('admin.roles.permissions')); ?>"
+                            class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
+                                class="fas fa-shield-alt w-6 mr-2"></i>Role Permissions</a>
                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     <?php if(auth()->user()->hasPermission('view_reports')): ?>
                         <a href="<?php echo e(route('admin.attendance-reports.index')); ?>"
@@ -2511,7 +2536,57 @@
         });
     </script>
 
+    
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->check()): ?>
+        <a href="<?php echo e(route('wrapped.show', ['year' => now()->year])); ?>" class="fixed bottom-6 left-6 z-[100] group"
+            title="Lihat Wrapped <?php echo e(now()->year); ?>">
+            <div class="relative">
+                
+                <div
+                    class="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 rounded-2xl blur-xl opacity-60 group-hover:opacity-100 animate-pulse transition-opacity duration-300">
+                </div>
 
+                
+                <div
+                    class="relative w-14 h-14 bg-gradient-to-br from-purple-600 via-pink-600 to-orange-600 rounded-2xl shadow-2xl flex items-center justify-center transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-12 border-2 border-white/20">
+                    
+                    <div
+                        class="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/40 to-white/0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    </div>
+
+                    
+                    <svg class="w-7 h-7 text-white relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <!-- Calendar base -->
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <line x1="3" y1="9" x2="21" y2="9" stroke-width="2" stroke-linecap="round" />
+                        <line x1="9" y1="2" x2="9" y2="6" stroke-width="2" stroke-linecap="round" />
+                        <line x1="15" y1="2" x2="15" y2="6" stroke-width="2" stroke-linecap="round" />
+                        <!-- Chart bars inside -->
+                        <line x1="7" y1="18" x2="7" y2="14" stroke-width="1.5" stroke-linecap="round" />
+                        <line x1="12" y1="18" x2="12" y2="12" stroke-width="1.5" stroke-linecap="round" />
+                        <line x1="17" y1="18" x2="17" y2="15" stroke-width="1.5" stroke-linecap="round" />
+                    </svg>
+
+                    
+                    <div
+                        class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white animate-ping">
+                    </div>
+                    <div class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>
+                </div>
+
+                
+                <div
+                    class="absolute bottom-full left-0 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                    <div
+                        class="bg-gray-900 text-white text-xs font-medium px-3 py-2 rounded-lg whitespace-nowrap shadow-xl">
+                        Wrapped <?php echo e(now()->year); ?> 🎉
+                        <div class="absolute top-full left-4 w-2 h-2 bg-gray-900 transform rotate-45 -mt-1"></div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
     <?php
 $__split = function ($name, $params = []) {

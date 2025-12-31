@@ -68,16 +68,29 @@ class StaffController extends Controller
             // Clear intended URL to prevent redirect loop
             session()->forget('url.intended');
 
-            // Log successful login and redirect
-            \Log::info('Login successful, redirecting to dashboard', [
+            // Check if user has viewed wrapped for current year
+            $currentYear = now()->year;
+            $hasViewedWrapped = \App\Models\UserWrappedView::hasViewed($user->id, $currentYear);
+
+            // Log successful login and redirect destination
+            \Log::info('Login successful, checking wrapped status', [
                 'user_id' => $user->id,
                 'email' => $user->email,
                 'role_id' => $user->role_id,
                 'is_staff' => $user->isStaff(),
+                'has_viewed_wrapped' => $hasViewedWrapped,
+                'year' => $currentYear,
                 'session_id' => $request->session()->getId()
             ]);
 
-            // Redirect to dashboard dengan status 302 untuk memastikan redirect berfungsi
+            // Redirect to wrapped if not viewed yet, otherwise to dashboard
+            if (!$hasViewedWrapped) {
+                return redirect()->route('wrapped.show', ['year' => $currentYear])
+                    ->with('success', 'Login berhasil! Lihat rekap tahun kamu 🎉')
+                    ->with('login_time', now()->format('Y-m-d H:i:s'));
+            }
+
+            // Redirect to dashboard if already viewed wrapped
             return redirect()->route('staff.dashboard')
                 ->with('success', 'Login berhasil!')
                 ->with('login_time', now()->format('Y-m-d H:i:s'));

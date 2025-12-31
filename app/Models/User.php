@@ -25,6 +25,7 @@ class User extends Authenticatable
         'staff_id',
         'is_active',
         'profile_image',
+        'custom_permissions',
     ];
 
     /**
@@ -48,6 +49,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'custom_permissions' => 'array',
         ];
     }
 
@@ -86,10 +88,6 @@ class User extends Authenticatable
         return !is_null($this->role_id);
     }
 
-    public function isParamedic()
-    {
-        return $this->role && $this->role->name === 'paramedic';
-    }
 
     public function isAdmin()
     {
@@ -104,6 +102,12 @@ class User extends Authenticatable
      */
     public function hasPermission(string $permission): bool
     {
+        // Check custom user permissions first
+        if (!empty($this->custom_permissions) && in_array($permission, $this->custom_permissions)) {
+            return true;
+        }
+
+        // Check role permissions
         return $this->role?->hasPermission($permission) ?? false;
     }
 
@@ -256,14 +260,13 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if user can reply to live chat (Manager level and above)
+     * Check if user can reply to live chat (has reply_livechat permission)
      *
      * @return bool
      */
     public function canReplyChat(): bool
     {
-        // Level 5 (Staff Manager) and above
-        return $this->role && $this->role->level >= 5;
+        return $this->hasPermission('reply_livechat');
     }
 
     /**

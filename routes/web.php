@@ -185,13 +185,13 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/attendance-reports/stats', [\App\Http\Controllers\Admin\AttendanceReportController::class, 'getStats'])
         ->middleware('permission:view_reports')->name('attendance-reports.stats');
     Route::post('/attendance-reports/force-checkout', [\App\Http\Controllers\Admin\AttendanceReportController::class, 'forceCheckOut'])
-        ->middleware('permission:view_reports')->name('attendance-reports.force-checkout');
+        ->middleware('permission:manage_attendance_advanced')->name('attendance-reports.force-checkout');
     Route::post('/attendance-reports/manual', [\App\Http\Controllers\Admin\AttendanceReportController::class, 'storeManualAttendance'])
-        ->middleware('permission:view_reports')->name('attendance-reports.manual');
+        ->middleware('permission:manage_attendance_advanced')->name('attendance-reports.manual');
     Route::put('/attendance-reports/{id}', [\App\Http\Controllers\Admin\AttendanceReportController::class, 'updateAttendance'])
-        ->middleware('permission:view_reports')->name('attendance-reports.update');
+        ->middleware('permission:manage_attendance_advanced')->name('attendance-reports.update');
     Route::delete('/attendance-reports/{id}', [\App\Http\Controllers\Admin\AttendanceReportController::class, 'deleteAttendance'])
-        ->middleware('permission:view_reports')->name('attendance-reports.delete');
+        ->middleware('permission:manage_attendance_advanced')->name('attendance-reports.delete');
 
     // Payroll management
     Route::get('/payroll', [\App\Http\Controllers\Admin\PayrollController::class, 'index'])
@@ -223,4 +223,17 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/chat', function () {
         return view('admin.chat.index');
     })->middleware('permission:manage_users')->name('chat.index');
+
+    // Role Permission Management (Admin Only)
+    Route::get('/roles/permissions', [App\Http\Controllers\Admin\RolePermissionController::class, 'index'])
+        ->middleware('admin')
+        ->name('roles.permissions');
+
+    Route::post('/roles/{role}/toggle-permission', [App\Http\Controllers\Admin\RolePermissionController::class, 'togglePermission'])
+        ->middleware('admin')
+        ->name('roles.toggle-permission');
+
+    Route::post('/users/{user}/toggle-chat-permission', [App\Http\Controllers\Admin\RolePermissionController::class, 'toggleUserChatPermission'])
+        ->middleware('admin')
+        ->name('users.toggle-chat-permission');
 });

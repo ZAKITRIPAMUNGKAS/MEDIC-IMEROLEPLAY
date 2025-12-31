@@ -9,14 +9,14 @@
     <link rel="icon" type="image/x-icon" href="<?php echo e(asset('favicon.ico')); ?>">
     <title>MedicIME Wrapped <?php echo e($year); ?> - <?php echo e($user->name); ?></title>
 
-    <!-- Tailwind CSS (CDN for simplicity) -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS (Local Build) -->
+    <link rel="stylesheet" href="<?php echo e(asset('assets/wrapped/tailwind.min.css')); ?>">
 
-    <!-- Swiper CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <!-- Swiper CSS (Local) -->
+    <link rel="stylesheet" href="<?php echo e(asset('assets/wrapped/swiper-bundle.min.css')); ?>">
 
-    <!-- Canvas Confetti -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Canvas Confetti (Local) -->
+    <script src="<?php echo e(asset('assets/wrapped/confetti.browser.min.js')); ?>"></script>
 
     <!-- Fonts - Premium Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,81 +24,13 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap"
         rel="stylesheet">
-
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Outfit"', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace'],
-                    },
-                    colors: {
-                        dark: "#050505",
-                        glass: "rgba(20, 20, 20, 0.6)",
-                        "glass-border": "rgba(255, 255, 255, 0.1)",
-                    },
-                    animation: {
-                        'blob': 'blob 10s infinite',
-                        'float': 'float 6s ease-in-out infinite',
-                        'pulse-glow': 'pulseGlow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'sparkle': 'sparkle 2s ease-in-out infinite',
-                        'spin-slow': 'spin 20s linear infinite',
-                        'bounce-slow': 'bounce 3s infinite',
-                        'shimmer': 'shimmer 2s ease-in-out infinite',
-                        'rainbow': 'rainbow 4s linear infinite',
-                        'bounce-gentle': 'bounceGentle 1s ease-in-out infinite',
-                        'wiggle': 'wiggle 0.5s ease-in-out infinite',
-                    },
-                    keyframes: {
-                        blob: {
-                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
-                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
-                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
-                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
-                        },
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-15px)' },
-                        },
-                        pulseGlow: {
-                            '0%, 100%': { opacity: 1, filter: 'brightness(1)' },
-                            '50%': { opacity: .8, filter: 'brightness(1.2)' },
-                        },
-                        sparkle: {
-                            '0%, 100%': { opacity: 0, transform: 'scale(0)' },
-                            '50%': { opacity: 1, transform: 'scale(1)' },
-                        },
-                        shimmer: {
-                            '0%, 100%': { filter: 'brightness(1) drop-shadow(0 0 0px rgba(255,255,255,0))' },
-                            '50%': { filter: 'brightness(1.3) drop-shadow(0 0 20px rgba(255,255,255,0.8))' },
-                        },
-                        rainbow: {
-                            '0%': { backgroundPosition: '0% 50%' },
-                            '50%': { backgroundPosition: '100% 50%' },
-                            '100%': { backgroundPosition: '0% 50%' },
-                        },
-                        bounceGentle: {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-10px)' },
-                        },
-                        wiggle: {
-                            '0%, 100%': { transform: 'rotate(-3deg)' },
-                            '50%': { transform: 'rotate(3deg)' },
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
     <style>
         :root {
             --swiper-theme-color: #fff;
         }
 
-        html, body {
+        html,
+        body {
             height: 100vh;
             height: 100dvh;
             margin: 0;
@@ -126,7 +58,7 @@
             inset: 0;
             z-index: 0;
             overflow: hidden;
-            transition: transform .7s cubic-bezier(.16,1,.3,1);
+            transition: transform .7s cubic-bezier(.16, 1, .3, 1);
         }
 
         .blob-shape {
@@ -152,8 +84,8 @@
 
         /* --- CINEMATIC SLIDE TRANSITIONS --- */
         .swiper-slide {
-            transition: 
-                transform .7s cubic-bezier(.16,1,.3,1),
+            transition:
+                transform .7s cubic-bezier(.16, 1, .3, 1),
                 filter .7s ease,
                 opacity .7s ease;
         }
@@ -278,12 +210,41 @@
             animation: sparkle 2s ease-in-out infinite;
         }
 
-        .sparkle:nth-child(1) { top: 10%; right: 10%; animation-delay: 0s; }
-        .sparkle:nth-child(2) { top: 30%; left: 5%; animation-delay: 0.3s; }
-        .sparkle:nth-child(3) { bottom: 20%; right: 15%; animation-delay: 0.6s; }
-        .sparkle:nth-child(4) { bottom: 10%; left: 20%; animation-delay: 0.9s; }
-        .sparkle:nth-child(5) { top: 50%; right: 0%; animation-delay: 1.2s; }
-        .sparkle:nth-child(6) { top: 50%; left: 0%; animation-delay: 1.5s; }
+        .sparkle:nth-child(1) {
+            top: 10%;
+            right: 10%;
+            animation-delay: 0s;
+        }
+
+        .sparkle:nth-child(2) {
+            top: 30%;
+            left: 5%;
+            animation-delay: 0.3s;
+        }
+
+        .sparkle:nth-child(3) {
+            bottom: 20%;
+            right: 15%;
+            animation-delay: 0.6s;
+        }
+
+        .sparkle:nth-child(4) {
+            bottom: 10%;
+            left: 20%;
+            animation-delay: 0.9s;
+        }
+
+        .sparkle:nth-child(5) {
+            top: 50%;
+            right: 0%;
+            animation-delay: 1.2s;
+        }
+
+        .sparkle:nth-child(6) {
+            top: 50%;
+            left: 0%;
+            animation-delay: 1.5s;
+        }
 
         /* --- FLOATING PARTICLES --- */
         .particle {
@@ -304,16 +265,21 @@
         }
 
         @keyframes floatParticle {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: translate(0, 0) rotate(0deg);
                 opacity: 0;
             }
+
             10% {
                 opacity: 0.3;
             }
+
             90% {
                 opacity: 0.3;
             }
+
             100% {
                 transform: translate(50px, -100vh) rotate(360deg);
                 opacity: 0;
@@ -322,13 +288,27 @@
 
         /* --- MOTION TIMELINE SYSTEM --- */
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(24px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @keyframes scalePop {
-            from { opacity: 0; transform: scale(.85); }
-            to { opacity: 1; transform: scale(1); }
+            from {
+                opacity: 0;
+                transform: scale(.85);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
         }
 
         /* Content visible by default - animation enhances, doesn't hide */
@@ -337,7 +317,7 @@
         }
 
         .motion.show {
-            animation: fadeUp .8s cubic-bezier(.16,1,.3,1) forwards;
+            animation: fadeUp .8s cubic-bezier(.16, 1, .3, 1) forwards;
         }
 
         /* First load - elements start visible, will animate whe show class added */
@@ -348,15 +328,22 @@
         }
 
         @keyframes badgePulse {
-            0%,100% { box-shadow: 0 0 30px rgba(255,215,0,.3); }
-            50% { box-shadow: 0 0 80px rgba(255,215,0,.9); }
+
+            0%,
+            100% {
+                box-shadow: 0 0 30px rgba(255, 215, 0, .3);
+            }
+
+            50% {
+                box-shadow: 0 0 80px rgba(255, 215, 0, .9);
+            }
         }
 
         /* --- SALARY ICON RING --- */
         .icon-ring {
             position: absolute;
             inset: -12px;
-            border: 2px dashed rgba(16,185,129,.4);
+            border: 2px dashed rgba(16, 185, 129, .4);
             border-radius: 50%;
             animation: spin 18s linear infinite;
         }
@@ -371,8 +358,15 @@
         }
 
         @keyframes numberPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
         }
 
         .number-shimmer {
@@ -387,14 +381,24 @@
 
         .card-glow-rainbow {
             box-shadow: 0 0 20px rgba(255, 0, 128, 0.3),
-                        0 0 40px rgba(64, 224, 208, 0.2);
+                0 0 40px rgba(64, 224, 208, 0.2);
             animation: rainbowGlow 3s ease-in-out infinite;
         }
 
         @keyframes rainbowGlow {
-            0%, 100% { box-shadow: 0 0 20px rgba(255, 0, 128, 0.4), 0 0 40px rgba(64, 224, 208, 0.2); }
-            33% { box-shadow: 0 0 20px rgba(255, 140, 0, 0.4), 0 0 40px rgba(75, 172, 226, 0.2); }
-            66% { box-shadow: 0 0 20px rgba(64, 224, 208, 0.4), 0 0 40px rgba(255, 0, 128, 0.2); }
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(255, 0, 128, 0.4), 0 0 40px rgba(64, 224, 208, 0.2);
+            }
+
+            33% {
+                box-shadow: 0 0 20px rgba(255, 140, 0, 0.4), 0 0 40px rgba(75, 172, 226, 0.2);
+            }
+
+            66% {
+                box-shadow: 0 0 20px rgba(64, 224, 208, 0.4), 0 0 40px rgba(255, 0, 128, 0.2);
+            }
         }
 
         /* --- SWIPER FIXES --- */
@@ -422,11 +426,13 @@
     <!-- Logo Branding - Top Left 🏥 -->
     <div class="fixed top-[calc(env(safe-area-inset-top)+20px)] left-4 z-[70] flex items-center gap-3">
         <!-- IME Logo -->
-        <div class="glass-panel rounded-2xl p-3 border border-white/10 backdrop-blur-xl hover:scale-110 transition-transform duration-300">
+        <div
+            class="glass-panel rounded-2xl p-3 border border-white/10 backdrop-blur-xl hover:scale-110 transition-transform duration-300">
             <img src="<?php echo e(asset('images/logoime.webp')); ?>" alt="IME" class="h-10 w-auto object-contain">
         </div>
         <!-- Motion Life Logo -->
-        <div class="glass-panel rounded-2xl p-2.5 border border-white/10 backdrop-blur-xl hover:scale-110 transition-transform duration-300">
+        <div
+            class="glass-panel rounded-2xl p-2.5 border border-white/10 backdrop-blur-xl hover:scale-110 transition-transform duration-300">
             <img src="<?php echo e(asset('images/motionlife-logo.png')); ?>" alt="Motion Life" class="h-8 w-auto object-contain">
         </div>
     </div>
@@ -451,12 +457,15 @@
     <button onclick="toggleMusic()" id="musicToggle"
         class="fixed top-[calc(env(safe-area-inset-top)+80px)] right-4 z-[70] w-10 h-10 rounded-full glass-panel flex items-center justify-center text-white/70 hover:bg-white/10 hover:text-white transition active:scale-90">
         <!-- Sound On Icon (default) -->
-        <svg id="soundOnIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg id="soundOnIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
             <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
         </svg>
         <!-- Sound Off Icon (hidden by default) -->
-        <svg id="soundOffIcon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg id="soundOffIcon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
             <line x1="23" y1="9" x2="17" y2="15"></line>
             <line x1="17" y1="9" x2="23" y2="15"></line>
@@ -481,8 +490,7 @@
                 </div>
 
                 <div class="relative z-10 w-full max-w-lg text-center">
-                    <div
-                        class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md text-[11px] font-bold tracking-[0.2em] uppercase mb-8 motion"
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 backdrop-blur-md text-[11px] font-bold tracking-[0.2em] uppercase mb-8 motion"
                         data-delay="100">
                         <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
                         MedicIME Wrapped <?php echo e($year); ?>
@@ -490,15 +498,15 @@
                     </div>
 
                     <!-- USER PHOTO WITH SPARKLES -->
-                    <div class="user-photo-container motion" data-delay="200" style="animation: scalePop .8s cubic-bezier(.16,1,.3,1) forwards;">
+                    <div class="user-photo-container motion" data-delay="200"
+                        style="animation: scalePop .8s cubic-bezier(.16,1,.3,1) forwards;">
                         <div class="photo-ring"></div>
                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user->profile_image): ?>
-                            <img src="<?php echo e($user->profile_image_url); ?>" 
-                                 alt="<?php echo e($user->name); ?>" 
-                                 class="user-photo"
-                                 onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'user-photo flex items-center justify-center text-5xl bg-gradient-to-br from-blue-500 to-purple-600\'><?php echo e(strtoupper(substr($user->name, 0, 1))); ?></div>';">
+                            <img src="<?php echo e($user->profile_image_url); ?>" alt="<?php echo e($user->name); ?>" class="user-photo"
+                                onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'user-photo flex items-center justify-center text-5xl bg-gradient-to-br from-blue-500 to-purple-600\'><?php echo e(strtoupper(substr($user->name, 0, 1))); ?></div>';">
                         <?php else: ?>
-                            <div class="user-photo flex items-center justify-center text-5xl bg-gradient-to-br from-blue-500 to-purple-600">
+                            <div
+                                class="user-photo flex items-center justify-center text-5xl bg-gradient-to-br from-blue-500 to-purple-600">
                                 <?php echo e(strtoupper(substr($user->name, 0, 1))); ?>
 
                             </div>
@@ -511,7 +519,8 @@
                         <div class="sparkle"></div>
                     </div>
 
-                    <h1 class="text-5xl md:text-6xl font-bold tracking-tight leading-tight mb-2 motion" data-delay="300">
+                    <h1 class="text-5xl md:text-6xl font-bold tracking-tight leading-tight mb-2 motion"
+                        data-delay="300">
                         Halo,
                     </h1>
 
@@ -520,13 +529,12 @@
 
                     </h2>
 
-                    <p class="text-lg text-white/60 leading-relaxed mb-20 motion" data-delay="800">
+                    <p class="text-lg text-white/60 leading-relaxed mb-8 motion" data-delay="800">
                         Inilah perjalanan medis kamu di <?php echo e($year); ?>
 
                     </p>
 
-                    <div
-                        class="absolute bottom-[calc(env(safe-area-inset-bottom)+40px)] left-0 w-full flex flex-col items-center justify-center gap-2 motion opacity-60"
+                    <div class="absolute bottom-[calc(env(safe-area-inset-bottom)+20px)] left-0 w-full flex flex-col items-center justify-center gap-2 motion opacity-60"
                         data-delay="1100">
                         <div class="w-[1px] h-12 bg-gradient-to-b from-transparent via-white/50 to-transparent"></div>
                         <span class="text-[10px] uppercase tracking-widest text-white/50">Swipe Up</span>
@@ -545,10 +553,13 @@
                     <h2 class="text-2xl font-bold mb-6 text-center motion" data-delay="200">Dedikasi Waktu</h2>
 
                     <!-- Hero Card -->
-                    <div class="glass-panel glass-highlight rounded-[2rem] p-8 text-center mb-4 relative overflow-hidden motion" data-delay="400" style="animation: scalePop .8s cubic-bezier(.16,1,.3,1) forwards;">
+                    <div class="glass-panel glass-highlight rounded-[2rem] p-8 text-center mb-4 relative overflow-hidden motion"
+                        data-delay="400" style="animation: scalePop .8s cubic-bezier(.16,1,.3,1) forwards;">
                         <div class="absolute top-0 right-0 p-5 opacity-10 text-6xl rotate-12 animate-spin-slow">⏱️</div>
-                        <p class="text-xs font-mono text-orange-400 uppercase tracking-widest mb-2">Total Jam Praktik</p>
-                        <div class="font-mono text-7xl font-bold tracking-tighter text-white drop-shadow-lg number-pulse number-shimmer" id="hoursNumber">
+                        <p class="text-xs font-mono text-orange-400 uppercase tracking-widest mb-2">Total Jam Praktik
+                        </p>
+                        <div class="font-mono text-7xl font-bold tracking-tighter text-white drop-shadow-lg number-pulse number-shimmer"
+                            id="hoursNumber">
                             <?php echo e(number_format($stats['total_hours'], 0)); ?>
 
                             <span class="text-2xl text-white/30 font-normal">h</span>
@@ -560,18 +571,30 @@
 
                     <!-- Grid -->
                     <div class="grid grid-cols-2 gap-3">
-                        <div class="glass-panel rounded-[1.5rem] p-5 flex flex-col justify-between h-36 motion card-bounce card-glow-rainbow" data-delay="600">
-                            <div class="text-2xl w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">📅</div>
+                        <div class="glass-panel rounded-[1.5rem] p-5 flex flex-col justify-between h-36 motion card-bounce card-glow-rainbow"
+                            data-delay="600">
+                            <div class="text-2xl w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">📅
+                            </div>
                             <div>
-                                <div class="text-3xl font-bold font-mono number-shimmer"><?php echo e($stats['total_days_worked']); ?></div>
-                                <div class="text-[10px] uppercase text-white/40 font-bold tracking-wider mt-1">Hari Kerja</div>
+                                <div class="text-3xl font-bold font-mono number-shimmer">
+                                    <?php echo e($stats['total_days_worked']); ?>
+
+                                </div>
+                                <div class="text-[10px] uppercase text-white/40 font-bold tracking-wider mt-1">Hari
+                                    Kerja</div>
                             </div>
                         </div>
-                        <div class="glass-panel rounded-[1.5rem] p-5 flex flex-col justify-between h-36 motion card-bounce card-glow-rainbow" data-delay="800" style="animation-delay: 0.3s;">
-                            <div class="text-2xl w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">⚡</div>
+                        <div class="glass-panel rounded-[1.5rem] p-5 flex flex-col justify-between h-36 motion card-bounce card-glow-rainbow"
+                            data-delay="800" style="animation-delay: 0.3s;">
+                            <div class="text-2xl w-10 h-10 rounded-full bg-white/5 flex items-center justify-center">⚡
+                            </div>
                             <div>
-                                <div class="text-3xl font-bold font-mono number-shimmer"><?php echo e($stats['average_hours_per_day']); ?></div>
-                                <div class="text-[10px] uppercase text-white/40 font-bold tracking-wider mt-1">Jam / Hari</div>
+                                <div class="text-3xl font-bold font-mono number-shimmer">
+                                    <?php echo e($stats['average_hours_per_day']); ?>
+
+                                </div>
+                                <div class="text-[10px] uppercase text-white/40 font-bold tracking-wider mt-1">Jam /
+                                    Hari</div>
                             </div>
                         </div>
                     </div>
@@ -587,7 +610,8 @@
                     </div>
 
                     <div class="relative z-10 w-full px-6 text-center">
-                        <div class="inline-block relative mb-8 motion" data-delay="200" style="animation: scalePop .8s cubic-bezier(.16,1,.3,1) forwards;">
+                        <div class="inline-block relative mb-8 motion" data-delay="200"
+                            style="animation: scalePop .8s cubic-bezier(.16,1,.3,1) forwards;">
                             <div class="absolute inset-0 bg-red-500 blur-[80px] opacity-30 animate-pulse-glow"></div>
                             <div class="text-8xl animate-float relative z-10">🫀</div>
                         </div>
@@ -595,16 +619,17 @@
                         <h2 class="text-sm font-bold text-white/60 uppercase tracking-[0.3em] mb-4 motion" data-delay="400">
                             Jiwa Disentuh</h2>
 
-                        <div class="font-mono text-[6rem] leading-none font-bold text-grad-rainbow drop-shadow-2xl motion number-shimmer" 
-                             data-delay="700" 
-                             id="patientsNumber">
+                        <div class="font-mono text-[6rem] leading-none font-bold text-grad-rainbow drop-shadow-2xl motion number-shimmer"
+                            data-delay="700" id="patientsNumber">
                             <?php echo e(number_format($stats['total_patients'])); ?>
 
                         </div>
 
                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($stats['most_common_form_type']): ?>
-                            <div class="mt-12 glass-panel rounded-full py-3 pl-4 pr-6 inline-flex items-center gap-3 motion" data-delay="1000">
-                                <div class="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center text-sm">🩺</div>
+                            <div class="mt-12 glass-panel rounded-full py-3 pl-4 pr-6 inline-flex items-center gap-3 motion"
+                                data-delay="1000">
+                                <div class="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center text-sm">🩺
+                                </div>
                                 <div class="text-left">
                                     <div class="text-[9px] text-white/40 uppercase tracking-wider font-bold">Top Case</div>
                                     <div class="text-sm font-bold"><?php echo e($stats['most_common_form_type']['formatted']); ?></div>
@@ -624,16 +649,23 @@
                 </div>
 
                 <div class="relative z-10 w-full max-w-md">
-                    <h2 class="text-3xl font-bold mb-8 text-center text-grad-fire motion" data-delay="200">Momen Puncak</h2>
+                    <h2 class="text-3xl font-bold mb-8 text-center text-grad-fire motion" data-delay="200">Momen Puncak
+                    </h2>
 
                     <div class="space-y-4">
                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($stats['busiest_month']): ?>
-                            <div class="glass-panel p-6 rounded-[1.5rem] flex items-center gap-5 border-l-4 border-l-orange-500 relative overflow-hidden group motion" data-delay="400">
+                            <div class="glass-panel p-6 rounded-[1.5rem] flex items-center gap-5 border-l-4 border-l-orange-500 relative overflow-hidden group motion"
+                                data-delay="400">
                                 <div class="absolute inset-0 bg-orange-500/5 group-hover:bg-orange-500/10 transition"></div>
-                                <div class="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center text-2xl relative z-10">📆</div>
+                                <div
+                                    class="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center text-2xl relative z-10">
+                                    📆</div>
                                 <div class="flex-1 relative z-10">
-                                    <div class="text-[10px] font-bold text-orange-400 uppercase tracking-widest">Bulan Tersibuk</div>
-                                    <div class="text-2xl font-bold font-mono mt-0.5"><?php echo e($stats['busiest_month']['name']); ?></div>
+                                    <div class="text-[10px] font-bold text-orange-400 uppercase tracking-widest">Bulan
+                                        Tersibuk</div>
+                                    <div class="text-2xl font-bold font-mono mt-0.5"><?php echo e($stats['busiest_month']['name']); ?>
+
+                                    </div>
                                 </div>
                                 <div class="text-right opacity-50 font-mono text-sm relative z-10">
                                     <?php echo e(number_format($stats['busiest_month']['hours'], 0)); ?>h
@@ -642,12 +674,18 @@
                         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($stats['most_active_day']): ?>
-                            <div class="glass-panel p-6 rounded-[1.5rem] flex items-center gap-5 border-l-4 border-l-pink-500 relative overflow-hidden group motion" data-delay="700">
+                            <div class="glass-panel p-6 rounded-[1.5rem] flex items-center gap-5 border-l-4 border-l-pink-500 relative overflow-hidden group motion"
+                                data-delay="700">
                                 <div class="absolute inset-0 bg-pink-500/5 group-hover:bg-pink-500/10 transition"></div>
-                                <div class="w-12 h-12 rounded-full bg-pink-500/20 flex items-center justify-center text-2xl relative z-10">🚀</div>
+                                <div
+                                    class="w-12 h-12 rounded-full bg-pink-500/20 flex items-center justify-center text-2xl relative z-10">
+                                    🚀</div>
                                 <div class="flex-1 relative z-10">
-                                    <div class="text-[10px] font-bold text-pink-400 uppercase tracking-widest">Hari Favorit</div>
-                                    <div class="text-2xl font-bold font-mono mt-0.5"><?php echo e($stats['most_active_day']['name']); ?></div>
+                                    <div class="text-[10px] font-bold text-pink-400 uppercase tracking-widest">Hari Favorit
+                                    </div>
+                                    <div class="text-2xl font-bold font-mono mt-0.5"><?php echo e($stats['most_active_day']['name']); ?>
+
+                                    </div>
                                 </div>
                                 <div class="text-right opacity-50 font-mono text-sm relative z-10">
                                     <?php echo e($stats['most_active_day']['count']); ?>x
@@ -669,25 +707,32 @@
 
                     <div class="relative z-10 w-full px-4 text-center">
                         <!-- Salary Icon -->
-                        <div class="relative w-20 h-20 mx-auto mb-8 motion" data-delay="200" style="animation: scalePop .8s cubic-bezier(.16,1,.3,1) forwards;">
+                        <div class="relative w-20 h-20 mx-auto mb-8 motion" data-delay="200"
+                            style="animation: scalePop .8s cubic-bezier(.16,1,.3,1) forwards;">
                             <div class="icon-ring"></div>
-                            <div class="w-20 h-20 rounded-full bg-emerald-500/10 flex items-center justify-center shadow-[0_0_40px_rgba(16,185,129,0.2)] border border-emerald-500/20">
+                            <div
+                                class="w-20 h-20 rounded-full bg-emerald-500/10 flex items-center justify-center shadow-[0_0_40px_rgba(16,185,129,0.2)] border border-emerald-500/20">
                                 <div class="icon-core">💸</div>
                             </div>
                         </div>
 
-                        <p class="text-xs font-mono text-emerald-400 mb-4 uppercase tracking-[0.25em] motion" data-delay="400">
+                        <p class="text-xs font-mono text-emerald-400 mb-4 uppercase tracking-[0.25em] motion"
+                            data-delay="400">
                             Total Pendapatan <?php echo e($year); ?>
 
                         </p>
 
                         <div class="relative group cursor-pointer select-none" onclick="triggerMoneyRain()">
-                            <div class="absolute inset-0 bg-emerald-500/20 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition duration-500"></div>
-                            <div class="relative font-mono text-4xl md:text-5xl font-bold text-white py-4 px-2 motion transition transform active:scale-95" data-delay="700">
+                            <div
+                                class="absolute inset-0 bg-emerald-500/20 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition duration-500">
+                            </div>
+                            <div class="relative font-mono text-4xl md:text-5xl font-bold text-white py-4 px-2 motion transition transform active:scale-95"
+                                data-delay="700">
                                 Rp <?php echo e(number_format($stats['total_salary'], 0, ',', '.')); ?>
 
                             </div>
-                            <div class="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-full bg-white/5 border border-white/5 text-[10px] text-white/50 animate-pulse motion" data-delay="1000">
+                            <div class="inline-flex items-center gap-2 mt-4 px-4 py-2 rounded-full bg-white/5 border border-white/5 text-[10px] text-white/50 animate-pulse motion"
+                                data-delay="1000">
                                 <span>👆</span> Tap untuk rayakan hasil kerja kerasmu
                             </div>
                         </div>
@@ -705,14 +750,18 @@
                 </div>
 
                 <div class="relative z-10 text-center px-6 max-w-sm">
-                    <div class="text-yellow-200 text-[10px] font-bold tracking-[0.3em] uppercase mb-10 motion" data-delay="200">
+                    <div class="text-yellow-200 text-[10px] font-bold tracking-[0.3em] uppercase mb-10 motion"
+                        data-delay="200">
                         Persona Medis</div>
 
-                    <div class="relative w-64 h-64 mx-auto mb-10 flex items-center justify-center motion" data-delay="400" style="animation: scalePop .8s cubic-bezier(.16,1,.3,1) forwards;">
-                        <div class="absolute inset-0 border border-yellow-500/30 rounded-full animate-[spin_20s_linear_infinite]" style="border-style: dashed;"></div>
+                    <div class="relative w-64 h-64 mx-auto mb-10 flex items-center justify-center motion"
+                        data-delay="400" style="animation: scalePop .8s cubic-bezier(.16,1,.3,1) forwards;">
+                        <div class="absolute inset-0 border border-yellow-500/30 rounded-full animate-[spin_20s_linear_infinite]"
+                            style="border-style: dashed;"></div>
                         <div class="absolute inset-4 border border-white/10 rounded-full"></div>
                         <div class="absolute inset-0 bg-yellow-500/10 blur-3xl rounded-full badge-glow"></div>
-                        <div class="text-[8rem] relative z-10 drop-shadow-2xl transition transform hover:scale-110 duration-300 cursor-pointer">
+                        <div
+                            class="text-[8rem] relative z-10 drop-shadow-2xl transition transform hover:scale-110 duration-300 cursor-pointer">
                             <?php echo e($stats['badge']['primary']['icon']); ?>
 
                         </div>
@@ -723,11 +772,12 @@
 
                     </h1>
 
-                    <div class="glass-panel p-5 rounded-2xl text-sm leading-relaxed text-white/80 border-t border-white/20 motion" data-delay="900">
+                    <div class="glass-panel p-5 rounded-2xl text-sm leading-relaxed text-white/80 border-t border-white/20 motion"
+                        data-delay="900">
                         <?php echo e($stats['badge']['primary']['description']); ?>
 
                     </div>
-                    
+
                     <!-- Additional Badges -->
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(count($stats['badge']['all']) > 1): ?>
                         <div class="mt-6 motion" data-delay="1100">
@@ -735,7 +785,8 @@
                             <div class="flex flex-wrap gap-2 justify-center">
                                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $stats['badge']['all']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $badge): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($index > 0): ?>
-                                        <div class="glass-panel px-3 py-2 rounded-full text-xs flex items-center gap-2 border border-white/5">
+                                        <div
+                                            class="glass-panel px-3 py-2 rounded-full text-xs flex items-center gap-2 border border-white/5">
                                             <span class="text-lg"><?php echo e($badge['icon']); ?></span>
                                             <span class="font-medium"><?php echo e($badge['title']); ?></span>
                                         </div>
@@ -758,8 +809,11 @@
                 <div class="relative z-10 text-center px-6 w-full max-w-md">
                     <h2 class="text-5xl font-bold mb-10 motion" data-delay="300">Terima Kasih</h2>
 
-                    <div class="glass-panel p-8 rounded-[2rem] mb-6 relative overflow-hidden text-left motion" data-delay="700" style="animation: scalePop .8s cubic-bezier(.16,1,.3,1) forwards;">
-                        <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-blue-400 via-purple-500 to-pink-500"></div>
+                    <div class="glass-panel p-8 rounded-[2rem] mb-6 relative overflow-hidden text-left motion"
+                        data-delay="700" style="animation: scalePop .8s cubic-bezier(.16,1,.3,1) forwards;">
+                        <div
+                            class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-blue-400 via-purple-500 to-pink-500">
+                        </div>
                         <p class="font-serif italic text-xl text-white/90 leading-relaxed">
                             "<?php echo e($quote['text']); ?>"
                         </p>
@@ -774,11 +828,13 @@
                     <!-- Developer Message -->
                     <div class="glass-panel p-6 rounded-2xl mb-10 border border-white/10 motion" data-delay="900">
                         <div class="flex items-center gap-3 mb-3">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-lg">
+                            <div
+                                class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-lg">
                                 💻
                             </div>
                             <div class="text-left">
-                                <div class="text-xs text-cyan-400 font-bold uppercase tracking-wider">From the Developer</div>
+                                <div class="text-xs text-cyan-400 font-bold uppercase tracking-wider">From the Developer
+                                </div>
                                 <div class="text-sm text-white/60">With ❤️</div>
                             </div>
                         </div>
@@ -787,6 +843,26 @@
                         </p>
                         <p class="text-right text-xs font-mono text-cyan-400/70 mt-3">
                             — Tepe Zhavarez
+                        </p>
+                    </div>
+
+                    <!-- Admin Reminder Message -->
+                    <div class="glass-panel p-6 rounded-2xl mb-10 border border-yellow-500/20 motion" data-delay="950">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div
+                                class="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-lg">
+                                ⚠️
+                            </div>
+                            <div class="text-left">
+                                <div class="text-xs text-yellow-400 font-bold uppercase tracking-wider">From Admin</div>
+                                <div class="text-sm text-white/60">Reminder Penting!</div>
+                            </div>
+                        </div>
+                        <p class="text-sm text-white/80 leading-relaxed text-left">
+                            Jangan lupa check out setelah off duty, nanti dimarahin admin zoel 😤
+                        </p>
+                        <p class="text-right text-xs font-mono text-yellow-400/70 mt-3">
+                            — Zoel Lysander
                         </p>
                     </div>
 
@@ -802,12 +878,15 @@
 
                     <!-- Logo Watermark -->
                     <div class="mt-6 flex items-center justify-center gap-4 motion" data-delay="1400">
-                        <div class="glass-panel rounded-xl p-2.5 border border-white/10 opacity-50 hover:opacity-100 transition-opacity">
+                        <div
+                            class="glass-panel rounded-xl p-2.5 border border-white/10 opacity-50 hover:opacity-100 transition-opacity">
                             <img src="<?php echo e(asset('images/logoime.webp')); ?>" alt="IME" class="h-10 w-auto object-contain">
                         </div>
                         <div class="text-white/30 text-xs">×</div>
-                        <div class="glass-panel rounded-xl p-2.5 border border-white/10 opacity-50 hover:opacity-100 transition-opacity">
-                            <img src="<?php echo e(asset('images/motionlife-logo.png')); ?>" alt="Motion Life" class="h-10 w-auto object-contain">
+                        <div
+                            class="glass-panel rounded-xl p-2.5 border border-white/10 opacity-50 hover:opacity-100 transition-opacity">
+                            <img src="<?php echo e(asset('images/motionlife-logo.png')); ?>" alt="Motion Life"
+                                class="h-10 w-auto object-contain">
                         </div>
                     </div>
                 </div>
@@ -816,8 +895,8 @@
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <!-- Swiper JS (Local) -->
+    <script src="<?php echo e(asset('assets/wrapped/swiper-bundle.min.js')); ?>"></script>
     <script>
         // --- FESTIVE CELEBRATION PARTICLES ---
         function createFloatingParticles() {
@@ -825,7 +904,7 @@
             const medicalParticles = ['💊', '🩺', '❤️', '⚕️', '💉', '🏥'];
             const celebrationParticles = ['✨', '🎉', '🎊', '💫', '⭐', '🌟', '🎈', '🎁', '🎆'];
             const allParticles = [...medicalParticles, ...celebrationParticles];
-            
+
             // More frequent spawning for festive feel
             setInterval(() => {
                 const particle = document.createElement('div');
@@ -836,7 +915,7 @@
                 particle.style.animationDuration = (Math.random() * 8 + 8) + 's'; // Faster
                 particle.style.animationDelay = Math.random() * 1 + 's';
                 container.appendChild(particle);
-                
+
                 setTimeout(() => particle.remove(), 14000);
             }, 1500); // Spawn more frequently
         }
@@ -864,7 +943,7 @@
                     bar.style.width = '100%';
                 } else if (i === index) {
                     bar.style.width = '0%';
-                    setTimeout(() => bar.style.width ='100%', 50);
+                    setTimeout(() => bar.style.width = '100%', 50);
                 } else {
                     bar.style.width = '0%';
                 }
@@ -912,25 +991,25 @@
         function playConfettiSound() {
             try {
                 const ctx = getAudioContext();
-                
+
                 // Main pop tone
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
-                
+
                 osc.connect(gain);
                 gain.connect(ctx.destination);
-                
+
                 // Bright pop sound with frequency sweep
                 osc.frequency.setValueAtTime(800, ctx.currentTime);
                 osc.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.05);
                 osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.15);
-                
+
                 osc.type = 'sine';
-                
+
                 // Quick envelope
                 gain.gain.setValueAtTime(0.3, ctx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
-                
+
                 osc.start(ctx.currentTime);
                 osc.stop(ctx.currentTime + 0.15);
             } catch (e) {
@@ -943,7 +1022,7 @@
         function playMoneySound() {
             try {
                 const ctx = getAudioContext();
-                
+
                 // First "ka" - metallic hit
                 const osc1 = ctx.createOscillator();
                 const gain1 = ctx.createGain();
@@ -956,7 +1035,7 @@
                 gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
                 osc1.start(ctx.currentTime);
                 osc1.stop(ctx.currentTime + 0.05);
-                
+
                 // Second "ching" - bell-like tone
                 const osc2 = ctx.createOscillator();
                 const gain2 = ctx.createGain();
@@ -968,7 +1047,7 @@
                 gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
                 osc2.start(ctx.currentTime + 0.06);
                 osc2.stop(ctx.currentTime + 0.3);
-                
+
                 // Third harmonic for richness
                 const osc3 = ctx.createOscillator();
                 const gain3 = ctx.createGain();
@@ -1105,7 +1184,7 @@
             const bgMusic = document.getElementById('bgMusic');
             const soundOnIcon = document.getElementById('soundOnIcon');
             const soundOffIcon = document.getElementById('soundOffIcon');
-            
+
             if (bgMusic.muted) {
                 // Unmute
                 bgMusic.muted = false;
@@ -1176,13 +1255,13 @@
                     playSlideTimeline(this.slides[0]);
                     recordView();
                     createFloatingParticles();
-                    
+
                     // Initialize background music 🎵
                     const bgMusic = document.getElementById('bgMusic');
                     if (bgMusic) {
                         console.log('🎵 Music element found, initializing...');
                         bgMusic.volume = 0.3; // Set comfortable volume
-                        
+
                         // Start playing muted (always works)
                         bgMusic.play()
                             .then(() => {
@@ -1200,23 +1279,23 @@
                     playSlideTimeline(this.slides[this.activeIndex]);
                     handleEffects(this.slides[this.activeIndex]);
                     if (navigator.vibrate) navigator.vibrate(10);
-                    
+
                     // 🎵 Unmute music on first swipe
                     const bgMusic = document.getElementById('bgMusic');
                     console.log('🔍 Swipe detected! Index:', this.activeIndex);
-                    
+
                     if (bgMusic) {
                         console.log('🔍 Music state - Muted:', bgMusic.muted, 'Paused:', bgMusic.paused, 'Volume:', bgMusic.volume);
-                        
+
                         if (bgMusic.muted && this.activeIndex > 0) {
                             bgMusic.muted = false;
                             console.log('🎵 Music unmuted on swipe!');
-                            
+
                             // Ensure it's playing
                             if (bgMusic.paused) {
                                 bgMusic.play().then(() => console.log('🎵 Music resumed'));
                             }
-                            
+
                             // 🎵 Smooth volume fade-in
                             bgMusic.volume = 0; // Start from silent
                             const targetVolume = 0.3;
@@ -1224,12 +1303,12 @@
                             const steps = 60; // 60 steps for smooth transition
                             const stepDuration = fadeInDuration / steps;
                             const volumeIncrement = targetVolume / steps;
-                            
+
                             let currentStep = 0;
                             const fadeInterval = setInterval(() => {
                                 currentStep++;
                                 bgMusic.volume = Math.min(volumeIncrement * currentStep, targetVolume);
-                                
+
                                 if (currentStep >= steps) {
                                     bgMusic.volume = targetVolume;
                                     clearInterval(fadeInterval);
