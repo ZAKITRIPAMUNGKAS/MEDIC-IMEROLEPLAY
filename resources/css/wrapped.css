@@ -1,0 +1,6 @@
+/* Tailwind CSS Build for MedicIME Wrapped */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom theme extension will be auto-generated from inline config */

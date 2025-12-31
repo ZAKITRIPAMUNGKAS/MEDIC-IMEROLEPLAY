@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#000000">
+    <title>MedicIME Wrapped {{ $year }} - {{ $user->name }}</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;900&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Outfit"', 'sans-serif'],
+                        mono: ['"Space Grotesk"', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            dark: "#030305",
+                            accent: "#6366f1",
+                            glow: "#a855f7",
+                        }
+                    },
+                    animation: {
+                        'aurora': 'aurora 20s infinite alternate',
+                        'float-slow': 'float 8s ease-in-out infinite',
+                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'slide-up': 'slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                    },
+                    keyframes: {
+                        aurora: {
+                            '0%': { transform: 'translate(0, 0) rotate(0deg) scale(1)' },
+                            '100%': { transform: 'translate(-20px, -20px) rotate(10deg) scale(1.1)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: 0, transform: 'translateY(40px)' },
+                            '100%': { opacity: 1, transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #030305;
+            color: #ffffff;
+            overflow: hidden;
+            height: 100vh;
+            height: 100dvh;
+        }
+
+        .aurora-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0;
+            overflow: hidden;
+            background: #030305;
+        }
+
+        .aurora-blob {
+            position: absolute;
+            filter: blur(80px);
+            opacity: 0.6;
+            animation: aurora 15s infinite alternate;
+            border-radius: 50%;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease-out;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        }
+
+        .text-gradient-main {
+            background: linear-gradient(135deg, #fff 30%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .text-gradient-gold {
+            background: linear-gradient(135deg, #fde047 0%, #d97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .swiper { width: 100%; height: 100%; }
+        .swiper-slide {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-center;
+            padding: 24px;
+            box-sizing: border-box;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .swiper-slide-active { opacity: 1; }
+
+        .story-nav {
+            position: fixed;
+            top: 12px; left: 8px; right: 8px;
+            z-index: 50;
+            display: flex;
+            gap: 4px;
+        }
+        .story-bar {
+            flex: 1;
+            height: 3px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .story-progress {
+            height: 100%;
+            width: 0%;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+            transition: width 0.1s linear;
+        }
+
+        .grain {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+        }
+
+        /* Animation delays - only applied when .show class is added */
+        .animate-in.show.stagger-1 { animation-delay: 100ms; }
+        .animate-in.show.stagger-2 { animation-delay: 200ms; }
+        .animate-in.show.stagger-3 { animation-delay: 300ms; }
+        .animate-in.show.stagger-4 { animation-delay: 400ms; }
+        .animate-in.show.stagger-5 { animation-delay: 500ms; }
+        
+        /* Default state - visible */
+        .animate-in {
+            opacity: 1;
+        }
+        
+        /* Only apply animation when show class is added */
+        .animate-in.show {
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Background Layer -->
+    <div class="aurora-bg">
+        <div class="aurora-blob bg-blue-600/40 w-[80vw] h-[80vw] top-[-20%] left-[-20%] animate-aurora"></div>
+        <div class="aurora-blob bg-purple-600/30 w-[90vw] h-[90vw] bottom-[-20%] right-[-20%] animate-aurora" style="animation-duration: 25s; animation-direction: reverse;"></div>
+        <div class="aurora-blob bg-teal-500/20 w-[60vw] h-[60vw] top-[30%] left-[20%] animate-aurora" style="animation-duration: 18s;"></div>
+    </div>
+    
+    <!-- Noise Texture -->
+    <div class="grain"></div>
+
+    <!-- UI Layer -->
+    <div class="story-nav" id="storyNav"></div>
+
+    <button onclick="closeWrapped()" class="fixed top-8 right-4 z-50 w-10 h-10 rounded-full glass-card flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition active:scale-95">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+
+    <!-- Swiper -->
+    <div class="swiper mySwiper">
+        <div class="swiper-wrapper">
+
+            <!-- SLIDE 1: INTRO -->
+            <div class="swiper-slide" data-slide="intro">
+                <div class="relative z-10 text-center w-full max-w-sm">
+                    <div class="absolute top-[-80px] left-1/2 transform -translate-x-1/2 animate-spin-slow opacity-20 pointer-events-none">
+                        <svg width="300" height="300" viewBox="0 0 100 100" fill="none">
+                            <path d="M50 0 L55 45 L100 50 L55 55 L50 100 L45 55 L0 50 L45 45 Z" fill="white"/>
+                        </svg>
+                    </div>
+
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur text-[10px] font-mono tracking-widest uppercase mb-6 animate-in stagger-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Wrapped {{ $year }}
+                    </div>
+
+                    <div class="relative mb-8 group animate-in stagger-2">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-blue-500 to-purple-500 rounded-full blur-2xl opacity-40 group-hover:opacity-60 transition duration-700"></div>
+                        <div class="relative w-40 h-40 mx-auto rounded-full p-1 bg-gradient-to-tr from-white/20 to-white/5 backdrop-blur-md border border-white/10">
+                            @if($user->profile_image)
+                                <img src="{{ $user->profile_image_url }}" class="w-full h-full rounded-full object-cover border-4 border-[#030305]" alt="{{ $user->name }}"
+                                     onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=0D8ABC&color=fff&size=256'">
+                            @else
+                                <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=0D8ABC&color=fff&size=256" 
+                                     class="w-full h-full rounded-full object-cover border-4 border-[#030305]" alt="{{ $user->name }}">
+                            @endif
+                        </div>
+                        <div class="absolute -bottom-2 -right-2 bg-[#030305] rounded-full p-2 border border-white/10">
+                            <div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-lg">✨</div>
+                        </div>
+                    </div>
+
+                    <h1 class="text-6xl font-black tracking-tight leading-[0.9] mb-4 animate-in stagger-3">
+                        <span class="block text-white/40 text-4xl mb-1 font-medium">Halo,</span>
+                        <span class="text-gradient-main">{{ explode(' ', $user->name)[0] }}</span>
+                    </h1>
+
+                    <p class="text-white/60 text-lg font-light leading-snug animate-in stagger-4">
+                        Tahun ini penuh dengan diagnosa, dedikasi, dan cerita.
+                        <br><span class="text-indigo-400 font-medium">Mari kita lihat kembali.</span>
+                    </p>
+
+                    <div class="mt-12 animate-in stagger-5 flex flex-col items-center gap-2">
+                        <div class="w-[1px] h-12 bg-gradient-to-b from-transparent via-white/50 to-transparent"></div>
+                        <span class="text-[10px] font-mono uppercase tracking-[0.3em] opacity-50 animate-bounce">Swipe Up</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 2: STATS (Bento Grid) -->
+            <div class="swiper-slide" data-slide="stats">
+                <div class="relative z-10 w-full max-w-sm px-4">
+                    <h2 class="text-3xl font-bold mb-6 animate-in stagger-1">Waktu & Dedikasi</h2>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="col-span-2 glass-card rounded-3xl p-6 flex flex-col items-center justify-center min-h-[180px] animate-in stagger-2 tilt-card">
+                            <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl">⏱️</div>
+                            <span class="text-xs font-mono text-indigo-300 uppercase tracking-widest mb-1">Total Jam Praktik</span>
+                            <div class="text-7xl font-mono font-bold text-white tracking-tighter">{{ number_format($stats['total_hours'], 0) }}</div>
+                            <div class="text-sm text-white/40 mt-2 font-medium">Setara dengan <span class="text-white">{{ round($stats['total_hours'] / 24) }} hari</span> nonstop</div>
+                        </div>
+
+                        <div class="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 animate-in stagger-3 tilt-card">
+                            <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-xl">📅</div>
+                            <div>
+                                <div class="text-3xl font-mono font-bold">{{ $stats['total_days_worked'] }}</div>
+                                <div class="text-[10px] uppercase text-white/50 tracking-wider">Hari Kerja</div>
+                            </div>
+                        </div>
+
+                        <div class="glass-card rounded-3xl p-5 flex flex-col justify-between h-40 animate-in stagger-4 tilt-card">
+                            <div class="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center text-xl">⚡</div>
+                            <div>
+                                <div class="text-3xl font-mono font-bold">{{ $stats['average_hours_per_day'] }}</div>
+                                <div class="text-[10px] uppercase text-white/50 tracking-wider">Jam / Hari</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 3: PATIENTS -->
+            @if($stats['total_patients'] > 0)
+                <div class="swiper-slide" data-slide="patients">
+                    <div class="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
+                        <svg viewBox="0 0 1440 320" class="w-[200%] animate-pulse">
+                            <path fill="#ef4444" fill-opacity="1" d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,250.7C672,235,768,181,864,181.3C960,181,1056,235,1152,234.7C1248,235,1344,181,1392,154.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+                        </svg>
+                    </div>
+
+                    <div class="relative z-10 text-center w-full max-w-sm px-6">
+                        <div class="inline-block mb-6 animate-in stagger-1">
+                            <div class="relative">
+                                <div class="absolute inset-0 bg-red-500 blur-[60px] opacity-40 animate-pulse"></div>
+                                <div class="text-8xl animate-float-slow transform hover:scale-110 transition duration-500 cursor-default">🫀</div>
+                            </div>
+                        </div>
+
+                        <h2 class="text-sm font-bold text-red-200/70 uppercase tracking-[0.3em] mb-2 animate-in stagger-2">Jiwa Disentuh</h2>
+                        
+                        <div class="font-mono text-[5.5rem] leading-none font-bold text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/10 drop-shadow-2xl animate-in stagger-3 mb-8" id="totalPatients">
+                            0
+                        </div>
+
+                        @if($stats['most_common_form_type'])
+                            <div class="glass-card rounded-2xl p-4 flex items-center gap-4 text-left border-l-4 border-l-red-500 animate-in stagger-4">
+                                <div class="flex-1">
+                                    <div class="text-[10px] text-white/40 uppercase tracking-wider font-bold mb-1">Kasus Terbanyak</div>
+                                    <div class="text-lg font-bold line-clamp-1">{{ $stats['most_common_form_type']['formatted'] }}</div>
+                                </div>
+                                <div class="text-2xl opacity-50">🦠</div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            @endif
+
+            <!--  SLIDE 4: TIMELINE -->
+            <div class="swiper-slide" data-slide="timeline">
+                <div class="relative z-10 w-full max-w-sm px-4">
+                    <h2 class="text-4xl font-black mb-8 text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-500 animate-in stagger-1">Prime Time</h2>
+
+                    <div class="space-y-4">
+                        @if($stats['busiest_month'])
+                            <div class="glass-card rounded-2xl p-6 relative overflow-hidden group animate-in stagger-2 tilt-card">
+                                <div class="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
+                                <div class="flex justify-between items-end relative z-10">
+                                    <div>
+                                        <div class="text-[10px] font-bold text-orange-400 uppercase tracking-widest mb-1">Bulan Tersibuk</div>
+                                        <div class="text-3xl font-bold">{{ $stats['busiest_month']['name'] }}</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-2xl font-mono font-bold text-white/80">{{ number_format($stats['busiest_month']['hours'], 0) }}h</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-end gap-1 mt-4 h-8 opacity-30">
+                                    <div class="flex-1 bg-white rounded-t-sm h-[40%]"></div>
+                                    <div class="flex-1 bg-white rounded-t-sm h-[60%]"></div>
+                                    <div class="flex-1 bg-orange-400 rounded-t-sm h-[100%] shadow-[0_0_10px_orange]"></div>
+                                    <div class="flex-1 bg-white rounded-t-sm h-[50%]"></div>
+                                    <div class="flex-1 bg-white rounded-t-sm h-[30%]"></div>
+                                </div>
+                            </div>
+                        @endif
+
+                        @if($stats['most_active_day'])
+                            <div class="glass-card rounded-2xl p-6 relative overflow-hidden animate-in stagger-3 tilt-card">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-12 h-12 rounded-full bg-pink-500/20 flex items-center justify-center text-2xl">🚀</div>
+                                    <div class="flex-1">
+                                        <div class="text-[10px] font-bold text-pink-400 uppercase tracking-widest">Hari Favorit</div>
+                                        <div class="text-2xl font-bold mt-0.5">{{ $stats['most_active_day']['name'] }}</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-xl font-mono text-white/60">{{ $stats['most_active_day']['count'] }}x</div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 5: SALARY -->
+            @if($stats['total_salary'] > 0)
+                <div class="swiper-slide" data-slide="salary">
+                    <div class="relative z-10 w-full px-4 text-center">
+                        <div class="w-24 h-24 mx-auto mb-8 relative animate-in stagger-1">
+                            <div class="absolute inset-0 bg-emerald-500 rounded-full blur-3xl opacity-30 animate-pulse"></div>
+                            <div class="relative w-full h-full rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center shadow-2xl transform rotate-12 hover:rotate-0 transition duration-500 text-4xl border border-white/20">
+                                💸
+                            </div>
+                        </div>
+
+                        <p class="text-xs font-mono text-emerald-300 mb-2 uppercase tracking-[0.25em] animate-in stagger-2">
+                            Total Pendapatan
+                        </p>
+
+                        <div class="glass-card rounded-2xl border border-emerald-500/30 p-8 mt-4 animate-in stagger-3 cursor-pointer group" onclick="triggerMoneyRain()">
+                            <div class="absolute inset-0 bg-emerald-500/5 group-hover:bg-emerald-500/10 transition duration-500"></div>
+                            
+                            <div class="font-mono text-4xl md:text-5xl font-bold text-white drop-shadow-[0_0_15px_rgba(16,185,129,0.5)] group-hover:scale-105 transition duration-300">
+                                Rp {{ number_format($stats['total_salary'], 0, ',', '.') }}
+                            </div>
+                            
+                            <div class="mt-4 flex items-center justify-center gap-2 text-[10px] text-white/40 uppercase tracking-wider group-hover:text-emerald-300 transition">
+                                <svg class="w-3 h-3 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                Tap to Celebrate
+                            </div>
+                        </div>
+                    </div>
+                    <div id="moneyContainer" class="fixed inset-0 pointer-events-none z-[60]"></div>
+                </div>
+            @endif
+
+            <!-- SLIDE 6: BADGE (RPG Card) -->
+            <div class="swiper-slide" data-slide="badge">
+                <div class="perspective-container w-full max-w-sm px-6">
+                    <div class="text-yellow-200 text-center text-[10px] font-bold tracking-[0.4em] uppercase mb-8 animate-in stagger-1">
+                        Karakter Medis</div>
+
+                    <div class="glass-card rounded-[2rem] p-1 bg-gradient-to-b from-yellow-500/20 to-transparent border border-yellow-500/30 animate-in stagger-2 tilt-card" style="transform-style: preserve-3d;">
+                        <div class="bg-[#050505]/80 rounded-[1.8rem] p-8 text-center relative overflow-hidden backdrop-blur-xl">
+                            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-1/2 bg-yellow-500/20 blur-[60px]"></div>
+
+                            <div class="text-[6rem] mb-4 relative z-10 drop-shadow-2xl animate-float-slow">
+                                {{ $stats['badge']['primary']['icon'] }}
+                            </div>
+
+                            <h1 class="text-3xl font-black text-gradient-gold mb-4 leading-tight">
+                                {{ $stats['badge']['primary']['title'] }}
+                            </h1>
+
+                            <p class="text-sm text-white/70 leading-relaxed font-light">
+                                {{ $stats['badge']['primary']['description'] }}
+                            </p>
+
+                            <div class="flex justify-center gap-4 mt-8 pt-6 border-t border-white/10">
+                                <div class="text-center">
+                                    <div class="text-[10px] text-white/30 uppercase">Hours</div>
+                                    <div class="text-yellow-400 font-mono font-bold">{{ min(99, round($stats['total_hours'] / 10)) }}</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-[10px] text-white/30 uppercase">Impact</div>
+                                    <div class="text-yellow-400 font-mono font-bold">{{ min(99, round($stats['total_patients'] / 50)) }}</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-[10px] text-white/30 uppercase">Days</div>
+                                    <div class="text-yellow-400 font-mono font-bold">{{ min(99, round($stats['total_days_worked'] / 2)) }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 7: OUTRO -->
+            <div class="swiper-slide" data-slide="outro">
+                <div class="w-full max-w-sm px-6 text-center">
+                    <h2 class="text-5xl font-black mb-8 animate-in stagger-1">Thank You</h2>
+
+                    <div class="glass-card p-8 rounded-2xl mb-8 text-left border-l-2 border-indigo-500 animate-in stagger-2">
+                        <p class="font-serif italic text-xl text-white/90 leading-relaxed">
+                            "{{ $quote['text'] }}"
+                        </p>
+                    </div>
+
+                    <button onclick="closeWrapped()" class="group relative w-full py-4 rounded-full overflow-hidden bg-white text-black font-bold text-lg shadow-[0_0_30px_rgba(255,255,255,0.2)] animate-in stagger-3 active:scale-95 transition">
+                        <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/50 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition duration-700"></div>
+                        <span class="relative flex items-center justify-center gap-2">
+                            Mulai {{ $year + 1 }} 🚀
+                        </span>
+                    </button>
+                    
+                    <div class="mt-8 text-[10px] font-mono opacity-30 animate-in stagger-4">
+                        MedicIME Wrapped • Developed by Tepe Zhavarez
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        // Trigger animations on slide
+        function playSlideAnimations(slide) {
+            const animatedElements = slide.querySelectorAll('.animate-in');
+            animatedElements.forEach((el, index) => {
+                // Remove show class first to reset
+                el.classList.remove('show');
+                // Add show class with slight delay to trigger animation
+                setTimeout(() => {
+                    el.classList.add('show');
+                }, 50 + (index * 20)); // Slight stagger even within same delay class
+            });
+        }
+
+        // Number Count Up
+        function animateValue(obj, start, end, duration) {
+            if (!obj) return; // Safety check
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start).toLocaleString('id-ID');
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+
+        // Story Progress Bars
+        const totalSlides = document.querySelectorAll('.swiper-slide').length;
+        const navContainer = document.getElementById('storyNav');
+        
+        for(let i=0; i<totalSlides; i++) {
+            const bar = document.createElement('div');
+            bar.className = 'story-bar';
+            bar.innerHTML = `<div class="story-progress" id="progress-${i}"></div>`;
+            navContainer.appendChild(bar);
+        }
+
+        function updateProgress(activeIndex) {
+            for(let i=0; i<totalSlides; i++) {
+                const el = document.getElementById(`progress-${i}`);
+                if (i < activeIndex) el.style.width = '100%';
+                else if (i === activeIndex) {
+                    el.style.width = '0%';
+                    setTimeout(() => el.style.width = '100%', 50);
+                } else el.style.width = '0%';
+            }
+        }
+
+        // Swiper Init
+        const swiper = new Swiper('.mySwiper', {
+            effect: 'creative',
+            creativeEffect: {
+                prev: {
+                    shadow: true,
+                    translate: [0, 0, -400],
+                    opacity: 0,
+                },
+                next: {
+                    translate: [0, '100%', 0],
+                },
+            },
+            direction: 'vertical',
+            speed: 700,
+            on: {
+                init: function() {
+                    updateProgress(0);
+                    // Trigger animations on first slide
+                    playSlideAnimations(this.slides[0]);
+                },
+                slideChange: function() {
+                    updateProgress(this.activeIndex);
+                    const currentSlide = this.slides[this.activeIndex];
+                    
+                    // Trigger animations for current slide
+                    playSlideAnimations(currentSlide);
+                    const slideType = currentSlide.getAttribute('data-slide');
+                    
+                    if(slideType === 'patients') {
+                        const el = document.getElementById('totalPatients');
+                        el.innerText = '0';
+                        setTimeout(() => animateValue(el, 0, {{ $stats['total_patients'] }}, 1500), 500);
+                    }
+
+                    if(slideType === 'badge') {
+                        setTimeout(() => {
+                            confetti({
+                                particleCount: 100,
+                                spread: 70,
+                                origin: { y: 0.6 },
+                                colors: ['#fbbf24', '#f59e0b', '#ffffff']
+                            });
+                        }, 600);
+                    }
+
+                    if(slideType === 'outro') {
+                        var duration = 3 * 1000;
+                        var animationEnd = Date.now() + duration;
+                        var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+                        var randomInRange = (min, max) => Math.random() * (max - min) + min;
+
+                        var interval = setInterval(function () {
+                            var timeLeft = animationEnd - Date.now();
+                            if (timeLeft <= 0) return clearInterval(interval);
+                            var particleCount = 50 * (timeLeft / duration);
+                            confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                            confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+                        }, 250);
+                    }
+
+                    if (navigator.vibrate) navigator.vibrate(15);
+                }
+            }
+        });
+
+        // Money Rain Effect
+        function triggerMoneyRain() {
+            const container = document.getElementById('moneyContainer');
+            const emojis = ['💸', '💵', '💎', '🏥'];
+            
+            container.innerHTML = '';
+
+            for (let i = 0; i < 30; i++) {
+                const el = document.createElement('div');
+                el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                el.style.position = 'absolute';
+                el.style.left = Math.random() * 100 + '%';
+                el.style.top = '-50px';
+                el.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                
+                el.animate([
+                    { transform: `translateY(0) rotate(0deg)` },
+                    { transform: `translateY(110vh) rotate(${Math.random() * 360}deg)` }
+                ], {
+                    duration: Math.random() * 2000 + 2000,
+                    easing: 'linear',
+                    fill: 'forwards'
+                });
+
+                container.appendChild(el);
+            }
+        }
+
+        // Close Logic
+        function closeWrapped() {
+            const wrapper = document.querySelector('.swiper');
+            wrapper.style.transition = 'all 0.5s ease';
+            wrapper.style.opacity = '0';
+            wrapper.style.transform = 'scale(0.9)';
+
+            document.getElementById('storyNav').style.opacity = '0';
+            
+            setTimeout(() => {
+                fetch('{{ route("wrapped.dismiss") }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                    body: JSON.stringify({ year: {{ $year }} })
+                }).finally(() => {
+                    sessionStorage.setItem('wrapped_{{ $year }}_seen', 'true');
+                    window.location.href = '{{ route("staff.dashboard") }}';
+                });
+            }, 500);
+        }
+
+        // 3D Tilt Effect
+        document.addEventListener('mousemove', (e) => {
+            const cards = document.querySelectorAll('.tilt-card');
+            const x = (window.innerWidth / 2 - e.pageX) / 25;
+            const y = (window.innerHeight / 2 - e.pageY) / 25;
+
+            cards.forEach(card => {
+                card.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+            });
+        });
+        
+    </script>
+</body>
+</html>

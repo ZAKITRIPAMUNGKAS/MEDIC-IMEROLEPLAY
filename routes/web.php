@@ -156,6 +156,11 @@ Route::middleware(['auth', 'staff'])->group(function () {
     Route::get('/staff/payroll/{id}', [\App\Http\Controllers\Staff\PayrollController::class, 'show'])->name('staff.payroll.show')->where('id', '[0-9]+');
     Route::get('/staff/payroll/stats', [\App\Http\Controllers\Staff\PayrollController::class, 'getStats'])->name('staff.payroll.stats');
     Route::post('/staff/payroll/notifications/{notification}/mark-read', [\App\Http\Controllers\Staff\PayrollController::class, 'markNotificationAsRead'])->name('staff.payroll.notifications.mark-read');
+
+    // Wrapped routes (Year in Review)
+    Route::get('/wrapped/{year}', [\App\Http\Controllers\WrappedController::class, 'show'])->name('wrapped.show');
+    Route::post('/wrapped/dismiss', [\App\Http\Controllers\WrappedController::class, 'dismiss'])->name('wrapped.dismiss');
+    Route::post('/wrapped/record', [\App\Http\Controllers\WrappedController::class, 'recordView'])->name('wrapped.record');
 });
 
 // Admin routes
