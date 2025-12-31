@@ -302,10 +302,6 @@ class WrappedController extends Controller
                 'author' => null
             ],
             [
-                'text' => 'Kamu itu walking W. Setiap shift adalah comeback story! 🎯',
-                'author' => null
-            ],
-            [
                 'text' => 'Slay the day, save the lives. Kamu emang go hard or go home! 🚀',
                 'author' => null
             ],

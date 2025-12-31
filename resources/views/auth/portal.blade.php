@@ -9,9 +9,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome (Local) -->
+    <link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}">
+    <!-- Tailwind CSS (Local) -->
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -24,6 +25,15 @@
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: #334155;
+            /* Fallback styles if Tailwind fails */
+            padding-left: 2.75rem;
+            /* pl-11 (11 * 0.25rem = 2.75rem) */
+            padding-right: 1rem;
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-radius: 0.75rem;
+            /* rounded-xl */
+            width: 100%;
             /* Slate-700 for better readability on white/light bg of the form side */
             transition: all 0.3s ease;
         }
@@ -41,6 +51,36 @@
         }
 
         /* Container & Animation Logic */
+        /* Tailwind Fallbacks */
+        .text-slate-600 {
+            color: #475569;
+        }
+
+        .text-slate-500 {
+            color: #64748b;
+        }
+
+        .bg-slate-100 {
+            background-color: #f1f5f9;
+        }
+
+        .bg-slate-50 {
+            background-color: #f8fafc;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .appearance-none {
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .cursor-pointer {
+            cursor: pointer;
+        }
+
         .container-custom {
             position: relative;
             width: 100%;
@@ -294,17 +334,17 @@
                                 placeholder="Email Address" required>
                         </div>
 
-                        <div class="relative group" x-data="{ show: false }">
+                        <div class="relative group password-group">
                             <div
                                 class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-sky-500 transition-colors">
                                 <i class="fas fa-lock"></i>
                             </div>
-                            <input :type="show ? 'text' : 'password'" name="password"
+                            <input type="password" name="password" id="login_password"
                                 class="form-input w-full pl-11 pr-12 py-4 rounded-xl text-sm bg-slate-100 border-transparent focus:bg-white"
                                 placeholder="Password" required>
-                            <button type="button" @click="show = !show"
+                            <button type="button" onclick="togglePassword('login_password', this)"
                                 class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-sky-500 transition-colors focus:outline-none">
-                                <i class="fas" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                <i class="fas fa-eye"></i>
                             </button>
                         </div>
                     </div>
@@ -380,31 +420,31 @@
                             </div>
                         </div>
 
-                        <div class="relative group" x-data="{ show: false }">
+                        <div class="relative group password-group">
                             <div
                                 class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-sky-500 transition-colors">
                                 <i class="fas fa-lock"></i>
                             </div>
-                            <input :type="show ? 'text' : 'password'" name="password"
+                            <input type="password" name="password" id="reg_password"
                                 class="form-input w-full pl-11 pr-12 py-3 rounded-xl text-sm bg-slate-100 border-transparent focus:bg-white"
                                 placeholder="Password" required>
-                            <button type="button" @click="show = !show"
+                            <button type="button" onclick="togglePassword('reg_password', this)"
                                 class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-sky-500 transition-colors focus:outline-none">
-                                <i class="fas" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                <i class="fas fa-eye"></i>
                             </button>
                         </div>
 
-                        <div class="relative group" x-data="{ show: false }">
+                        <div class="relative group password-group">
                             <div
                                 class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-sky-500 transition-colors">
                                 <i class="fas fa-lock"></i>
                             </div>
-                            <input :type="show ? 'text' : 'password'" name="password_confirmation"
+                            <input type="password" name="password_confirmation" id="reg_password_confirmation"
                                 class="form-input w-full pl-11 pr-12 py-3 rounded-xl text-sm bg-slate-100 border-transparent focus:bg-white"
                                 placeholder="Confirm Password" required>
-                            <button type="button" @click="show = !show"
+                            <button type="button" onclick="togglePassword('reg_password_confirmation', this)"
                                 class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-sky-500 transition-colors focus:outline-none">
-                                <i class="fas" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                <i class="fas fa-eye"></i>
                             </button>
                         </div>
                     </div>
@@ -522,6 +562,22 @@
                 e.preventDefault();
                 container.classList.remove("sign-up-mode");
             });
+        }
+
+        // Toggle Password Function (Vanilla JS replacement for Alpine)
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            const icon = btn.querySelector('i');
+
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = "password";
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
         }
     </script>
 </body>

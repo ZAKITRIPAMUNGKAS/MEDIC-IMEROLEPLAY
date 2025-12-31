@@ -19,7 +19,11 @@ class StaffController extends Controller
     }
     public function showLoginForm()
     {
-        return view('auth.portal', ['mode' => 'login']);
+        $roles = StaffRole::where('name', '!=', 'super_admin')->get(); // Exclude super_admin if needed
+        return view('auth.portal', [
+            'mode' => 'login',
+            'roles' => $roles
+        ]);
     }
 
     public function login(Request $request)
