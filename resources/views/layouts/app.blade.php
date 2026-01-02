@@ -1881,7 +1881,9 @@
 
             // Skip forms that should submit normally (public forms with error handling)
             // These forms need to redirect normally to show flash messages
-            if (form.id === 'medicalForm' || form.action && form.action.includes('/form/submit')) {
+            if (form.id === 'medicalForm' ||
+                (form.action && form.action.includes('/form/submit')) ||
+                (form.action && form.action.includes('/staff/logout'))) {
                 // Let form submit normally - flash messages will be shown on redirect
                 return;
             }
