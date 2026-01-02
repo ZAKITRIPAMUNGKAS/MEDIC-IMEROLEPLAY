@@ -2620,7 +2620,9 @@
         </a>
     @endauth
 
-    @livewire('chat-widget')
+    @auth
+        @livewire('chat-widget')
+    @endauth
     @livewireScripts
     @livewireScriptConfig
     @stack('scripts')
