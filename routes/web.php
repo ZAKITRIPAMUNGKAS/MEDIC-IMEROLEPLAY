@@ -100,18 +100,17 @@ Route::post('/appointment/create', [PublicController::class, 'createAppointment'
 Route::get('/appointment/success/{id}', [PublicController::class, 'appointmentSuccess'])->name('public.appointment.success');
 
 // User Chat & Feedback Routes (Authentication Required)
-Route::middleware(['auth'])->group(function () {
-    Route::get('/chat', function () {
-        return view('chat.index');
-    })->name('chat.page');
+// User Chat & Feedback Routes (Public Access)
+Route::get('/chat', function () {
+    return view('chat.index');
+})->name('chat.page');
 
-    Route::get('/livechat', function () {
-        return view('chat.livechat');
-    })->name('chat.livechat');
+Route::get('/livechat', function () {
+    return view('chat.livechat');
+})->name('chat.livechat');
 
-    Route::get('/feedback', [PublicController::class, 'showFeedbackForm'])->name('feedback.form');
-    Route::post('/feedback', [PublicController::class, 'submitFeedback'])->name('feedback.submit');
-});
+Route::get('/feedback', [PublicController::class, 'showFeedbackForm'])->name('feedback.form');
+Route::post('/feedback', [PublicController::class, 'submitFeedback'])->name('feedback.submit');
 
 // Form success route (used after submit)
 Route::get('/form/success/{id}', [PublicController::class, 'formSuccess'])->name('public.form.success');
