@@ -33,6 +33,24 @@
                     </div>
                 @endif
 
+                @if($errors->any())
+                    <div class="mb-6 p-4 bg-red-500/20 border border-red-400/50 rounded-xl backdrop-blur-sm animate-fade-in-up">
+                        <div class="flex items-start gap-3">
+                            <div class="flex-shrink-0 w-10 h-10 bg-red-500/30 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-exclamation-circle text-red-300 text-lg"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-red-200 font-bold mb-1">Terjadi Kesalahan</h4>
+                                <ul class="text-red-100 text-sm leading-relaxed list-disc list-inside">
+                                    @foreach($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+
                 <form action="{{ route('feedback.submit') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
