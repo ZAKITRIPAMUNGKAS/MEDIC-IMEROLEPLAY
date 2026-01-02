@@ -120,8 +120,8 @@
                                             <span class="text-[10px] text-sky-200/70 mb-1 px-1 font-medium">
                                                 {{ $msg->is_staff_reply ? ($msg->user->name ?? 'Staff') : $activeSession->anonymous_name }}
                                             </span>
-                                            <div class="px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl shadow-md transition-all duration-300 text-sm leading-relaxed border
-                                                                                                        {{ $msg->is_staff_reply
+                                            <div class="px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl shadow-md transition-all duration-300 text-sm leading-7 whitespace-pre-wrap border
+                                                                                                                        {{ $msg->is_staff_reply
                             ? 'bg-gradient-to-br from-sky-500 to-cyan-600 text-white rounded-tr-none border-sky-400/50 shadow-sky-500/20'
                             : 'bg-white/10 backdrop-blur-sm text-white rounded-tl-none border-white/20' }}">
                                                 {{-- Display Attachment if exists --}}
@@ -162,16 +162,18 @@
                     <div class="p-3 sm:p-4 bg-black/20 border-t border-sky-400/30 backdrop-blur-md shrink-0">
                         {{-- File Preview --}}
                         @if($attachment)
-                            <div class="mb-3 flex items-center gap-2 p-3 bg-sky-900/40 border border-sky-400/30 rounded-lg backdrop-blur-sm">
+                            <div
+                                class="mb-3 flex items-center gap-2 p-3 bg-sky-900/40 border border-sky-400/30 rounded-lg backdrop-blur-sm">
                                 <i class="fas fa-paperclip text-sky-400"></i>
-                                <span class="flex-1 text-xs text-sky-100 font-medium truncate">{{ $attachment->getClientOriginalName() }}</span>
-                                <button type="button" wire:click="$set('attachment', null)" 
+                                <span
+                                    class="flex-1 text-xs text-sky-100 font-medium truncate">{{ $attachment->getClientOriginalName() }}</span>
+                                <button type="button" wire:click="$set('attachment', null)"
                                     class="text-red-400 hover:text-red-300 transition-colors">
                                     <i class="fas fa-times text-sm"></i>
                                 </button>
                             </div>
                         @endif
-                        
+
                         {{-- Error Messages --}}
                         @error('replyMessage')
                             <div class="mb-2 text-xs text-red-400 flex items-center gap-1">
@@ -186,7 +188,7 @@
 
                         <form wire:submit.prevent="sendReply" class="flex gap-3 sm:gap-4 items-end">
                             {{-- File Upload Button --}}
-                            <label for="admin-attachment" 
+                            <label for="admin-attachment"
                                 class="w-11 h-11 sm:w-12 sm:h-12 bg-white/10 hover:bg-white/20 text-sky-200 hover:text-white rounded-xl flex items-center justify-center cursor-pointer transition-all border border-sky-400/30 shrink-0">
                                 <i class="fas fa-paperclip text-lg"></i>
                                 <input type="file" id="admin-attachment" wire:model="attachment" class="hidden"

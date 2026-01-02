@@ -129,8 +129,8 @@ class FeedbackList extends Component
             'new' => Feedback::where('status', 'new')->count(),
             'reviewed' => Feedback::where('status', 'reviewed')->count(),
             'resolved' => Feedback::where('status', 'resolved')->count(),
-            'kritik' => Feedback::where('type', 'kritik')->count(),
-            'saran' => Feedback::where('type', 'saran')->count(),
+            'laporan' => Feedback::where('type', 'laporan')->count(),
+            'masukan' => Feedback::where('type', 'masukan')->count(),
         ];
 
         return view('livewire.feedback-list', compact('stats'));

@@ -486,7 +486,7 @@ class PayrollController extends Controller
                         $periodStart->toDateString(),
                         $periodEnd->toDateString()
                     ])
-                    ->where('session_type', 'work')
+                    ->whereIn('session_type', ['work', 'meeting'])
                     ->whereNotNull('session_duration')
                     ->where('session_duration', '>', 0)
                     ->where('is_active', false) // Only completed sessions

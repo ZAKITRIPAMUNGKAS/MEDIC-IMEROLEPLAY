@@ -1,4 +1,4 @@
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[calc(100vh-200px)]" wire:poll.15s="loadFeedback">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[600px]">
     <!-- Left Sidebar - Feedback List -->
     <div
         class="lg:col-span-1 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-sky-200/50 overflow-hidden flex flex-col">
@@ -25,8 +25,8 @@
                     style="color: #0f172a !important;"
                     class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 outline-none text-sm bg-white">
                     <option value="all">Semua Tipe</option>
-                    <option value="kritik">Laporan</option>
-                    <option value="saran">Masukan</option>
+                    <option value="laporan">Laporan</option>
+                    <option value="masukan">Masukan</option>
                 </select>
             </div>
         </div>
@@ -34,9 +34,14 @@
         <!-- Feedback List -->
         <div class="flex-1 overflow-y-auto p-2">
             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $feedbackList; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $feedback): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                    <div wire:click="selectFeedback(<?php echo e($feedback->id); ?>)" class="p-3 mb-2 rounded-lg cursor-pointer transition-all border
+                    <button type="button" 
+                         wire:key="feedback-<?php echo e($feedback->id); ?>" 
+                         wire:click="selectFeedback(<?php echo e($feedback->id); ?>)" 
+                         wire:loading.class="opacity-50 bg-slate-100"
+                         wire:target="selectFeedback(<?php echo e($feedback->id); ?>)"
+                         class="w-full text-left p-3 mb-2 rounded-lg cursor-pointer transition-all border relative overflow-hidden outline-none focus:ring-2 focus:ring-sky-400
                                 <?php echo e($selectedFeedback && $selectedFeedback->id === $feedback->id
-                ? 'bg-sky-50 border-sky-300 shadow-md'
+                ? 'bg-sky-50 border-sky-300 shadow-md ring-1 ring-sky-200'
                 : 'bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-300'); ?>">
 
                         <div class="flex items-start justify-between mb-2">
@@ -53,11 +58,11 @@
                         <div class="flex items-center gap-2 flex-wrap">
                             <!-- Type Badge -->
                             <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold
-                                    <?php echo e($feedback->type === 'kritik'
+                                    <?php echo e($feedback->type === 'laporan'
                 ? 'bg-red-100 text-red-700'
                 : 'bg-green-100 text-green-700'); ?>">
                                 <i
-                                    class="fas <?php echo e($feedback->type === 'kritik' ? 'fa-exclamation-triangle' : 'fa-lightbulb'); ?>"></i>
+                                    class="fas <?php echo e($feedback->type === 'laporan' ? 'fa-exclamation-triangle' : 'fa-lightbulb'); ?>"></i>
                                 <?php echo e(ucfirst($feedback->type)); ?>
 
                             </span>
@@ -83,7 +88,7 @@
 
                             </span>
                         </div>
-                    </div>
+                    </button>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                 <div class="flex flex-col items-center justify-center h-full text-center p-6">
                     <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-3">
@@ -120,11 +125,11 @@
                     <div class="flex items-center gap-2">
                         <!-- Type Badge -->
                         <span class="px-3 py-1 rounded-full text-xs font-semibold
-                                <?php echo e($selectedFeedback->type === 'kritik'
+                                <?php echo e($selectedFeedback->type === 'laporan'
             ? 'bg-red-100 text-red-700 border border-red-200'
             : 'bg-green-100 text-green-700 border border-green-200'); ?>">
                             <i
-                                class="fas <?php echo e($selectedFeedback->type === 'kritik' ? 'fa-exclamation-triangle' : 'fa-lightbulb'); ?>"></i>
+                                class="fas <?php echo e($selectedFeedback->type === 'laporan' ? 'fa-exclamation-triangle' : 'fa-lightbulb'); ?>"></i>
                             <?php echo e(ucfirst($selectedFeedback->type)); ?>
 
                         </span>
@@ -140,9 +145,10 @@
                         <i class="fas fa-message text-sky-600"></i>
                         Pesan
                     </h4>
-                    <p class="text-slate-700 text-sm leading-relaxed whitespace-pre-wrap"><?php echo e($selectedFeedback->message); ?>
+                    <div class="text-slate-800 text-base leading-7 font-medium tracking-wide prose prose-sm max-w-none">
+                        <?php echo $selectedFeedback->message; ?>
 
-                    </p>
+                    </div>
                 </div>
 
                 <!-- Attachment Image -->
@@ -207,7 +213,7 @@
                 <!-- Admin Notes -->
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($selectedFeedback->notes || $selectedFeedback->status !== 'new'): ?>
                     <div class="bg-amber-50 rounded-lg p-4 border border-amber-200">
-                        <h4 class="font-semibold text-amber-900 text-sm mb-2 flex items-center gap-2">
+                        <h4 class="font-semibold text-black text-sm mb-2 flex items-center gap-2">
                             <i class="fas fa-sticky-note text-amber-600"></i>
                             Catatan Admin
                         </h4>
@@ -216,7 +222,7 @@
                                 <?php echo e($selectedFeedback->notes ?? 'Tidak ada catatan'); ?></p>
                         <?php else: ?>
                             <textarea wire:model="adminNotes" rows="3"
-                                class="w-full px-3 py-2 rounded-lg border border-amber-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none text-sm bg-white"
+                                class="w-full px-3 py-2 rounded-lg border border-amber-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none text-sm bg-white text-black"
                                 placeholder="Tambahkan catatan untuk feedback ini..."></textarea>
                         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>

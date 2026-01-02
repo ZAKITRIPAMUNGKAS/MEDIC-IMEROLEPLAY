@@ -500,7 +500,7 @@ class DashboardController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
 
-            return back()->with('error', 'Terjadi kesalahan saat clock out. Silakan coba lagi.');
+            return back()->with('error', 'Terjadi kesalahan saat clock out: ' . $e->getMessage());
         }
     }
 
@@ -541,7 +541,7 @@ class DashboardController extends Controller
         // Query dasar untuk user yang punya attendance
         $usersQuery = User::whereHas('attendances', function ($query) use ($startOfWeek, $endOfWeek) {
             $query->whereBetween('work_date', [$startOfWeek, $endOfWeek])
-                ->where('session_type', 'work')
+                ->whereIn('session_type', ['work', 'meeting'])
                 ->whereNotNull('session_duration')
                 ->where('session_duration', '>', 0);
         });
@@ -590,7 +590,7 @@ class DashboardController extends Controller
             ->withCount([
                 'attendances' => function ($query) use ($startOfWeek, $endOfWeek) {
                     $query->whereBetween('work_date', [$startOfWeek, $endOfWeek])
-                        ->where('session_type', 'work')
+                        ->whereIn('session_type', ['work', 'meeting'])
                         ->whereNotNull('session_duration')
                         ->where('session_duration', '>', 0);
                 }
@@ -598,7 +598,7 @@ class DashboardController extends Controller
             ->withSum([
                 'attendances' => function ($query) use ($startOfWeek, $endOfWeek) {
                     $query->whereBetween('work_date', [$startOfWeek, $endOfWeek])
-                        ->where('session_type', 'work')
+                        ->whereIn('session_type', ['work', 'meeting'])
                         ->whereNotNull('session_duration')
                         ->where('session_duration', '>', 0);
                 }
@@ -611,7 +611,7 @@ class DashboardController extends Controller
         foreach ($users as $user) {
             $uniqueWorkDays = Attendance::where('user_id', $user->id)
                 ->whereBetween('work_date', [$startOfWeek, $endOfWeek])
-                ->where('session_type', 'work')
+                ->whereIn('session_type', ['work', 'meeting'])
                 ->whereNotNull('session_duration')
                 ->where('session_duration', '>', 0)
                 ->distinct('work_date')
@@ -630,7 +630,7 @@ class DashboardController extends Controller
     {
         return Attendance::where('user_id', $userId)
             ->whereBetween('work_date', [now()->startOfWeek(), now()->endOfWeek()])
-            ->where('session_type', 'work')
+            ->whereIn('session_type', ['work', 'meeting'])
             ->whereNotNull('session_duration')
             ->where('session_duration', '>', 0)
             ->selectRaw('

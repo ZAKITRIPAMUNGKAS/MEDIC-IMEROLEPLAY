@@ -231,7 +231,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     
                                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($msg->message): ?>
-                                        <p class="text-sm <?php echo e($msg->is_staff_reply ? 'text-slate-700' : 'text-white'); ?>"><?php echo e($msg->message); ?></p>
+                                        <p class="text-sm leading-relaxed whitespace-pre-wrap <?php echo e($msg->is_staff_reply ? 'text-slate-700' : 'text-white'); ?>"><?php echo e($msg->message); ?></p>
                                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     
                                     <p class="text-[10px] mt-1 <?php echo e($msg->is_staff_reply ? 'text-slate-400' : 'text-sky-100'); ?>">

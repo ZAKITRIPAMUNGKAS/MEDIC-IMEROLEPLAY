@@ -127,8 +127,8 @@
                                                 <?php echo e($msg->is_staff_reply ? ($msg->user->name ?? 'Staff') : $activeSession->anonymous_name); ?>
 
                                             </span>
-                                            <div class="px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl shadow-md transition-all duration-300 text-sm leading-relaxed border
-                                                                                                        <?php echo e($msg->is_staff_reply
+                                            <div class="px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl shadow-md transition-all duration-300 text-sm leading-7 whitespace-pre-wrap border
+                                                                                                                        <?php echo e($msg->is_staff_reply
                             ? 'bg-gradient-to-br from-sky-500 to-cyan-600 text-white rounded-tr-none border-sky-400/50 shadow-sky-500/20'
                             : 'bg-white/10 backdrop-blur-sm text-white rounded-tl-none border-white/20'); ?>">
                                                 
@@ -172,16 +172,18 @@
                     <div class="p-3 sm:p-4 bg-black/20 border-t border-sky-400/30 backdrop-blur-md shrink-0">
                         
                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($attachment): ?>
-                            <div class="mb-3 flex items-center gap-2 p-3 bg-sky-900/40 border border-sky-400/30 rounded-lg backdrop-blur-sm">
+                            <div
+                                class="mb-3 flex items-center gap-2 p-3 bg-sky-900/40 border border-sky-400/30 rounded-lg backdrop-blur-sm">
                                 <i class="fas fa-paperclip text-sky-400"></i>
-                                <span class="flex-1 text-xs text-sky-100 font-medium truncate"><?php echo e($attachment->getClientOriginalName()); ?></span>
-                                <button type="button" wire:click="$set('attachment', null)" 
+                                <span
+                                    class="flex-1 text-xs text-sky-100 font-medium truncate"><?php echo e($attachment->getClientOriginalName()); ?></span>
+                                <button type="button" wire:click="$set('attachment', null)"
                                     class="text-red-400 hover:text-red-300 transition-colors">
                                     <i class="fas fa-times text-sm"></i>
                                 </button>
                             </div>
                         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                        
+
                         
                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['replyMessage'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -212,7 +214,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 
                         <form wire:submit.prevent="sendReply" class="flex gap-3 sm:gap-4 items-end">
                             
-                            <label for="admin-attachment" 
+                            <label for="admin-attachment"
                                 class="w-11 h-11 sm:w-12 sm:h-12 bg-white/10 hover:bg-white/20 text-sky-200 hover:text-white rounded-xl flex items-center justify-center cursor-pointer transition-all border border-sky-400/30 shrink-0">
                                 <i class="fas fa-paperclip text-lg"></i>
                                 <input type="file" id="admin-attachment" wire:model="attachment" class="hidden"

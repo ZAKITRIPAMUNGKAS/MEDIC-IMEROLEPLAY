@@ -37,7 +37,7 @@ class AttendanceHelper
             ->withSum([
                 'attendances' => function ($query) use ($startOfWeek, $endOfWeek) {
                     $query->whereBetween('work_date', [$startOfWeek, $endOfWeek])
-                        ->where('session_type', 'work')
+                        ->whereIn('session_type', ['work', 'meeting'])
                         ->whereNotNull('session_duration')
                         ->where('session_duration', '>', 0);
                 }
@@ -124,7 +124,7 @@ class AttendanceHelper
         $currentYearWeek = now()->format('oW'); // ISO YearWeek
 
         $weeks = Attendance::selectRaw('YEARWEEK(work_date, 1) as week_year, MIN(work_date) as week_start')
-            ->where('session_type', 'work')
+            ->whereIn('session_type', ['work', 'meeting'])
             ->whereNotNull('session_duration')
             ->where('session_duration', '>', 0)
             ->whereRaw('YEARWEEK(work_date, 1) < ?', [$currentYearWeek]) // Only past weeks
@@ -165,7 +165,7 @@ class AttendanceHelper
         // Build query for top user
         $topUserQuery = User::whereHas('attendances', function ($query) use ($startDate, $endDate) {
             $query->whereBetween('work_date', [$startDate, $endDate])
-                ->where('session_type', 'work')
+                ->whereIn('session_type', ['work', 'meeting'])
                 ->whereNotNull('session_duration')
                 ->where('session_duration', '>', 0);
         });
@@ -209,7 +209,7 @@ class AttendanceHelper
             ->withSum([
                 'attendances' => function ($query) use ($startDate, $endDate) {
                     $query->whereBetween('work_date', [$startDate, $endDate])
-                        ->where('session_type', 'work')
+                        ->whereIn('session_type', ['work', 'meeting'])
                         ->whereNotNull('session_duration')
                         ->where('session_duration', '>', 0);
                 }
@@ -230,7 +230,7 @@ class AttendanceHelper
     {
         $stats = Attendance::where('user_id', $userId)
             ->whereBetween('work_date', [now()->startOfWeek(), now()->endOfWeek()])
-            ->where('session_type', 'work')
+            ->whereIn('session_type', ['work', 'meeting'])
             ->whereNotNull('session_duration')
             ->where('session_duration', '>', 0)
             ->selectRaw('
@@ -260,7 +260,11 @@ class AttendanceHelper
     {
         $totalSeconds = Attendance::where('user_id', $userId)
             ->when($sessionType, function ($query) use ($sessionType) {
-                $query->where('session_type', $sessionType);
+                if ($sessionType === 'work') {
+                    $query->whereIn('session_type', ['work', 'meeting']);
+                } else {
+                    $query->where('session_type', $sessionType);
+                }
             })
             ->whereNotNull('session_duration')
             ->where('session_duration', '>', 0)
@@ -386,11 +390,11 @@ class AttendanceHelper
     public static function getPeriodStatistics(string $startDate, string $endDate): array
     {
         $totalSessions = Attendance::whereBetween('work_date', [$startDate, $endDate])
-            ->where('session_type', 'work')
+            ->whereIn('session_type', ['work', 'meeting'])
             ->count();
 
         $totalHours = Attendance::whereBetween('work_date', [$startDate, $endDate])
-            ->where('session_type', 'work')
+            ->whereIn('session_type', ['work', 'meeting'])
             ->whereNotNull('session_duration')
             ->where('session_duration', '>', 0)
             ->sum('session_duration');
@@ -400,7 +404,7 @@ class AttendanceHelper
             ->count();
 
         $uniqueUsers = Attendance::whereBetween('work_date', [$startDate, $endDate])
-            ->where('session_type', 'work')
+            ->whereIn('session_type', ['work', 'meeting'])
             ->distinct('user_id')
             ->count('user_id');
 

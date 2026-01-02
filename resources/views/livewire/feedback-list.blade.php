@@ -25,8 +25,8 @@
                     style="color: #0f172a !important;"
                     class="w-full px-3 py-2 rounded-lg border border-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 outline-none text-sm bg-white">
                     <option value="all">Semua Tipe</option>
-                    <option value="kritik">Laporan</option>
-                    <option value="saran">Masukan</option>
+                    <option value="laporan">Laporan</option>
+                    <option value="masukan">Masukan</option>
                 </select>
             </div>
         </div>
@@ -57,11 +57,11 @@
                         <div class="flex items-center gap-2 flex-wrap">
                             <!-- Type Badge -->
                             <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold
-                                    {{ $feedback->type === 'kritik'
+                                    {{ $feedback->type === 'laporan'
                 ? 'bg-red-100 text-red-700'
                 : 'bg-green-100 text-green-700' }}">
                                 <i
-                                    class="fas {{ $feedback->type === 'kritik' ? 'fa-exclamation-triangle' : 'fa-lightbulb' }}"></i>
+                                    class="fas {{ $feedback->type === 'laporan' ? 'fa-exclamation-triangle' : 'fa-lightbulb' }}"></i>
                                 {{ ucfirst($feedback->type) }}
                             </span>
 
@@ -115,11 +115,11 @@
                     <div class="flex items-center gap-2">
                         <!-- Type Badge -->
                         <span class="px-3 py-1 rounded-full text-xs font-semibold
-                                {{ $selectedFeedback->type === 'kritik'
+                                {{ $selectedFeedback->type === 'laporan'
             ? 'bg-red-100 text-red-700 border border-red-200'
             : 'bg-green-100 text-green-700 border border-green-200' }}">
                             <i
-                                class="fas {{ $selectedFeedback->type === 'kritik' ? 'fa-exclamation-triangle' : 'fa-lightbulb' }}"></i>
+                                class="fas {{ $selectedFeedback->type === 'laporan' ? 'fa-exclamation-triangle' : 'fa-lightbulb' }}"></i>
                             {{ ucfirst($selectedFeedback->type) }}
                         </span>
                     </div>
@@ -196,7 +196,7 @@
                 <!-- Admin Notes -->
                 @if($selectedFeedback->notes || $selectedFeedback->status !== 'new')
                     <div class="bg-amber-50 rounded-lg p-4 border border-amber-200">
-                        <h4 class="font-semibold text-amber-900 text-sm mb-2 flex items-center gap-2">
+                        <h4 class="font-semibold text-black text-sm mb-2 flex items-center gap-2">
                             <i class="fas fa-sticky-note text-amber-600"></i>
                             Catatan Admin
                         </h4>
@@ -205,7 +205,7 @@
                                 {{ $selectedFeedback->notes ?? 'Tidak ada catatan' }}</p>
                         @else
                             <textarea wire:model="adminNotes" rows="3"
-                                class="w-full px-3 py-2 rounded-lg border border-amber-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none text-sm bg-white"
+                                class="w-full px-3 py-2 rounded-lg border border-amber-300 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 outline-none text-sm bg-white text-black"
                                 placeholder="Tambahkan catatan untuk feedback ini..."></textarea>
                         @endif
                     </div>

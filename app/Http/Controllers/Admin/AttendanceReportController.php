@@ -501,7 +501,7 @@ class AttendanceReportController extends Controller
             'work_date' => 'required|date',
             'clock_in_time' => 'required|date_format:H:i',
             'clock_out_time' => 'required|date_format:H:i',
-            'session_type' => 'nullable|in:work,study,overtime',
+            'session_type' => 'nullable|in:work,study,overtime,meeting',
             'notes' => 'nullable|string|max:500'
         ], [
             'user_id.required' => 'Staff harus dipilih',
@@ -512,7 +512,7 @@ class AttendanceReportController extends Controller
             'clock_in_time.date_format' => 'Format waktu mulai harus HH:MM (contoh: 08:00)',
             'clock_out_time.required' => 'Waktu berakhir harus diisi',
             'clock_out_time.date_format' => 'Format waktu berakhir harus HH:MM (contoh: 17:00)',
-            'session_type.in' => 'Tipe sesi harus salah satu dari: work, study, overtime'
+            'session_type.in' => 'Tipe sesi harus salah satu dari: work, study, overtime, meeting'
         ]);
 
         try {

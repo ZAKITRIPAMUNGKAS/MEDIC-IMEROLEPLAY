@@ -39,6 +39,9 @@
     <link rel="shortcut icon" href="<?php echo e(asset('favicon.ico')); ?>">
 
     <!-- Inline Image Error Handler - Must load early to prevent 404 errors -->
+    <?php echo $__env->yieldPushContent('styles'); ?>
+    <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::styles(); ?>
+
     <script>
         (function () {
             'use strict';
@@ -1724,7 +1727,7 @@
                     console.warn('Error initializing image error handler:', e);
                 }
             }
-      })();
+        })();
     </script>
 
     <!-- Chart.js Local -->
@@ -1869,9 +1872,7 @@
             // Skip forms that have their own JavaScript handlers
             const formsWithHandlers = [
                 'dashboardClockInForm',
-                'dashboardClockOutForm',
-                'activeSessionClockOutForm'
-            ];
+                ];
 
             if (formsWithHandlers.includes(form.id)) {
                 // Let the form's own handler take care of it
@@ -1880,7 +1881,10 @@
 
             // Skip forms that should submit normally (public forms with error handling)
             // These forms need to redirect normally to show flash messages
-            if (form.id === 'medicalForm' || form.action && form.action.includes('/form/submit')) {
+            if (form.id === 'medicalForm' ||
+                (form.action && form.action.includes('/form/submit')) ||
+                (form.action && form.action.includes('/staff/logout')) ||
+                (form.action && form.action.includes('clock-out'))) {
                 // Let form submit normally - flash messages will be shown on redirect
                 return;
             }
@@ -2619,7 +2623,8 @@
         </a>
     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-    <?php
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->check()): ?>
+        <?php
 $__split = function ($name, $params = []) {
     return [$name, $params];
 };
@@ -2639,6 +2644,12 @@ unset($__params);
 unset($__split);
 if (isset($__slots)) unset($__slots);
 ?>
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+    <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::scripts(); ?>
+
+    <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::scriptConfig(); ?>
+
+    <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 
 </html><?php /**PATH D:\website\EMS-IME\public_html\resources\views/layouts/app.blade.php ENDPATH**/ ?>

@@ -202,7 +202,7 @@
                                     @endif
                                     
                                     @if($msg->message)
-                                        <p class="text-sm {{ $msg->is_staff_reply ? 'text-slate-700' : 'text-white' }}">{{ $msg->message }}</p>
+                                        <p class="text-sm leading-relaxed whitespace-pre-wrap {{ $msg->is_staff_reply ? 'text-slate-700' : 'text-white' }}">{{ $msg->message }}</p>
                                     @endif
                                     
                                     <p class="text-[10px] mt-1 {{ $msg->is_staff_reply ? 'text-slate-400' : 'text-sky-100' }}">

@@ -33,6 +33,24 @@
                     </div>
                 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($errors->any()): ?>
+                    <div class="mb-6 p-4 bg-red-500/20 border border-red-400/50 rounded-xl backdrop-blur-sm animate-fade-in-up">
+                        <div class="flex items-start gap-3">
+                            <div class="flex-shrink-0 w-10 h-10 bg-red-500/30 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-exclamation-circle text-red-300 text-lg"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-red-200 font-bold mb-1">Terjadi Kesalahan</h4>
+                                <ul class="text-red-100 text-sm leading-relaxed list-disc list-inside">
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <li><?php echo e($error); ?></li>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
                 <form action="<?php echo e(route('feedback.submit')); ?>" method="POST" enctype="multipart/form-data">
                     <?php echo csrf_field(); ?>
 
@@ -120,8 +138,7 @@ $message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($messag
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>"
-                                    placeholder="Jelaskan laporan atau masukan Anda secara detail..."
-                                    required><?php echo e(old('message')); ?></textarea>
+                                    placeholder="Jelaskan laporan atau masukan Anda secara detail..."><?php echo e(old('message')); ?></textarea>
                                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['message'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -209,7 +226,50 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startPush('scripts'); ?>
+    <script src="https://cdn.tiny.cloud/1/qdzhbf1hc7m1exen7qf977pmcg9o6ejyssf6r401zwfvc6ia/tinymce/6/tinymce.min.js"
+        referrerpolicy="origin"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            tinymce.init({
+                selector: '#message',
+                height: 300,
+                menubar: false,
+                plugins: 'lists link autolink',
+                toolbar: 'undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | indent outdent | bullist numlist',
+                content_style: 'body { font-family:Inter,sans-serif; font-size:14px; color: #334155; }',
+                skin: 'oxide',
+                border_width: 2,
+                setup: function (editor) {
+                    editor.on('change', function () {
+                        editor.save();
+                    });
+                }
+            });
+
+            // Custom form validation to sync TinyMCE and check if message has content
+            const feedbackForm = document.querySelector('form');
+            feedbackForm.addEventListener('submit', function (e) {
+                // Sync TinyMCE content to textarea
+                if (typeof tinymce !== 'undefined' && tinymce.activeEditor) {
+                    tinymce.activeEditor.save();
+                }
+
+                // Check if message textarea has content
+                const messageTextarea = document.getElementById('message');
+                const messageContent = messageTextarea.value.trim();
+
+                if (!messageContent || messageContent === '') {
+                    e.preventDefault();
+                    alert('Mohon isi pesan Anda sebelum mengirim');
+                    // Try to focus TinyMCE editor
+                    if (typeof tinymce !== 'undefined' && tinymce.activeEditor) {
+                        tinymce.activeEditor.focus();
+                    }
+                    return false;
+                }
+            });
+        });
+
         function previewImage(input) {
             const preview = document.getElementById('preview');
             const previewContainer = document.getElementById('imagePreview');
@@ -217,10 +277,24 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
 
-                reader.onload = function  (e) {                 preview.src = e.target.result;                 previewContainer.classList.remove('hidden');             }
-                 reader.readAsDataURL(input.files[0]);         }     }
-         function removeImage() {         const input = document.getElementById('image');         const preview = document.getElementById('preview');         const previewContainer = document.getElementById('imagePreview');
-             input.value = '';         preview.src = '';         previewContainer.classList.add('hidden');     }
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    previewContainer.classList.remove('hidden');
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function removeImage() {
+            const input = document.getElementById('image');
+            const preview = document.getElementById('preview');
+            const previewContainer = document.getElementById('imagePreview');
+
+            input.value = '';
+            preview.src = '';
+            previewContainer.classList.add('hidden');
+        }
     </script>
 <?php $__env->stopPush(); ?>
 
