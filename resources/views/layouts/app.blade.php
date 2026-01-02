@@ -1870,9 +1870,7 @@
             // Skip forms that have their own JavaScript handlers
             const formsWithHandlers = [
                 'dashboardClockInForm',
-                'dashboardClockOutForm',
-                'activeSessionClockOutForm'
-            ];
+                ];
 
             if (formsWithHandlers.includes(form.id)) {
                 // Let the form's own handler take care of it
@@ -1883,7 +1881,8 @@
             // These forms need to redirect normally to show flash messages
             if (form.id === 'medicalForm' ||
                 (form.action && form.action.includes('/form/submit')) ||
-                (form.action && form.action.includes('/staff/logout'))) {
+                (form.action && form.action.includes('/staff/logout')) ||
+                (form.action && form.action.includes('clock-out'))) {
                 // Let form submit normally - flash messages will be shown on redirect
                 return;
             }
