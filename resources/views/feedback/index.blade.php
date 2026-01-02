@@ -83,8 +83,7 @@
                                 </label>
                                 <textarea id="message" name="message" rows="5"
                                     class="form-input resize-none @error('message') border-red-500 @enderror"
-                                    placeholder="Jelaskan laporan atau masukan Anda secara detail..."
-                                    required>{{ old('message') }}</textarea>
+                                    placeholder="Jelaskan laporan atau masukan Anda secara detail...">{{ old('message') }}</textarea>
                                 @error('message')
                                     <p class="mt-2 text-xs text-red-400 flex items-center gap-2">
                                         <i class="fas fa-exclamation-circle"></i> {{ $message }}
@@ -156,7 +155,50 @@
 @endsection
 
 @push('scripts')
+    <script src="https://cdn.tiny.cloud/1/qdzhbf1hc7m1exen7qf977pmcg9o6ejyssf6r401zwfvc6ia/tinymce/6/tinymce.min.js"
+        referrerpolicy="origin"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            tinymce.init({
+                selector: '#message',
+                height: 300,
+                menubar: false,
+                plugins: 'lists link autolink',
+                toolbar: 'undo redo | formatselect | bold italic underline | alignleft aligncenter alignright alignjustify | indent outdent | bullist numlist',
+                content_style: 'body { font-family:Inter,sans-serif; font-size:14px; color: #334155; }',
+                skin: 'oxide',
+                border_width: 2,
+                setup: function (editor) {
+                    editor.on('change', function () {
+                        editor.save();
+                    });
+                }
+            });
+
+            // Custom form validation to sync TinyMCE and check if message has content
+            const feedbackForm = document.querySelector('form');
+            feedbackForm.addEventListener('submit', function (e) {
+                // Sync TinyMCE content to textarea
+                if (typeof tinymce !== 'undefined' && tinymce.activeEditor) {
+                    tinymce.activeEditor.save();
+                }
+
+                // Check if message textarea has content
+                const messageTextarea = document.getElementById('message');
+                const messageContent = messageTextarea.value.trim();
+
+                if (!messageContent || messageContent === '') {
+                    e.preventDefault();
+                    alert('Mohon isi pesan Anda sebelum mengirim');
+                    // Try to focus TinyMCE editor
+                    if (typeof tinymce !== 'undefined' && tinymce.activeEditor) {
+                        tinymce.activeEditor.focus();
+                    }
+                    return false;
+                }
+            });
+        });
+
         function previewImage(input) {
             const preview = document.getElementById('preview');
             const previewContainer = document.getElementById('imagePreview');
@@ -164,10 +206,24 @@
             if (input.files && input.files[0]) {
                 const reader = new FileReader();
 
-                reader.onload = function  (e) {                 preview.src = e.target.result;                 previewContainer.classList.remove('hidden');             }
-                 reader.readAsDataURL(input.files[0]);         }     }
-         function removeImage() {         const input = document.getElementById('image');         const preview = document.getElementById('preview');         const previewContainer = document.getElementById('imagePreview');
-             input.value = '';         preview.src = '';         previewContainer.classList.add('hidden');     }
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    previewContainer.classList.remove('hidden');
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function removeImage() {
+            const input = document.getElementById('image');
+            const preview = document.getElementById('preview');
+            const previewContainer = document.getElementById('imagePreview');
+
+            input.value = '';
+            preview.src = '';
+            previewContainer.classList.add('hidden');
+        }
     </script>
 @endpush
 

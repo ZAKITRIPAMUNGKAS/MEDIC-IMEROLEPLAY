@@ -39,6 +39,8 @@
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
 
     <!-- Inline Image Error Handler - Must load early to prevent 404 errors -->
+    @stack('styles')
+    @livewireStyles
     <script>
         (function () {
             'use strict';
@@ -1723,7 +1725,7 @@
                     console.warn('Error initializing image error handler:', e);
                 }
             }
-      })();
+        })();
     </script>
 
     <!-- Chart.js Local -->
@@ -2619,6 +2621,9 @@
     @endauth
 
     @livewire('chat-widget')
+    @livewireScripts
+    @livewireScriptConfig
+    @stack('scripts')
 </body>
 
 </html>

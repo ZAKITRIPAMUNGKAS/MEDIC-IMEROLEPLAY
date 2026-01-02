@@ -7,6 +7,8 @@ use App\Models\Feedback;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 
+use Illuminate\Support\Facades\Log;
+
 class FeedbackList extends Component
 {
     public $feedbackList = [];
@@ -46,6 +48,7 @@ class FeedbackList extends Component
 
     public function selectFeedback($id)
     {
+        Log::info("Selecting feedback ID: " . $id);
         $this->selectedFeedback = Feedback::with(['user', 'reviewer'])->find($id);
         $this->adminNotes = $this->selectedFeedback?->notes ?? '';
     }
