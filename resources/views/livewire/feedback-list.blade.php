@@ -1,4 +1,4 @@
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[calc(100vh-200px)]" wire:poll.15s="loadFeedback">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[600px]">
     <!-- Left Sidebar - Feedback List -->
     <div
         class="lg:col-span-1 bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl border border-sky-200/50 overflow-hidden flex flex-col">
@@ -34,9 +34,14 @@
         <!-- Feedback List -->
         <div class="flex-1 overflow-y-auto p-2">
             @forelse($feedbackList as $feedback)
-                    <div wire:click="selectFeedback({{ $feedback->id }})" class="p-3 mb-2 rounded-lg cursor-pointer transition-all border
+                    <button type="button" 
+                         wire:key="feedback-{{ $feedback->id }}" 
+                         wire:click="selectFeedback({{ $feedback->id }})" 
+                         wire:loading.class="opacity-50 bg-slate-100"
+                         wire:target="selectFeedback({{ $feedback->id }})"
+                         class="w-full text-left p-3 mb-2 rounded-lg cursor-pointer transition-all border relative overflow-hidden outline-none focus:ring-2 focus:ring-sky-400
                                 {{ $selectedFeedback && $selectedFeedback->id === $feedback->id
-                ? 'bg-sky-50 border-sky-300 shadow-md'
+                ? 'bg-sky-50 border-sky-300 shadow-md ring-1 ring-sky-200'
                 : 'bg-white border-slate-200 hover:bg-slate-50 hover:border-slate-300' }}">
 
                         <div class="flex items-start justify-between mb-2">
@@ -75,7 +80,7 @@
                                 {{ $feedback->created_at->diffForHumans() }}
                             </span>
                         </div>
-                    </div>
+                    </button>
             @empty
                 <div class="flex flex-col items-center justify-center h-full text-center p-6">
                     <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-3">
@@ -129,8 +134,9 @@
                         <i class="fas fa-message text-sky-600"></i>
                         Pesan
                     </h4>
-                    <p class="text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">{{ $selectedFeedback->message }}
-                    </p>
+                    <div class="text-slate-800 text-base leading-7 font-medium tracking-wide prose prose-sm max-w-none">
+                        {!! $selectedFeedback->message !!}
+                    </div>
                 </div>
 
                 <!-- Attachment Image -->
