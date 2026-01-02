@@ -1466,17 +1466,17 @@
             toast.style.setProperty('--duration', `${duration}ms`);
             console.log('🎨 NEW TOAST DESIGN v2 - White Card Design');
             toast.innerHTML = `
-                                    <div class="toast-icon">
-                                        <i class="fas ${icons[type]} text-sm"></i>
-                                    </div>
-                                    <div class="toast-content">
-                                        <div class="toast-title">${title}</div>
-                                        <div class="toast-message">${message}</div>
-                                    </div>
-                                    <button class="toast-close" onclick="closeToast(this.parentElement)">
-                                        <i class="fas fa-times text-xs"></i>
-                                    </button>
-                                `;
+                                        <div class="toast-icon">
+                                            <i class="fas ${icons[type]} text-sm"></i>
+                                        </div>
+                                        <div class="toast-content">
+                                            <div class="toast-title">${title}</div>
+                                            <div class="toast-message">${message}</div>
+                                        </div>
+                                        <button class="toast-close" onclick="closeToast(this.parentElement)">
+                                            <i class="fas fa-times text-xs"></i>
+                                        </button>
+                                    `;
 
             container.appendChild(toast);
             setTimeout(() => closeToast(toast), duration);
@@ -1496,7 +1496,7 @@
             @if(session('info'))
                 showToast('info', 'Informasi', '{{ session('info') }}');
             @endif
-                        });
+                            });
 
         function closeToast(toast) {
             if (!toast || toast.classList.contains('hiding')) return;
@@ -1678,6 +1678,7 @@
             const dashboardClockOutBtn = document.getElementById('dashboardClockOutBtn');
 
             if (dashboardClockOutForm && dashboardClockOutBtn) {
+                /*
                 dashboardClockOutForm.addEventListener('submit', function (e) {
                     e.preventDefault();
 
@@ -1696,6 +1697,15 @@
                         dashboardClockOutForm.submit();
                     }
                 });
+                */
+                // Allow standard submission
+                dashboardClockOutForm.addEventListener('submit', function (e) {
+                    const btnText = dashboardClockOutBtn.querySelector('.btn-text');
+                    const btnLoading = dashboardClockOutBtn.querySelector('.btn-loading');
+                    if (btnText) btnText.classList.add('hidden');
+                    if (btnLoading) btnLoading.classList.remove('hidden');
+                    dashboardClockOutBtn.disabled = true;
+                });
             }
 
             // Clock Out Form Handler (for active session today)
@@ -1703,6 +1713,7 @@
             const activeSessionClockOutBtn = document.getElementById('activeSessionClockOutBtn');
 
             if (activeSessionClockOutForm && activeSessionClockOutBtn) {
+                /*
                 activeSessionClockOutForm.addEventListener('submit', function (e) {
                     e.preventDefault();
 
@@ -1720,6 +1731,15 @@
                     } else {
                         activeSessionClockOutForm.submit();
                     }
+                });
+                */
+                // Allow standard submission
+                activeSessionClockOutForm.addEventListener('submit', function (e) {
+                    const btnText = activeSessionClockOutBtn.querySelector('.btn-text');
+                    const btnLoading = activeSessionClockOutBtn.querySelector('.btn-loading');
+                    if (btnText) btnText.classList.add('hidden');
+                    if (btnLoading) btnLoading.classList.remove('hidden');
+                    activeSessionClockOutBtn.disabled = true;
                 });
             }
 
