@@ -266,7 +266,7 @@ class User extends Authenticatable
      */
     public function canReplyChat(): bool
     {
-        return $this->hasPermission('reply_livechat');
+        return $this->hasPermission('access_live_chat');
     }
 
     /**

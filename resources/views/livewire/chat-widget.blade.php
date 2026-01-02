@@ -1,126 +1,294 @@
-<div class="fixed bottom-4 right-4 z-50 flex flex-col items-end" wire:poll.15s="loadMessages">
-
-    <!-- Chat Box -->
-    <div x-show="$wire.isOpen" 
-         x-transition:enter="transition ease-out duration-200"
-         x-transition:enter-start="opacity-0 scale-95"
-         x-transition:enter-end="opacity-100 scale-100"
-         x-transition:leave="transition ease-in duration-150"
-         x-transition:leave-start="opacity-100 scale-100"
-         x-transition:leave-end="opacity-0 scale-95"
-         class="mb-4 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col"
-         style="height: 500px; display: none;">
-
-        <!-- Header -->
-        <div class="bg-gradient-to-r from-sky-500 to-cyan-500 p-4 text-white flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                    <i class="fas fa-comment-medical text-lg"></i>
-                </div>
-                <div>
-                    <h3 class="font-bold text-base">Live Chat Medis</h3>
-                    <p class="text-xs text-sky-100 flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 bg-green-400 rounded-full"></span>
-                        Online
-                    </p>
-                </div>
-            </div>
-            <div class="flex items-center gap-2">
-                @if($hasSession)
-                    <button wire:click="endSession" title="Akhiri Sesi"
-                        class="text-white/80 hover:text-white transition-colors p-1.5 hover:bg-white/10 rounded-lg">
-                        <i class="fas fa-power-off text-sm"></i>
-                    </button>
-                @endif
-                <button wire:click="toggleChat" class="text-white/80 hover:text-white transition-colors">
-                    <i class="fas fa-times text-lg"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Chat Content -->
-        <div class="flex-1 overflow-y-auto p-4 bg-slate-50" id="chat-messages">
+<div class="{{ $pageMode ? 'h-full' : '' }}">
+    @if($pageMode)
+        {{-- Full Page Mode - Show chat interface directly --}}
+        <div class="h-full flex flex-col bg-white">
             @if(!$hasSession)
-                <!-- Welcome Screen -->
-                <div class="h-full flex flex-col justify-center items-center text-center px-4">
-                    <div class="w-16 h-16 bg-gradient-to-br from-sky-100 to-cyan-100 rounded-2xl flex items-center justify-center mb-4">
-                        <i class="fas fa-user-md text-3xl text-sky-600"></i>
-                    </div>
-                    
-                    <h4 class="font-bold text-slate-800 text-lg mb-2">Selamat Datang</h4>
-                    <p class="text-slate-600 text-sm mb-6 leading-relaxed">
-                        Mulai chat dengan tim medis kami
-                    </p>
-
-                    <form wire:submit.prevent="startChat" class="w-full space-y-3">
-                        <div class="text-left">
-                            <label class="block text-xs font-semibold text-slate-700 mb-1.5">Nama Anda</label>
-                            <input type="text" wire:model="name"
-                                class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 outline-none transition-all text-sm"
-                                placeholder="Masukkan nama..." @auth readonly @endauth>
-                            @error('name') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                {{-- Welcome Screen --}}
+                <div class="flex-1 flex items-center justify-center p-6">
+                    <div class="max-w-md w-full text-center space-y-6">
+                        <div class="w-20 h-20 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-3xl mx-auto flex items-center justify-center shadow-xl">
+                            <i class="fas fa-comments text-3xl text-white"></i>
                         </div>
                         
-                        <button type="submit"
-                            class="w-full py-2.5 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white font-semibold rounded-lg shadow-md transition-all">
-                            Mulai Chat
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-800 mb-2">Mulai Chat Baru</h2>
+                            <p class="text-slate-600 text-sm">
+                                Chat dengan tim medis kami secara anonim
+                            </p>
+                        </div>
+
+                        <button wire:click="startChat" type="button"
+                            class="w-full py-4 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5">
+                            <i class="fas fa-comment-medical mr-2"></i>
+                            Mulai Chat Anonim
                         </button>
-                    </form>
-                </div>
-            @else
-                <!-- Messages -->
-                <div class="space-y-3">
-                    @foreach($chatMessages as $msg)
-                        <div class="flex {{ $msg->is_staff_reply ? 'justify-start' : 'justify-end' }}">
-                            <div class="flex flex-col {{ $msg->is_staff_reply ? 'items-start' : 'items-end' }} max-w-[75%]">
-                                <span class="text-[10px] text-slate-500 mb-1 px-1">
-                                    {{ $msg->is_staff_reply ? ($msg->user->name ?? 'Tim Medis') : 'Anda' }}
-                                </span>
-                                <div class="px-4 py-2.5 rounded-2xl text-sm {{ $msg->is_staff_reply 
-                                    ? 'bg-white border border-slate-200 text-slate-700' 
-                                    : 'bg-gradient-to-r from-sky-500 to-cyan-500 text-white' }}">
-                                    {{ $msg->message }}
-                                </div>
-                                <span class="text-[9px] text-slate-400 mt-0.5 px-1">
-                                    {{ $msg->created_at->format('H:i') }}
-                                </span>
+
+                        <!-- Divider -->
+                        <div class="relative w-full my-6">
+                            <div class="absolute inset-0 flex items-center">
+                                <div class="w-full border-t border-slate-300"></div>
+                            </div>
+                            <div class="relative flex justify-center text-xs">
+                                <span class="px-3 bg-white text-slate-500 font-medium">ATAU</span>
                             </div>
                         </div>
-                    @endforeach
+
+                        <!-- Feedback Option -->
+                        <button wire:click="toggleFeedbackForm" type="button"
+                            class="w-full py-3 bg-white border-2 border-sky-500 text-sky-600 font-semibold rounded-xl hover:bg-sky-50 transition-all">
+                            <i class="fas fa-comment-dots mr-2"></i>
+                            Kirim Laporan & Masukan
+                        </button>
+                    </div>
+                </div>
+            @elseif($showFeedbackForm)
+                {{-- Feedback Form --}}
+                <div class="flex-1 overflow-y-auto p-6">
+                    <div class="max-w-2xl mx-auto">
+                        <div class="flex items-center gap-2 mb-6 pb-4 border-b border-slate-200">
+                            <button wire:click="toggleFeedbackForm" type="button"
+                                class="text-slate-600 hover:text-slate-800 transition-colors">
+                                <i class="fas fa-arrow-left"></i>
+                            </button>
+                            <h4 class="font-bold text-slate-800 text-lg">Laporan & Masukan</h4>
+                        </div>
+
+                        @if($feedbackSuccess)
+                            <div class="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-xl p-4 mb-4 shadow-sm">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <i class="fas fa-check-circle text-white text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="font-bold text-green-900 text-sm mb-1">Terima kasih!</h5>
+                                        <p class="text-green-700 text-xs leading-relaxed">
+                                            Feedback Anda telah dikirim secara anonim. Kami akan meninjau sesegera mungkin.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+                        <form wire:submit.prevent="submitFeedback" class="space-y-4">
+                            <!-- Type Selection -->
+                            <div class="text-left">
+                                <label class="block text-xs font-bold text-slate-700 mb-2">Pilih Tipe</label>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <button type="button" wire:click="$set('feedbackType', 'saran')"
+                                        class="px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all
+                                            {{ $feedbackType === 'saran' ? 'border-green-500 bg-green-50 text-green-700' : 'border-slate-300 text-slate-600 hover:border-green-400' }}">
+                                        <i class="fas fa-lightbulb mr-1"></i> Masukan
+                                    </button>
+                                    <button type="button" wire:click="$set('feedbackType', 'kritik')"
+                                        class="px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all
+                                            {{ $feedbackType === 'kritik' ? 'border-red-500 bg-red-50 text-red-700' : 'border-slate-300 text-slate-600 hover:border-red-400' }}">
+                                        <i class="fas fa-exclamation-triangle mr-1"></i> Laporan
+                                    </button>
+                                </div>
+                                @error('feedbackType') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            </div>
+
+                            <!-- Subject Field -->
+                            <div class="text-left">
+                                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Subjek</label>
+                                <input type="text" wire:model="feedbackSubject"
+                                    class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 outline-none transition-all text-sm"
+                                    placeholder="Ringkasan singkat...">
+                                @error('feedbackSubject') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            </div>
+
+                            <!-- Message Field -->
+                            <div class="text-left">
+                                <label class="block text-xs font-semibold text-slate-700 mb-1.5">Pesan</label>
+                                <textarea wire:model="feedbackMessage" rows="4"
+                                    class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 outline-none transition-all text-sm resize-none"
+                                    placeholder="Jelaskan feedback Anda secara detail..."></textarea>
+                                @error('feedbackMessage') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            </div>
+
+                            <!-- Image Upload Field -->
+                            <div class="text-left">
+                                <label class="block text-xs font-semibold text-slate-700 mb-1.5">
+                                    <i class="fas fa-image mr-1"></i> Lampiran Gambar (Opsional)
+                                </label>
+                                <input type="file" wire:model="feedbackImage" accept="image/*"
+                                    class="w-full px-4 py-2.5 rounded-lg border-2 border-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 outline-none transition-all text-sm file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-sky-50 file:text-sky-700 hover:file:bg-sky-100">
+                                @error('feedbackImage') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                                
+                                @if ($feedbackImage)
+                                    <div class="mt-2 text-xs text-slate-600 flex items-center gap-2">
+                                        <i class="fas fa-check-circle text-green-500"></i>
+                                        <span>{{ $feedbackImage->getClientOriginalName() }}</span>
+                                    </div>
+                                @endif
+                                
+                                <p class="text-xs text-slate-500 mt-1">Max 5MB (JPG, PNG, GIF)</p>
+                            </div>
+
+                            <!-- Anonymous Info -->
+                            <div class="bg-sky-50 border border-sky-200 rounded-lg p-3">
+                                <div class="flex items-start gap-2">
+                                    <i class="fas fa-user-secret text-sky-600 text-sm mt-0.5"></i>
+                                    <p class="text-sky-700 text-xs leading-relaxed">
+                                        Feedback dikirim secara <strong>anonim</strong>. Identitas Anda tidak akan tercatat.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit"
+                                class="w-full py-3 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5"
+                                wire:loading.attr="disabled">
+                                <span wire:loading.remove>
+                                    <i class="fas fa-paper-plane mr-2"></i> Kirim Feedback Anonim
+                                </span>
+                                <span wire:loading>
+                                    <i class="fas fa-spinner fa-spin mr-2"></i> Mengirim...
+                                </span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @else
+                {{-- Chat Messages --}}
+                <div class="flex-1 flex flex-col h-full">
+                    <!-- Chat Header -->
+                    <div class="bg-gradient-to-r from-sky-500 to-cyan-500 text-white p-4 flex items-center justify-between shadow-lg">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-sm">Tim Medis</h3>
+                                <p class="text-xs text-sky-100">Online - Siap Membantu</p>
+                            </div>
+                        </div>
+                        <button wire:click="endSession" class="text-white hover:bg-white/20 rounded-lg px-3 py-2 transition-all text-sm">
+                            <i class="fas fa-times mr-1"></i> Akhiri
+                        </button>
+                    </div>
+
+                    <!-- Messages Container -->
+                    <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50" id="messages" wire:poll.5s="loadMessages">
+                        @forelse($chatMessages as $msg)
+                            <div class="flex {{ $msg->is_staff_reply ? 'justify-start' : 'justify-end' }}">
+                                <div class="max-w-[75%] {{ $msg->is_staff_reply ? 'bg-white' : 'bg-sky-500 text-white' }} rounded-2xl px-4 py-3 shadow-sm">
+                                    @if($msg->is_staff_reply)
+                                        <p class="text-xs text-slate-500 font-medium mb-1">
+                                            <i class="fas fa-user-md mr-1"></i> Staff Medis
+                                        </p>
+                                    @endif
+                                    
+                                    {{-- Display Attachment if exists --}}
+                                    @if($msg->attachment_path)
+                                        @if($msg->attachment_type === 'image')
+                                            <div class="mb-2">
+                                                <img src="{{ Storage::url($msg->attachment_path) }}" 
+                                                    alt="Attachment" 
+                                                    class="rounded-lg max-w-full max-h-64 cursor-pointer hover:opacity-90 transition-opacity"
+                                                    onclick="window.open('{{ Storage::url($msg->attachment_path) }}', '_blank')">
+                                            </div>
+                                        @else
+                                            <div class="mb-2 flex items-center gap-2 p-2 {{ $msg->is_staff_reply ? 'bg-slate-100' : 'bg-sky-600' }} rounded-lg">
+                                                <i class="fas fa-file-pdf text-lg {{ $msg->is_staff_reply ? 'text-red-500' : 'text-white' }}"></i>
+                                                <a href="{{ Storage::url($msg->attachment_path) }}" 
+                                                    target="_blank" 
+                                                    class="flex-1 text-xs font-medium {{ $msg->is_staff_reply ? 'text-slate-700 hover:text-sky-600' : 'text-white hover:underline' }} truncate">
+                                                    {{ basename($msg->attachment_path) }}
+                                                </a>
+                                                <i class="fas fa-download text-xs {{ $msg->is_staff_reply ? 'text-slate-400' : 'text-sky-100' }}"></i>
+                                            </div>
+                                        @endif
+                                    @endif
+                                    
+                                    @if($msg->message)
+                                        <p class="text-sm {{ $msg->is_staff_reply ? 'text-slate-700' : 'text-white' }}">{{ $msg->message }}</p>
+                                    @endif
+                                    
+                                    <p class="text-[10px] mt-1 {{ $msg->is_staff_reply ? 'text-slate-400' : 'text-sky-100' }}">
+                                        {{ $msg->created_at->format('H:i') }}
+                                    </p>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="text-center py-12 text-slate-400">
+                                <i class="fas fa-comments text-4xl mb-3"></i>
+                                <p class="text-sm">Belum ada pesan. Mulai percakapan!</p>
+                            </div>
+                        @endforelse
+                    </div>
+
+                    <!-- Message Input -->
+                    <div class="bg-white border-t border-slate-200 p-4">
+                        {{-- File Preview --}}
+                        @if($attachment)
+                            <div class="mb-3 flex items-center gap-2 p-3 bg-sky-50 border border-sky-200 rounded-lg">
+                                <i class="fas fa-paperclip text-sky-600"></i>
+                                <span class="flex-1 text-xs text-slate-700 font-medium truncate">{{ $attachment->getClientOriginalName() }}</span>
+                                <button type="button" wire:click="$set('attachment', null)" 
+                                    class="text-red-500 hover:text-red-700 transition-colors">
+                                    <i class="fas fa-times text-sm"></i>
+                                </button>
+                            </div>
+                        @endif
+                        
+                        {{-- Error Messages --}}
+                        @error('message')
+                            <div class="mb-2 text-xs text-red-500 flex items-center gap-1">
+                                <i class="fas fa-exclamation-circle"></i> {{ $message }}
+                            </div>
+                        @enderror
+                        @error('attachment')
+                            <div class="mb-2 text-xs text-red-500 flex items-center gap-1">
+                                <i class="fas fa-exclamation-circle"></i> {{ $message }}
+                            </div>
+                        @enderror
+                        
+                        <form wire:submit.prevent="sendMessage" class="flex gap-2">
+                            {{-- File Upload Button --}}
+                            <label for="attachment-input" 
+                                class="flex items-center justify-center w-12 h-12 bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-sky-600 rounded-xl cursor-pointer transition-all border border-slate-200">
+                                <i class="fas fa-paperclip text-lg"></i>
+                                <input type="file" id="attachment-input" wire:model="attachment" class="hidden"
+                                    accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx">
+                            </label>
+                            
+                            <input type="text" wire:model="message"
+                                class="flex-1 px-4 py-3 rounded-xl border-2 border-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 outline-none text-sm"
+                                placeholder="Ketik pesan atau lampirkan file..."
+                                autocomplete="off">
+                            <button type="submit"
+                                class="px-6 py-3 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white font-semibold rounded-xl transition-all">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </form>
+                    </div>
                 </div>
             @endif
         </div>
-
-        <!-- Footer -->
-        @if($hasSession)
-            <div class="p-3 bg-white border-t border-slate-200">
-                <form wire:submit.prevent="sendMessage" class="flex gap-2">
-                    <input type="text" wire:model="message"
-                        class="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-sky-200 focus:border-sky-400 outline-none text-sm"
-                        placeholder="Ketik pesan..." autofocus>
-                    <button type="submit"
-                        class="w-10 h-10 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white rounded-lg flex items-center justify-center transition-all"
-                        wire:loading.attr="disabled">
-                        <i class="fas fa-paper-plane text-sm"></i>
-                    </button>
-                </form>
-            </div>
-        @endif
-    </div>
-
-    <!-- Toggle Button -->
-    <button wire:click="toggleChat"
-        class="w-14 h-14 bg-gradient-to-br from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all flex items-center justify-center">
-        <i class="fas {{ $isOpen ? 'fa-times' : 'fa-comment-alt' }} text-xl"></i>
-    </button>
-
+    @else
+        {{-- Floating Widget Mode - Redirect Button --}}
+        <div class="fixed bottom-6 right-6 z-50">
+            <a href="{{ route('chat.page') }}" 
+                class="flex items-center gap-3 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white px-6 py-4 rounded-2xl shadow-2xl hover:shadow-3xl transition-all transform hover:-translate-y-1 group">
+                <div class="relative">
+                    <i class="fas fa-comments text-2xl"></i>
+                    <span class="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white animate-pulse"></span>
+                </div>
+                <span class="font-bold text-sm hidden sm:block">Live Chat</span>
+            </a>
+        </div>
+    @endif
+    
     <script>
-        const chatContainer = document.getElementById('chat-messages');
-        if (chatContainer) {
-            const observer = new MutationObserver(() => {
-                chatContainer.scrollTop = chatContainer.scrollHeight;
+        // Auto-scroll to bottom when new messages arrive
+        document.addEventListener('livewire:init', () => {
+            Livewire.hook('message.processed', (message, component) => {
+                const messagesContainer = document.getElementById('messages');
+                if (messagesContainer) {
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }
             });
-            observer.observe(chatContainer, { childList: true, subtree: true });
-        }
+        });
     </script>
 </div>

@@ -52,7 +52,7 @@ class StaffManagementController extends Controller
         // Week range from HTML week input (e.g., 2025-W38)
         if ($weekParam) {
             [$y, $w] = explode('-W', $weekParam);
-            $week = Carbon::now()->setISODate((int)$y, (int)$w);
+            $week = Carbon::now()->setISODate((int) $y, (int) $w);
         } else {
             $week = now();
         }
@@ -94,7 +94,7 @@ class StaffManagementController extends Controller
             ->get();
 
         // Export CSV on demand (?export=daily|weekly|monthly)
-        if (in_array(request('export'), ['daily','weekly','monthly'])) {
+        if (in_array(request('export'), ['daily', 'weekly', 'monthly'])) {
             $map = [
                 'daily' => $daily,
                 'weekly' => $weekly,
@@ -117,20 +117,20 @@ class StaffManagementController extends Controller
 
     private function exportCsv($collection, string $range): StreamedResponse
     {
-        $filename = 'rekap-'.$range.'-'.now()->format('Ymd_His').'.csv';
+        $filename = 'rekap-' . $range . '-' . now()->format('Ymd_His') . '.csv';
         $headers = [
             'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ];
 
-        return response()->stream(function() use ($collection) {
+        return response()->stream(function () use ($collection) {
             $out = fopen('php://output', 'w');
             fputcsv($out, ['Staf', 'User ID', 'Total Detik', 'Total HH:MM:SS']);
             foreach ($collection as $row) {
                 $seconds = (int) ($row->total ?? 0);
                 $hhmmss = TimeHelper::formatDuration($seconds);
                 fputcsv($out, [
-                    optional($row->user)->name ?? ('#'.$row->user_id),
+                    optional($row->user)->name ?? ('#' . $row->user_id),
                     $row->user_id,
                     $seconds,
                     $hhmmss,
@@ -163,12 +163,12 @@ class StaffManagementController extends Controller
             $fileName = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $request->file('profile_image')->getClientOriginalName());
             $publicPath = public_path('uploads/profile-images');
             $destinationPath = $publicPath . '/' . $fileName;
-            
+
             // Create directory if it doesn't exist
             if (!is_dir($publicPath)) {
                 mkdir($publicPath, 0755, true);
             }
-            
+
             // Compress and save image (max 500x500, quality 85)
             $compressed = ImageHelper::compressUploadedImage(
                 $request->file('profile_image'),
@@ -177,12 +177,12 @@ class StaffManagementController extends Controller
                 500, // max height
                 85   // quality
             );
-            
+
             // If compression failed, use original file
             if (!$compressed) {
                 $request->file('profile_image')->move($publicPath, $fileName);
             }
-            
+
             $profileImagePath = 'uploads/profile-images/' . $fileName;
         }
 
@@ -236,7 +236,7 @@ class StaffManagementController extends Controller
             // Hapus gambar lama jika ada
             if ($user->profile_image) {
                 $oldImagePath = null;
-                
+
                 // Check if it's a storage path or public path
                 if (str_starts_with($user->profile_image, 'uploads/')) {
                     // Public path
@@ -245,22 +245,22 @@ class StaffManagementController extends Controller
                     // Storage path
                     $oldImagePath = storage_path('app/public/' . $user->profile_image);
                 }
-                
+
                 if (file_exists($oldImagePath)) {
                     unlink($oldImagePath);
                 }
             }
-            
+
             // Use public directory for hosting compatibility
             $fileName = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $request->file('profile_image')->getClientOriginalName());
             $publicPath = public_path('uploads/profile-images');
             $destinationPath = $publicPath . '/' . $fileName;
-            
+
             // Create directory if it doesn't exist
             if (!is_dir($publicPath)) {
                 mkdir($publicPath, 0755, true);
             }
-            
+
             // Compress and save image (max 500x500, quality 85)
             $compressed = ImageHelper::compressUploadedImage(
                 $request->file('profile_image'),
@@ -269,14 +269,18 @@ class StaffManagementController extends Controller
                 500, // max height
                 85   // quality
             );
-            
+
             // If compression failed, use original file
             if (!$compressed) {
                 $request->file('profile_image')->move($publicPath, $fileName);
             }
-            
+
             $data['profile_image'] = 'uploads/profile-images/' . $fileName;
         }
+
+        // Handle custom permissions
+        $customPermissions = $request->input('custom_permissions', []);
+        $data['custom_permissions'] = $customPermissions;
 
         $user->update($data);
 
@@ -287,10 +291,10 @@ class StaffManagementController extends Controller
     {
         // Hapus data attendance terlebih dahulu
         $user->attendances()->delete();
-        
+
         // Hapus user
         $user->delete();
-        
+
         return redirect()->route('admin.staff.index')->with('success', 'Staf berhasil dihapus.');
     }
 
@@ -343,12 +347,12 @@ class StaffManagementController extends Controller
         ];
 
         // Add BOM for UTF-8 Excel compatibility
-        return response()->stream(function() use ($staff) {
+        return response()->stream(function () use ($staff) {
             $out = fopen('php://output', 'w');
-            
+
             // Add UTF-8 BOM for Excel
-            fprintf($out, chr(0xEF).chr(0xBB).chr(0xBF));
-            
+            fprintf($out, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
             // Headers
             fputcsv($out, [
                 'No',
@@ -361,13 +365,13 @@ class StaffManagementController extends Controller
                 'Rumah Sakit',
                 'Tanggal Dibuat',
             ], ','); // Use comma for standard CSV
-            
+
             // Data
             $no = 1;
             foreach ($staff as $user) {
                 $hospital = $user->isRoxwood() ? 'Roxwood Hospital' : 'Alta Hospital';
                 $status = $user->is_active ? 'Aktif' : 'Nonaktif';
-                
+
                 fputcsv($out, [
                     $no++,
                     $user->name,
@@ -380,7 +384,7 @@ class StaffManagementController extends Controller
                     $user->created_at ? $user->created_at->format('Y-m-d H:i:s') : '-',
                 ], ',');
             }
-            
+
             fclose($out);
         }, 200, $headers);
     }

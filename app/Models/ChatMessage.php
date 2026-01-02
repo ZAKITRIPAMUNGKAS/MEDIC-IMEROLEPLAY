@@ -11,6 +11,8 @@ class ChatMessage extends Model
         'chat_session_id',
         'user_id',
         'message',
+        'attachment_path',
+        'attachment_type',
         'is_staff_reply'
     ];
 

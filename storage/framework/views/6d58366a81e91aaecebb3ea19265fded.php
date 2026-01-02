@@ -1343,8 +1343,24 @@
                                     <span>Profil</span>
                                 </a>
 
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->hasPermission('access_live_chat')): ?>
+                                    <a href="<?php echo e(route('admin.chat.index')); ?>"
+                                        class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
+                                        <i class="fas fa-comments mr-2"></i>
+                                        <span>Live Chat</span>
+                                    </a>
+                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
+                                <?php if(auth()->user()->hasPermission('access_feedback')): ?>
+                                    <a href="<?php echo e(route('admin.feedback.index')); ?>"
+                                        class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
+                                        <i class="fas fa-paper-plane mr-2"></i>
+                                        <span>Feedback</span>
+                                    </a>
+                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
                                 
-                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('view_reports')): ?>
+                                <?php if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('view_reports')): ?>
                                     <div class="relative group">
                                         <button
                                             class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
@@ -1368,6 +1384,11 @@
                                                         <i class="fas fa-comments mr-3 w-5"></i>
                                                         Live Chat
                                                     </a>
+                                                    <a href="<?php echo e(route('admin.feedback.index')); ?>"
+                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                        <i class="fas fa-comment-dots mr-3 w-5"></i>
+                                                        Laporan & Masukan
+                                                    </a>
                                                     <a href="<?php echo e(route('admin.roles.permissions')); ?>"
                                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                         <i class="fas fa-shield-alt mr-3 w-5"></i>
@@ -1375,7 +1396,7 @@
                                                     </a>
                                                     <div class="border-t border-gray-200 my-1"></div>
                                                 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                                                
+
                                                 <?php if(auth()->user()->hasPermission('view_reports')): ?>
                                                     <a href="<?php echo e(route('admin.attendance-reports.index')); ?>"
                                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
@@ -1465,6 +1486,16 @@
                     <a href="<?php echo e(route('staff.profile')); ?>"
                         class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                             class="fas fa-user-cog w-6 mr-2"></i>Profil</a>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->hasPermission('access_live_chat')): ?>
+                        <a href="<?php echo e(route('admin.chat.index')); ?>"
+                            class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
+                                class="fas fa-comments w-6 mr-2"></i>Live Chat</a>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    <?php if(auth()->user()->hasPermission('access_feedback')): ?>
+                        <a href="<?php echo e(route('admin.feedback.index')); ?>"
+                            class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
+                                class="fas fa-paper-plane w-6 mr-2"></i>Feedback</a>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     <?php if(auth()->user()->hasPermission('manage_users')): ?>
                         <a href="<?php echo e(route('admin.staff.index')); ?>"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
@@ -1693,7 +1724,7 @@
                     console.warn('Error initializing image error handler:', e);
                 }
             }
-        })();
+      })();
     </script>
 
     <!-- Chart.js Local -->

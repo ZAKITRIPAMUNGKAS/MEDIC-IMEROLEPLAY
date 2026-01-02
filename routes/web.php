@@ -98,6 +98,21 @@ Route::get('/form/{type?}', [PublicController::class, 'showForm'])->name('public
 Route::post('/form/submit', [PublicController::class, 'submitForm'])->name('public.form.submit');
 Route::post('/appointment/create', [PublicController::class, 'createAppointment'])->name('public.appointment.create');
 Route::get('/appointment/success/{id}', [PublicController::class, 'appointmentSuccess'])->name('public.appointment.success');
+
+// User Chat & Feedback Routes (Authentication Required)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/chat', function () {
+        return view('chat.index');
+    })->name('chat.page');
+
+    Route::get('/livechat', function () {
+        return view('chat.livechat');
+    })->name('chat.livechat');
+
+    Route::get('/feedback', [PublicController::class, 'showFeedbackForm'])->name('feedback.form');
+    Route::post('/feedback', [PublicController::class, 'submitFeedback'])->name('feedback.submit');
+});
+
 // Form success route (used after submit)
 Route::get('/form/success/{id}', [PublicController::class, 'formSuccess'])->name('public.form.success');
 Route::post('/form/testimoni/{id}', [PublicController::class, 'submitTestimoni'])->name('public.form.testimoni');
@@ -219,10 +234,22 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/salary-settings/{salarySetting}/toggle-status', [\App\Http\Controllers\Admin\SalarySettingController::class, 'toggleStatus'])
         ->middleware('permission:manage_payroll')->name('salary-settings.toggle-status');
 
-    // Live Chat (Managers Only)
+
+    // Live Chat (Permission-based access)
     Route::get('/chat', function () {
         return view('admin.chat.index');
-    })->middleware('permission:manage_users')->name('chat.index');
+    })->middleware('permission:access_live_chat')->name('chat.index');
+
+    // Feedback Management (Permission-based access)
+    Route::get('/feedback', function () {
+        $totalFeedback = \App\Models\Feedback::count();
+        $newFeedback = \App\Models\Feedback::where('status', 'new')->count();
+        $kritikCount = \App\Models\Feedback::where('type', 'kritik')->count();
+        $saranCount = \App\Models\Feedback::where('type', 'saran')->count();
+
+        return view('admin.feedback.index', compact('totalFeedback', 'newFeedback', 'kritikCount', 'saranCount'));
+    })->middleware('permission:access_feedback')->name('feedback.index');
+
 
     // Role Permission Management (Admin Only)
     Route::get('/roles/permissions', [App\Http\Controllers\Admin\RolePermissionController::class, 'index'])

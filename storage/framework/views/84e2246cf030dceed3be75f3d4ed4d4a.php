@@ -35,7 +35,7 @@
                                 <div class="flex justify-between items-start mb-1">
                                     <h3
                                         class="font-bold text-white group-hover:text-sky-200 transition-colors <?php echo e($activeSessionId === $session->id ? 'text-sky-300' : ''); ?>">
-                                        <?php echo e($session->name); ?>
+                                        <?php echo e($session->anonymous_name); ?>
 
                                     </h3>
                                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!$session->is_read): ?>
@@ -81,11 +81,14 @@
                     <div class="flex items-center gap-3">
                         <div
                             class="w-11 h-11 bg-gradient-to-br from-cyan-400 to-sky-600 rounded-xl shadow-lg flex items-center justify-center text-white font-bold text-xl border border-white/20 shrink-0">
-                            <?php echo e(substr($activeSession->name, 0, 1)); ?>
+                            <?php echo e(substr($activeSession->anonymous_name, 0, 1)); ?>
 
                         </div>
                         <div class="min-w-0">
-                            <h3 class="font-bold text-white text-lg tracking-wide truncate"><?php echo e($activeSession->name); ?></h3>
+                            <h3 class="font-bold text-white text-lg tracking-wide truncate">
+                                <?php echo e($activeSession->anonymous_name); ?>
+
+                            </h3>
                             <div class="flex items-center gap-2 text-xs text-sky-200">
                                 <i class="fas fa-clock text-[10px]"></i>
                                 Dimulai <?php echo e($activeSession->created_at->format('d M H:i')); ?>
@@ -121,13 +124,35 @@
                                         <div
                                             class="flex flex-col <?php echo e($msg->is_staff_reply ? 'items-end' : 'items-start'); ?> max-w-[85%] sm:max-w-[75%]">
                                             <span class="text-[10px] text-sky-200/70 mb-1 px-1 font-medium">
-                                                <?php echo e($msg->is_staff_reply ? ($msg->user->name ?? 'Staff') : $activeSession->name); ?>
+                                                <?php echo e($msg->is_staff_reply ? ($msg->user->name ?? 'Staff') : $activeSession->anonymous_name); ?>
 
                                             </span>
                                             <div class="px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl shadow-md transition-all duration-300 text-sm leading-relaxed border
-                                                                        <?php echo e($msg->is_staff_reply
+                                                                                                        <?php echo e($msg->is_staff_reply
                             ? 'bg-gradient-to-br from-sky-500 to-cyan-600 text-white rounded-tr-none border-sky-400/50 shadow-sky-500/20'
                             : 'bg-white/10 backdrop-blur-sm text-white rounded-tl-none border-white/20'); ?>">
+                                                
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($msg->attachment_path): ?>
+                                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($msg->attachment_type === 'image'): ?>
+                                                        <div class="mb-2">
+                                                            <a href="<?php echo e(Storage::url($msg->attachment_path)); ?>" target="_blank">
+                                                                <img src="<?php echo e(Storage::url($msg->attachment_path)); ?>" alt="Attachment"
+                                                                    class="rounded-lg max-w-full max-h-48 cursor-pointer hover:opacity-90 transition-opacity">
+                                                            </a>
+                                                        </div>
+                                                    <?php else: ?>
+                                                        <div class="mb-2 flex items-center gap-2 p-2 bg-black/20 rounded-lg">
+                                                            <i class="fas fa-file-pdf text-lg text-white"></i>
+                                                            <a href="<?php echo e(Storage::url($msg->attachment_path)); ?>" target="_blank"
+                                                                class="flex-1 text-xs font-medium text-white hover:underline truncate">
+                                                                <?php echo e(basename($msg->attachment_path)); ?>
+
+                                                            </a>
+                                                            <i class="fas fa-download text-xs text-white/70"></i>
+                                                        </div>
+                                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
                                                 <?php echo e($msg->message); ?>
 
                                             </div>
@@ -145,11 +170,59 @@
                 <!-- Reply Input -->
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($activeSession->status === 'open'): ?>
                     <div class="p-3 sm:p-4 bg-black/20 border-t border-sky-400/30 backdrop-blur-md shrink-0">
+                        
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($attachment): ?>
+                            <div class="mb-3 flex items-center gap-2 p-3 bg-sky-900/40 border border-sky-400/30 rounded-lg backdrop-blur-sm">
+                                <i class="fas fa-paperclip text-sky-400"></i>
+                                <span class="flex-1 text-xs text-sky-100 font-medium truncate"><?php echo e($attachment->getClientOriginalName()); ?></span>
+                                <button type="button" wire:click="$set('attachment', null)" 
+                                    class="text-red-400 hover:text-red-300 transition-colors">
+                                    <i class="fas fa-times text-sm"></i>
+                                </button>
+                            </div>
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        
+                        
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['replyMessage'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <div class="mb-2 text-xs text-red-400 flex items-center gap-1">
+                                <i class="fas fa-exclamation-circle"></i> <?php echo e($message); ?>
+
+                            </div>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['attachment'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <div class="mb-2 text-xs text-red-400 flex items-center gap-1">
+                                <i class="fas fa-exclamation-circle"></i> <?php echo e($message); ?>
+
+                            </div>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
                         <form wire:submit.prevent="sendReply" class="flex gap-3 sm:gap-4 items-end">
+                            
+                            <label for="admin-attachment" 
+                                class="w-11 h-11 sm:w-12 sm:h-12 bg-white/10 hover:bg-white/20 text-sky-200 hover:text-white rounded-xl flex items-center justify-center cursor-pointer transition-all border border-sky-400/30 shrink-0">
+                                <i class="fas fa-paperclip text-lg"></i>
+                                <input type="file" id="admin-attachment" wire:model="attachment" class="hidden"
+                                    accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx">
+                            </label>
+
                             <div class="flex-1 relative">
                                 <textarea wire:model="replyMessage" rows="1" id="chat-textarea"
                                     class="w-full bg-white/10 border border-sky-400/30 rounded-xl px-3 sm:px-4 py-2 sm:py-3 text-white placeholder-sky-200/40 focus:ring-2 focus:ring-sky-400 focus:border-transparent outline-none resize-none min-h-[44px] sm:min-h-[50px] transition-all text-sm sm:text-base"
-                                    placeholder="Ketik balasan untuk <?php echo e($activeSession->name); ?>..."></textarea>
+                                    placeholder="Ketik balasan untuk <?php echo e($activeSession->anonymous_name); ?>..."></textarea>
                             </div>
                             <button type="submit" wire:loading.attr="disabled"
                                 class="w-11 h-11 sm:w-12 sm:h-12 bg-gradient-to-br from-sky-500 to-cyan-500 hover:from-sky-400 hover:to-cyan-400 text-white rounded-xl flex items-center justify-center shadow-lg shadow-sky-500/30 transition-all hover:-translate-y-1 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shrink-0">

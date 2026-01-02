@@ -1342,6 +1342,22 @@
                                     <span>Profil</span>
                                 </a>
 
+                                @if(auth()->user()->hasPermission('access_live_chat'))
+                                    <a href="{{ route('admin.chat.index') }}"
+                                        class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
+                                        <i class="fas fa-comments mr-2"></i>
+                                        <span>Live Chat</span>
+                                    </a>
+                                @endif
+
+                                @if(auth()->user()->hasPermission('access_feedback'))
+                                    <a href="{{ route('admin.feedback.index') }}"
+                                        class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
+                                        <i class="fas fa-paper-plane mr-2"></i>
+                                        <span>Feedback</span>
+                                    </a>
+                                @endif
+
                                 {{-- Admin Dropdown Menu --}}
                                 @if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('view_reports'))
                                     <div class="relative group">
@@ -1367,6 +1383,11 @@
                                                         <i class="fas fa-comments mr-3 w-5"></i>
                                                         Live Chat
                                                     </a>
+                                                    <a href="{{ route('admin.feedback.index') }}"
+                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                        <i class="fas fa-comment-dots mr-3 w-5"></i>
+                                                        Laporan & Masukan
+                                                    </a>
                                                     <a href="{{ route('admin.roles.permissions') }}"
                                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                         <i class="fas fa-shield-alt mr-3 w-5"></i>
@@ -1374,7 +1395,7 @@
                                                     </a>
                                                     <div class="border-t border-gray-200 my-1"></div>
                                                 @endif
-                                                
+
                                                 @if(auth()->user()->hasPermission('view_reports'))
                                                     <a href="{{ route('admin.attendance-reports.index') }}"
                                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
@@ -1464,6 +1485,16 @@
                     <a href="{{ route('staff.profile') }}"
                         class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                             class="fas fa-user-cog w-6 mr-2"></i>Profil</a>
+                    @if(auth()->user()->hasPermission('access_live_chat'))
+                        <a href="{{ route('admin.chat.index') }}"
+                            class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
+                                class="fas fa-comments w-6 mr-2"></i>Live Chat</a>
+                    @endif
+                    @if(auth()->user()->hasPermission('access_feedback'))
+                        <a href="{{ route('admin.feedback.index') }}"
+                            class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
+                                class="fas fa-paper-plane w-6 mr-2"></i>Feedback</a>
+                    @endif
                     @if(auth()->user()->hasPermission('manage_users'))
                         <a href="{{ route('admin.staff.index') }}"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
@@ -1692,7 +1723,7 @@
                     console.warn('Error initializing image error handler:', e);
                 }
             }
-        })();
+      })();
     </script>
 
     <!-- Chart.js Local -->

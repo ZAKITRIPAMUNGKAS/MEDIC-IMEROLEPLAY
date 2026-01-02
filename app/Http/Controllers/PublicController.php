@@ -1463,4 +1463,73 @@ class PublicController extends Controller
         return response($xml, 200)
             ->header('Content-Type', 'application/xml; charset=utf-8');
     }
+
+    /**
+     * Show feedback submission form
+     */
+    public function showFeedbackForm()
+    {
+        return view('feedback.index');
+    }
+
+    /**
+     * Submit feedback
+     */
+    public function submitFeedback(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'type' => 'required|in:laporan,masukan',
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string|max:5000',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120', // 5MB max
+            'name' => 'nullable|string|max:100',
+        ], [
+            'type.required' => 'Silakan pilih jenis laporan atau masukan.',
+            'type.in' => 'Jenis yang dipilih tidak valid.',
+            'subject.required' => 'Subjek harus diisi.',
+            'subject.max' => 'Subjek terlalu panjang (maksimal 255 karakter).',
+            'message.required' => 'Pesan harus diisi.',
+            'message.max' => 'Pesan terlalu panjang (maksimal 5000 karakter).',
+            'image.image' => 'File harus berupa gambar.',
+            'image.mimes' => 'Format gambar harus: JPEG, PNG, JPG, atau GIF.',
+            'image.max' => 'Ukuran gambar maksimal 5MB.',
+            'name.max' => 'Nama terlalu panjang (maksimal 100 karakter).',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $data = $request->only(['type', 'subject', 'message', 'name']);
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+            $imagePath = $image->storeAs('feedback', $imageName, 'public');
+            $data['image'] = $imagePath;
+        }
+
+        // Generate anonymous name if not provided
+        if (empty($data['name'])) {
+            $latestTicket = \App\Models\Feedback::max('id') ?? 0;
+            $ticketNumber = str_pad($latestTicket + 1, 4, '0', STR_PAD_LEFT);
+            $data['name'] = "Ticket #" . $ticketNumber;
+        }
+
+        // Create feedback
+        \App\Models\Feedback::create([
+            'name' => $data['name'],
+            'type' => $data['type'],
+            'subject' => $data['subject'],
+            'message' => $data['message'],
+            'image' => $data['image'] ?? null,
+            'status' => 'new',
+        ]);
+
+        return redirect()->route('feedback.form')
+            ->with('success', 'Laporan/Masukan Anda telah dikirim. Tim kami akan meninjaunya segera. Terima kasih!');
+    }
 }

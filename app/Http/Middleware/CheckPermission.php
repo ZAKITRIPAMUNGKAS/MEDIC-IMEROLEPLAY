@@ -23,12 +23,12 @@ class CheckPermission
 
         $user = Auth::user();
 
-        // Cek apakah user memiliki peran dan izin yang sesuai
-        if ($user->role && $user->role->hasPermission($permission)) {
+        // Check if user has permission (includes both role permissions and custom permissions)
+        if ($user->hasPermission($permission)) {
             return $next($request);
         }
 
-        // Jika tidak punya izin, kembalikan ke dashboard atau halaman lain dengan pesan error
+        // If not authorized, redirect back with error message
         return redirect()->route('staff.dashboard')->with('error', 'Anda tidak memiliki izin untuk mengakses halaman ini.');
     }
 }

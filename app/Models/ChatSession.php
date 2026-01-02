@@ -25,4 +25,13 @@ class ChatSession extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    /**
+     * Get anonymous display name for the session
+     */
+    public function getAnonymousNameAttribute()
+    {
+        // Simple ticket-based format: Ticket #00001
+        return 'Ticket #' . str_pad($this->id, 5, '0', STR_PAD_LEFT);
+    }
 }

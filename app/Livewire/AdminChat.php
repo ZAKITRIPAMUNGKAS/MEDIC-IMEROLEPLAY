@@ -8,10 +8,15 @@ use App\Models\ChatMessage;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 
+use Livewire\WithFileUploads;
+
 class AdminChat extends Component
 {
+    use WithFileUploads;
+
     public $activeSessionId;
     public $replyMessage;
+    public $attachment; // Added attachment property
     public $filterStatus = 'open'; // open, closed, all
 
     // Derived properties
@@ -33,8 +38,6 @@ class AdminChat extends Component
             $this->loadSessions();
         }
     }
-
-
 
     public function loadSessions()
     {
@@ -78,21 +81,47 @@ class AdminChat extends Component
     public function sendReply()
     {
         $this->validate([
-            'replyMessage' => 'required|min:1'
+            'replyMessage' => 'nullable|min:1',
+            'attachment' => 'nullable|file|mimes:jpg,jpeg,png,gif,pdf,doc,docx|max:10240'
         ]);
 
         if (!$this->activeSession)
             return;
 
+        // Require either message or attachment
+        if (empty($this->replyMessage) && !$this->attachment) {
+            $this->addError('replyMessage', 'Pesan atau lampiran harus diisi');
+            return;
+        }
+
+        // Handle file upload
+        $attachmentPath = null;
+        $attachmentType = null;
+
+        if ($this->attachment) {
+            $attachmentPath = $this->attachment->store('chat-attachments', 'public');
+
+            // Determine file type
+            $mimeType = $this->attachment->getMimeType();
+            if (str_starts_with($mimeType, 'image/')) {
+                $attachmentType = 'image';
+            } else {
+                $attachmentType = 'document';
+            }
+        }
+
         ChatMessage::create([
             'chat_session_id' => $this->activeSessionId,
             'user_id' => Auth::id(),
-            'message' => $this->replyMessage,
+            'message' => $this->replyMessage ?? '',
+            'attachment_path' => $attachmentPath,
+            'attachment_type' => $attachmentType,
             'is_staff_reply' => true
         ]);
 
         $this->activeSession->touch(); // Update updated_at
         $this->replyMessage = '';
+        $this->attachment = null; // Reset attachment
         $this->loadMessages();
     }
 
