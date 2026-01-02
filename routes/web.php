@@ -111,6 +111,7 @@ Route::get('/livechat', function () {
 
 Route::get('/feedback', [PublicController::class, 'showFeedbackForm'])->name('feedback.form');
 Route::post('/feedback', [PublicController::class, 'submitFeedback'])->name('feedback.submit');
+Route::get('/feedback/success', [PublicController::class, 'feedbackSuccess'])->name('feedback.success');
 
 // Form success route (used after submit)
 Route::get('/form/success/{id}', [PublicController::class, 'formSuccess'])->name('public.form.success');

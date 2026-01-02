@@ -1529,7 +1529,14 @@ class PublicController extends Controller
             'status' => 'new',
         ]);
 
-        return redirect()->route('feedback.form')
-            ->with('success', 'Laporan/Masukan Anda telah dikirim. Tim kami akan meninjaunya segera. Terima kasih!');
+        return redirect()->route('feedback.success');
+    }
+
+    /**
+     * Show feedback success page
+     */
+    public function feedbackSuccess()
+    {
+        return view('feedback.success');
     }
 }
