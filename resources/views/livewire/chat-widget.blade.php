@@ -1,47 +1,8 @@
 <div class="{{ $pageMode ? 'h-full' : '' }}">
     @if($pageMode)
-        {{-- Full Page Mode - Show chat interface directly --}}
+        {{-- Full Page Mode - Always show chat interface --}}
         <div class="h-full flex flex-col bg-white">
-            @if(!$hasSession)
-                {{-- Welcome Screen --}}
-                <div class="flex-1 flex items-center justify-center p-6">
-                    <div class="max-w-md w-full text-center space-y-6">
-                        <div class="w-20 h-20 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-3xl mx-auto flex items-center justify-center shadow-xl">
-                            <i class="fas fa-comments text-3xl text-white"></i>
-                        </div>
-                        
-                        <div>
-                            <h2 class="text-2xl font-bold text-slate-800 mb-2">Mulai Chat Baru</h2>
-                            <p class="text-slate-600 text-sm">
-                                Chat dengan tim medis kami secara anonim
-                            </p>
-                        </div>
-
-                        <button wire:click="startChat" type="button"
-                            class="w-full py-4 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5">
-                            <i class="fas fa-comment-medical mr-2"></i>
-                            Mulai Chat Anonim
-                        </button>
-
-                        <!-- Divider -->
-                        <div class="relative w-full my-6">
-                            <div class="absolute inset-0 flex items-center">
-                                <div class="w-full border-t border-slate-300"></div>
-                            </div>
-                            <div class="relative flex justify-center text-xs">
-                                <span class="px-3 bg-white text-slate-500 font-medium">ATAU</span>
-                            </div>
-                        </div>
-
-                        <!-- Feedback Option -->
-                        <button wire:click="toggleFeedbackForm" type="button"
-                            class="w-full py-3 bg-white border-2 border-sky-500 text-sky-600 font-semibold rounded-xl hover:bg-sky-50 transition-all">
-                            <i class="fas fa-comment-dots mr-2"></i>
-                            Kirim Laporan & Masukan
-                        </button>
-                    </div>
-                </div>
-            @elseif($showFeedbackForm)
+            @if($showFeedbackForm)
                 {{-- Feedback Form --}}
                 <div class="flex-1 overflow-y-auto p-6">
                     <div class="max-w-2xl mx-auto">
@@ -150,9 +111,9 @@
                     </div>
                 </div>
             @else
-                {{-- Chat Messages --}}
+                {{-- Chat Interface - Show always in page mode --}}
                 <div class="flex-1 flex flex-col h-full">
-                    <!-- Chat Header -->
+                    {{-- Chat Header --}}
                     <div class="bg-gradient-to-r from-sky-500 to-cyan-500 text-white p-4 flex items-center justify-between shadow-lg">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
@@ -163,12 +124,35 @@
                                 <p class="text-xs text-sky-100">Online - Siap Membantu</p>
                             </div>
                         </div>
-                        <button wire:click="endSession" class="text-white hover:bg-white/20 rounded-lg px-3 py-2 transition-all text-sm">
-                            <i class="fas fa-times mr-1"></i> Akhiri
-                        </button>
+                        @if($hasSession)
+                            <button wire:click="endSession" class="text-white hover:bg-white/20 rounded-lg px-3 py-2 transition-all text-sm">
+                                <i class="fas fa-times mr-1"></i> Akhiri
+                            </button>
+                        @else
+                            <button wire:click="toggleFeedbackForm" type="button" class="text-white hover:bg-white/20 rounded-lg px-3 py-2 transition-all text-xs">
+                                <i class="fas fa-comment-dots mr-1"></i> Feedback
+                            </button>
+                        @endif
                     </div>
 
-                    <!-- Messages Container -->
+                    {{-- No Session Info Banner --}}
+                    @if(!$hasSession)
+                        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border-b-2 border-blue-200 p-4">
+                            <div class="flex items-start gap-3 max-w-2xl mx-auto">
+                                <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-user-secret text-white"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-blue-900 text-sm mb-1">Chat Anonim</h4>
+                                    <p class="text-blue-700 text-xs leading-relaxed">
+                                        Ketik pesan Anda di bawah untuk memulai chat secara anonim dengan tim medis kami. Identitas Anda akan dijaga kerahasiaannya.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                    {{-- Messages Container --}}
                     <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50" id="messages" wire:poll.5s="loadMessages">
                         @forelse($chatMessages as $msg)
                             <div class="flex {{ $msg->is_staff_reply ? 'justify-start' : 'justify-end' }}">
@@ -218,7 +202,7 @@
                         @endforelse
                     </div>
 
-                    <!-- Message Input -->
+                    {{-- Message Input --}}
                     <div class="bg-white border-t border-slate-200 p-4">
                         {{-- File Preview --}}
                         @if($attachment)

@@ -2,46 +2,7 @@
     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($pageMode): ?>
         
         <div class="h-full flex flex-col bg-white">
-            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!$hasSession): ?>
-                
-                <div class="flex-1 flex items-center justify-center p-6">
-                    <div class="max-w-md w-full text-center space-y-6">
-                        <div class="w-20 h-20 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-3xl mx-auto flex items-center justify-center shadow-xl">
-                            <i class="fas fa-comments text-3xl text-white"></i>
-                        </div>
-                        
-                        <div>
-                            <h2 class="text-2xl font-bold text-slate-800 mb-2">Mulai Chat Baru</h2>
-                            <p class="text-slate-600 text-sm">
-                                Chat dengan tim medis kami secara anonim
-                            </p>
-                        </div>
-
-                        <button wire:click="startChat" type="button"
-                            class="w-full py-4 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-0.5">
-                            <i class="fas fa-comment-medical mr-2"></i>
-                            Mulai Chat Anonim
-                        </button>
-
-                        <!-- Divider -->
-                        <div class="relative w-full my-6">
-                            <div class="absolute inset-0 flex items-center">
-                                <div class="w-full border-t border-slate-300"></div>
-                            </div>
-                            <div class="relative flex justify-center text-xs">
-                                <span class="px-3 bg-white text-slate-500 font-medium">ATAU</span>
-                            </div>
-                        </div>
-
-                        <!-- Feedback Option -->
-                        <button wire:click="toggleFeedbackForm" type="button"
-                            class="w-full py-3 bg-white border-2 border-sky-500 text-sky-600 font-semibold rounded-xl hover:bg-sky-50 transition-all">
-                            <i class="fas fa-comment-dots mr-2"></i>
-                            Kirim Laporan & Masukan
-                        </button>
-                    </div>
-                </div>
-            <?php elseif($showFeedbackForm): ?>
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($showFeedbackForm): ?>
                 
                 <div class="flex-1 overflow-y-auto p-6">
                     <div class="max-w-2xl mx-auto">
@@ -180,7 +141,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
             <?php else: ?>
                 
                 <div class="flex-1 flex flex-col h-full">
-                    <!-- Chat Header -->
+                    
                     <div class="bg-gradient-to-r from-sky-500 to-cyan-500 text-white p-4 flex items-center justify-between shadow-lg">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
@@ -191,12 +152,35 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                 <p class="text-xs text-sky-100">Online - Siap Membantu</p>
                             </div>
                         </div>
-                        <button wire:click="endSession" class="text-white hover:bg-white/20 rounded-lg px-3 py-2 transition-all text-sm">
-                            <i class="fas fa-times mr-1"></i> Akhiri
-                        </button>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($hasSession): ?>
+                            <button wire:click="endSession" class="text-white hover:bg-white/20 rounded-lg px-3 py-2 transition-all text-sm">
+                                <i class="fas fa-times mr-1"></i> Akhiri
+                            </button>
+                        <?php else: ?>
+                            <button wire:click="toggleFeedbackForm" type="button" class="text-white hover:bg-white/20 rounded-lg px-3 py-2 transition-all text-xs">
+                                <i class="fas fa-comment-dots mr-1"></i> Feedback
+                            </button>
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
 
-                    <!-- Messages Container -->
+                    
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!$hasSession): ?>
+                        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 border-b-2 border-blue-200 p-4">
+                            <div class="flex items-start gap-3 max-w-2xl mx-auto">
+                                <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-user-secret text-white"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="font-bold text-blue-900 text-sm mb-1">Chat Anonim</h4>
+                                    <p class="text-blue-700 text-xs leading-relaxed">
+                                        Ketik pesan Anda di bawah untuk memulai chat secara anonim dengan tim medis kami. Identitas Anda akan dijaga kerahasiaannya.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
+                    
                     <div class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50" id="messages" wire:poll.5s="loadMessages">
                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $chatMessages; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $msg): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <div class="flex <?php echo e($msg->is_staff_reply ? 'justify-start' : 'justify-end'); ?>">
@@ -248,7 +232,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
 
-                    <!-- Message Input -->
+                    
                     <div class="bg-white border-t border-slate-200 p-4">
                         
                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($attachment): ?>

@@ -75,11 +75,6 @@ class ChatWidget extends Component
                 $this->hasSession = false;
             }
         }
-
-        // Auto-start chat if in page mode and no session
-        if ($this->pageMode && !$this->hasSession) {
-            $this->startChat();
-        }
     }
 
     public function toggleChat()
@@ -129,8 +124,9 @@ class ChatWidget extends Component
             return;
         }
 
+        // Lazy create session: only create when user sends first message
         if (!$this->hasSession) {
-            return;
+            $this->startChat();
         }
 
         $session = ChatSession::where('session_token', $this->sessionToken)->first();
