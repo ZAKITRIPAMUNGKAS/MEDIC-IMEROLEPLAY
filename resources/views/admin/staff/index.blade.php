@@ -253,44 +253,58 @@
         </div>
     </div>
 </div>
-@endsection
 
-@push('scripts')
 <script>
-// Dropdown menu toggling - dengan DOMContentLoaded untuk ensure DOM ready
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Staff page dropdown script loaded');
+// Dropdown menu toggling - Inline untuk ensure execution
+(function() {
+    'use strict';
     
-    // Handle clicks on dropdown buttons and outside clicks
-    document.addEventListener('click', function(e) {
-        const btn = e.target.closest('.action-menu-btn');
-        const allMenus = document.querySelectorAll('.action-menu');
-        
-        if (btn) {
-            e.stopPropagation();
-            e.preventDefault();
+    console.log('[Staff Page] Dropdown script initialized');
+    
+    function initDropdowns() {
+        // Click handler
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('.action-menu-btn');
+            const allMenus = document.querySelectorAll('.action-menu');
             
-            const menu = btn.parentElement.querySelector('.action-menu');
-            
-            // Close all other menus first
-            allMenus.forEach(m => {
-                if (m !== menu) {
-                    m.classList.add('hidden');
+            if (btn) {
+                e.stopPropagation();
+                e.preventDefault();
+                
+                const menu = btn.parentElement.querySelector('.action-menu');
+                console.log('[Staff Page] Dropdown button clicked, menu found:', !!menu);
+                
+                // Close all other menus
+                allMenus.forEach(m => {
+                    if (m !== menu) {
+                        m.classList.add('hidden');
+                    }
+                });
+                
+                // Toggle clicked menu
+                if (menu) {
+                    const wasHidden = menu.classList.contains('hidden');
+                    menu.classList.toggle('hidden');
+                    console.log('[Staff Page] Menu toggled to:', wasHidden ? 'visible' : 'hidden');
                 }
-            });
-            
-            // Toggle the clicked menu
-            if (menu) {
-                menu.classList.toggle('hidden');
-                console.log('Menu toggled:', menu.classList.contains('hidden') ? 'closed' : 'open');
+                
+                return false;
             }
             
-            return;
-        }
+            // Click outside - close all
+            allMenus.forEach(m => m.classList.add('hidden'));
+        });
         
-        // Click outside - close all menus
-        allMenus.forEach(m => m.classList.add('hidden'));
-    });
-});
+        console.log('[Staff Page] Click handler registered successfully');
+    }
+    
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initDropdowns);
+    } else {
+        initDropdowns();
+    }
+})();
 </script>
-@endpush
+
+@endsection
