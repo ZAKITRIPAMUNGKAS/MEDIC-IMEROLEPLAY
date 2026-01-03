@@ -158,7 +158,7 @@ Route::middleware(['auth', 'staff'])->group(function () {
     // Profile update
     Route::get('/staff/profile', [StaffController::class, 'showProfile'])->name('staff.profile');
     Route::post('/staff/profile', [StaffController::class, 'updateProfile'])->name('staff.profile.update');
-    Route::post('/staff/profile/update-email', [DashboardController::class, 'updateEmail'])->name('staff.profile.update-email');
+    Route::post('/staff/profile/update-email', [StaffController::class, 'updateEmail'])->name('staff.profile.update-email');
 
     // Forms routes (list, detail, approve, reject)
     Route::get('/staff/forms', [DashboardController::class, 'forms'])->name('staff.forms');
