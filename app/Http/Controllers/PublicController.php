@@ -355,19 +355,19 @@ class PublicController extends Controller
         ];
 
         $validator = Validator::make($request->all(), [
-            'character_name' => 'required|string|max:255',
+            'character_name' => 'nullable|string|max:255',
             'citizen_id' => 'nullable|string|max:50',
             'form_type' => 'required|string|in:' . implode(',', $allowedTypes),
-            'hospital' => 'required|string|in:alta,roxwood',
+            'hospital' => 'nullable|string|in:alta,roxwood',
             // Banyak tipe form tidak memiliki kolom deskripsi, jadi buat opsional
             'description' => 'nullable|string|max:1000',
             'form_data' => 'required|array',
-            // Field wajib untuk semua form
-            'form_data.birth_date' => 'required|date',
-            'form_data.gender' => 'required|string|in:Laki-laki,Perempuan',
-            'form_data.age' => 'required|integer|min:1|max:120',
-            'form_data.occupation' => 'required|string|max:255',
-            'form_data.phone_number' => 'required|string|max:20',
+            // Field wajib untuk semua form (made optional since removed from frontend)
+            'form_data.birth_date' => 'nullable|date',
+            'form_data.gender' => 'nullable|string|in:Laki-laki,Perempuan',
+            'form_data.age' => 'nullable|integer|min:1|max:120',
+            'form_data.occupation' => 'nullable|string|max:255',
+            'form_data.phone_number' => 'nullable|string|max:20',
             // Validasi dokter_name wajib untuk surat kesehatan, tes psikologi, surat psikolog, dan operasi plastik
             'form_data.doctor_name' => 'required_if:form_type,surat_kesehatan,tes_psikologi,surat_psikolog,operasi_plastik|string|max:255|filled',
             // Validasi untuk tes psikologi
@@ -641,12 +641,28 @@ class PublicController extends Controller
             $description .= "- BFI: E={$bfi_scores['extraversion']}, A={$bfi_scores['agreeableness']}, C={$bfi_scores['conscientiousness']}, N={$bfi_scores['neuroticism']}, O={$bfi_scores['openness']}";
         }
 
+        // Provide default values for removed fields
+        $characterName = $request->character_name ?? 'Anonymous User';
+        $hospital = $request->hospital ?? 'alta';
+
+        // Ensure form_data has default values for removed fields
+        if (!isset($formData['birth_date']))
+            $formData['birth_date'] = '1990-01-01';
+        if (!isset($formData['gender']))
+            $formData['gender'] = 'Laki-laki';
+        if (!isset($formData['age']))
+            $formData['age'] = 25;
+        if (!isset($formData['occupation']))
+            $formData['occupation'] = 'Warga';
+        if (!isset($formData['phone_number']))
+            $formData['phone_number'] = '0000000000';
+
         // Prepare form creation data
         $formCreateData = [
-            'character_name' => $request->character_name,
+            'character_name' => $characterName,
             'citizen_id' => $request->citizen_id,
             'form_type' => $request->form_type,
-            'hospital' => $request->hospital,
+            'hospital' => $hospital,
             'description' => $description,
             'form_data' => $formData,
             'ip_address' => $request->ip()
