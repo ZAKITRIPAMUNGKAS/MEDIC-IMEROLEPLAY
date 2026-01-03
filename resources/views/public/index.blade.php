@@ -36,7 +36,6 @@
                         </div>
                         <div>
                             <h2 class="text-xl sm:text-3xl font-black mb-1 sm:mb-2">UPDATE REGULASI</h2>
-                            <h3 class="text-lg sm:text-xl font-bold text-red-100">MOTION MEDICAL CENTER</h3>
                             <div class="flex flex-wrap items-center mt-2 sm:mt-3 gap-2 sm:space-x-4">
                                 <div class="flex items-center space-x-2 bg-white/20 px-3 py-1 rounded-full">
                                     <i class="fas fa-calendar-alt text-xs sm:text-sm"></i>
