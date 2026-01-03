@@ -37,8 +37,9 @@ class TelegramService
         $success = true;
         foreach ($this->chatIds as $chatId) {
             $chatId = trim($chatId);
-            if (empty($chatId))
+            if (empty($chatId)) {
                 continue;
+            }
 
             try {
                 $response = Http::post("https://api.telegram.org/bot{$this->botToken}/sendMessage", [

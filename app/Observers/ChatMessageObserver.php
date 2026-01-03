@@ -27,7 +27,7 @@ class ChatMessageObserver
         try {
             $telegram = new TelegramService();
 
-            $session = $chatMessage->chatSession;
+            $session = $chatMessage->session;
             $sessionName = $session->anonymous_name ?? 'Unknown';
             $message = $chatMessage->message;
             $url = url('/admin/chat');
