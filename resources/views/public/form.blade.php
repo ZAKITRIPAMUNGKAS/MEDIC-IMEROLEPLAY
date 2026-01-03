@@ -67,96 +67,6 @@
                     @csrf
                     <input type="hidden" name="form_type" value="{{ $type }}">
 
-                    <div class="border-b border-white/10 pb-6 mb-8">
-                        <h3 class="text-xl font-semibold text-white mb-6">Informasi Data Diri</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                            <div>
-                                <label for="hospital" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                    Rumah Sakit <span class="text-red-400">*</span>
-                                </label>
-                                <select id="hospital" name="hospital"
-                                    class="form-select @error('hospital') border-red-500 @enderror" required>
-                                    <option value="">-- Pilih Rumah Sakit --</option>
-                                    <option value="alta" @if(old('hospital') == 'alta') selected @endif
-                                        class="bg-slate-900 text-white font-bold">Alta Hospital</option>
-                                    <option value="roxwood" @if(old('hospital') == 'roxwood') selected @endif
-                                        class="bg-slate-900 text-white font-bold">Roxwood Hospital</option>
-                                </select>
-                                @error('hospital') <p class="form-error">{{ $message }}</p> @enderror
-                            </div>
-                            <div>
-                                <label for="character_name"
-                                    class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                    Nama Lengkap <span class="text-red-400">*</span>
-                                </label>
-                                <input type="text" id="character_name" name="character_name"
-                                    value="{{ old('character_name') }}"
-                                    class="form-input @error('character_name') border-red-500 @enderror"
-                                    placeholder="Masukkan Nama Lengkap" required>
-                                @error('character_name') <p class="form-error">{{ $message }}</p> @enderror
-                            </div>
-                            <div>
-                                <label for="birth_date" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                    Tanggal Lahir <span class="text-red-400">*</span>
-                                </label>
-                                <input type="date" id="birth_date" name="form_data[birth_date]"
-                                    value="{{ old('form_data.birth_date') }}"
-                                    class="form-input @error('form_data.birth_date') border-red-500 @enderror" required>
-                                @error('form_data.birth_date') <p class="form-error">{{ $message }}</p> @enderror
-                            </div>
-                            <div>
-                                <label for="gender" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                    Gender <span class="text-red-400">*</span>
-                                </label>
-                                <select id="gender" name="form_data[gender]"
-                                    class="form-select @error('form_data.gender') border-red-500 @enderror" required>
-                                    <option value="" class="bg-slate-900 text-white font-bold">Pilih Gender</option>
-                                    <option value="Laki-laki" @if(old('form_data.gender') == 'Laki-laki') selected @endif
-                                        class="bg-slate-900 text-white font-bold">Laki-laki</option>
-                                    <option value="Perempuan" @if(old('form_data.gender') == 'Perempuan') selected @endif
-                                        class="bg-slate-900 text-white font-bold">Perempuan</option>
-                                </select>
-                                @error('form_data.gender') <p class="form-error">{{ $message }}</p> @enderror
-                            </div>
-                            <div>
-                                <label for="age" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                    Umur <span class="text-red-400">*</span>
-                                </label>
-                                <input type="number" id="age" name="form_data[age]" value="{{ old('form_data.age') }}"
-                                    class="form-input @error('form_data.age') border-red-500 @enderror"
-                                    placeholder="Contoh: 25" required>
-                                @error('form_data.age') <p class="form-error">{{ $message }}</p> @enderror
-                            </div>
-                            <div class="sm:col-span-2">
-                                <label for="occupation" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                    Pekerjaan <span class="text-red-400">*</span>
-                                </label>
-                                <input type="text" id="occupation" name="form_data[occupation]"
-                                    value="{{ old('form_data.occupation') }}"
-                                    class="form-input @error('form_data.occupation') border-red-500 @enderror"
-                                    placeholder="Contoh: Pengusaha" required>
-                                @error('form_data.occupation') <p class="form-error">{{ $message }}</p> @enderror
-                            </div>
-                            <div>
-                                <label for="citizen_id"
-                                    class="block text-sm font-medium text-white mb-2 font-bold text-lg">Citizen ID</label>
-                                <input type="text" id="citizen_id" name="citizen_id" value="{{ old('citizen_id') }}"
-                                    class="form-input" placeholder="Contoh: 123456">
-                            </div>
-                            <div>
-                                <label for="phone_number"
-                                    class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                    No HP (IC) <span class="text-red-400">*</span>
-                                </label>
-                                <input type="text" id="phone_number" name="form_data[phone_number]"
-                                    value="{{ old('form_data.phone_number') }}"
-                                    class="form-input @error('form_data.phone_number') border-red-500 @enderror"
-                                    placeholder="Contoh: 08123456789" required>
-                                @error('form_data.phone_number') <p class="form-error">{{ $message }}</p> @enderror
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="mb-8">
                         <h3 class="text-xl font-bold text-white mb-6">
                             @if($type === 'pendaftaran_karakter')
@@ -262,37 +172,43 @@
 
                                     {{-- Dropdown for Linking with Previous Surat Psikolog --}}
                                     @if($availablePsychForms->isNotEmpty())
-                                        <div class="mb-8 p-6 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border-2 border-indigo-400/30 rounded-xl">
+                                        <div
+                                            class="mb-8 p-6 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border-2 border-indigo-400/30 rounded-xl">
                                             <div class="flex items-start gap-3 mb-4">
-                                                <div class="w-10 h-10 bg-indigo-500/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                <div
+                                                    class="w-10 h-10 bg-indigo-500/30 rounded-lg flex items-center justify-center flex-shrink-0">
                                                     <i class="fas fa-link text-indigo-300 text-lg"></i>
                                                 </div>
                                                 <div>
-                                                    <h4 class="text-lg font-bold text-white mb-1">Hubungkan dengan Surat Psikolog</h4>
-                                                    <p class="text-indigo-200 text-sm">Jika Anda sebelumnya sudah mengisi <strong>Surat Psikolog</strong>, pilih dari daftar di bawah. Surat tersebut akan otomatis disetujui!</p>
+                                                    <h4 class="text-lg font-bold text-white mb-1">Hubungkan dengan Surat Psikolog
+                                                    </h4>
+                                                    <p class="text-indigo-200 text-sm">Jika Anda sebelumnya sudah mengisi
+                                                        <strong>Surat Psikolog</strong>, pilih dari daftar di bawah. Surat tersebut
+                                                        akan otomatis disetujui!</p>
                                                 </div>
                                             </div>
-                                            
+
                                             <label for="linked_psych_form" class="block text-sm font-medium text-white mb-2">
                                                 Pilih Surat Psikolog (Opsional)
                                             </label>
                                             <select id="linked_psych_form" name="linked_psych_form_id" class="form-select">
                                                 <option value="">-- Tidak ada / Lewati --</option>
                                                 @foreach($availablePsychForms as $psychForm)
-                                                    <option value="{{ $psychForm->id }}" 
+                                                    <option value="{{ $psychForm->id }}"
                                                         data-character="{{ $psychForm->character_name }}"
                                                         data-doctor="{{ $psychForm->form_data['doctor_name'] ?? 'N/A' }}"
                                                         class="bg-slate-900 text-white">
-                                                        [#{{ $psychForm->id }}] {{ $psychForm->character_name }} - 
-                                                        {{ $psychForm->created_at->format('d M Y, H:i') }} 
+                                                        [#{{ $psychForm->id }}] {{ $psychForm->character_name }} -
+                                                        {{ $psychForm->created_at->format('d M Y, H:i') }}
                                                         ({{ ucfirst($psychForm->hospital) }})
                                                     </option>
                                                 @endforeach
                                             </select>
-                                            
+
                                             <div class="mt-3 flex items-center gap-2 text-xs text-green-300">
                                                 <i class="fas fa-info-circle"></i>
-                                                <span>Dengan memilih surat psikolog, form tersebut akan langsung <strong>di-ACC otomatis</strong>!</span>
+                                                <span>Dengan memilih surat psikolog, form tersebut akan langsung <strong>di-ACC
+                                                        otomatis</strong>!</span>
                                             </div>
                                         </div>
                                     @endif
@@ -333,12 +249,14 @@
                                                 <div class="flex flex-wrap items-center gap-3">
                                                     @foreach($bigfive_scale as $val => $label)
                                                         <label class="flex items-center cursor-pointer group">
-                                                            <input type="radio" name="form_data[bigfive{{ $i + 1 }}]" value="{{ $val }}" 
-                                                                   @if(old('form_data.bigfive' . ($i + 1)) == $val) checked @endif
-                                                                   class="sr-only peer" required>
-                                                            <div class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24">
+                                                            <input type="radio" name="form_data[bigfive{{ $i + 1 }}]" value="{{ $val }}"
+                                                                @if(old('form_data.bigfive' . ($i + 1)) == $val) checked @endif
+                                                                class="sr-only peer" required>
+                                                            <div
+                                                                class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24">
                                                                 <span class="text-2xl font-bold text-white">{{ $val }}</span>
-                                                                <span class="text-[10px] text-gray-300 text-center leading-tight px-1">{{ $label }}</span>
+                                                                <span
+                                                                    class="text-[10px] text-gray-300 text-center leading-tight px-1">{{ $label }}</span>
                                                             </div>
                                                         </label>
                                                     @endforeach
@@ -379,7 +297,18 @@
                                             <div
                                                 class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
                                                 <p class="text-white mb-4 font-medium text-lg">{{ $i + 1 }}. {{ $question }}</p>
-                                                <div class="flex flex-wrap items-center gap-3">@foreach($stress_scale as $val => $label)<label class="flex items-center cursor-pointer group"><input type="radio" name="form_data[stress{{ $i + 1 }}]" value="{{ $val }}" @if(old('form_data.stress' . ($i + 1)) == $val) checked @endif class="sr-only peer" required><div class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24"><span class="text-2xl font-bold text-white">{{ $val }}</span><span class="text-xs text-gray-300 text-center leading-tight px-1">{{ $label }}</span></div></label>@endforeach</div>
+                                                <div class="flex flex-wrap items-center gap-3">
+                                                    @foreach($stress_scale as $val => $label)<label
+                                                        class="flex items-center cursor-pointer group"><input type="radio"
+                                                            name="form_data[stress{{ $i + 1 }}]" value="{{ $val }}"
+                                                            @if(old('form_data.stress' . ($i + 1)) == $val) checked @endif
+                                                            class="sr-only peer" required>
+                                                        <div
+                                                            class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24">
+                                                            <span class="text-2xl font-bold text-white">{{ $val }}</span><span
+                                                                class="text-xs text-gray-300 text-center leading-tight px-1">{{ $label }}</span>
+                                                        </div>
+                                                    </label>@endforeach</div>
                                             </div>
                                         @endforeach
                                     </div>
@@ -416,7 +345,18 @@
                                             <div
                                                 class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
                                                 <p class="text-white mb-4 font-medium text-lg">{{ $i + 1 }}. {{ $question }}</p>
-                                                <div class="flex flex-wrap items-center gap-3">@foreach($esteem_scale as $val => $label)<label class="flex items-center cursor-pointer group"><input type="radio" name="form_data[esteem{{ $i + 1 }}]" value="{{ $val }}" @if(old('form_data.esteem' . ($i + 1)) == $val) checked @endif class="sr-only peer" required><div class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24"><span class="text-2xl font-bold text-white">{{ $val }}</span><span class="text-xs text-gray-300 text-center leading-tight px-1">{{ $label }}</span></div></label>@endforeach</div>
+                                                <div class="flex flex-wrap items-center gap-3">
+                                                    @foreach($esteem_scale as $val => $label)<label
+                                                        class="flex items-center cursor-pointer group"><input type="radio"
+                                                            name="form_data[esteem{{ $i + 1 }}]" value="{{ $val }}"
+                                                            @if(old('form_data.esteem' . ($i + 1)) == $val) checked @endif
+                                                            class="sr-only peer" required>
+                                                        <div
+                                                            class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24">
+                                                            <span class="text-2xl font-bold text-white">{{ $val }}</span><span
+                                                                class="text-xs text-gray-300 text-center leading-tight px-1">{{ $label }}</span>
+                                                        </div>
+                                                    </label>@endforeach</div>
                                             </div>
                                         @endforeach
                                     </div>
@@ -1224,41 +1164,41 @@
                                 class="xs:hidden">Kirim</span>
                         </button>
                     </div>
-                
-    <script>
-        // Psychology test radio button visual feedback
-        document.addEventListener('DOMContentLoaded', function() {
-            const radioInputs = document.querySelectorAll('input[type="radio"][name^="form_data[bigfive"], input[type="radio"][name^="form_data[stress"], input[type="radio"][name^="form_data[esteem"]');
-            
-            radioInputs.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    // Remove selected state from all siblings
-                    const name = this.getAttribute('name');
-                    document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
-                        const box = r.nextElementSibling;
-                        if (box) {
-                            box.classList.remove('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
-                        }
-                    });
-                    
-                    // Add selected state to this one
-                    const box = this.nextElementSibling;
-                    if (box && this.checked) {
-                        box.classList.add('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
-                    }
-                });
-                
-                // Set initial state for checked radios
-                if (radio.checked) {
-                    const box = radio.nextElementSibling;
-                    if (box) {
-                        box.classList.add('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
-                    }
-                }
-            });
-        });
-    </script>
-</form>
+
+                    <script>
+                        // Psychology test radio button visual feedback
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const radioInputs = document.querySelectorAll('input[type="radio"][name^="form_data[bigfive"], input[type="radio"][name^="form_data[stress"], input[type="radio"][name^="form_data[esteem"]');
+
+                            radioInputs.forEach(radio => {
+                                radio.addEventListener('change', function () {
+                                    // Remove selected state from all siblings
+                                    const name = this.getAttribute('name');
+                                    document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+                                        const box = r.nextElementSibling;
+                                        if (box) {
+                                            box.classList.remove('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
+                                        }
+                                    });
+
+                                    // Add selected state to this one
+                                    const box = this.nextElementSibling;
+                                    if (box && this.checked) {
+                                        box.classList.add('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
+                                    }
+                                });
+
+                                // Set initial state for checked radios
+                                if (radio.checked) {
+                                    const box = radio.nextElementSibling;
+                                    if (box) {
+                                        box.classList.add('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
+                                    }
+                                }
+                            });
+                        });
+                    </script>
+                </form>
             </div>
         </div>
     </div>
