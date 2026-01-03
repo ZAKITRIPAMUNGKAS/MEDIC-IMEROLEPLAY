@@ -23,6 +23,7 @@ class User extends Authenticatable
         'password',
         'role_id',
         'staff_id',
+        'hospital',
         'is_active',
         'profile_image',
         'custom_permissions',
@@ -271,22 +272,12 @@ class User extends Authenticatable
 
     /**
      * Check if user belongs to Roxwood Hospital
-     * User is considered Roxwood if name or staff_id contains "RH", "roxwood", etc.
      *
      * @return bool
      */
     public function isRoxwood(): bool
     {
-        $name = strtolower($this->name ?? '');
-        $staffId = strtolower($this->staff_id ?? '');
-
-        return str_contains($name, 'rh')
-            || str_contains($name, 'roxwood')
-            || str_contains($name, 'rh -')
-            || str_contains($name, 'rh-')
-            || str_contains($staffId, 'rh')
-            || str_contains($staffId, 'rh -')
-            || str_contains($staffId, 'rh-');
+        return $this->hospital === 'roxwood';
     }
 
     /**
@@ -296,7 +287,7 @@ class User extends Authenticatable
      */
     public function isAlta(): bool
     {
-        return !$this->isRoxwood();
+        return $this->hospital === 'alta' || $this->hospital === null;
     }
 
     /**
@@ -304,13 +295,7 @@ class User extends Authenticatable
      */
     public function scopeRoxwood($query)
     {
-        return $query->where(function ($q) {
-            $q->where('name', 'like', '%rh%')
-                ->orWhere('name', 'like', '%roxwood%')
-                ->orWhere('staff_id', 'like', '%rh%')
-                ->orWhere('staff_id', 'like', '%rh -%')
-                ->orWhere('staff_id', 'like', '%rh-%');
-        });
+        return $query->where('hospital', 'roxwood');
     }
 
     /**
@@ -319,13 +304,8 @@ class User extends Authenticatable
     public function scopeAlta($query)
     {
         return $query->where(function ($q) {
-            $q->where('name', 'not like', '%rh%')
-                ->where('name', 'not like', '%roxwood%');
-        })->where(function ($q) {
-            $q->where('staff_id', 'not like', '%rh%')
-                ->where('staff_id', 'not like', '%rh -%')
-                ->where('staff_id', 'not like', '%rh-%')
-                ->orWhereNull('staff_id');
+            $q->where('hospital', 'alta')
+                ->orWhereNull('hospital');
         });
     }
 
@@ -336,7 +316,7 @@ class User extends Authenticatable
      */
     public function getHospital(): string
     {
-        return $this->isRoxwood() ? 'roxwood' : 'alta';
+        return $this->hospital ?? 'alta';
     }
 
     /**

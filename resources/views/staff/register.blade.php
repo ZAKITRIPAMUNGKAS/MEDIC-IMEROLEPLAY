@@ -111,6 +111,34 @@
                             @enderror
                         </div>
 
+                        <!-- Hospital Selection -->
+                        <div>
+                            <label for="hospital" class="block text-lg font-bold text-white mb-3">
+                                <i class="fas fa-hospital mr-2"></i>Rumah Sakit
+                            </label>
+                            <div class="relative">
+                                <select id="hospital" name="hospital" required
+                                    class="w-full bg-white text-black border-3 border-slate-700 rounded-xl px-4 py-4 focus:ring-4 focus:ring-blue-500 focus:border-blue-700 transition-all duration-300 text-lg font-bold appearance-none cursor-pointer shadow-lg">
+                                    <option value="" disabled selected class="bg-slate-800 text-white font-bold">🏥 Pilih
+                                        rumah sakit</option>
+                                    <option value="alta" @selected(old('hospital') == 'alta')
+                                        class="bg-slate-900 text-white font-bold">
+                                        Alta Hospital (EMS)
+                                    </option>
+                                    <option value="roxwood" @selected(old('hospital') == 'roxwood')
+                                        class="bg-slate-900 text-white font-bold">
+                                        Roxwood Hospital
+                                    </option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                                    <i class="fas fa-chevron-down text-sky-300 text-lg"></i>
+                                </div>
+                            </div>
+                            @error('hospital')
+                                <p class="mt-2 text-sm text-red-300 font-medium">{{ $message }}</p>
+                            @enderror
+                        </div>
+
                         <!-- Password -->
                         <div>
                             <label for="password" class="block text-lg font-bold text-white mb-2">Password</label>
@@ -272,13 +300,13 @@
                 // Role data from server
                 const roleData = {
                     @foreach($roles as $role)
-                        {{ $role->id }}: {
+                                    {{ $role->id }}: {
                             name: @json($role->display_name ?? $role->name),
                             description: @json($role->description ?? 'Peran staf medis profesional'),
                             permissions: @json($role->permissions ?? [])
                         },
                     @endforeach
-            };
+                    };
 
             // Event Listeners
             togglePasswordBtn.addEventListener('click', function () {
@@ -295,7 +323,7 @@
             if (roleSelect.value) {
                 updateRolePreview();
             }
-        });
+                });
         </script>
     @endpush
 @endsection

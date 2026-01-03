@@ -155,6 +155,7 @@ class StaffController extends Controller
                     }
                 },
             ],
+            'hospital' => 'required|in:alta,roxwood',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -168,6 +169,7 @@ class StaffController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role_id' => $request->role_id,
+            'hospital' => $request->hospital,
             'is_active' => true,
             'profile_image' => $profileImagePath,
         ]);
