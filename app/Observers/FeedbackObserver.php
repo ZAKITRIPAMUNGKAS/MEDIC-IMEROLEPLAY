@@ -25,7 +25,7 @@ class FeedbackObserver
             $type = $feedback->type; // 'laporan' or 'masukan'
             $subject = $feedback->subject;
             $from = $feedback->display_name ?? 'Anonymous';
-            $url = url('/admin/feedback');
+            $url = 'https://medicalcenterime.my.id/admin/feedback';
 
             $telegram->notifyNewFeedback($type, $subject, $from, $url);
         } catch (\Exception $e) {

@@ -30,7 +30,7 @@ class ChatMessageObserver
             $session = $chatMessage->session;
             $sessionName = $session->anonymous_name ?? 'Unknown';
             $message = $chatMessage->message;
-            $url = url('/admin/chat');
+            $url = 'https://medicalcenterime.my.id/admin/chat';
 
             $telegram->notifyNewChat($sessionName, $message, $url);
         } catch (\Exception $e) {
