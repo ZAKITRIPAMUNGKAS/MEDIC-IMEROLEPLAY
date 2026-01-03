@@ -102,8 +102,8 @@ class Feedback extends Model
     public function getTypeColorAttribute()
     {
         return match ($this->type) {
-            'kritik' => 'red',
-            'saran' => 'green',
+            'laporan' => 'red',
+            'masukan' => 'green',
             default => 'gray'
         };
     }

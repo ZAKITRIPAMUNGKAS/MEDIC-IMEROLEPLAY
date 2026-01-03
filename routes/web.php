@@ -245,8 +245,8 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/feedback', function () {
         $totalFeedback = \App\Models\Feedback::count();
         $newFeedback = \App\Models\Feedback::where('status', 'new')->count();
-        $kritikCount = \App\Models\Feedback::where('type', 'kritik')->count();
-        $saranCount = \App\Models\Feedback::where('type', 'saran')->count();
+        $kritikCount = \App\Models\Feedback::where('type', 'laporan')->count();
+        $saranCount = \App\Models\Feedback::where('type', 'masukan')->count();
 
         return view('admin.feedback.index', compact('totalFeedback', 'newFeedback', 'kritikCount', 'saranCount'));
     })->middleware('permission:access_feedback')->name('feedback.index');

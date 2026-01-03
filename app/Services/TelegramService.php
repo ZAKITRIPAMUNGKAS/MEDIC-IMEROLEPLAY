@@ -34,14 +34,27 @@ class TelegramService
         $parseMode = $options['parse_mode'] ?? 'HTML';
         $disablePreview = $options['disable_web_page_preview'] ?? true;
 
+        // Debug: Log all chat IDs before sending
+        Log::info('Telegram: Preparing to send notification', [
+            'total_recipients' => count($this->chatIds),
+            'chat_ids' => $this->chatIds,
+            'message_preview' => substr($message, 0, 50) . '...'
+        ]);
+
         $success = true;
-        foreach ($this->chatIds as $chatId) {
+        $sentCount = 0;
+        $failedCount = 0;
+
+        foreach ($this->chatIds as $index => $chatId) {
             $chatId = trim($chatId);
             if (empty($chatId)) {
+                Log::warning("Telegram: Skipping empty chat ID at index {$index}");
                 continue;
             }
 
             try {
+                Log::info("Telegram: Sending to chat ID #{$index}: {$chatId}");
+
                 $response = Http::post("https://api.telegram.org/bot{$this->botToken}/sendMessage", [
                     'chat_id' => $chatId,
                     'text' => $message,
@@ -50,20 +63,36 @@ class TelegramService
                 ]);
 
                 if (!$response->successful()) {
+                    $failedCount++;
                     Log::error('Telegram notification failed', [
+                        'index' => $index,
                         'chat_id' => $chatId,
+                        'status' => $response->status(),
                         'response' => $response->json()
                     ]);
                     $success = false;
+                } else {
+                    $sentCount++;
+                    Log::info("Telegram: Successfully sent to chat ID {$chatId}");
                 }
             } catch (\Exception $e) {
+                $failedCount++;
                 Log::error('Telegram notification exception', [
+                    'index' => $index,
                     'chat_id' => $chatId,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
                 ]);
                 $success = false;
             }
         }
+
+        // Summary log
+        Log::info('Telegram: Notification batch completed', [
+            'sent' => $sentCount,
+            'failed' => $failedCount,
+            'total' => count($this->chatIds)
+        ]);
 
         return $success;
     }

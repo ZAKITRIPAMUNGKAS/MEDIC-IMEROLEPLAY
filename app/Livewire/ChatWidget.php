@@ -30,7 +30,7 @@ class ChatWidget extends Component
 
     // Feedback properties
     public $showFeedbackForm = false;
-    public $feedbackType = 'saran';
+    public $feedbackType = 'masukan';
     public $feedbackSubject = '';
     public $feedbackMessage = '';
     public $feedbackImage;
@@ -235,7 +235,7 @@ class ChatWidget extends Component
     public function submitFeedback()
     {
         $this->validate([
-            'feedbackType' => 'required|in:kritik,saran',
+            'feedbackType' => 'required|in:laporan,masukan',
             'feedbackSubject' => 'required|min:5|max:200',
             'feedbackMessage' => 'required|min:10|max:2000',
             'feedbackImage' => 'nullable|image|max:5120' // Max 5MB

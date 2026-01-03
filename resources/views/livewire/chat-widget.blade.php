@@ -35,14 +35,14 @@
                             <div class="text-left">
                                 <label class="block text-xs font-bold text-slate-700 mb-2">Pilih Tipe</label>
                                 <div class="grid grid-cols-2 gap-3">
-                                    <button type="button" wire:click="$set('feedbackType', 'saran')"
+                                    <button type="button" wire:click="$set('feedbackType', 'masukan')"
                                         class="px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all
-                                            {{ $feedbackType === 'saran' ? 'border-green-500 bg-green-50 text-green-700' : 'border-slate-300 text-slate-600 hover:border-green-400' }}">
+                                            {{ $feedbackType === 'masukan' ? 'border-green-500 bg-green-50 text-green-700' : 'border-slate-300 text-slate-600 hover:border-green-400' }}">
                                         <i class="fas fa-lightbulb mr-1"></i> Masukan
                                     </button>
-                                    <button type="button" wire:click="$set('feedbackType', 'kritik')"
+                                    <button type="button" wire:click="$set('feedbackType', 'laporan')"
                                         class="px-4 py-3 rounded-xl border-2 text-sm font-medium transition-all
-                                            {{ $feedbackType === 'kritik' ? 'border-red-500 bg-red-50 text-red-700' : 'border-slate-300 text-slate-600 hover:border-red-400' }}">
+                                            {{ $feedbackType === 'laporan' ? 'border-red-500 bg-red-50 text-red-700' : 'border-slate-300 text-slate-600 hover:border-red-400' }}">
                                         <i class="fas fa-exclamation-triangle mr-1"></i> Laporan
                                     </button>
                                 </div>
