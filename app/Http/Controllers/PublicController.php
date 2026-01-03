@@ -641,11 +641,11 @@ class PublicController extends Controller
             $description .= "- BFI: E={$bfi_scores['extraversion']}, A={$bfi_scores['agreeableness']}, C={$bfi_scores['conscientiousness']}, N={$bfi_scores['neuroticism']}, O={$bfi_scores['openness']}";
         }
 
-        // Provide default values for removed fields
+        // Provide default values for removed fields (fallback)
         $characterName = $request->character_name ?? 'Anonymous User';
         $hospital = $request->hospital ?? 'alta';
 
-        // Ensure form_data has default values for removed fields
+        // Ensure form_data has default values (fallback)
         if (!isset($formData['birth_date']))
             $formData['birth_date'] = '1990-01-01';
         if (!isset($formData['gender']))
@@ -657,23 +657,14 @@ class PublicController extends Controller
         if (!isset($formData['phone_number']))
             $formData['phone_number'] = '0000000000';
 
-        // Prepare form creation data
-        $formCreateData = [
-            'character_name' => $characterName,
-            'citizen_id' => $request->citizen_id,
-            'form_type' => $request->form_type,
-            'hospital' => $hospital,
-            'description' => $description,
-            'form_data' => $formData,
-            'ip_address' => $request->ip()
-        ];
+        $linkedFormId = null;
 
         // Handle linked psychology form for tes_psikologi
         if ($request->form_type === 'tes_psikologi' && $request->filled('linked_psych_form_id')) {
-            $linkedFormId = $request->input('linked_psych_form_id');
+            $linkedId = $request->input('linked_psych_form_id');
 
             // Validate the linked form exists and is pending surat_psikolog
-            $linkedForm = MedicalForm::where('id', $linkedFormId)
+            $linkedForm = MedicalForm::where('id', $linkedId)
                 ->where('form_type', 'surat_psikolog')
                 ->where('status', 'pending')
                 ->first();
@@ -687,13 +678,41 @@ class PublicController extends Controller
                 ]);
 
                 // Link the form
-                $formCreateData['linked_form_id'] = $linkedFormId;
+                $linkedFormId = $linkedId;
+
+                // INHERIT DATA FROM LINKED FORM
+                // Prioritize linked form data over defaults/input
+                $characterName = $linkedForm->character_name;
+                $hospital = $linkedForm->hospital;
+
+                // Inherit form_data fields if available in linked form
+                if (isset($linkedForm->form_data['birth_date']))
+                    $formData['birth_date'] = $linkedForm->form_data['birth_date'];
+                if (isset($linkedForm->form_data['gender']))
+                    $formData['gender'] = $linkedForm->form_data['gender'];
+                if (isset($linkedForm->form_data['age']))
+                    $formData['age'] = $linkedForm->form_data['age'];
+                if (isset($linkedForm->form_data['occupation']))
+                    $formData['occupation'] = $linkedForm->form_data['occupation'];
+                if (isset($linkedForm->form_data['phone_number']))
+                    $formData['phone_number'] = $linkedForm->form_data['phone_number'];
 
                 // Add note to description
-                $description .= "\n\n[AUTO-LINKED] Terhubung dengan Surat Psikolog ID#{$linkedFormId} (sudah di-approve otomatis)";
-                $formCreateData['description'] = $description;
+                $description .= "\n\n[AUTO-LINKED] Terhubung dengan Surat Psikolog ID#{$linkedId} (sudah di-approve otomatis)";
             }
         }
+
+        // Prepare form creation data
+        $formCreateData = [
+            'character_name' => $characterName,
+            'citizen_id' => $request->citizen_id,
+            'form_type' => $request->form_type,
+            'hospital' => $hospital,
+            'description' => $description,
+            'form_data' => $formData,
+            'ip_address' => $request->ip(),
+            'linked_form_id' => $linkedFormId
+        ];
 
         $form = MedicalForm::create($formCreateData);
 
