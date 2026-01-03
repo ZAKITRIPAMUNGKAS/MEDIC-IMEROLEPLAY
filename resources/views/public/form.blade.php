@@ -67,6 +67,98 @@
                     @csrf
                     <input type="hidden" name="form_type" value="{{ $type }}">
 
+                    @if($type !== 'tes_psikologi')
+                        <div class="border-b border-white/10 pb-6 mb-8">
+                            <h3 class="text-xl font-semibold text-white mb-6">Informasi Data Diri</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                                <div>
+                                    <label for="hospital" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Rumah Sakit <span class="text-red-400">*</span>
+                                    </label>
+                                    <select id="hospital" name="hospital"
+                                        class="form-select @error('hospital') border-red-500 @enderror" required>
+                                        <option value="">-- Pilih Rumah Sakit --</option>
+                                        <option value="alta" @if(old('hospital') == 'alta') selected @endif
+                                            class="bg-slate-900 text-white font-bold">Alta Hospital</option>
+                                        <option value="roxwood" @if(old('hospital') == 'roxwood') selected @endif
+                                            class="bg-slate-900 text-white font-bold">Roxwood Hospital</option>
+                                    </select>
+                                    @error('hospital') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+                                <div>
+                                    <label for="character_name"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Nama Lengkap <span class="text-red-400">*</span>
+                                    </label>
+                                    <input type="text" id="character_name" name="character_name"
+                                        value="{{ old('character_name') }}"
+                                        class="form-input @error('character_name') border-red-500 @enderror"
+                                        placeholder="Masukkan Nama Lengkap" required>
+                                    @error('character_name') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+                                <div>
+                                    <label for="birth_date" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Tanggal Lahir <span class="text-red-400">*</span>
+                                    </label>
+                                    <input type="date" id="birth_date" name="form_data[birth_date]"
+                                        value="{{ old('form_data.birth_date') }}"
+                                        class="form-input @error('form_data.birth_date') border-red-500 @enderror" required>
+                                    @error('form_data.birth_date') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+                                <div>
+                                    <label for="gender" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Gender <span class="text-red-400">*</span>
+                                    </label>
+                                    <select id="gender" name="form_data[gender]"
+                                        class="form-select @error('form_data.gender') border-red-500 @enderror" required>
+                                        <option value="" class="bg-slate-900 text-white font-bold">Pilih Gender</option>
+                                        <option value="Laki-laki" @if(old('form_data.gender') == 'Laki-laki') selected @endif
+                                            class="bg-slate-900 text-white font-bold">Laki-laki</option>
+                                        <option value="Perempuan" @if(old('form_data.gender') == 'Perempuan') selected @endif
+                                            class="bg-slate-900 text-white font-bold">Perempuan</option>
+                                    </select>
+                                    @error('form_data.gender') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+                                <div>
+                                    <label for="age" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Umur <span class="text-red-400">*</span>
+                                    </label>
+                                    <input type="number" id="age" name="form_data[age]" value="{{ old('form_data.age') }}"
+                                        class="form-input @error('form_data.age') border-red-500 @enderror"
+                                        placeholder="Contoh: 25" required>
+                                    @error('form_data.age') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label for="occupation" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Pekerjaan <span class="text-red-400">*</span>
+                                    </label>
+                                    <input type="text" id="occupation" name="form_data[occupation]"
+                                        value="{{ old('form_data.occupation') }}"
+                                        class="form-input @error('form_data.occupation') border-red-500 @enderror"
+                                        placeholder="Contoh: Pengusaha" required>
+                                    @error('form_data.occupation') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+                                <div>
+                                    <label for="citizen_id"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">Citizen ID</label>
+                                    <input type="text" id="citizen_id" name="citizen_id" value="{{ old('citizen_id') }}"
+                                        class="form-input" placeholder="Contoh: 123456">
+                                </div>
+                                <div>
+                                    <label for="phone_number"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        No HP (IC) <span class="text-red-400">*</span>
+                                    </label>
+                                    <input type="text" id="phone_number" name="form_data[phone_number]"
+                                        value="{{ old('form_data.phone_number') }}"
+                                        class="form-input @error('form_data.phone_number') border-red-500 @enderror"
+                                        placeholder="Contoh: 08123456789" required>
+                                    @error('form_data.phone_number') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="mb-8">
                         <h3 class="text-xl font-bold text-white mb-6">
                             @if($type === 'pendaftaran_karakter')
@@ -184,7 +276,8 @@
                                                     </h4>
                                                     <p class="text-indigo-200 text-sm">Jika Anda sebelumnya sudah mengisi
                                                         <strong>Surat Psikolog</strong>, pilih dari daftar di bawah. Surat tersebut
-                                                        akan otomatis disetujui!</p>
+                                                        akan otomatis disetujui!
+                                                    </p>
                                                 </div>
                                             </div>
 
@@ -1166,42 +1259,42 @@
                     </div>
 
                     <script>
-                        // Psychology test radio button visual feedback
-                        document.addEventListener('DOMContentLoaded', function () {
-                            const radioInputs = document.querySelectorAll('input[type="radio"][name^="form_data[bigfive"], input[type="radio"][name^="form_data[stress"], input[type="radio"][name^="form_data[esteem"]');
+                            / / Psy                         chology test radio button visual feedback
+                            document.addEventListener('DOMContentLoaded', function () {
+                                const radioInputs = document.querySelectorAll('input[type="radio"][name^="form_data[bigfive"], input[type="radio"][name^="form_data[stress"], input[type="radio"][name^="form_data[esteem"]');
 
-                            radioInputs.forEach(radio => {
-                                radio.addEventListener('change', function () {
-                                    // Remove selected state from all siblings
-                                    const name = this.getAttribute('name');
-                                    document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
-                                        const box = r.nextElementSibling;
-                                        if (box) {
-                                            box.classList.remove('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
+                                radioInputs.forEach(radio => {
+                                    radio.addEventListener('change', function () {
+                                        // Remove selected state from all siblings
+                                        const name = this.getAttribute('name');
+                                        document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+                                            const box = r.nextElementSibling;
+                                            if (box) {
+                                                box.classList.remove('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
+                                            }
+                                        });
+
+                                        // Add selected state to this one
+                                        const box = this.nextElementSibling;
+                                        if (box && this.checked) {
+                                            box.classList.add('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
                                         }
                                     });
 
-                                    // Add selected state to this one
-                                    const box = this.nextElementSibling;
-                                    if (box && this.checked) {
-                                        box.classList.add('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
+                                    // Set initial state for checked radios
+                                    if (radio.checked) {
+                                        const box = radio.nextElementSibling;
+                                        if (box) {
+                                            box.classList.add('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
+                                        }
                                     }
                                 });
-
-                                // Set initial state for checked radios
-                                if (radio.checked) {
-                                    const box = radio.nextElementSibling;
-                                    if (box) {
-                                        box.classList.add('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
-                                    }
-                                }
                             });
-                        });
-                    </script>
-                </form>
+                        </script>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
 @endsection
 
 @push('scripts')
