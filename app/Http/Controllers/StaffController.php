@@ -277,4 +277,33 @@ class StaffController extends Controller
 
         return back()->with('success', 'Profil berhasil diperbarui.');
     }
+
+    public function updateEmail(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_email' => 'required|string|email|max:255|unique:users,email|confirmed',
+        ]);
+
+        // Verifikasi password saat ini
+        if (!Hash::check($request->current_password, $user->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => 'Password saat ini tidak sesuai.',
+            ]);
+        }
+
+        $oldEmail = $user->email;
+        $user->email = $request->new_email;
+        $user->save();
+
+        \Log::info('Staff email updated', [
+            'user_id' => $user->id,
+            'old_email' => $oldEmail,
+            'new_email' => $user->email
+        ]);
+
+        return back()->with('info', 'Email berhasil diperbarui. Silakan login kembali dengan email baru jika diperlukan.');
+    }
 }
