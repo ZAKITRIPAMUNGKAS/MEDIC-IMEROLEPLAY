@@ -260,6 +260,43 @@
                                     <p class="text-blue-200 text-sm mb-6">Silakan jawab pertanyaan berikut dengan jujur. Hasil
                                         tes akan membantu psikolog dalam memberikan evaluasi yang tepat.</p>
 
+                                    {{-- Dropdown for Linking with Previous Surat Psikolog --}}
+                                    @if($availablePsychForms->isNotEmpty())
+                                        <div class="mb-8 p-6 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border-2 border-indigo-400/30 rounded-xl">
+                                            <div class="flex items-start gap-3 mb-4">
+                                                <div class="w-10 h-10 bg-indigo-500/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                    <i class="fas fa-link text-indigo-300 text-lg"></i>
+                                                </div>
+                                                <div>
+                                                    <h4 class="text-lg font-bold text-white mb-1">Hubungkan dengan Surat Psikolog</h4>
+                                                    <p class="text-indigo-200 text-sm">Jika Anda sebelumnya sudah mengisi <strong>Surat Psikolog</strong>, pilih dari daftar di bawah. Surat tersebut akan otomatis disetujui!</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <label for="linked_psych_form" class="block text-sm font-medium text-white mb-2">
+                                                Pilih Surat Psikolog (Opsional)
+                                            </label>
+                                            <select id="linked_psych_form" name="linked_psych_form_id" class="form-select">
+                                                <option value="">-- Tidak ada / Lewati --</option>
+                                                @foreach($availablePsychForms as $psychForm)
+                                                    <option value="{{ $psychForm->id }}" 
+                                                        data-character="{{ $psychForm->character_name }}"
+                                                        data-doctor="{{ $psychForm->form_data['doctor_name'] ?? 'N/A' }}"
+                                                        class="bg-slate-900 text-white">
+                                                        [#{{ $psychForm->id }}] {{ $psychForm->character_name }} - 
+                                                        {{ $psychForm->created_at->format('d M Y, H:i') }} 
+                                                        ({{ ucfirst($psychForm->hospital) }})
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            
+                                            <div class="mt-3 flex items-center gap-2 text-xs text-green-300">
+                                                <i class="fas fa-info-circle"></i>
+                                                <span>Dengan memilih surat psikolog, form tersebut akan langsung <strong>di-ACC otomatis</strong>!</span>
+                                            </div>
+                                        </div>
+                                    @endif
+
                                     <!-- Big Five Personality Test (BFI-10) -->
                                     <div class="mb-8">
                                         <h4 class="text-lg font-semibold text-white mb-4">Bagian 1: Tes Kepribadian (BFI-10)

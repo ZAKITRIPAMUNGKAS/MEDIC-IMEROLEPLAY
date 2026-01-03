@@ -207,7 +207,17 @@ class PublicController extends Controller
                 return $doctor;
             });
 
-        return view('public.form', compact('type', 'formTypes', 'doctors'));
+        // For tes_psikologi, fetch pending surat_psikolog forms for droplist
+        $availablePsychForms = collect();
+        if ($type === 'tes_psikologi') {
+            $availablePsychForms = MedicalForm::where('form_type', 'surat_psikolog')
+                ->where('status', 'pending')
+                ->orderBy('created_at', 'desc')
+                ->limit(50) // Limit to last 50 for performance
+                ->get(['id', 'character_name', 'created_at', 'hospital', 'form_data']);
+        }
+
+        return view('public.form', compact('type', 'formTypes', 'doctors', 'availablePsychForms'));
     }
 
     public function createAppointment(Request $request)
@@ -631,7 +641,8 @@ class PublicController extends Controller
             $description .= "- BFI: E={$bfi_scores['extraversion']}, A={$bfi_scores['agreeableness']}, C={$bfi_scores['conscientiousness']}, N={$bfi_scores['neuroticism']}, O={$bfi_scores['openness']}";
         }
 
-        $form = MedicalForm::create([
+        // Prepare form creation data
+        $formCreateData = [
             'character_name' => $request->character_name,
             'citizen_id' => $request->citizen_id,
             'form_type' => $request->form_type,
@@ -639,7 +650,36 @@ class PublicController extends Controller
             'description' => $description,
             'form_data' => $formData,
             'ip_address' => $request->ip()
-        ]);
+        ];
+
+        // Handle linked psychology form for tes_psikologi
+        if ($request->form_type === 'tes_psikologi' && $request->filled('linked_psych_form_id')) {
+            $linkedFormId = $request->input('linked_psych_form_id');
+
+            // Validate the linked form exists and is pending surat_psikolog
+            $linkedForm = MedicalForm::where('id', $linkedFormId)
+                ->where('form_type', 'surat_psikolog')
+                ->where('status', 'pending')
+                ->first();
+
+            if ($linkedForm) {
+                // Auto-approve the linked psychology letter
+                $linkedForm->update([
+                    'status' => 'approved',
+                    'processed_at' => now(),
+                    'notes' => 'Disetujui otomatis melalui pengisian Tes Psikologi'
+                ]);
+
+                // Link the form
+                $formCreateData['linked_form_id'] = $linkedFormId;
+
+                // Add note to description
+                $description .= "\n\n[AUTO-LINKED] Terhubung dengan Surat Psikolog ID#{$linkedFormId} (sudah di-approve otomatis)";
+                $formCreateData['description'] = $description;
+            }
+        }
+
+        $form = MedicalForm::create($formCreateData);
 
         // Webhook system removed for better performance
 

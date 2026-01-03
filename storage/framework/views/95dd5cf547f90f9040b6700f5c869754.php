@@ -319,7 +319,16 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 class="flex items-center gap-3 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white px-6 py-4 rounded-2xl shadow-2xl hover:shadow-3xl transition-all transform hover:-translate-y-1 group">
                 <div class="relative">
                     <i class="fas fa-comments text-2xl"></i>
-                    <span class="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white animate-pulse"></span>
+                    
+                    
+                    <span class="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white <?php echo e(!$hasUnreadMessages || $isOpen ? 'block' : 'hidden'); ?>"></span>
+                    
+                    
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($hasUnreadMessages && !$isOpen): ?>
+                        <span class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-500 rounded-full border-2 border-white animate-bounce flex items-center justify-center">
+                            <span class="w-1.5 h-1.5 bg-white rounded-full"></span>
+                        </span>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </div>
                 <span class="font-bold text-sm hidden sm:block">Live Chat</span>
             </a>

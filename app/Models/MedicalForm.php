@@ -11,6 +11,7 @@ class MedicalForm extends Model
         'character_name',
         'citizen_id',
         'form_type',
+        'linked_form_id', // For linking test psikologi with surat psikolog
         'hospital',
         'description',
         'form_data',
@@ -52,7 +53,7 @@ class MedicalForm extends Model
     public function scopeApprovedTestimonials($query)
     {
         return $query->where('testimoni_approved', true)
-                    ->whereNotNull('testimoni')
-                    ->whereNotNull('rating');
+            ->whereNotNull('testimoni')
+            ->whereNotNull('rating');
     }
 }
