@@ -24,10 +24,14 @@ class AppServiceProvider extends ServiceProvider
         if (config('app.url') && str_starts_with(config('app.url'), 'https://')) {
             URL::forceScheme('https');
         }
-        
+
         // Auto-detect secure cookie for HTTPS
         if (request()->secure() || request()->header('X-Forwarded-Proto') === 'https') {
             config(['session.secure' => true]);
         }
+
+        // Register observers for Telegram notifications
+        \App\Models\ChatMessage::observe(\App\Observers\ChatMessageObserver::class);
+        \App\Models\Feedback::observe(\App\Observers\FeedbackObserver::class);
     }
 }

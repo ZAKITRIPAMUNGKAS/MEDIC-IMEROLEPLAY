@@ -261,7 +261,19 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
         ->middleware('admin')
         ->name('roles.toggle-permission');
 
+
     Route::post('/users/{user}/toggle-chat-permission', [App\Http\Controllers\Admin\RolePermissionController::class, 'toggleUserChatPermission'])
         ->middleware('admin')
         ->name('users.toggle-chat-permission');
+
+    // Telegram Bot Settings
+    Route::get('/telegram', [\App\Http\Controllers\Admin\TelegramSettingController::class, 'index'])
+        ->middleware('admin')
+        ->name('telegram.index');
+    Route::put('/telegram', [\App\Http\Controllers\Admin\TelegramSettingController::class, 'update'])
+        ->middleware('admin')
+        ->name('telegram.update');
+    Route::post('/telegram/test', [\App\Http\Controllers\Admin\TelegramSettingController::class, 'test'])
+        ->middleware('admin')
+        ->name('telegram.test');
 });
