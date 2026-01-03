@@ -13,7 +13,8 @@ class ChatSession extends Model
         'name',
         'user_id',
         'status',
-        'is_read'
+        'is_read', // Admin read status
+        'is_user_read' // User read status
     ];
 
     public function messages(): HasMany

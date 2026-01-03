@@ -23,6 +23,7 @@ class ChatWidget extends Component
     public $hasSession = false;
     // Renamed from messages to chatMessages to avoid conflict with Livewire validation
     public $chatMessages = [];
+    public $hasUnreadMessages = false;
 
     // Page mode - when true, always show chat interface (no popup)
     public $pageMode = false;
@@ -57,6 +58,15 @@ class ChatWidget extends Component
             $session = ChatSession::where('session_token', $this->sessionToken)->first();
             if ($session && $session->status === 'open') {
                 $this->hasSession = true;
+                // Check if user has unread messages
+                $this->hasUnreadMessages = !$session->is_user_read;
+
+                // If in page mode, mark as read immediately
+                if ($this->pageMode) {
+                    $session->update(['is_user_read' => true]);
+                    $this->hasUnreadMessages = false;
+                }
+
                 $this->loadMessages();
             } else {
                 // If session exists but is closed, or doesn't exist
@@ -76,6 +86,10 @@ class ChatWidget extends Component
     {
         $this->isOpen = !$this->isOpen;
         if ($this->isOpen && $this->hasSession) {
+            // Mark as read when opening
+            ChatSession::where('session_token', $this->sessionToken)->update(['is_user_read' => true]);
+            $this->hasUnreadMessages = false;
+
             $this->loadMessages();
         }
     }
@@ -170,6 +184,18 @@ class ChatWidget extends Component
                 if ($session->status === 'closed') {
                     $this->endSession();
                     return;
+                }
+
+                // Update local unread status from database
+                // If chat is OPEN, we mark database as read.
+                // If chat is CLOSED, we just update local state to show red dot.
+                if ($this->isOpen || $this->pageMode) {
+                    if (!$session->is_user_read) {
+                        $session->update(['is_user_read' => true]);
+                    }
+                    $this->hasUnreadMessages = false;
+                } else {
+                    $this->hasUnreadMessages = !$session->is_user_read;
                 }
 
                 $this->chatMessages = $session->messages()->with('user')->orderBy('created_at', 'asc')->get();

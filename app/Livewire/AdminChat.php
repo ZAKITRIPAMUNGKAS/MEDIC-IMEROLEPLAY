@@ -119,6 +119,12 @@ class AdminChat extends Component
             'is_staff_reply' => true
         ]);
 
+        // Mark session as read for admin (since we replied) but unread for user
+        $this->activeSession->update([
+            'is_read' => true,
+            'is_user_read' => false
+        ]);
+
         $this->activeSession->touch(); // Update updated_at
         $this->replyMessage = '';
         $this->attachment = null; // Reset attachment
