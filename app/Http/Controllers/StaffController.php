@@ -195,13 +195,15 @@ class StaffController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'hospital' => 'required|in:alta,roxwood',
             'current_password' => 'nullable|string',
             'password' => 'nullable|string|min:8|confirmed',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // Update name
+        // Update name and hospital
         $user->name = $validated['name'];
+        $user->hospital = $validated['hospital'];
 
         // If user wants to change password, verify current password (if set) then update
         if (!empty($validated['password'])) {
