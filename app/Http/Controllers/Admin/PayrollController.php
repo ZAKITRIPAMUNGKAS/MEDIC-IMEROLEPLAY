@@ -649,7 +649,7 @@ class PayrollController extends Controller
             // Recalculate based on current attendance
             $totalSeconds = $payroll->user->attendances()
                 ->whereBetween('work_date', [$payroll->period_start, $payroll->period_end])
-                ->where('session_type', 'work')
+                ->whereIn('session_type', ['work', 'meeting'])
                 ->whereNotNull('session_duration')
                 ->where('session_duration', '>', 0)
                 ->where('is_active', false) // Only completed sessions
@@ -723,7 +723,7 @@ class PayrollController extends Controller
                 // Recalculate based on current attendance
                 $totalSeconds = $payroll->user->attendances()
                     ->whereBetween('work_date', [$payroll->period_start, $payroll->period_end])
-                    ->where('session_type', 'work')
+                    ->whereIn('session_type', ['work', 'meeting'])
                     ->whereNotNull('session_duration')
                     ->where('session_duration', '>', 0)
                     ->where('is_active', false)
