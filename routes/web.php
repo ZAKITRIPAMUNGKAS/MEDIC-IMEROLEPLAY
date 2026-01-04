@@ -226,6 +226,10 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
         ->middleware('permission:manage_payroll')->name('payroll.cancel');
     Route::delete('/payroll/{payroll}', [\App\Http\Controllers\Admin\PayrollController::class, 'destroy'])
         ->middleware('permission:manage_payroll')->name('payroll.destroy');
+    Route::post('/payroll/{payroll}/regenerate', [\App\Http\Controllers\Admin\PayrollController::class, 'regeneratePayroll'])
+        ->middleware('permission:manage_payroll')->name('payroll.regenerate');
+    Route::post('/payroll/regenerate-week', [\App\Http\Controllers\Admin\PayrollController::class, 'regenerateWeek'])
+        ->middleware('permission:manage_payroll')->name('payroll.regenerate-week');
 
     // Salary settings management
     Route::resource('salary-settings', \App\Http\Controllers\Admin\SalarySettingController::class)

@@ -260,6 +260,13 @@
                                     <div class="text-sm text-gray-300">Dibayar</div>
                                     <div class="text-lg font-bold text-green-400">{{ $weekPayrolls->where('status', 'paid')->count() }}</div>
                                 </div>
+                                @if($weekPayrolls->where('status', 'pending')->count() > 0)
+                                    <button onclick="regenerateWeek('{{ $weekStart }}')" 
+                                            class="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-lg text-sm font-semibold transition-all duration-300 shadow-lg"
+                                            title="Regenerate semua gaji pending minggu ini">
+                                        <i class="fas fa-sync-alt mr-1"></i>Regenerate Minggu
+                                    </button>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -345,6 +352,11 @@
                                                     <i class="fas fa-eye"></i>
                                                 </a>
                                                 @if($payroll->status === 'pending')
+                                                    <button onclick="regeneratePayroll({{ $payroll->id }})" 
+                                                            class="text-purple-400 hover:text-purple-300 transition-colors duration-200"
+                                                            title="Regenerate - Hitung ulang dengan formula terbaru">
+                                                        <i class="fas fa-sync-alt"></i>
+                                                    </button>
                                                     <button onclick="markAsPaid({{ $payroll->id }})" 
                                                             class="text-green-400 hover:text-green-300 transition-colors duration-200">
                                                         <i class="fas fa-check"></i>
@@ -593,6 +605,47 @@ if (generateModal) {
         }
     });
 }
+
+function regeneratePayroll(payrollId) {
+    if (confirm('Apakah Anda yakin ingin regenerate gaji ini?\n\nGaji akan dihitung ulang menggunakan formula terbaru berdasarkan data attendance saat ini.')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/payroll/${payrollId}/regenerate`;
+        
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = '{{ csrf_token() }}';
+        
+        form.appendChild(csrfToken);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+function regenerateWeek(weekStart) {
+    if (confirm('Apakah Anda yakin ingin regenerate SEMUA gaji pending untuk minggu ini?\n\nSemua gaji pending akan dihitung ulang menggunakan formula terbaru.')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/admin/payroll/regenerate-week';
+        
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = '{{ csrf_token() }}';
+        
+        const weekInput = document.createElement('input');
+        weekInput.type = 'hidden';
+        weekInput.name = 'week_start';
+        weekInput.value = weekStart;
+        
+        form.appendChild(csrfToken);
+        form.appendChild(weekInput);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
 
 </script>
 @endsection

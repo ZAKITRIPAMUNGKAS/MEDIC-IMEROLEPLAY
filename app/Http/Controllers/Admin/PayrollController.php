@@ -635,6 +635,142 @@ class PayrollController extends Controller
     }
 
     /**
+     * Regenerate payroll - Recalculate with updated formula
+     */
+    public function regeneratePayroll(Payroll $payroll)
+    {
+        // Only allow regenerating pending payrolls
+        if ($payroll->status !== 'pending') {
+            return redirect()->back()->with('error', 'Hanya gaji dengan status pending yang bisa di-regenerate.');
+        }
+
+        DB::beginTransaction();
+        try {
+            // Recalculate based on current attendance
+            $totalSeconds = $payroll->user->attendances()
+                ->whereBetween('work_date', [$payroll->period_start, $payroll->period_end])
+                ->where('session_type', 'work')
+                ->whereNotNull('session_duration')
+                ->where('session_duration', '>', 0)
+                ->where('is_active', false) // Only completed sessions
+                ->sum('session_duration');
+
+            $totalHours = PayrollHelper::convertSecondsToHours($totalSeconds);
+            $roleName = optional($payroll->user->role)->name;
+            $baseSalary = PayrollHelper::getBaseSalary($roleName);
+            $calculatedSalary = PayrollHelper::computeWeeklySalary($roleName, $totalSeconds);
+
+            $oldSalary = $payroll->calculated_salary;
+
+            // Update payroll
+            $payroll->update([
+                'total_hours' => $totalHours,
+                'base_salary' => $baseSalary,
+                'calculated_salary' => $calculatedSalary,
+                'notes' => ($payroll->notes ? $payroll->notes . "\n" : '') .
+                    "Regenerated on " . now()->format('Y-m-d H:i:s') .
+                    " (Old: $" . number_format($oldSalary, 0, '.', ',') .
+                    " → New: $" . number_format($calculatedSalary, 0, '.', ',') . ")"
+            ]);
+
+            DB::commit();
+
+            return redirect()->back()->with(
+                'success',
+                "Gaji berhasil di-regenerate. Old: $" . number_format($oldSalary, 0, '.', ',') .
+                " → New: $" . number_format($calculatedSalary, 0, '.', ',')
+            );
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error regenerating payroll', [
+                'payroll_id' => $payroll->id,
+                'error' => $e->getMessage()
+            ]);
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat regenerate: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Regenerate all pending payrolls for a specific week
+     */
+    public function regenerateWeek(Request $request)
+    {
+        $request->validate([
+            'week_start' => 'required|date',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $weekStart = Carbon::parse($request->week_start);
+            $weekEnd = $weekStart->copy()->endOfWeek();
+
+            // Get all pending payrolls for this week
+            $payrolls = Payroll::where('status', 'pending')
+                ->where('period_start', $weekStart->format('Y-m-d'))
+                ->where('period_end', $weekEnd->format('Y-m-d'))
+                ->get();
+
+            if ($payrolls->isEmpty()) {
+                return redirect()->back()->with('info', 'Tidak ada gaji pending untuk minggu ini.');
+            }
+
+            $regeneratedCount = 0;
+            $totalOldSalary = 0;
+            $totalNewSalary = 0;
+
+            foreach ($payrolls as $payroll) {
+                // Recalculate based on current attendance
+                $totalSeconds = $payroll->user->attendances()
+                    ->whereBetween('work_date', [$payroll->period_start, $payroll->period_end])
+                    ->where('session_type', 'work')
+                    ->whereNotNull('session_duration')
+                    ->where('session_duration', '>', 0)
+                    ->where('is_active', false)
+                    ->sum('session_duration');
+
+                $totalHours = PayrollHelper::convertSecondsToHours($totalSeconds);
+                $roleName = optional($payroll->user->role)->name;
+                $baseSalary = PayrollHelper::getBaseSalary($roleName);
+                $calculatedSalary = PayrollHelper::computeWeeklySalary($roleName, $totalSeconds);
+
+                $oldSalary = $payroll->calculated_salary;
+                $totalOldSalary += $oldSalary;
+                $totalNewSalary += $calculatedSalary;
+
+                // Update payroll
+                $payroll->update([
+                    'total_hours' => $totalHours,
+                    'base_salary' => $baseSalary,
+                    'calculated_salary' => $calculatedSalary,
+                    'notes' => ($payroll->notes ? $payroll->notes . "\n" : '') .
+                        "Batch regenerated on " . now()->format('Y-m-d H:i:s') .
+                        " (Old: $" . number_format($oldSalary, 0, '.', ',') .
+                        " → New: $" . number_format($calculatedSalary, 0, '.', ',') . ")"
+                ]);
+
+                $regeneratedCount++;
+            }
+
+            DB::commit();
+
+            return redirect()->back()->with(
+                'success',
+                "$regeneratedCount gaji berhasil di-regenerate. Total Old: $" . number_format($totalOldSalary, 0, '.', ',') .
+                " → Total New: $" . number_format($totalNewSalary, 0, '.', ',')
+            );
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error regenerating week payrolls', [
+                'week_start' => $request->week_start,
+                'error' => $e->getMessage()
+            ]);
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat regenerate: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Delete payroll (for duplicate data)
      */
     public function destroy(Payroll $payroll)
