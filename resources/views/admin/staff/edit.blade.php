@@ -32,7 +32,8 @@
                             <p class="text-white font-semibold text-lg">{{ $user->name }}</p>
                             <p class="text-gray-300 text-sm">{{ $user->email }}</p>
                             <p class="text-gray-400 text-xs">Terakhir diperbarui:
-                                {{ optional($user->updated_at)->format('d M Y, H:i') ?? '-' }}</p>
+                                {{ optional($user->updated_at)->format('d M Y, H:i') ?? '-' }}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -73,6 +74,23 @@
                                     class="w-full bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 transition-all duration-300"
                                     required>
                                 @error('email')
+                                    <p class="text-red-300 text-sm mt-2 flex items-center">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-3">Rumah Sakit</label>
+                                <select name="hospital"
+                                    class="w-full bg-white/10 text-white border border-white/20 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 transition-all duration-300 appearance-none"
+                                    required>
+                                    <option value="alta" @selected(old('hospital', $user->hospital ?? 'alta') == 'alta')
+                                        class="bg-slate-800 text-slate-100">Alta Hospital (EMS)</option>
+                                    <option value="roxwood" @selected(old('hospital', $user->hospital) == 'roxwood')
+                                        class="bg-slate-800 text-slate-100">Roxwood Hospital</option>
+                                </select>
+                                @error('hospital')
                                     <p class="text-red-300 text-sm mt-2 flex items-center">
                                         <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
                                     </p>
@@ -145,7 +163,8 @@
                                     <div>
                                         <p class="text-white text-sm font-medium">{{ $user->name }}</p>
                                         <p class="text-gray-300 text-xs">
-                                            {{ $user->role->display_name ?? $user->role->name ?? 'Staff' }}</p>
+                                            {{ $user->role->display_name ?? $user->role->name ?? 'Staff' }}
+                                        </p>
                                     </div>
                                 </div>
                             </div>

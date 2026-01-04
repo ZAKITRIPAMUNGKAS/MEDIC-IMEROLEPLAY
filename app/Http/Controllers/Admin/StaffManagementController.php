@@ -215,6 +215,7 @@ class StaffManagementController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
+            'hospital' => 'required|in:alta,roxwood',
             'password' => 'nullable|string|min:6|confirmed',
             'role_id' => 'required|exists:staff_roles,id',
             'is_active' => 'nullable|boolean',
@@ -224,6 +225,7 @@ class StaffManagementController extends Controller
         $data = [
             'name' => $validated['name'],
             'email' => $validated['email'],
+            'hospital' => $validated['hospital'],
             'role_id' => $validated['role_id'],
             'is_active' => $request->boolean('is_active', true),
         ];
