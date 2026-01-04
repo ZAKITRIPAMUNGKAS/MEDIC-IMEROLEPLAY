@@ -58,6 +58,19 @@
                                     class="w-full px-4 py-3 rounded-xl bg-white/25 text-white border-2 border-white/40 opacity-80 shadow-lg"
                                     disabled />
                             </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-sky-200 mb-2">Rumah Sakit</label>
+                                <select name="hospital"
+                                    class="w-full px-4 py-3 rounded-xl bg-white/30 text-white border-2 border-white/50 focus:outline-none focus:ring-2 focus:ring-sky-500 shadow-xl"
+                                    required>
+                                    <option value="alta" {{ (auth()->user()->hospital ?? 'alta') == 'alta' ? 'selected' : '' }}>Alta Hospital (EMS)</option>
+                                    <option value="roxwood" {{ (auth()->user()->hospital ?? '') == 'roxwood' ? 'selected' : '' }}>Roxwood Hospital</option>
+                                </select>
+                                <p class="text-sky-200 text-xs mt-2">
+                                    <i class="fas fa-hospital mr-1"></i>
+                                    Pilih rumah sakit tempat Anda bekerja
+                                </p>
+                            </div>
                         </div>
 
                         <!-- Profile Image Section -->
