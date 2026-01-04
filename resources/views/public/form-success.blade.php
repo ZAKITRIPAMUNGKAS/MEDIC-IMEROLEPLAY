@@ -349,6 +349,15 @@
                         <span>Ajukan Formulir Lain</span>
                     </div>
                 </a>
+                @if($form->form_type === 'surat_psikolog')
+                <a href="{{ route('public.form', 'tes_psikologi') }}" class="group relative px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-lg font-bold rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div class="relative flex items-center justify-center">
+                        <i class="fas fa-brain mr-3 text-xl"></i>
+                        <span>Lanjut ke Tes Psikologi</span>
+                    </div>
+                </a>
+                @endif
             </div>
 
             <!-- Enhanced Contact Info -->
