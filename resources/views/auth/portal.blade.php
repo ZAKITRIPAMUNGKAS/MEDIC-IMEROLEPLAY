@@ -420,6 +420,24 @@
                             </div>
                         </div>
 
+                        <!-- Hospital Selection -->
+                        <div class="relative group">
+                            <div
+                                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-sky-500 transition-colors">
+                                <i class="fas fa-hospital"></i>
+                            </div>
+                            <select name="hospital" required
+                                class="form-input w-full pl-11 pr-4 py-3 rounded-xl text-sm bg-slate-100 border-transparent focus:bg-white appearance-none cursor-pointer text-slate-600">
+                                <option value="" disabled selected>Pilih Rumah Sakit</option>
+                                <option value="alta">Alta Hospital (EMS)</option>
+                                <option value="roxwood">Roxwood Hospital</option>
+                            </select>
+                            <div
+                                class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400">
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
+
                         <div class="relative group password-group">
                             <div
                                 class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-sky-500 transition-colors">

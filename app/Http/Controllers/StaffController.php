@@ -20,7 +20,7 @@ class StaffController extends Controller
     public function showLoginForm()
     {
         // Restrict roles for the dropdown in the portal view
-        $allowedRoles = ['trainee', 'nurse', 'co_ass'];
+        $allowedRoles = ['trainee', 'perawat'];
         $roles = StaffRole::whereIn('name', $allowedRoles)->orderBy('level', 'asc')->get();
 
         return view('auth.portal', [
@@ -129,7 +129,7 @@ class StaffController extends Controller
     public function showRegisterForm()
     {
         // Hanya tampilkan role yang diizinkan untuk registrasi: trainee, perawat, co_ass
-        $allowedRoles = ['trainee', 'nurse', 'co_ass'];
+        $allowedRoles = ['trainee', 'perawat'];
         $roles = StaffRole::whereIn('name', $allowedRoles)
             ->orderBy('level', 'asc')
             ->get();
@@ -139,7 +139,7 @@ class StaffController extends Controller
     public function register(Request $request)
     {
         // Validasi role_id harus salah satu dari role yang diizinkan
-        $allowedRoles = ['trainee', 'nurse', 'co_ass'];
+        $allowedRoles = ['trainee', 'perawat'];
         $allowedRoleIds = StaffRole::whereIn('name', $allowedRoles)->pluck('id')->toArray();
 
         $request->validate([
@@ -151,7 +151,7 @@ class StaffController extends Controller
                 'exists:staff_roles,id',
                 function ($attribute, $value, $fail) use ($allowedRoleIds) {
                     if (!in_array($value, $allowedRoleIds)) {
-                        $fail('Hanya role Trainee, Perawat, Co-Ass, Dokter Umum, atau Dokter Spesialis yang dapat dipilih saat registrasi.');
+                        $fail('Hanya role Trainee dan Perawat yang dapat dipilih saat registrasi.');
                     }
                 },
             ],

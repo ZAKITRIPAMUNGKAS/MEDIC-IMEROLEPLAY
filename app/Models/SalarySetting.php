@@ -44,9 +44,14 @@ class SalarySetting extends Model
      * - < 15 menit (0.25 jam) = $0 (dianggap tidak bekerja)
      * - 15 menit - < 1 jam = Minimum 10% dari bayaran mingguan
      * - 1-5 jam = 50%
-     * - 5-10 jam = 80%
-     * - ≥ 10 jam = 100% (langsung maksimal)
-     * - > 15 jam = 100% + overtime ($500 per jam)
+     * - 5-<10 jam = 80%
+     * - ≥ 10 jam = 100% + overtime ($500 per jam untuk setiap jam di atas 10)
+     * 
+     * Examples:
+     * - 9.5 jam = 80% weekly salary
+     * - 10 jam = 100% weekly salary
+     * - 12 jam = 100% + (2 × $500) = 100% + $1,000
+     * - 15 jam = 100% + (5 × $500) = 100% + $2,500
      * 
      * @param float $totalHours Total hours worked
      * @return int Calculated salary
@@ -62,7 +67,6 @@ class SalarySetting extends Model
         $oneHour = 1.0;
         $fiveHours = 5.0;
         $tenHours = 10.0;
-        $fifteenHours = 15.0;
 
         // < 15 menit (0.25 jam) = $0 (dianggap tidak bekerja)
         if ($totalHours < $min15Minutes) {
@@ -79,23 +83,26 @@ class SalarySetting extends Model
             return (int) ($weeklySalary * 0.50);
         }
 
-        // 5-10 jam = 80%
+        // 5-<10 jam = 80%
         if ($totalHours >= $fiveHours && $totalHours < $tenHours) {
             return (int) ($weeklySalary * 0.80);
         }
 
-        // ≥ 10 jam dan ≤ 15 jam = 100% (langsung maksimal)
-        if ($totalHours >= $tenHours && $totalHours <= $fifteenHours) {
-            return (int) $weeklySalary;
+        // ≥ 10 jam = 100% + overtime
+        // Base: 100% weekly salary untuk 10 jam pertama
+        // Overtime: (total jam - 10) × $500 per jam
+        $baseSalary = (int) $weeklySalary;
+
+        if ($totalHours > $tenHours) {
+            $overtimeHours = $totalHours - $tenHours;
+            $overtimeRatePerHour = 500;
+            $overtimePay = $overtimeHours * $overtimeRatePerHour;
+
+            return (int) ($baseSalary + $overtimePay);
         }
 
-        // > 15 jam = 100% + overtime
-        // Overtime dihitung: (jam - 15) × $500 per jam (dinaikkan dari $300)
-        $overtimeHours = $totalHours - $fifteenHours;
-        $overtimeRatePerHour = 500; // Dinaikkan dari $300 menjadi $500 per jam overtime
-        $overtimePay = $overtimeHours * $overtimeRatePerHour;
-
-        return (int) ($weeklySalary + $overtimePay);
+        // Exactly 10 hours = 100% weekly salary, no overtime
+        return $baseSalary;
     }
 
     /**
