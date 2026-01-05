@@ -17,7 +17,7 @@
                         cermat.</p>
                 </div>
 
-                @if(session('error'))
+                @if(session('error') || $errors->any())
                     <div class="mb-6 p-4 bg-red-500/20 border border-red-400/50 rounded-xl backdrop-blur-sm animate-fade-in-up"
                         id="errorAlert">
                         <div class="flex items-start gap-3">
@@ -25,25 +25,33 @@
                                 <i class="fas fa-exclamation-triangle text-red-300 text-lg"></i>
                             </div>
                             <div class="flex-1">
-                                <h4 class="text-red-200 font-bold mb-1">Tidak Dapat Mengirim Form</h4>
-                                <p class="text-red-100 text-sm leading-relaxed">{{ session('error') }}</p>
+                                <h4 class="text-red-200 font-bold mb-1">Pemberitahuan</h4>
+                                <p class="text-red-100 text-sm leading-relaxed">
+                                    @if(session('error'))
+                                        {{ session('error') }}
+                                    @else
+                                        Terdapat kesalahan pada pengisian formulir. Harap periksa kembali field yang berwarna merah.
+                                    @endif
+                                </p>
                             </div>
                         </div>
                     </div>
                     <script>
-                        // Scroll to top and show alert when error alert is shown
-                        (function () {
+                        document.addEventListener('DOMContentLoaded', function () {
                             const errorAlert = document.getElementById('errorAlert');
                             if (errorAlert) {
-                                // Scroll to top immediately
                                 window.scrollTo({ top: 0, behavior: 'smooth' });
                                 errorAlert.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                // Show browser alert  for better visibility
+
                                 setTimeout(function () {
-                                    alert('{{ addslashes(session('error')) }}');
-                                }, 100);
+                                    @if(session('error'))
+                                        alert(@json(session('error')));
+                                    @else
+                                        alert('Terdapat kesalahan pada pengisian formulir. Harap periksa kembali.');
+                                    @endif
+                                        }, 100);
                             }
-                        })();
+                        });
                     </script>
                 @endif
 
