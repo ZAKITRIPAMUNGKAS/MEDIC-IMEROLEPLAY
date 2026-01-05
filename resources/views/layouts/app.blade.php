@@ -1870,7 +1870,7 @@
             // Skip forms that have their own JavaScript handlers
             const formsWithHandlers = [
                 'dashboardClockInForm',
-                ];
+            ];
 
             if (formsWithHandlers.includes(form.id)) {
                 // Let the form's own handler take care of it
@@ -2624,6 +2624,91 @@
     @auth
         @livewire('chat-widget')
     @endauth
+    {{-- Global Flash Message & Error Handler --}}
+    @if(session('error') || session('success') || $errors->any())
+        <div class="fixed top-5 right-5 z-[99999] w-full max-w-md animate-fade-in-left pointer-events-auto"
+            id="global-toast-layout">
+            @if(session('error') || $errors->any())
+                <div
+                    class="bg-red-600 border-l-4 border-white text-white p-4 rounded shadow-2xl flex items-start gap-3 relative">
+                    <div class="flex-shrink-0"><i class="fas fa-exclamation-circle text-2xl"></i></div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-lg">Perhatian!</h3>
+                        <p class="text-sm opacity-95">
+                            @if(session('error'))
+                                {!! session('error') !!}
+                            @else
+                                Terdapat {{ $errors->count() }} kesalahan pada isian formulir. Mohon periksa kembali.
+                            @endif
+                        </p>
+                    </div>
+                    <button onclick="document.getElementById('global-toast-layout').remove()"
+                        class="ml-4 opacity-80 hover:opacity-100 transition-opacity">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                    <!-- Progress bar -->
+                    <div class="absolute bottom-0 left-0 h-1 bg-white/30 animate-shrink w-full"></div>
+                </div>
+            @elseif(session('success'))
+                <div
+                    class="bg-green-600 border-l-4 border-white text-white p-4 rounded shadow-2xl flex items-start gap-3 relative">
+                    <div class="flex-shrink-0"><i class="fas fa-check-circle text-2xl"></i></div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-lg">Berhasil!</h3>
+                        <p class="text-sm opacity-95">{!! session('success') !!}</p>
+                    </div>
+                    <button onclick="document.getElementById('global-toast-layout').remove()"
+                        class="ml-4 opacity-80 hover:opacity-100 transition-opacity">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            @endif
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                console.log('Global Toast Initialized');
+                const toast = document.getElementById('global-toast-layout');
+                if (toast) {
+                    console.log('Toast element found, ensuring visibility');
+                    toast.style.display = 'block';
+                    // Auto dismiss after 10 seconds
+                    setTimeout(() => {
+                        if (toast) {
+                            toast.style.transition = 'opacity 0.5s ease-out';
+                            toast.style.opacity = '0';
+                            setTimeout(() => toast.remove(), 500);
+                        }
+                    }, 10000);
+                }
+
+                // Backup Alert
+                setTimeout(() => {
+                    @if(session('error'))
+                        alert(@json(session('error')));
+                    @elseif($errors->any())
+                        alert('Terdapat kesalahan input. Silakan periksa formulir.');
+                    @endif
+                    }, 1000);
+            });
+        </script>
+        <style>
+            @keyframes shrink {
+                from {
+                    width: 100%;
+                }
+
+                to {
+                    width: 0%;
+                }
+            }
+
+            .animate-shrink {
+                animation: shrink 10s linear forwards;
+            }
+        </style>
+    @endif
+
     @livewireScripts
     @livewireScriptConfig
     @stack('scripts')
