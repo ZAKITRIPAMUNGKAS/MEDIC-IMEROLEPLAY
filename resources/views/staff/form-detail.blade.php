@@ -301,8 +301,17 @@
                                                                     </div>
                                                                 </td>
                                                                 <td class="px-6 py-4">
-                                                                    <span
-                                                                        class="text-white font-semibold">{{ $displayValue ?: '-' }}</span>
+                                                                    <div class="flex items-center justify-between group/val">
+                                                                        <span class="text-white font-semibold">{{ $displayValue ?: '-' }}</span>
+                                                                        @if($displayValue)
+                                                                        <button
+                                                                            onclick="copyToClipboard('{{ addslashes($displayValue) }}', this)"
+                                                                            class="ml-3 p-2 bg-sky-500/20 hover:bg-sky-500/40 text-sky-300 hover:text-sky-200 rounded-lg transition-all duration-200 opacity-70 hover:opacity-100"
+                                                                            title="Salin nilai">
+                                                                            <i class="fas fa-copy text-sm"></i>
+                                                                        </button>
+                                                                        @endif
+                                                                    </div>
                                                                 </td>
                                                             </tr>
                                                         @endif
@@ -675,5 +684,24 @@
                 closeImageModal();
             }
         });
+
+        // Copy to clipboard function
+        function copyToClipboard(text, button) {
+            navigator.clipboard.writeText(text).then(function() {
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check text-sm"></i>';
+                button.classList.remove('bg-sky-500/20', 'hover:bg-sky-500/40', 'text-sky-300');
+                button.classList.add('bg-green-500/40', 'text-green-200');
+                
+                setTimeout(function() {
+                    button.innerHTML = originalHTML;
+                    button.classList.remove('bg-green-500/40', 'text-green-200');
+                    button.classList.add('bg-sky-500/20', 'hover:bg-sky-500/40', 'text-sky-300');
+                }, 1500);
+            }).catch(function(err) {
+                console.error('Failed to copy:', err);
+                alert('Gagal menyalin teks');
+            });
+        }
     </script>
 @endsection

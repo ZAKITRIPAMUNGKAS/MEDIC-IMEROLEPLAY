@@ -371,36 +371,38 @@ class PublicController extends Controller
             // Validasi dokter_name wajib untuk surat kesehatan, tes psikologi, surat psikolog, dan operasi plastik
             'form_data.doctor_name' => 'required_if:form_type,surat_kesehatan,tes_psikologi,surat_psikolog,operasi_plastik|string|max:255|filled',
             // Validasi untuk tes psikologi
-            'form_data.bigfive1' => 'required_if:form_type,tes_psikologi|integer|min:1|max:5',
-            'form_data.bigfive2' => 'required_if:form_type,tes_psikologi|integer|min:1|max:5',
-            'form_data.bigfive3' => 'required_if:form_type,tes_psikologi|integer|min:1|max:5',
-            'form_data.bigfive4' => 'required_if:form_type,tes_psikologi|integer|min:1|max:5',
-            'form_data.bigfive5' => 'required_if:form_type,tes_psikologi|integer|min:1|max:5',
-            'form_data.bigfive6' => 'required_if:form_type,tes_psikologi|integer|min:1|max:5',
-            'form_data.bigfive7' => 'required_if:form_type,tes_psikologi|integer|min:1|max:5',
-            'form_data.bigfive8' => 'required_if:form_type,tes_psikologi|integer|min:1|max:5',
-            'form_data.bigfive9' => 'required_if:form_type,tes_psikologi|integer|min:1|max:5',
-            'form_data.bigfive10' => 'required_if:form_type,tes_psikologi|integer|min:1|max:5',
-            'form_data.stress1' => 'required_if:form_type,tes_psikologi|integer|min:0|max:4',
-            'form_data.stress2' => 'required_if:form_type,tes_psikologi|integer|min:0|max:4',
-            'form_data.stress3' => 'required_if:form_type,tes_psikologi|integer|min:0|max:4',
-            'form_data.stress4' => 'required_if:form_type,tes_psikologi|integer|min:0|max:4',
-            'form_data.stress5' => 'required_if:form_type,tes_psikologi|integer|min:0|max:4',
-            'form_data.stress6' => 'required_if:form_type,tes_psikologi|integer|min:0|max:4',
-            'form_data.stress7' => 'required_if:form_type,tes_psikologi|integer|min:0|max:4',
-            'form_data.stress8' => 'required_if:form_type,tes_psikologi|integer|min:0|max:4',
-            'form_data.stress9' => 'required_if:form_type,tes_psikologi|integer|min:0|max:4',
-            'form_data.stress10' => 'required_if:form_type,tes_psikologi|integer|min:0|max:4',
-            'form_data.esteem1' => 'required_if:form_type,tes_psikologi|integer|min:1|max:4',
-            'form_data.esteem2' => 'required_if:form_type,tes_psikologi|integer|min:1|max:4',
-            'form_data.esteem3' => 'required_if:form_type,tes_psikologi|integer|min:1|max:4',
-            'form_data.esteem4' => 'required_if:form_type,tes_psikologi|integer|min:1|max:4',
-            'form_data.esteem5' => 'required_if:form_type,tes_psikologi|integer|min:1|max:4',
-            'form_data.esteem6' => 'required_if:form_type,tes_psikologi|integer|min:1|max:4',
-            'form_data.esteem7' => 'required_if:form_type,tes_psikologi|integer|min:1|max:4',
-            'form_data.esteem8' => 'required_if:form_type,tes_psikologi|integer|min:1|max:4',
-            'form_data.esteem9' => 'required_if:form_type,tes_psikologi|integer|min:1|max:4',
-            'form_data.esteem10' => 'required_if:form_type,tes_psikologi|integer|min:1|max:4',
+            'form_data.bigfive1' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:5',
+            'form_data.bigfive2' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:5',
+            'form_data.bigfive3' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:5',
+            'form_data.bigfive4' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:5',
+            'form_data.bigfive5' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:5',
+            'form_data.bigfive6' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:5',
+            'form_data.bigfive7' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:5',
+            'form_data.bigfive8' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:5',
+            'form_data.bigfive9' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:5',
+            'form_data.bigfive10' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:5',
+            'form_data.stress1' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:0|max:4',
+            'form_data.stress2' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:0|max:4',
+            'form_data.stress3' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:0|max:4',
+            'form_data.stress4' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:0|max:4',
+            'form_data.stress5' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:0|max:4',
+            'form_data.stress6' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:0|max:4',
+            'form_data.stress7' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:0|max:4',
+            'form_data.stress8' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:0|max:4',
+            'form_data.stress9' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:0|max:4',
+            'form_data.stress10' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:0|max:4',
+            'form_data.esteem1' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:4',
+            'form_data.esteem2' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:4',
+            'form_data.esteem3' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:4',
+            'form_data.esteem4' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:4',
+            'form_data.esteem5' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:4',
+            'form_data.esteem6' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:4',
+            'form_data.esteem7' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:4',
+            'form_data.esteem8' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:4',
+            'form_data.esteem9' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:4',
+            'form_data.esteem10' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:4',
+            // Validasi untuk tes psikologi: harus memilih surat psikolog yang sudah ada
+            'linked_psych_form_id' => 'required_if:form_type,tes_psikologi|nullable|exists:medical_forms,id',
             // Field khusus untuk pendaftaran karakter
             'form_data.jenis_pemakaman' => 'required_if:form_type,pendaftaran_karakter|string|in:Penguburan,Kremasi',
             'form_data.tanggal_wafat' => 'required_if:form_type,pendaftaran_karakter|date',
@@ -526,7 +528,7 @@ class PublicController extends Controller
                 $formData['photo_skb_url'] = $skbUrl;
                 unset($formData['photo_skb']);
             }
-        } elseif ($request->form_type === 'tes_psikologi') {
+        } elseif (in_array($request->form_type, ['tes_psikologi', 'surat_psikolog'])) {
             // Calculate Psychology Test Results
 
             // 1. Big Five Inventory (BFI-10)
@@ -659,8 +661,15 @@ class PublicController extends Controller
 
         $linkedFormId = null;
 
-        // Handle linked psychology form for tes_psikologi
-        if ($request->form_type === 'tes_psikologi' && $request->filled('linked_psych_form_id')) {
+        // Handle linked psychology form for tes_psikologi (REQUIRED)
+        if ($request->form_type === 'tes_psikologi') {
+            if (!$request->filled('linked_psych_form_id')) {
+                return back()
+                    ->withErrors(['linked_psych_form_id' => 'Anda harus memilih Surat Psikolog yang sudah dibuat sebelumnya.'])
+                    ->withInput()
+                    ->with('error', 'Silakan pilih Surat Psikolog terlebih dahulu sebelum mengisi Tes Psikologi.');
+            }
+
             $linkedId = $request->input('linked_psych_form_id');
 
             // Validate the linked form exists and is pending surat_psikolog
@@ -669,37 +678,42 @@ class PublicController extends Controller
                 ->where('status', 'pending')
                 ->first();
 
-            if ($linkedForm) {
-                // Auto-approve the linked psychology letter
-                $linkedForm->update([
-                    'status' => 'approved',
-                    'processed_at' => now(),
-                    'notes' => 'Disetujui otomatis melalui pengisian Tes Psikologi'
-                ]);
-
-                // Link the form
-                $linkedFormId = $linkedId;
-
-                // INHERIT DATA FROM LINKED FORM
-                // Prioritize linked form data over defaults/input
-                $characterName = $linkedForm->character_name;
-                $hospital = $linkedForm->hospital;
-
-                // Inherit form_data fields if available in linked form
-                if (isset($linkedForm->form_data['birth_date']))
-                    $formData['birth_date'] = $linkedForm->form_data['birth_date'];
-                if (isset($linkedForm->form_data['gender']))
-                    $formData['gender'] = $linkedForm->form_data['gender'];
-                if (isset($linkedForm->form_data['age']))
-                    $formData['age'] = $linkedForm->form_data['age'];
-                if (isset($linkedForm->form_data['occupation']))
-                    $formData['occupation'] = $linkedForm->form_data['occupation'];
-                if (isset($linkedForm->form_data['phone_number']))
-                    $formData['phone_number'] = $linkedForm->form_data['phone_number'];
-
-                // Add note to description
-                $description .= "\n\n[AUTO-LINKED] Terhubung dengan Surat Psikolog ID#{$linkedId} (sudah di-approve otomatis)";
+            if (!$linkedForm) {
+                return back()
+                    ->withErrors(['linked_psych_form_id' => 'Surat Psikolog tidak ditemukan atau sudah diproses.'])
+                    ->withInput()
+                    ->with('error', 'Surat Psikolog yang dipilih tidak valid atau sudah diproses. Silakan pilih yang lain.');
             }
+
+            // Auto-approve the linked psychology letter
+            $linkedForm->update([
+                'status' => 'approved',
+                'processed_at' => now(),
+                'notes' => 'Disetujui otomatis melalui pengisian Tes Psikologi'
+            ]);
+
+            // Link the form
+            $linkedFormId = $linkedId;
+
+            // INHERIT DATA FROM LINKED FORM
+            // Prioritize linked form data over defaults/input
+            $characterName = $linkedForm->character_name;
+            $hospital = $linkedForm->hospital;
+
+            // Inherit form_data fields if available in linked form
+            if (isset($linkedForm->form_data['birth_date']))
+                $formData['birth_date'] = $linkedForm->form_data['birth_date'];
+            if (isset($linkedForm->form_data['gender']))
+                $formData['gender'] = $linkedForm->form_data['gender'];
+            if (isset($linkedForm->form_data['age']))
+                $formData['age'] = $linkedForm->form_data['age'];
+            if (isset($linkedForm->form_data['occupation']))
+                $formData['occupation'] = $linkedForm->form_data['occupation'];
+            if (isset($linkedForm->form_data['phone_number']))
+                $formData['phone_number'] = $linkedForm->form_data['phone_number'];
+
+            // Add note to description
+            $description .= "\n\n[AUTO-LINKED] Terhubung dengan Surat Psikolog ID#{$linkedId} (sudah di-approve otomatis)";
         }
 
         // Prepare form creation data

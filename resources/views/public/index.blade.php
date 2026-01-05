@@ -1241,13 +1241,9 @@
                     <p class="text-sky-200/90 mb-6 text-center text-sm sm:text-base leading-relaxed">Sesi konseling dan
                         terapi bersama psikolog profesional untuk membantu Anda mengatasi masalah kesehatan mental.</p>
                     <div class="space-y-3">
-                        <a href="{{ route('public.tes-psikologi') }}"
-                            class="block w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold text-base py-3.5 px-6 rounded-xl shadow-lg hover:shadow-xl hover:from-cyan-500 hover:to-blue-500 transition-all duration-300 transform hover:scale-[1.02] text-center">
-                            <i class="fas fa-clipboard-check mr-2"></i>Mulai Tes Psikologi
-                        </a>
                         <a href="{{ route('public.surat-psikolog') }}"
-                            class="block w-full bg-white/10 backdrop-blur-md border-2 border-white/30 text-white font-bold text-base py-3.5 px-6 rounded-xl hover:bg-white/20 hover:border-white/40 transition-all duration-300 transform hover:scale-[1.02] text-center">
-                            <i class="fas fa-file-alt mr-2"></i>Form Surat Psikolog
+                            class="block w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold text-base py-3.5 px-6 rounded-xl shadow-lg hover:shadow-xl hover:from-cyan-500 hover:to-blue-500 transition-all duration-300 transform hover:scale-[1.02] text-center">
+                            <i class="fas fa-clipboard-check mr-2"></i>Formulir Psikologi
                         </a>
                     </div>
                 </div>

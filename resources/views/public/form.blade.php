@@ -262,49 +262,66 @@
                                     <p class="text-blue-200 text-sm mb-6">Silakan jawab pertanyaan berikut dengan jujur. Hasil
                                         tes akan membantu psikolog dalam memberikan evaluasi yang tepat.</p>
 
-                                    {{-- Dropdown for Linking with Previous Surat Psikolog --}}
-                                    @if($availablePsychForms->isNotEmpty())
-                                        <div
-                                            class="mb-8 p-6 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border-2 border-indigo-400/30 rounded-xl">
-                                            <div class="flex items-start gap-3 mb-4">
-                                                <div
-                                                    class="w-10 h-10 bg-indigo-500/30 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                    <i class="fas fa-link text-indigo-300 text-lg"></i>
-                                                </div>
-                                                <div>
-                                                    <h4 class="text-lg font-bold text-white mb-1">Hubungkan dengan Surat Psikolog
-                                                    </h4>
-                                                    <p class="text-indigo-200 text-sm">Jika Anda sebelumnya sudah mengisi
-                                                        <strong>Surat Psikolog</strong>, pilih dari daftar di bawah. Surat tersebut
-                                                        akan otomatis disetujui!
-                                                    </p>
-                                                </div>
+                                    {{-- Dropdown for Linking with Previous Surat Psikolog - REQUIRED --}}
+                                    <div
+                                        class="mb-8 p-6 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border-2 border-indigo-400/30 rounded-xl">
+                                        <div class="flex items-start gap-3 mb-4">
+                                            <div
+                                                class="w-10 h-10 bg-indigo-500/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                <i class="fas fa-link text-indigo-300 text-lg"></i>
                                             </div>
-
-                                            <label for="linked_psych_form" class="block text-sm font-medium text-white mb-2">
-                                                Pilih Surat Psikolog (Opsional)
-                                            </label>
-                                            <select id="linked_psych_form" name="linked_psych_form_id" class="form-select">
-                                                <option value="">-- Tidak ada / Lewati --</option>
-                                                @foreach($availablePsychForms as $psychForm)
-                                                    <option value="{{ $psychForm->id }}"
-                                                        data-character="{{ $psychForm->character_name }}"
-                                                        data-doctor="{{ $psychForm->form_data['doctor_name'] ?? 'N/A' }}"
-                                                        class="bg-slate-900 text-white">
-                                                        [#{{ $psychForm->id }}] {{ $psychForm->character_name }} -
-                                                        {{ $psychForm->created_at->format('d M Y, H:i') }}
-                                                        ({{ ucfirst($psychForm->hospital) }})
-                                                    </option>
-                                                @endforeach
-                                            </select>
-
-                                            <div class="mt-3 flex items-center gap-2 text-xs text-green-300">
-                                                <i class="fas fa-info-circle"></i>
-                                                <span>Dengan memilih surat psikolog, form tersebut akan langsung <strong>di-ACC
-                                                        otomatis</strong>!</span>
+                                            <div>
+                                                <h4 class="text-lg font-bold text-white mb-1">Hubungkan dengan Surat Psikolog
+                                                </h4>
+                                                <p class="text-indigo-200 text-sm">Pilih <strong>Surat Psikolog</strong> yang
+                                                    sudah Anda buat sebelumnya. Surat tersebut akan otomatis disetujui setelah
+                                                    Anda menyelesaikan tes ini!</p>
                                             </div>
                                         </div>
-                                    @endif
+
+                                        <label for="linked_psych_form"
+                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                            Pilih Surat Psikolog <span class="text-red-400">*</span>
+                                        </label>
+                                        <select id="linked_psych_form" name="linked_psych_form_id"
+                                            class="form-select @error('linked_psych_form_id') border-red-500 @enderror"
+                                            required>
+                                            <option value="">-- Pilih Surat Psikolog --</option>
+                                            @foreach($availablePsychForms as $psychForm)
+                                                <option value="{{ $psychForm->id }}"
+                                                    data-character="{{ $psychForm->character_name }}"
+                                                    data-hospital="{{ $psychForm->hospital }}"
+                                                    data-doctor="{{ $psychForm->form_data['doctor_name'] ?? 'N/A' }}"
+                                                    @if(old('linked_psych_form_id') == $psychForm->id) selected @endif
+                                                    class="bg-slate-900 text-white">
+                                                    [#{{ $psychForm->id }}] {{ $psychForm->character_name }} -
+                                                    {{ $psychForm->created_at->format('d M Y, H:i') }}
+                                                    ({{ ucfirst($psychForm->hospital) }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('linked_psych_form_id') <p class="form-error">{{ $message }}</p> @enderror
+
+                                        <div class="mt-3 flex items-center gap-2 text-xs text-green-300">
+                                            <i class="fas fa-info-circle"></i>
+                                            <span>Dengan memilih surat psikolog, form tersebut akan langsung <strong>di-ACC
+                                                    otomatis</strong> setelah tes selesai!</span>
+                                        </div>
+
+                                        @if($availablePsychForms->isEmpty())
+                                            <div class="mt-4 p-4 bg-yellow-500/10 border border-yellow-400/30 rounded-lg">
+                                                <div class="flex items-start gap-2">
+                                                    <i class="fas fa-exclamation-triangle text-yellow-300 mt-0.5"></i>
+                                                    <div class="text-sm text-yellow-200">
+                                                        <strong>Belum ada Surat Psikolog yang pending.</strong><br>
+                                                        Silakan <a href="{{ route('public.form', ['type' => 'surat_psikolog']) }}"
+                                                            class="underline hover:text-yellow-100">buat Surat Psikolog terlebih
+                                                            dahulu</a> sebelum mengisi tes psikologi.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </div>
 
                                     <!-- Big Five Personality Test (BFI-10) -->
                                     <div class="mb-8">
@@ -346,7 +363,7 @@
                                                                 @if(old('form_data.bigfive' . ($i + 1)) == $val) checked @endif
                                                                 class="sr-only peer" required>
                                                             <div
-                                                                class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24">
+                                                                class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex-1 min-w-[100px] h-24">
                                                                 <span class="text-2xl font-bold text-white">{{ $val }}</span>
                                                                 <span
                                                                     class="text-[10px] text-gray-300 text-center leading-tight px-1">{{ $label }}</span>
@@ -454,37 +471,22 @@
                                         @endforeach
                                     </div>
 
-                                    <!-- Pilihan Dokter/Psikolog -->
-                                    <div class="mb-8">
-                                        <div>
-                                            <label for="doctor_name_tp"
-                                                class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                                Nama Psikolog <span class="text-red-400">*</span>
-                                            </label>
-                                            <select id="doctor_name_tp" name="form_data[doctor_name]"
-                                                class="form-select @error('form_data.doctor_name') border-red-500 @enderror"
-                                                required>
-                                                <option value="">-- Pilih Psikolog --</option>
-                                                @foreach($doctors as $doctor)
-                                                    <option value="{{ $doctor->name }}"
-                                                        data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                        @if(old('form_data.doctor_name') == $doctor->name) selected @endif
-                                                        class="bg-slate-900 text-white font-bold">
-                                                        {{ $doctor->name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
-                                        </div>
-                                    </div>
+                                    <!-- Hidden field for psychologist name (auto-filled from Surat Psikolog) -->
+                                    <input type="hidden" id="doctor_name_tp" name="form_data[doctor_name]"
+                                        value="{{ old('form_data.doctor_name') }}" required>
                                 </div>
 
                             @elseif($type === 'surat_psikolog')
-                                <div>
+                                <div class="mb-6">
+                                    <h3 class="text-xl font-semibold text-white mb-4">Formulir Psikologi</h3>
+                                    <p class="text-blue-200 text-sm mb-6">Lengkapi formulir dan jawab pertanyaan berikut dengan
+                                        jujur. Hasil tes akan membantu psikolog dalam memberikan evaluasi yang tepat.</p>
+
                                     <label for="purpose_sp"
                                         class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan</label>
                                     <select id="purpose_sp" name="form_data[purpose]" class="form-select">
-                                        <option value="Konsultasi Psikolog" class="bg-slate-900 text-white font-bold">Konsultasi
+                                        <option value="Konsult asi Psikolog" class="bg-slate-900 text-white font-bold">
+                                            Konsultasi
                                             Psikolog</option>
                                         <option value="Lampiran Pembuatan Lisensi" class="bg-slate-900 text-white font-bold">
                                             Lampiran
@@ -512,6 +514,160 @@
                                         @endforeach
                                     </select>
                                     @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+
+                                {{-- Psychology Tests Section --}}
+                                <div class="mt-8 border-t border-white/10 pt-8">
+                                    <h4 class="text-xl font-semibold text-white mb-4">Tes Psikologi Multi-Aspek</h4>
+                                    <p class="text-blue-200 text-sm mb-6">Silakan jawab semua pertanyaan berikut untuk
+                                        melengkapi formulir Anda.</p>
+
+                                    <!-- Big Five Personality Test (BFI-10) -->
+                                    <div class="mb-8">
+                                        <h4 class="text-lg font-semibold text-white mb-4">Bagian 1: Tes Kepribadian (BFI-10)
+                                        </h4>
+                                        <p class="text-blue-200 text-sm mb-4">Pilih jawaban yang paling sesuai dengan diri Anda:
+                                        </p>
+
+                                        @php
+                                            $bigfive_questions = [
+                                                "Saya adalah seseorang yang cenderung ekstrovert, suka bergaul.",
+                                                "Saya adalah seseorang yang cenderung bersikap kritis, suka berdebat.",
+                                                "Saya adalah seseorang yang cenderung dapat dipercaya, tekun.",
+                                                "Saya adalah seseorang yang cenderung mudah merasa cemas, khawatir.",
+                                                "Saya adalah seseorang yang cenderung terbuka pada pengalaman baru.",
+                                                "Saya adalah seseorang yang cenderung pendiam, tertutup.",
+                                                "Saya adalah seseorang yang cenderung ramah, hangat.",
+                                                "Saya adalah seseorang yang cenderung ceroboh, kurang teliti.",
+                                                "Saya adalah seseorang yang cenderung stabil secara emosional, tenang.",
+                                                "Saya adalah seseorang yang cenderung konvensional, kurang imajinatif."
+                                            ];
+                                            $bigfive_scale = [
+                                                1 => "Sangat Tidak Setuju",
+                                                2 => "Tidak Setuju",
+                                                3 => "Netral",
+                                                4 => "Setuju",
+                                                5 => "Sangat Setuju"
+                                            ];
+                                        @endphp
+
+                                        @foreach($bigfive_questions as $i => $question)
+                                            <div
+                                                class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
+                                                <p class="text-white mb-4 font-medium text-lg">{{ $i + 1 }}. {{ $question }}</p>
+                                                <div class="flex flex-wrap items-center gap-3">
+                                                    @foreach($bigfive_scale as $val => $label)
+                                                        <label class="flex items-center cursor-pointer group">
+                                                            <input type="radio" name="form_data[bigfive{{ $i + 1 }}]" value="{{ $val }}"
+                                                                @if(old('form_data.bigfive' . ($i + 1)) == $val) checked @endif
+                                                                class="sr-only peer" required>
+                                                            <div
+                                                                class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex-1 min-w-[100px] h-24">
+                                                                <span class="text-2xl font-bold text-white">{{ $val }}</span>
+                                                                <span
+                                                                    class="text-[10px] text-gray-300 text-center leading-tight px-1">{{ $label }}</span>
+                                                            </div>
+                                                        </label>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+
+                                    <!-- Stress Test (PSS-10) -->
+                                    <div class="mb-8">
+                                        <h4 class="text-lg font-semibold text-white mb-4">Bagian 2: Tes Stres (PSS-10)</h4>
+                                        <p class="text-blue-200 text-sm mb-4">Seberapa sering Anda mengalami hal-hal berikut
+                                            dalam sebulan terakhir:</p>
+
+                                        @php
+                                            $stress_questions = [
+                                                "Seberapa sering Anda merasa terganggu oleh sesuatu yang tidak terduga?",
+                                                "Seberapa sering Anda merasa tidak mampu mengendalikan hal-hal penting dalam hidup Anda?",
+                                                "Seberapa sering Anda merasa gelisah dan tertekan?",
+                                                "Seberapa sering Anda merasa percaya diri dalam kemampuan mengatasi masalah pribadi?",
+                                                "Seberapa sering Anda merasa bahwa hal-hal berjalan sesuai keinginan Anda?",
+                                                "Seberapa sering Anda merasa tidak mampu mengatasi semua hal yang harus dilakukan?",
+                                                "Seberapa sering Anda merasa dapat mengendalikan gangguan dalam hidup Anda?",
+                                                "Seberapa sering Anda merasa bahwa hal-hal di luar kendali Anda?",
+                                                "Seberapa sering Anda merasa dapat mengendalikan waktu Anda?",
+                                                "Seberapa sering Anda merasa kesulitan menanggulangi masalah?"
+                                            ];
+                                            $stress_scale = [
+                                                0 => "Tidak Pernah",
+                                                1 => "Jarang",
+                                                2 => "Kadang-Kadang",
+                                                3 => "Sering",
+                                                4 => "Sangat Sering"
+                                            ];
+                                        @endphp
+
+                                        @foreach($stress_questions as $i => $question)
+                                            <div
+                                                class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
+                                                <p class="text-white mb-4 font-medium text-lg">{{ $i + 1 }}. {{ $question }}</p>
+                                                <div class="flex flex-wrap items-center gap-3">
+                                                    @foreach($stress_scale as $val => $label)<label
+                                                        class="flex items-center cursor-pointer group"><input type="radio"
+                                                            name="form_data[stress{{ $i + 1 }}]" value="{{ $val }}"
+                                                            @if(old('form_data.stress' . ($i + 1)) == $val) checked @endif
+                                                            class="sr-only peer" required>
+                                                        <div
+                                                            class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24">
+                                                            <span class="text-2xl font-bold text-white">{{ $val }}</span><span
+                                                                class="text-xs text-gray-300 text-center leading-tight px-1">{{ $label }}</span>
+                                                        </div>
+                                                    </label>@endforeach</div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+
+                                    <!-- Self-Esteem Test (RSES) -->
+                                    <div class="mb-8">
+                                        <h4 class="text-lg font-semibold text-white mb-4">Bagian 3: Tes Harga Diri (RSES)</h4>
+                                        <p class="text-blue-200 text-sm mb-4">Pilih jawaban yang paling sesuai dengan perasaan
+                                            Anda:</p>
+
+                                        @php
+                                            $esteem_questions = [
+                                                "Saya merasa bahwa saya adalah orang yang berharga, setara dengan orang lain.",
+                                                "Saya merasa saya memiliki sejumlah kualitas yang baik.",
+                                                "Secara keseluruhan, saya cenderung merasa bahwa saya adalah orang yang gagal.",
+                                                "Saya mampu melakukan sesuatu sama baiknya dengan kebanyakan orang lain.",
+                                                "Saya merasa tidak banyak hal yang bisa saya banggakan.",
+                                                "Saya memiliki sikap positif terhadap diri saya sendiri.",
+                                                "Secara keseluruhan, saya puas dengan diri saya.",
+                                                "Saya merasa tidak berguna pada beberapa kesempatan.",
+                                                "Saya berharap dapat lebih menghargai diri saya.",
+                                                "Kadang-kadang saya benar-benar merasa tidak berguna."
+                                            ];
+                                            $esteem_scale = [
+                                                1 => "Sangat Tidak Setuju",
+                                                2 => "Tidak Setuju",
+                                                3 => "Setuju",
+                                                4 => "Sangat Setuju"
+                                            ];
+                                        @endphp
+
+                                        @foreach($esteem_questions as $i => $question)
+                                            <div
+                                                class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
+                                                <p class="text-white mb-4 font-medium text-lg">{{ $i + 1 }}. {{ $question }}</p>
+                                                <div class="flex flex-wrap items-center gap-3">
+                                                    @foreach($esteem_scale as $val => $label)<label
+                                                        class="flex items-center cursor-pointer group"><input type="radio"
+                                                            name="form_data[esteem{{ $i + 1 }}]" value="{{ $val }}"
+                                                            @if(old('form_data.esteem' . ($i + 1)) == $val) checked @endif
+                                                            class="sr-only peer" required>
+                                                        <div
+                                                            class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24">
+                                                            <span class="text-2xl font-bold text-white">{{ $val }}</span><span
+                                                                class="text-xs text-gray-300 text-center leading-tight px-1">{{ $label }}</span>
+                                                        </div>
+                                                    </label>@endforeach</div>
+                                            </div>
+                                        @endforeach
+                                    </div>
                                 </div>
 
                             @elseif($type === 'konsultasi_medis')
@@ -1259,42 +1415,42 @@
                     </div>
 
                     <script>
-                            / / Psy                         chology test radio button visual feedback
-                            document.addEventListener('DOMContentLoaded', function () {
-                                const radioInputs = document.querySelectorAll('input[type="radio"][name^="form_data[bigfive"], input[type="radio"][name^="form_data[stress"], input[type="radio"][name^="form_data[esteem"]');
+                        / / Psy                         chology test radio button visual feedback
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const radioInputs = document.querySelectorAll('input[type="radio"][name^="form_data[bigfive"], input[type="radio"][name^="form_data[stress"], input[type="radio"][name^="form_data[esteem"]');
 
-                                radioInputs.forEach(radio => {
-                                    radio.addEventListener('change', function () {
-                                        // Remove selected state from all siblings
-                                        const name = this.getAttribute('name');
-                                        document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
-                                            const box = r.nextElementSibling;
-                                            if (box) {
-                                                box.classList.remove('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
-                                            }
-                                        });
-
-                                        // Add selected state to this one
-                                        const box = this.nextElementSibling;
-                                        if (box && this.checked) {
-                                            box.classList.add('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
+                            radioInputs.forEach(radio => {
+                                radio.addEventListener('change', function () {
+                                    // Remove selected state from all siblings
+                                    const name = this.getAttribute('name');
+                                    document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+                                        const box = r.nextElementSibling;
+                                        if (box) {
+                                            box.classList.remove('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
                                         }
                                     });
 
-                                    // Set initial state for checked radios
-                                    if (radio.checked) {
-                                        const box = radio.nextElementSibling;
-                                        if (box) {
-                                            box.classList.add('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
-                                        }
+                                    // Add selected state to this one
+                                    const box = this.nextElementSibling;
+                                    if (box && this.checked) {
+                                        box.classList.add('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
                                     }
                                 });
+
+                                // Set initial state for checked radios
+                                if (radio.checked) {
+                                    const box = radio.nextElementSibling;
+                                    if (box) {
+                                        box.classList.add('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
+                                    }
+                                }
                             });
-                        </script>
-                    </form>
-                </div>
+                        });
+                    </script>
+                </form>
             </div>
         </div>
+    </div>
 @endsection
 
 @push('scripts')
@@ -1469,6 +1625,151 @@
                         }
                     }
                 });
+            }
+        });
+    </script>
+
+    {{-- jQuery (required for Select2) --}}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    {{-- Select2 for searchable dropdowns --}}
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <style>
+        /* Custom Select2 styling to match the form theme */
+        .select2-container--default .select2-selection--single {
+            background-color: rgba(255, 255, 255, 0.10) !important;
+            border: 2px solid rgba(255, 255, 255, 0.18) !important;
+            border-radius: 0.75rem !important;
+            height: 50px !important;
+            padding: 0.75rem 1rem !important;
+            backdrop-filter: blur(2px);
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: #ffffff !important;
+            font-weight: 600 !important;
+            line-height: 26px !important;
+            padding-left: 0 !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__placeholder {
+            color: #c7d2fe !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 48px !important;
+            right: 10px !important;
+        }
+
+        .select2-dropdown {
+            background-color: #1e293b !important;
+            border: 2px solid rgba(56, 189, 248, 0.5) !important;
+            border-radius: 0.75rem !important;
+            backdrop-filter: blur(8px);
+        }
+
+        .select2-container--default .select2-search--dropdown .select2-search__field {
+            background-color: rgba(255, 255, 255, 0.10) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            color: #ffffff !important;
+            border-radius: 0.5rem !important;
+            padding: 0.5rem;
+        }
+
+        .select2-container--default .select2-results__option {
+            color: #ffffff !important;
+            padding: 10px 15px !important;
+            background-color: transparent;
+        }
+
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: rgba(56, 189, 248, 0.3) !important;
+        }
+
+        .select2-container--default .select2-results__option[aria-selected=true] {
+            background-color: rgba(56, 189, 248, 0.5) !important;
+        }
+
+        .select2-container--default.select2-container--focus .select2-selection--single {
+            border-color: #38bdf8 !important;
+            box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.35) !important;
+        }
+
+        .select2-container {
+            width: 100% !important;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize Select2 on psychologist/doctor dropdowns
+            $('#doctor_name_tp').select2({
+                placeholder: '-- Pilih Psikolog --',
+                allowClear: true,
+                width: '100%'
+            });
+
+            // Also apply to linked form dropdown if exists
+            $('#linked_psych_form').select2({
+                placeholder: '-- Tidak ada / Lewati --',
+                allowClear: true,
+                width: '100%'
+            });
+
+            // Update hospital filtering to work with Select2
+            const hospitalSelect = document.getElementById('hospital_tp');
+            if (hospitalSelect) {
+                hospitalSelect.addEventListener('change', function () {
+                    const selectedHospital = this.value;
+                    const doctorSelect = $('#doctor_name_tp');
+
+                    // Reset selection
+                    doctorSelect.val(null).trigger('change');
+
+                    // Filter options
+                    doctorSelect.find('option').each(function () {
+                        const option = $(this);
+                        const doctorHospital = option.data('hospital');
+
+                        if (!option.val() || !selectedHospital || doctorHospital === selectedHospital) {
+                            option.prop('disabled', false);
+                        } else {
+                            option.prop('disabled', true);
+                        }
+                    });
+
+                    // Refresh Select2
+                    doctorSelect.trigger('change');
+                });
+            }
+
+            // Auto-fill psychologist name from selected Surat Psikolog
+            const linkedFormSelect = $('#linked_psych_form');
+            const doctorNameInput = document.getElementById('doctor_name_tp'); // Hidden field
+            if (linkedFormSelect.length && doctorNameInput) {
+                linkedFormSelect.on('change', function () {
+                    const selectedOption = $(this).find('option:selected');
+                    const doctorName = selectedOption.data('doctor');
+
+                    if (doctorName && doctorName !== 'N/A') {
+                        doctorNameInput.value = doctorName; // Set hidden field
+                        if (doctorNameDisplay) {
+                            doctorNameDisplay.value = doctorName; // Set display field
+                        }
+                    } else {
+                        doctorNameInput.value = '';
+                        if (doctorNameDisplay) {
+                            doctorNameDisplay.value = '';
+                        }
+                    }
+                });
+
+                // Auto-fill on page load if there's old value
+                if (linkedFormSelect.val()) {
+                    linkedFormSelect.trigger('change');
+                }
             }
         });
     </script>

@@ -41,7 +41,7 @@
             </div>
 
             <!-- Psychology Test Results -->
-            @if($form->form_type === 'tes_psikologi' && isset($form->form_data['suggestions']))
+            @if(in_array($form->form_type, ['tes_psikologi', 'surat_psikolog']) && isset($form->form_data['suggestions']))
             <div class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 rounded-3xl p-8 mb-8 border border-indigo-200 shadow-lg text-left animate-fade-in-up" style="animation-delay: 0.3s;">
                 <div class="flex items-center justify-center mb-6">
                     <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mr-3 shadow-lg">
@@ -349,15 +349,6 @@
                         <span>Ajukan Formulir Lain</span>
                     </div>
                 </a>
-                @if($form->form_type === 'surat_psikolog')
-                <a href="{{ route('public.form', 'tes_psikologi') }}" class="group relative px-8 py-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-lg font-bold rounded-2xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-r from-indigo-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <div class="relative flex items-center justify-center">
-                        <i class="fas fa-brain mr-3 text-xl"></i>
-                        <span>Lanjut ke Tes Psikologi</span>
-                    </div>
-                </a>
-                @endif
             </div>
 
             <!-- Enhanced Contact Info -->
