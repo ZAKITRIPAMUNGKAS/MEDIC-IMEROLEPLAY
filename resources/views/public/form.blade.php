@@ -1397,9 +1397,9 @@
                     </div>
 
                     <script>
-                        / / Psy                         chology test radio button visual feedback
+                        // Psychology test radio button visual feedback
                         document.addEventListener('DOMContentLoaded', function () {
-                            const radioInputs = document.querySelectorAll('input[type="radio"][name^="form_data[bigfive"], input[type="radio"][name^="form_data[stress"], input[type="radio"][name^="form_data[esteem"]');
+                            const radioInputs = document.querySelectorAll('input[type="radio"][name^="form_data[bigfive]"], input[type="radio"][name^="form_data[stress]"], input[type="radio"][name^="form_data[esteem]"]');
 
                             radioInputs.forEach(radio => {
                                 radio.addEventListener('change', function () {
