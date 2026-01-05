@@ -424,28 +424,30 @@ class PublicController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        // Validasi 1: Cek apakah surat masih status PENDING (Global check by name only)
+        // Validasi 1: Cek apakah surat masih status PENDING (Specific to form type)
         $pendingForm = MedicalForm::whereRaw('LOWER(character_name) = LOWER(?)', [$request->character_name])
+            ->where('form_type', $request->form_type)
             ->where('status', 'pending')
             ->first();
 
         if ($pendingForm) {
-            $errorMessage = "Surat atas nama karakter \"{$request->character_name}\" masih berstatus PENDING (Menunggu Persetujuan). Harap tunggu hingga surat sebelumnya diproses sebelum mengajukan kembali.";
+            $errorMessage = "Surat atas nama karakter \"{$request->character_name}\" masih berstatus PENDING (Menunggu Persetujuan). Harap tunggu hingga surat diproses oleh staff kami sebelum mengajukan kembali.";
             return back()
                 ->withErrors(['character_name' => $errorMessage])
                 ->withInput()
                 ->with('error', $errorMessage);
         }
 
-        // Validasi 2: Cek apakah user sudah mengisi dalam 24 jam terakhir (Cooldown - Global check)
+        // Validasi 2: Cek apakah user sudah mengisi dalam 24 jam terakhir (Cooldown - Specific to form type)
         // Kecuali jika statusnya 'rejected' (ditolak), maka boleh mengisi lagi
         $recentForm = MedicalForm::whereRaw('LOWER(character_name) = LOWER(?)', [$request->character_name])
+            ->where('form_type', $request->form_type)
             ->where('created_at', '>=', now()->subHours(24))
             ->where('status', '!=', 'rejected')
             ->first();
 
         if ($recentForm) {
-            $errorMessage = "Anda sudah membuat formulir dalam 24 jam terakhir. Mohon tunggu 24 jam sebelum membuat formulir baru.";
+            $errorMessage = "Anda sudah membuat formulir ini dalam 24 jam terakhir. Mohon tunggu 24 jam sebelum membuat formulir baru.";
             return back()
                 ->withErrors(['character_name' => $errorMessage])
                 ->withInput()
