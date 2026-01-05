@@ -424,38 +424,30 @@ class PublicController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        // Validasi: Cek apakah karakter dengan nama yang sama sudah mengisi form jenis yang sama hari ini (case-insensitive)
-        // Hanya cek form dengan status 'pending' atau 'approved', form 'rejected' bisa diisi lagi
-        $existingForm = MedicalForm::whereRaw('LOWER(character_name) = LOWER(?)', [$request->character_name])
+        // Validasi 1: Cek apakah surat masih status PENDING
+        $pendingForm = MedicalForm::whereRaw('LOWER(character_name) = LOWER(?)', [$request->character_name])
             ->where('form_type', $request->form_type)
-            ->whereDate('created_at', today())
-            ->whereIn('status', ['pending', 'approved'])
+            ->where('status', 'pending')
             ->first();
 
-        if ($existingForm) {
-            $formTypeLabels = [
-                'surat_kesehatan' => 'Surat Kesehatan',
-                'operasi_plastik' => 'Operasi Plastik',
-                'tes_psikologi' => 'Tes Psikologi',
-                'surat_psikolog' => 'Surat Psikolog',
-                'pendaftaran_karakter' => 'Pendaftaran Karakter',
-                'konsultasi_medis' => 'Konsultasi Medis',
-                'laporan_kecelakaan' => 'Laporan Kecelakaan',
-                'permintaan_ambulans' => 'Permintaan Ambulans',
-                'penyakit_dalam' => 'Poli Penyakit Dalam',
-                'spesialis_anak' => 'Poli Spesialis Anak',
-                'spesialis_bedah' => 'Poli Spesialis Bedah',
-                'spesialis_mata' => 'Poli Spesialis Mata',
-                'spesialis_saraf' => 'Poli Spesialis Saraf',
-                'spesialis_urologi' => 'Poli Spesialis Urologi',
-                'spesialis_tht' => 'Poli Spesialis THT',
-                'spesialis_ortopedi' => 'Poli Spesialis Ortopedi',
-            ];
+        if ($pendingForm) {
+            $errorMessage = "Surat atas nama karakter \"{$request->character_name}\" masih berstatus PENDING (Menunggu Persetujuan). Harap tunggu hingga surat diproses oleh staff kami sebelum mengajukan kembali.";
+            return back()
+                ->withErrors(['character_name' => $errorMessage])
+                ->withInput()
+                ->with('error', $errorMessage);
+        }
 
-            $formTypeLabel = $formTypeLabels[$request->form_type] ?? ucfirst(str_replace('_', ' ', $request->form_type));
-            $hospitalName = $request->hospital === 'alta' ? 'Alta Hospital' : 'Roxwood Hospital';
-            $errorMessage = 'Karakter ' . $request->character_name . ' sudah mengisi form ' . $formTypeLabel . ' hari ini. Anda tidak dapat mengirim form yang sama lagi hari ini. Silakan hubungi staff medis di ' . $hospitalName . ' untuk bantuan lebih lanjut.';
+        // Validasi 2: Cek apakah user sudah mengisi dalam 24 jam terakhir (Cooldown)
+        // Kecuali jika statusnya 'rejected' (ditolak), maka boleh mengisi lagi
+        $recentForm = MedicalForm::whereRaw('LOWER(character_name) = LOWER(?)', [$request->character_name])
+            ->where('form_type', $request->form_type)
+            ->where('created_at', '>=', now()->subHours(24))
+            ->where('status', '!=', 'rejected')
+            ->first();
 
+        if ($recentForm) {
+            $errorMessage = "Anda sudah membuat formulir ini dalam 24 jam terakhir. Mohon tunggu 24 jam sebelum membuat formulir baru.";
             return back()
                 ->withErrors(['character_name' => $errorMessage])
                 ->withInput()
