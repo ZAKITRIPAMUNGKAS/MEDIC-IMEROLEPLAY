@@ -258,6 +258,46 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody class="divide-y divide-white/5">
+                                                    <!-- Manual Addition: Character Name -->
+                                                    <tr class="hover:bg-white/10 transition-all duration-200 group">
+                                                        <td class="px-6 py-4">
+                                                            <div class="flex items-center space-x-3">
+                                                                <div class="w-2 h-2 bg-gradient-to-br from-cyan-400 to-sky-400 rounded-full group-hover:scale-125 transition-transform"></div>
+                                                                <span class="text-gray-300 font-medium text-sm">Nama Karakter</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="px-6 py-4">
+                                                            <div class="flex items-center justify-between group/val">
+                                                                <span class="text-white font-semibold">{{ $form->character_name ?: '-' }}</span>
+                                                                @if($form->character_name)
+                                                                <button onclick="copyToClipboard('{{ addslashes($form->character_name) }}', this)" class="ml-3 p-2 bg-sky-500/20 hover:bg-sky-500/40 text-sky-300 hover:text-sky-200 rounded-lg transition-all duration-200 opacity-70 hover:opacity-100" title="Salin nilai">
+                                                                    <i class="fas fa-copy text-sm"></i>
+                                                                </button>
+                                                                @endif
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+
+                                                    <!-- Manual Addition: Citizen ID -->
+                                                    <tr class="hover:bg-white/10 transition-all duration-200 group">
+                                                        <td class="px-6 py-4">
+                                                            <div class="flex items-center space-x-3">
+                                                                <div class="w-2 h-2 bg-gradient-to-br from-cyan-400 to-sky-400 rounded-full group-hover:scale-125 transition-transform"></div>
+                                                                <span class="text-gray-300 font-medium text-sm">Citizen ID</span>
+                                                            </div>
+                                                        </td>
+                                                        <td class="px-6 py-4">
+                                                            <div class="flex items-center justify-between group/val">
+                                                                <span class="text-white font-semibold">{{ $form->citizen_id ?: '-' }}</span>
+                                                                @if($form->citizen_id)
+                                                                <button onclick="copyToClipboard('{{ addslashes($form->citizen_id) }}', this)" class="ml-3 p-2 bg-sky-500/20 hover:bg-sky-500/40 text-sky-300 hover:text-sky-200 rounded-lg transition-all duration-200 opacity-70 hover:opacity-100" title="Salin nilai">
+                                                                    <i class="fas fa-copy text-sm"></i>
+                                                                </button>
+                                                                @endif
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+
                                                     @foreach($form->form_data as $key => $value)
                                                         @if($value !== null && $value !== '' && !in_array($key, ['photo_ktp_url', 'photo_skb_url']))
                                                             @php
