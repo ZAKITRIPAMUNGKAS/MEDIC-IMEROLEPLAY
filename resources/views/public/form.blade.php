@@ -496,25 +496,7 @@
                                             Mendaftar Pekerjaan</option>
                                     </select>
                                 </div>
-                                <div>
-                                    <label for="doctor_name_sp"
-                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                        Nama Psikolog <span class="text-red-400">*</span>
-                                    </label>
-                                    <select id="doctor_name_sp" name="form_data[doctor_name]"
-                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
-                                        <option value="">-- Pilih Psikolog --</option>
-                                        @foreach($doctors as $doctor)
-                                            <option value="{{ $doctor->name }}"
-                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
-                                                class="bg-slate-900 text-white font-bold">
-                                                {{ $doctor->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
-                                </div>
+
 
                                 {{-- Psychology Tests Section --}}
                                 <div class="mt-8 border-t border-white/10 pt-8">

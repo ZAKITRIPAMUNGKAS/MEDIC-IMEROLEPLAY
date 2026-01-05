@@ -369,7 +369,7 @@ class PublicController extends Controller
             'form_data.occupation' => 'nullable|string|max:255',
             'form_data.phone_number' => 'nullable|string|max:20',
             // Validasi dokter_name wajib untuk surat kesehatan, tes psikologi, surat psikolog, dan operasi plastik
-            'form_data.doctor_name' => 'required_if:form_type,surat_kesehatan,tes_psikologi,surat_psikolog,operasi_plastik|string|max:255|filled',
+            'form_data.doctor_name' => 'required_if:form_type,surat_kesehatan,tes_psikologi,operasi_plastik|string|max:255|filled',
             // Validasi untuk tes psikologi
             'form_data.bigfive1' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:5',
             'form_data.bigfive2' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:5',
