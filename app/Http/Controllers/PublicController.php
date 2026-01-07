@@ -1135,17 +1135,25 @@ class PublicController extends Controller
                     // Check if this position has children (subordinates)
                     $children = $dbPositions->where('parent_id', $position->id);
 
-                    if ($children->isNotEmpty()) {
-                        // This is a department head with subordinates
-                        $staffNames = $children->filter(fn($c) => $c->user)->map(fn($c) => $c->user->name)->values()->toArray();
-
-                        $hierarchyLevel['departments'][$positionTitle] = [
-                            $positionTitle => $assignedUser,
-                            'Staff' => $staffNames
-                        ];
-                    } else {
-                        // This is a standalone position
+                    // Strategy: Level 0-1 always use 'positions' (simple list)
+                    // Level 2+ use 'departments' for positions with subordinates
+                    if ($level <= 1) {
+                        // High Command level - always simple positions (no nesting)
                         $hierarchyLevel['positions'][$positionTitle] = $assignedUser;
+                    } else {
+                        // Level 2+ - use department structure for positions with subordinates
+                        if ($children->isNotEmpty()) {
+                            // This is a department head with subordinates
+                            $staffNames = $children->filter(fn($c) => $c->user)->map(fn($c) => $c->user->name)->values()->toArray();
+
+                            $hierarchyLevel['departments'][$positionTitle] = [
+                                $positionTitle => $assignedUser,
+                                'Staff' => $staffNames
+                            ];
+                        } else {
+                            // This is a standalone position
+                            $hierarchyLevel['positions'][$positionTitle] = $assignedUser;
+                        }
                     }
                 }
 
