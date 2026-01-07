@@ -1395,6 +1395,11 @@
                                                         <i class="fas fa-shield-alt mr-3 w-5"></i>
                                                         Role Permissions
                                                     </a>
+                                                    <a href="{{ route('admin.structural.index') }}"
+                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                        <i class="fas fa-sitemap mr-3 w-5"></i>
+                                                        Struktural EMS
+                                                    </a>
                                                     <div class="border-t border-gray-200 my-1"></div>
                                                 @endif
 
@@ -1504,6 +1509,9 @@
                         <a href="{{ route('admin.roles.permissions') }}"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-shield-alt w-6 mr-2"></i>Role Permissions</a>
+                        <a href="{{ route('admin.structural.index') }}"
+                            class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
+                                class="fas fa-sitemap w-6 mr-2"></i>Struktural EMS</a>
                     @endif
                     @if(auth()->user()->hasPermission('view_reports'))
                         <a href="{{ route('admin.attendance-reports.index') }}"
@@ -2689,7 +2697,7 @@
                     @elseif($errors->any())
                         alert('Terdapat kesalahan input. Silakan periksa formulir.');
                     @endif
-                    }, 1000);
+                        }, 1000);
             });
         </script>
         <style>

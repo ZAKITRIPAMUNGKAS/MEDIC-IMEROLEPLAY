@@ -239,6 +239,12 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/salary-settings/{salarySetting}/toggle-status', [\App\Http\Controllers\Admin\SalarySettingController::class, 'toggleStatus'])
         ->middleware('permission:manage_payroll')->name('salary-settings.toggle-status');
 
+    // Structural/Organizational Management (Admin only - no specific permission check yet)
+    Route::resource('structural', \App\Http\Controllers\Admin\StructuralManagementController::class)
+        ->middleware('admin');
+    Route::post('/structural/reorder', [\App\Http\Controllers\Admin\StructuralManagementController::class, 'reorder'])
+        ->middleware('admin')->name('structural.reorder');
+
 
     // Live Chat (Permission-based access)
     Route::get('/chat', function () {

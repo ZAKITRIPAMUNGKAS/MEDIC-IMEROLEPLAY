@@ -1094,6 +1094,53 @@ class PublicController extends Controller
 
     private function buildHierarchy($users)
     {
+        // **DATABASE-DRIVEN HIERARCHY** - Read from organizational_positions table
+        $dbPositions = \App\Models\OrganizationalPosition::with(['user', 'children.user'])
+            ->active()
+            ->ordered()
+            ->get();
+
+        // If we have positions in database, use them instead of hardcoded data
+        if ($dbPositions->isNotEmpty()) {
+            $positionsByLevel = $dbPositions->groupBy('level');
+            $hierarchy = [];
+
+            foreach ($positionsByLevel as $level => $levelPositions) {
+                $levelKey = 'level_' . $level;
+                $firstPos = $levelPositions->first();
+                $levelTitle = $firstPos->position_name ?? "Level {$level}";
+
+                $hierarchyLevel = [
+                    'title' => $levelTitle,
+                    'positions' => [],
+                    'departments' => []
+                ];
+
+                foreach ($levelPositions as $position) {
+                    if ($position->parent_id !== null)
+                        continue;
+
+                    $children = $dbPositions->where('parent_id', $position->id);
+
+                    if ($children->isNotEmpty()) {
+                        $staffNames = $children->filter(fn($c) => $c->user)->map(fn($c) => $c->user->name)->toArray();
+
+                        $hierarchyLevel['departments'][$position->title] = [
+                            $position->title => $position->user ? $position->user->name : '[Belum diisi]',
+                            'Staff' => $staffNames
+                        ];
+                    } else {
+                        $hierarchyLevel['positions'][$position->title] = $position->user ? $position->user->name : '[Belum diisi]';
+                    }
+                }
+
+                $hierarchy[$levelKey] = $hierarchyLevel;
+            }
+
+            return $hierarchy; // Early return with database data
+        }
+
+        // FALLBACK: Old hardcoded implementation (only if database is empty)
         // Mapping nama yang wajib digunakan (tidak akan diganti oleh matching database)
         // Format: 'nama yang dicari' => 'nama yang wajib ditampilkan'
         $mandatoryNames = [

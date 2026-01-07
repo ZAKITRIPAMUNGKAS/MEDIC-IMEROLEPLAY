@@ -1,8 +1,6 @@
-@extends('layouts.app')
+<?php $__env->startSection('title', 'Edit Staf - Portal Medis MPK-BA'); ?>
 
-@section('title', 'Edit Staf - Portal Medis MPK-BA')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
     <div class="relative min-h-screen py-8 px-4 sm:px-6 lg:px-8">
         <div class="absolute inset-0 bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700"></div>
         <div class="absolute inset-0 bg-black bg-opacity-20"></div>
@@ -15,7 +13,7 @@
                         <h1 class="text-3xl md:text-4xl font-bold text-white mb-2">Edit Data Staf</h1>
                         <p class="text-sky-200 text-lg">Perbarui informasi dan pengaturan akun staf</p>
                     </div>
-                    <a href="{{ route('admin.staff.index') }}"
+                    <a href="<?php echo e(route('admin.staff.index')); ?>"
                         class="inline-flex items-center px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white/20">
                         <i class="fas fa-arrow-left mr-2"></i>Kembali
                     </a>
@@ -29,10 +27,11 @@
                             <i class="fas fa-user text-white text-lg"></i>
                         </div>
                         <div>
-                            <p class="text-white font-semibold text-lg">{{ $user->name }}</p>
-                            <p class="text-gray-300 text-sm">{{ $user->email }}</p>
+                            <p class="text-white font-semibold text-lg"><?php echo e($user->name); ?></p>
+                            <p class="text-gray-300 text-sm"><?php echo e($user->email); ?></p>
                             <p class="text-gray-400 text-xs">Terakhir diperbarui:
-                                {{ optional($user->updated_at)->format('d M Y, H:i') ?? '-' }}
+                                <?php echo e(optional($user->updated_at)->format('d M Y, H:i') ?? '-'); ?>
+
                             </p>
                         </div>
                     </div>
@@ -41,10 +40,10 @@
 
             <!-- Form Section -->
             <div class="glass-effect rounded-2xl elegant-shadow-lg p-6 md:p-8">
-                <form method="POST" action="{{ route('admin.staff.update', $user) }}" enctype="multipart/form-data"
+                <form method="POST" action="<?php echo e(route('admin.staff.update', $user)); ?>" enctype="multipart/form-data"
                     class="space-y-8">
-                    @csrf
-                    @method('PUT')
+                    <?php echo csrf_field(); ?>
+                    <?php echo method_field('PUT'); ?>
 
                     <!-- Personal Information -->
                     <div class="space-y-6">
@@ -56,28 +55,44 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label class="block text-sm font-medium text-gray-300 mb-3">Nama Lengkap</label>
-                                <input type="text" name="name" value="{{ old('name', $user->name) }}"
+                                <input type="text" name="name" value="<?php echo e(old('name', $user->name)); ?>"
                                     placeholder="Masukkan nama lengkap"
                                     class="w-full bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 transition-all duration-300"
                                     required>
-                                @error('name')
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                     <p class="text-red-300 text-sm mt-2 flex items-center">
-                                        <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
+                                        <i class="fas fa-exclamation-circle mr-1"></i><?php echo e($message); ?>
+
                                     </p>
-                                @enderror
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
 
                             <div>
                                 <label class="block text-sm font-medium text-gray-300 mb-3">Email</label>
-                                <input type="email" name="email" value="{{ old('email', $user->email) }}"
+                                <input type="email" name="email" value="<?php echo e(old('email', $user->email)); ?>"
                                     placeholder="contoh@email.com"
                                     class="w-full bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 transition-all duration-300"
                                     required>
-                                @error('email')
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                     <p class="text-red-300 text-sm mt-2 flex items-center">
-                                        <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
+                                        <i class="fas fa-exclamation-circle mr-1"></i><?php echo e($message); ?>
+
                                     </p>
-                                @enderror
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
 
                             <div>
@@ -85,16 +100,24 @@
                                 <select name="hospital"
                                     class="w-full bg-white/10 text-white border border-white/20 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 transition-all duration-300 appearance-none"
                                     required>
-                                    <option value="alta" @selected(old('hospital', $user->hospital ?? 'alta') == 'alta')
+                                    <option value="alta" <?php if(old('hospital', $user->hospital ?? 'alta') == 'alta'): echo 'selected'; endif; ?>
                                         class="bg-slate-800 text-slate-100">Alta Hospital (EMS)</option>
-                                    <option value="roxwood" @selected(old('hospital', $user->hospital) == 'roxwood')
+                                    <option value="roxwood" <?php if(old('hospital', $user->hospital) == 'roxwood'): echo 'selected'; endif; ?>
                                         class="bg-slate-800 text-slate-100">Roxwood Hospital</option>
                                 </select>
-                                @error('hospital')
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['hospital'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                     <p class="text-red-300 text-sm mt-2 flex items-center">
-                                        <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
+                                        <i class="fas fa-exclamation-circle mr-1"></i><?php echo e($message); ?>
+
                                     </p>
-                                @enderror
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -124,11 +147,19 @@
                                         <i class="fas fa-eye" id="password-eye"></i>
                                     </button>
                                 </div>
-                                @error('password')
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                     <p class="text-red-300 text-sm mt-2 flex items-center">
-                                        <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
+                                        <i class="fas fa-exclamation-circle mr-1"></i><?php echo e($message); ?>
+
                                     </p>
-                                @enderror
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
 
                             <div>
@@ -157,13 +188,14 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-300 mb-3">Foto Profil Saat Ini</label>
                                 <div class="flex items-center space-x-4">
-                                    <img src="{{ $user->profile_image_url }}" alt="{{ $user->name }}"
-                                        onerror="this.onerror=null;this.src='{{ asset('profile.jpg') }}';"
+                                    <img src="<?php echo e($user->profile_image_url); ?>" alt="<?php echo e($user->name); ?>"
+                                        onerror="this.onerror=null;this.src='<?php echo e(asset('profile.jpg')); ?>';"
                                         class="w-20 h-20 rounded-full border-4 border-sky-400 object-cover">
                                     <div>
-                                        <p class="text-white text-sm font-medium">{{ $user->name }}</p>
+                                        <p class="text-white text-sm font-medium"><?php echo e($user->name); ?></p>
                                         <p class="text-gray-300 text-xs">
-                                            {{ $user->role->display_name ?? $user->role->name ?? 'Staff' }}
+                                            <?php echo e($user->role->display_name ?? $user->role->name ?? 'Staff'); ?>
+
                                         </p>
                                     </div>
                                 </div>
@@ -180,11 +212,19 @@
                                         Kosongkan jika tidak ingin mengubah foto
                                     </div>
                                 </div>
-                                @error('profile_image')
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['profile_image'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                     <p class="text-red-300 text-sm mt-2 flex items-center">
-                                        <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
+                                        <i class="fas fa-exclamation-circle mr-1"></i><?php echo e($message); ?>
+
                                     </p>
-                                @enderror
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -202,46 +242,27 @@
                                 <select name="role_id"
                                     class="w-full bg-white/10 text-white border border-white/20 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 transition-all duration-300 appearance-none"
                                     required>
-                                    @foreach($roles as $role)
-                                        <option value="{{ $role->id }}" @selected(old('role_id', $user->role_id) == $role->id)
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $roles; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $role): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <option value="<?php echo e($role->id); ?>" <?php if(old('role_id', $user->role_id) == $role->id): echo 'selected'; endif; ?>
                                             class="bg-slate-800 text-slate-100">
-                                            {{ $role->display_name ?? $role->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('role_id')
-                                    <p class="text-red-300 text-sm mt-2 flex items-center">
-                                        <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
+                                            <?php echo e($role->display_name ?? $role->name); ?>
 
-                            <div>
-                                <label class="block text-sm font-medium text-gray-300 mb-3">
-                                    <i class="fas fa-money-bill-wave mr-2"></i>Gaji Per Minggu (Custom)
-                                </label>
-                                <div class="relative">
-                                    <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-                                    <input type="number" name="custom_salary" id="custom_salary"
-                                        value="{{ old('custom_salary', $user->custom_salary) }}"
-                                        placeholder="Otomatis dari role" step="0.01" min="0"
-                                        class="w-full bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded-lg pl-10 pr-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 transition-all duration-300">
-                                </div>
-                                <div class="mt-2 space-y-1">
-                                    <p class="text-gray-400 text-xs flex items-center">
-                                        <i class="fas fa-info-circle mr-1"></i>
-                                        Default gaji role: <span id="role-salary"
-                                            class="font-semibold text-green-400 ml-1">Loading...</span>
-                                    </p>
-                                    <p class="text-gray-400 text-xs">
-                                        Kosongkan untuk menggunakan default, atau isi untuk custom salary
-                                    </p>
-                                </div>
-                                @error('custom_salary')
+                                        </option>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                </select>
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['role_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
                                     <p class="text-red-300 text-sm mt-2 flex items-center">
-                                        <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
+                                        <i class="fas fa-exclamation-circle mr-1"></i><?php echo e($message); ?>
+
                                     </p>
-                                @enderror
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
 
                             <div>
@@ -249,13 +270,13 @@
                                 <div class="flex items-center space-x-6">
                                     <label class="flex items-center cursor-pointer">
                                         <input id="is_active" type="checkbox" name="is_active" value="1" class="sr-only"
-                                            @checked(old('is_active', $user->is_active))>
+                                            <?php if(old('is_active', $user->is_active)): echo 'checked'; endif; ?>>
                                         <div class="relative">
                                             <div
-                                                class="w-12 h-6 {{ old('is_active', $user->is_active) ? 'bg-green-500' : 'bg-gray-500' }} rounded-full shadow-inner">
+                                                class="w-12 h-6 <?php echo e(old('is_active', $user->is_active) ? 'bg-green-500' : 'bg-gray-500'); ?> rounded-full shadow-inner">
                                             </div>
                                             <div
-                                                class="absolute top-1 {{ old('is_active', $user->is_active) ? 'left-7' : 'left-1' }} w-4 h-4 bg-white rounded-full shadow transform transition-transform duration-200 ease-in-out">
+                                                class="absolute top-1 <?php echo e(old('is_active', $user->is_active) ? 'left-7' : 'left-1'); ?> w-4 h-4 bg-white rounded-full shadow transform transition-transform duration-200 ease-in-out">
                                             </div>
                                         </div>
                                         <span class="ml-3 text-sm font-medium text-gray-300">Aktif</span>
@@ -287,7 +308,7 @@
                                 <label class="flex items-center cursor-pointer">
                                     <input type="checkbox" name="custom_permissions[]" value="access_live_chat"
                                         class="w-5 h-5 text-cyan-500 bg-white/10 border-white/20 rounded focus:ring-2 focus:ring-cyan-400"
-                                        @checked(in_array('access_live_chat', old('custom_permissions', $user->custom_permissions ?? [])))>
+                                        <?php if(in_array('access_live_chat', old('custom_permissions', $user->custom_permissions ?? []))): echo 'checked'; endif; ?>>
                                     <div class="ml-3">
                                         <span class="text-white font-medium flex items-center">
                                             <i class="fas fa-comments text-cyan-400 mr-2"></i>
@@ -304,7 +325,7 @@
                                 <label class="flex items-center cursor-pointer">
                                     <input type="checkbox" name="custom_permissions[]" value="access_feedback"
                                         class="w-5 h-5 text-purple-500 bg-white/10 border-white/20 rounded focus:ring-2 focus:ring-purple-400"
-                                        @checked(in_array('access_feedback', old('custom_permissions', $user->custom_permissions ?? [])))>
+                                        <?php if(in_array('access_feedback', old('custom_permissions', $user->custom_permissions ?? []))): echo 'checked'; endif; ?>>
                                     <div class="ml-3">
                                         <span class="text-white font-medium flex items-center">
                                             <i class="fas fa-paper-plane text-purple-400 mr-2"></i>
@@ -320,7 +341,7 @@
                     <!-- Action Buttons -->
                     <div
                         class="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-6 border-t border-white/10">
-                        <a href="{{ route('admin.staff.index') }}"
+                        <a href="<?php echo e(route('admin.staff.index')); ?>"
                             class="inline-flex items-center justify-center px-6 py-3 bg-white/10 text-white rounded-lg border border-white/20 hover:bg-white/20 transition-all duration-300 font-medium">
                             <i class="fas fa-times mr-2"></i>Batal
                         </a>
@@ -371,32 +392,6 @@
                 }
             });
         });
-
-        // Fetch and display role salary when role changes
-        const roleSelect = document.querySelector('select[name="role_id"]');
-        const salaryDisplay = document.getElementById('role-salary');
-        const customSalaryInput = document.getElementById('custom_salary');
-
-        // Role salary mapping (fetched from backend)
-        const roleSalaries = @json($roles->mapWithKeys(function ($role) {
-            $salary = \App\Models\SalarySetting::where('role_name', $role->name)->first();
-            return [$role->id => $salary ? $salary->idr_per_week : 0];
-        }));
-
-        function updateRoleSalary() {
-            const selectedRoleId = roleSelect.value;
-            const salary = roleSalaries[selectedRoleId] || 0;
-            salaryDisplay.textContent = '$' + Number(salary).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-
-            // Set placeholder to show default
-            if (!customSalaryInput.value) {
-                customSalaryInput.placeholder = `Default: $${Number(salary).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-            }
-        }
-
-        roleSelect.addEventListener('change', updateRoleSalary);
-
-        // Initial load
-        updateRoleSalary();
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\website\EMS-IME\public_html\resources\views/admin/staff/edit.blade.php ENDPATH**/ ?>
