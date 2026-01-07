@@ -55,29 +55,199 @@
             </header>
 
             <!-- Organizational Chart Structure -->
-            <section class="relative" aria-label="Struktur Organisasi">
-                @php
-                    $levelColors = [
-                        'level_0' => ['gradient' => 'from-purple-500 via-pink-500 to-rose-500', 'icon' => 'fa-crown', 'glow' => 'purple'],
-                        'level_1' => ['gradient' => 'from-red-500 via-orange-500 to-amber-500', 'icon' => 'fa-user-tie', 'glow' => 'red'],
-                        'level_2' => ['gradient' => 'from-orange-500 via-yellow-500 to-lime-500', 'icon' => 'fa-user-graduate', 'glow' => 'orange'],
-                        'level_3' => ['gradient' => 'from-blue-500 via-cyan-500 to-teal-500', 'icon' => 'fa-user-md', 'glow' => 'blue'],
-                        'level_4' => ['gradient' => 'from-green-500 via-emerald-500 to-teal-500', 'icon' => 'fa-users', 'glow' => 'green'],
-                        'level_5' => ['gradient' => 'from-indigo-500 via-purple-500 to-pink-500', 'icon' => 'fa-building', 'glow' => 'indigo'],
-                        'level_6' => ['gradient' => 'from-teal-500 via-cyan-500 to-blue-500', 'icon' => 'fa-sitemap', 'glow' => 'teal'],
-                        'level_7' => ['gradient' => 'from-rose-500 via-pink-500 to-purple-500', 'icon' => 'fa-gavel', 'glow' => 'rose']
-                    ];
-                @endphp
+            <section class="relative space-y-24" aria-label="Struktur Organisasi">
+                
+                {{-- 1. HIGH COMMAND SECTION (Pyramid) --}}
+                <div class="relative">
+                    <div class="text-center mb-12">
+                        <h2 class="text-3xl sm:text-4xl font-black text-white uppercase tracking-widest drop-shadow-lg">
+                            <span class="bg-clip-text text-transparent bg-gradient-to-r from-yellow-300 via-orange-300 to-red-300">
+                                High Command
+                            </span>
+                        </h2>
+                        <div class="h-1 w-32 mx-auto bg-gradient-to-r from-transparent via-yellow-400 to-transparent mt-4"></div>
+                    </div>
 
-                @foreach($hierarchy as $levelKey => $levelData)
-                    <!-- Organizational Level Container -->
-                    <article class="relative mb-12 sm:mb-16" role="group" aria-labelledby="level-{{ $loop->index }}-title">
-                        <!-- Connecting Line from previous level -->
-                        @if($loop->index > 0)
-                            <div class="absolute left-1/2 top-0 w-0.5 h-16 sm:h-20 bg-gradient-to-b from-white/40 to-white/20 transform -translate-x-1/2 -translate-y-full z-0"
-                                aria-hidden="true"></div>
-                        @endif
+                    <div class="flex flex-col items-center gap-12 relative z-10">
+                        {{-- LEVEL 0: TOP (CEO, Directors) --}}
+                        <div class="flex flex-wrap justify-center gap-8 md:gap-16">
+                            @foreach($hierarchy['high_command']['top'] as $pos)
+                                <div class="group relative">
+                                    {{-- Card --}}
+                                    <div class="w-64 bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 text-center transform transition-all hover:scale-105 hover:bg-white/20 shadow-2xl">
+                                        {{-- Avatar --}}
+                                        <div class="w-32 h-32 mx-auto mb-4 relative">
+                                            <div class="absolute inset-0 bg-blue-500 rounded-full blur-lg opacity-50 group-hover:opacity-80 transition-opacity"></div>
+                                            @php
+                                                $avatarUrl = $pos->user && $pos->user->profile_image 
+                                                    ? asset('uploads/profile-images/' . basename($pos->user->profile_image)) 
+                                                    : 'https://ui-avatars.com/api/?name=' . urlencode($pos->user ? $pos->user->name : '?') . '&background=0ea5e9&color=fff';
+                                            @endphp
+                                            <img src="{{ $avatarUrl }}" alt="{{ $pos->title }}" 
+                                                 class="w-32 h-32 rounded-full object-cover border-4 border-white/50 relative z-10 shadow-lg"
+                                                 onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ str_replace(' ', '+', $pos->user ? $pos->user->name : '?') }}&background=0ea5e9&color=fff';">
+                                        </div>
+                                        
+                                        {{-- Info --}}
+                                        <h3 class="text-white font-bold text-lg mb-1 leading-tight">{{ $pos->user ? $pos->user->name : 'VACANT' }}</h3>
+                                        <div class="text-sky-300 text-sm font-semibold uppercase tracking-wider mb-2">{{ $pos->title }}</div>
+                                        @if($pos->user && $pos->user->role)
+                                            <span class="inline-block px-3 py-1 bg-blue-600/50 rounded-full text-xs text-blue-100 border border-blue-400/30">
+                                                {{ $pos->user->role->display_name }}
+                                            </span>
+                                        @endif
+                                    </div>
 
+                                    {{-- Connecting Line (Down) --}}
+                                    <div class="absolute left-1/2 -bottom-12 w-0.5 h-12 bg-white/20"></div>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        {{-- Connecting Line (Horizontal for Level 1) --}}
+                        <div class="h-0.5 w-3/4 max-w-4xl bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+
+                        {{-- LEVEL 1: DEPT HEADS (4 Pillars) --}}
+                        <div class="flex flex-wrap justify-center gap-6 md:gap-10">
+                            @foreach($hierarchy['high_command']['heads'] as $pos)
+                                <a href="#dept-{{ $pos->id }}" class="group relative w-56 cursor-pointer">
+                                    {{-- Vertical Line (Up) --}}
+                                    <div class="absolute left-1/2 -top-12 h-12 w-0.5 bg-white/20"></div>
+
+                                    <div class="bg-gradient-to-b from-slate-800/80 to-slate-900/80 backdrop-blur-sm rounded-xl p-5 border border-white/10 text-center hover:border-sky-400/50 transition-all hover:-translate-y-2 shadow-xl">
+                                        <div class="w-24 h-24 mx-auto mb-3">
+                                            @php
+                                                $avatarUrl = $pos->user && $pos->user->profile_image 
+                                                    ? asset('uploads/profile-images/' . basename($pos->user->profile_image)) 
+                                                    : 'https://ui-avatars.com/api/?name=' . urlencode($pos->user ? $pos->user->name : '?') . '&background=6366f1&color=fff';
+                                            @endphp
+                                            <img src="{{ $avatarUrl }}" alt="{{ $pos->title }}" 
+                                                 class="w-24 h-24 rounded-full object-cover border-2 border-sky-400/30 group-hover:border-sky-400 transition-colors"
+                                                 onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ str_replace(' ', '+', $pos->user ? $pos->user->name : '?') }}&background=6366f1&color=fff';">
+                                        </div>
+                                        <h4 class="text-gray-100 font-bold text-sm mb-1 truncate">{{ $pos->user ? $pos->user->name : 'VACANT' }}</h4>
+                                        <div class="text-indigo-300 text-xs font-medium leading-tight">{{ $pos->title }}</div>
+                                    </div>
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                {{-- 2. DEPARTMENT SECTIONS --}}
+                <div class="space-y-32 pt-16">
+                    @foreach($hierarchy['departments'] as $dept)
+                        <div id="dept-{{ $dept['id'] }}" class="relative scroll-mt-32">
+                            {{-- Header --}}
+                            <div class="text-center mb-16 relative">
+                                <h3 class="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter drop-shadow-2xl">
+                                    {{ $dept['title'] }}
+                                </h3>
+                                <div class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-sky-500 rounded-full"></div>
+                                <div class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 w-48 h-1 bg-sky-500/30 rounded-full blur-sm"></div>
+                            </div>
+
+                            {{-- Department Head (Featured) --}}
+                            <div class="flex justify-center mb-16 relative z-10">
+                                <div class="w-80 bg-gradient-to-br from-white/90 to-blue-50/90 backdrop-blur-sm rounded-3xl p-8 text-center shadow-[0_0_50px_rgba(14,165,233,0.3)] border-4 border-white transform hover:scale-105 transition-transform duration-500">
+                                    <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 bg-sky-600 text-white px-6 py-1 rounded-full text-sm font-bold uppercase tracking-widest shadow-lg">
+                                        Department Head
+                                    </div>
+                                    
+                                    <div class="w-40 h-40 mx-auto mb-6 relative">
+                                        <div class="absolute inset-0 bg-sky-400 rounded-full blur-xl opacity-40 animate-pulse"></div>
+                                        @php
+                                            $head = $dept['head'];
+                                            $avatarUrl = $head->user && $head->user->profile_image 
+                                                ? asset('uploads/profile-images/' . basename($head->user->profile_image)) 
+                                                : 'https://ui-avatars.com/api/?name=' . urlencode($head->user ? $head->user->name : '?') . '&background=0ea5e9&color=fff';
+                                        @endphp
+                                        <img src="{{ $avatarUrl }}" 
+                                             class="w-40 h-40 rounded-full object-cover border-4 border-white shadow-xl relative z-10"
+                                             onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ str_replace(' ', '+', $head->user ? $head->user->name : '?') }}&background=0ea5e9&color=fff';">
+                                    </div>
+                                    
+                                    <h4 class="text-2xl font-black text-gray-800 mb-2">{{ $head->user ? $head->user->name : 'VACANT' }}</h4>
+                                    <p class="text-sky-600 font-bold uppercase text-sm mb-4">{{ $head->title }}</p>
+                                    @if($head->user && $head->user->role)
+                                        <span class="inline-block px-4 py-1.5 bg-gray-200 rounded-lg text-gray-700 font-semibold text-xs uppercase tracking-wide">
+                                            {{ $head->user->role->display_name }}
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
+
+                            {{-- Connection Line --}}
+                            <div class="absolute left-1/2 top-[350px] bottom-0 w-0.5 bg-gradient-to-b from-sky-500/50 to-transparent -translate-x-1/2 z-0 hidden md:block"></div>
+
+                            {{-- Units & Staff Grid --}}
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 px-4 relative z-10">
+                                @foreach($dept['units'] as $unit)
+                                    <div class="bg-white/5 backdrop-blur-md rounded-3xl p-8 border border-white/10 hover:bg-white/10 transition-colors">
+                                        <h5 class="text-xl font-bold text-sky-300 mb-6 flex items-center">
+                                            <i class="fas fa-layer-group mr-3 opacity-70"></i>
+                                            {{ $unit['position']->title }}
+                                        </h5>
+
+                                        {{-- Unit Head (if assigned and different from Dept Head) --}}
+                                        @if($unit['position']->user)
+                                            <div class="flex items-center gap-4 mb-6 p-4 bg-black/20 rounded-xl border border-white/5">
+                                                 @php
+                                                    $uHead = $unit['position']->user;
+                                                    $avatarUrl = $uHead->profile_image 
+                                                        ? asset('uploads/profile-images/' . basename($uHead->profile_image)) 
+                                                        : 'https://ui-avatars.com/api/?name=' . urlencode($uHead->name) . '&background=random&color=fff';
+                                                @endphp
+                                                <img src="{{ $avatarUrl }}" class="w-16 h-16 rounded-full object-cover border-2 border-white/20"
+                                                     onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ str_replace(' ', '+', $uHead->name) }}&background=random&color=fff';">
+                                                <div>
+                                                    <div class="text-white font-bold">{{ $uHead->name }}</div>
+                                                    <div class="text-xs text-gray-400 uppercase">Unit Lead</div>
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        {{-- Staff List --}}
+                                        @if($unit['staff']->isNotEmpty())
+                                            <div class="space-y-3">
+                                                @foreach($unit['staff'] as $staffPos)
+                                                    @if($staffPos->user)
+                                                        <div class="flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors">
+                                                            @php
+                                                                $sAvatar = $staffPos->user->profile_image 
+                                                                    ? asset('uploads/profile-images/' . basename($staffPos->user->profile_image)) 
+                                                                    : 'https://ui-avatars.com/api/?name=' . urlencode($staffPos->user->name) . '&background=random&color=fff';
+                                                            @endphp
+                                                            <img src="{{ $sAvatar }}" class="w-10 h-10 rounded-full object-cover border border-white/10"
+                                                                 onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name={{ str_replace(' ', '+', $staffPos->user->name) }}&background=random&color=fff';">
+                                                            <div>
+                                                                <div class="text-gray-200 text-sm font-medium">{{ $staffPos->user->name }}</div>
+                                                                <div class="text-gray-500 text-xs">{{ $staffPos->title }}</div>
+                                                            </div>
+                                                        </div>
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            <div class="text-center py-4 text-gray-500 text-sm italic">
+                                                Belum ada staff assigned
+                                            </div>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                            
+                            {{-- Description / Footer of Section --}}
+                            <div class="mt-12 bg-blue-900/40 rounded-2xl p-6 text-center border border-blue-500/20 max-w-4xl mx-auto backdrop-blur-sm">
+                                <p class="text-blue-200/80 italic">
+                                    "{{ $dept['title'] }} bertanggung jawab atas operasional dan kinerja unit-unit dibawahnya untuk memastikan pelayanan terbaik di EMS Motion Life."
+                                </p>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+            </section>
                         <!-- Level Title -->
                         <div class="text-center mb-8 sm:mb-10 relative z-10">
                             <div
