@@ -12,16 +12,25 @@ class PayrollHelper
      *
      * @param string|null $roleName
      * @param int $totalSeconds
+     * @param float|null $customWeeklySalary
      * @return int
      */
-    public static function computeWeeklySalary(?string $roleName, int $totalSeconds): int
+    public static function computeWeeklySalary(?string $roleName, int $totalSeconds, ?float $customWeeklySalary = null): int
     {
-        if (!$roleName || $totalSeconds <= 0) {
+        if ((!$roleName && !$customWeeklySalary) || $totalSeconds <= 0) {
             return 0;
         }
 
         $salarySetting = SalarySetting::findByRole($roleName);
-        if (!$salarySetting || !$salarySetting->isValidForCalculation()) {
+
+        // If custom salary is provided, use it. If not, check validation.
+        if ($customWeeklySalary > 0) {
+            // If salary setting doesn't exist (e.g. no role), create a dummy one for calculation
+            if (!$salarySetting) {
+                $salarySetting = new SalarySetting();
+            }
+            $salarySetting->weekly_salary = $customWeeklySalary;
+        } elseif (!$salarySetting || !$salarySetting->isValidForCalculation()) {
             return 0;
         }
 
@@ -41,13 +50,18 @@ class PayrollHelper
     }
 
     /**
-     * Get base salary for role
+     * Get base salary for role or custom
      *
      * @param string|null $roleName
+     * @param float|null $customWeeklySalary
      * @return int
      */
-    public static function getBaseSalary(?string $roleName): int
+    public static function getBaseSalary(?string $roleName, ?float $customWeeklySalary = null): int
     {
+        if ($customWeeklySalary > 0) {
+            return (int) $customWeeklySalary;
+        }
+
         if (!$roleName) {
             return 0;
         }
@@ -108,7 +122,7 @@ class PayrollHelper
     ): int {
         $regularPay = min($totalHours, $regularHours) * $hourlyRate;
         $overtimePay = self::calculateOvertimePay($regularHours, $totalHours, $hourlyRate, $overtimeMultiplier);
-        
+
         return (int) ($regularPay + $overtimePay);
     }
 
@@ -124,7 +138,7 @@ class PayrollHelper
     {
         $roleName = $user->role?->name;
         $salarySetting = SalarySetting::findByRole($roleName);
-        
+
         if (!$salarySetting || !$salarySetting->isValidForCalculation()) {
             return [
                 'hourly_rate' => 0,
@@ -183,7 +197,7 @@ class PayrollHelper
         if (!empty($data['period_start']) && !empty($data['period_end'])) {
             $start = \Carbon\Carbon::parse($data['period_start']);
             $end = \Carbon\Carbon::parse($data['period_end']);
-            
+
             if ($end->lt($start)) {
                 $errors[] = 'Period end must be after period start';
             }

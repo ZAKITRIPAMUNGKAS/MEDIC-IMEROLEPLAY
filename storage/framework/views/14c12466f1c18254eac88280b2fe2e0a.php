@@ -1,16 +1,16 @@
-@extends('layouts.app')
 
-@section('title', 'Portal Medis iMe Roleplay - Layanan Medis untuk Komunitas RP')
 
-@section('meta_description', 'Portal Medis iMe Roleplay - Menyediakan perawatan komprehensif untuk semua kebutuhan kesehatan Anda dengan standar profesional tertinggi. Konsultasi Medis. Pemeriksaan umum dan diagnosis.')
+<?php $__env->startSection('title', 'Portal Medis iMe Roleplay - Layanan Medis untuk Komunitas RP'); ?>
 
-@section('meta_keywords', 'ime roleplay, portal medis ime roleplay, ime roleplay medical, motion ime roleplay, gta roleplay, motionlife roleplay, motion ime, portal medis, motion medical center, layanan medis, EMS, medical center roleplay, roleplay medical services')
+<?php $__env->startSection('meta_description', 'Portal Medis iMe Roleplay - Menyediakan perawatan komprehensif untuk semua kebutuhan kesehatan Anda dengan standar profesional tertinggi. Konsultasi Medis. Pemeriksaan umum dan diagnosis.'); ?>
 
-@section('og_title', 'Portal Medis iMe Roleplay - Layanan Medis untuk Komunitas RP')
+<?php $__env->startSection('meta_keywords', 'ime roleplay, portal medis ime roleplay, ime roleplay medical, motion ime roleplay, gta roleplay, motionlife roleplay, motion ime, portal medis, motion medical center, layanan medis, EMS, medical center roleplay, roleplay medical services'); ?>
 
-@section('og_description', 'Portal Medis iMe Roleplay - Menyediakan perawatan komprehensif untuk semua kebutuhan kesehatan Anda dengan standar profesional tertinggi. Konsultasi Medis. Pemeriksaan umum dan diagnosis.')
+<?php $__env->startSection('og_title', 'Portal Medis iMe Roleplay - Layanan Medis untuk Komunitas RP'); ?>
 
-@section('content')
+<?php $__env->startSection('og_description', 'Portal Medis iMe Roleplay - Menyediakan perawatan komprehensif untuk semua kebutuhan kesehatan Anda dengan standar profesional tertinggi. Konsultasi Medis. Pemeriksaan umum dan diagnosis.'); ?>
+
+<?php $__env->startSection('content'); ?>
     <!-- Pop-up Informasi Kenaikan Regulasi -->
     <div id="regulationModal"
         class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4"
@@ -723,12 +723,12 @@
 
             <!-- Hero Image Background -->
             <div class="absolute inset-0 opacity-40">
-                <img src="{{ asset('images/hero.webp') }}" alt="Medical Background" class="w-full h-full object-cover">
+                <img src="<?php echo e(asset('images/hero.webp')); ?>" alt="Medical Background" class="w-full h-full object-cover">
             </div>
 
             <!-- Blurred Medical Illustration Overlay -->
             <div class="absolute inset-0 opacity-20">
-                <img src="{{ asset('images/hero.webp') }}" alt="Medical Background"
+                <img src="<?php echo e(asset('images/hero.webp')); ?>" alt="Medical Background"
                     class="w-full h-full object-cover blur-2xl scale-110">
             </div>
 
@@ -760,7 +760,7 @@
                             <div
                                 class="absolute inset-0 bg-cyan-500/30 rounded-full blur-2xl group-hover:opacity-75 transition-opacity duration-300">
                             </div>
-                            <img src="{{ asset('images/logoime.webp') }}" alt="MOTIONLIFE"
+                            <img src="<?php echo e(asset('images/logoime.webp')); ?>" alt="MOTIONLIFE"
                                 class="relative h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 object-contain drop-shadow-2xl animate-float">
                         </div>
                         <div class="relative group">
@@ -769,7 +769,7 @@
                             </div>
                             <div
                                 class="relative h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 flex items-center justify-center bg-white/15 backdrop-blur-xl rounded-3xl border-2 border-white/30 shadow-2xl animate-float hover:bg-white/25 transition-all duration-300">
-                                <img src="{{ asset('images/motionlife-logo.png') }}" alt="EMS"
+                                <img src="<?php echo e(asset('images/motionlife-logo.png')); ?>" alt="EMS"
                                     class="h-16 w-16 sm:h-20 sm:w-20 lg:h-24 lg:w-24 object-contain">
                             </div>
                         </div>
@@ -816,7 +816,7 @@
                         </button>
 
                         <!-- Struktural EMS Button with Glassmorphism -->
-                        <a href="{{ route('public.struktural-ems') }}"
+                        <a href="<?php echo e(route('public.struktural-ems')); ?>"
                             class="relative z-10 group inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-xl border-2 border-white/25 text-white font-semibold text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-5 rounded-xl shadow-xl hover:bg-white/20 hover:border-white/40 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]">
                             <i class="fas fa-sitemap text-lg"></i>
                             <span>Struktural EMS</span>
@@ -889,7 +889,8 @@
                                     </div>
                                     <div class="text-right">
                                         <p class="text-5xl font-black text-cyan-300 leading-none drop-shadow-lg">
-                                            {{ $onDutyStats['ems'] ?? 0 }}
+                                            <?php echo e($onDutyStats['ems'] ?? 0); ?>
+
                                         </p>
                                         <p class="text-xs font-bold text-cyan-200/90 mt-1 uppercase tracking-wide">Staff
                                             Aktif</p>
@@ -922,7 +923,8 @@
                                     </div>
                                     <div class="text-right">
                                         <p class="text-5xl font-black text-amber-300 leading-none drop-shadow-lg">
-                                            {{ $onDutyStats['roxwood'] ?? 0 }}
+                                            <?php echo e($onDutyStats['roxwood'] ?? 0); ?>
+
                                         </p>
                                         <p class="text-xs font-bold text-amber-200/90 mt-1 uppercase tracking-wide">Staff
                                             Aktif</p>
@@ -966,7 +968,7 @@
                         <i class="fas fa-users text-white text-2xl"></i>
                     </div>
                     <h4 class="text-4xl font-black text-cyan-300 mb-3 drop-shadow-lg leading-none">
-                        {{ number_format($stats['total_forms']) }}+
+                        <?php echo e(number_format($stats['total_forms'])); ?>+
                     </h4>
                     <p class="text-sky-200 font-semibold text-base">Pasien Puas</p>
                 </div>
@@ -977,7 +979,7 @@
                         <i class="fas fa-user-md text-white text-2xl"></i>
                     </div>
                     <h4 class="text-4xl font-black text-emerald-300 mb-3 drop-shadow-lg leading-none">
-                        {{ $stats['total_staff'] }}+
+                        <?php echo e($stats['total_staff']); ?>+
                     </h4>
                     <p class="text-sky-200 font-semibold text-base">Dokter Ahli</p>
                 </div>
@@ -1189,11 +1191,11 @@
                     <p class="text-sky-200/90 mb-6 text-center text-sm sm:text-base leading-relaxed">Konsultasi menyeluruh
                         dengan dokter berpengalaman untuk mendiagnosis dan menangani keluhan kesehatan Anda.</p>
                     <div class="space-y-3">
-                        <a href="{{ route('public.cek-kesehatan') }}"
+                        <a href="<?php echo e(route('public.cek-kesehatan')); ?>"
                             class="block w-full bg-gradient-to-r from-sky-600 to-cyan-600 text-white font-bold text-base py-3.5 px-6 rounded-xl shadow-lg hover:shadow-xl hover:from-sky-500 hover:to-cyan-500 transition-all duration-300 transform hover:scale-[1.02] text-center">
                             <i class="fas fa-file-medical mr-2"></i>Form Surat Kesehatan
                         </a>
-                        <a href="{{ route('public.form', 'janji_temu') }}"
+                        <a href="<?php echo e(route('public.form', 'janji_temu')); ?>"
                             class="block w-full bg-white/10 backdrop-blur-md border-2 border-white/30 text-white font-bold text-base py-3.5 px-6 rounded-xl hover:bg-white/20 hover:border-white/40 transition-all duration-300 transform hover:scale-[1.02] text-center">
                             <i class="fas fa-calendar-check mr-2"></i>Form Janji Temu
                         </a>
@@ -1217,7 +1219,7 @@
                     </div>
                     <p class="text-sky-200/90 mb-6 text-center text-sm sm:text-base leading-relaxed">Prosedur bedah kosmetik
                         yang aman dan dilakukan oleh ahli bedah plastik bersertifikat untuk meningkatkan penampilan.</p>
-                    <a href="{{ route('public.operasi-plastik') }}"
+                    <a href="<?php echo e(route('public.operasi-plastik')); ?>"
                         class="block w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-base py-3.5 px-6 rounded-xl shadow-lg hover:shadow-xl hover:from-emerald-500 hover:to-teal-500 transition-all duration-300 transform hover:scale-[1.02] text-center">
                         <i class="fas fa-user-md mr-2"></i>Form Operasi Plastik
                     </a>
@@ -1241,7 +1243,7 @@
                     <p class="text-sky-200/90 mb-6 text-center text-sm sm:text-base leading-relaxed">Sesi konseling dan
                         terapi bersama psikolog profesional untuk membantu Anda mengatasi masalah kesehatan mental.</p>
                     <div class="space-y-3">
-                        <a href="{{ route('public.surat-psikolog') }}"
+                        <a href="<?php echo e(route('public.surat-psikolog')); ?>"
                             class="block w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold text-base py-3.5 px-6 rounded-xl shadow-lg hover:shadow-xl hover:from-cyan-500 hover:to-blue-500 transition-all duration-300 transform hover:scale-[1.02] text-center">
                             <i class="fas fa-clipboard-check mr-2"></i>Formulir Psikologi
                         </a>
@@ -1267,7 +1269,7 @@
                     <p class="text-sky-200/90 mb-6 text-center text-sm sm:text-base leading-relaxed">Daftarkan karakter Anda
                         untuk layanan medis khusus dan perawatan intensif dalam skenario kritis dengan tim medis
                         berpengalaman.</p>
-                    <a href="{{ route('public.pendaftaran-karakter') }}"
+                    <a href="<?php echo e(route('public.pendaftaran-karakter')); ?>"
                         class="block w-full bg-gradient-to-r from-red-600 to-pink-600 text-white font-bold text-base py-3.5 px-6 rounded-xl shadow-lg hover:shadow-xl hover:from-red-500 hover:to-pink-500 transition-all duration-300 transform hover:scale-[1.02] text-center">
                         <i class="fas fa-user-plus mr-2"></i>Daftar Sekarang
                     </a>
@@ -1326,13 +1328,13 @@
                 </div>
             </div>
 
-            @if(isset($testimonials) && $testimonials->count() > 0)
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($testimonials) && $testimonials->count() > 0): ?>
                 <!-- Single Testimonial Carousel -->
                 <div class="relative max-w-5xl mx-auto px-4">
                     <!-- Testimonial Card Container -->
                     <div class="overflow-hidden rounded-3xl">
                         <div id="testimonialTrack" class="flex transition-transform duration-700 ease-in-out">
-                            @foreach($testimonials as $index => $testimoniItem)
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $testimonials; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $testimoniItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <div class="w-full flex-shrink-0">
                                     <div
                                         class="bg-white/10 backdrop-blur-xl border-2 border-white/20 rounded-3xl p-8 md:p-12 relative overflow-hidden">
@@ -1350,16 +1352,16 @@
                                         <div class="relative z-10">
                                             <!-- Stars -->
                                             <div class="flex items-center gap-1 mb-6">
-                                                @for($i = 1; $i <= 5; $i++)
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php for($i = 1; $i <= 5; $i++): ?>
                                                     <i
-                                                        class="fas fa-star text-2xl {{ $i <= $testimoniItem->rating ? 'text-amber-400' : 'text-white/20' }}"></i>
-                                                @endfor
+                                                        class="fas fa-star text-2xl <?php echo e($i <= $testimoniItem->rating ? 'text-amber-400' : 'text-white/20'); ?>"></i>
+                                                <?php endfor; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                             </div>
 
                                             <!-- Testimonial Text -->
                                             <blockquote
                                                 class="text-white text-xl md:text-2xl leading-relaxed mb-8 font-light italic">
-                                                "{{ $testimoniItem->testimoni }}"
+                                                "<?php echo e($testimoniItem->testimoni); ?>"
                                             </blockquote>
 
                                             <!-- Author Info -->
@@ -1369,26 +1371,29 @@
                                                     <div
                                                         class="w-full h-full rounded-full bg-sky-900 flex items-center justify-center">
                                                         <span class="text-2xl font-bold text-white">
-                                                            {{ strtoupper(substr($testimoniItem->character_name, 0, 1)) }}
+                                                            <?php echo e(strtoupper(substr($testimoniItem->character_name, 0, 1))); ?>
+
                                                         </span>
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <h4 class="text-white font-bold text-lg">{{ $testimoniItem->character_name }}
+                                                    <h4 class="text-white font-bold text-lg"><?php echo e($testimoniItem->character_name); ?>
+
                                                     </h4>
                                                     <p class="text-sky-300 text-sm flex items-center gap-2">
                                                         <i class="fas fa-check-circle text-xs"></i>
                                                         Verified Patient
                                                     </p>
                                                     <p class="text-sky-200/60 text-xs mt-1">
-                                                        {{ $testimoniItem->created_at->diffForHumans() }}
+                                                        <?php echo e($testimoniItem->created_at->diffForHumans()); ?>
+
                                                     </p>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            @endforeach
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
                     </div>
 
@@ -1404,24 +1409,24 @@
 
                     <!-- Dots Indicator -->
                     <div id="dotsContainer" class="flex justify-center gap-3 mt-10">
-                        @foreach($testimonials as $index => $item)
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $testimonials; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <button
                                 class="testimonial-dot w-2.5 h-2.5 rounded-full bg-white/40 hover:bg-sky-400 transition-all duration-300"
-                                data-index="{{ $index }}"></button>
-                        @endforeach
+                                data-index="<?php echo e($index); ?>"></button>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
                 </div>
-            @else
+            <?php else: ?>
                 <div class="text-center text-sky-200/60 py-12 text-lg">Belum ada testimoni.</div>
-            @endif
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
     </div>
 
     </div>
 
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
     <style>
         /* Custom Scrollbar untuk Pop-up */
         .custom-scrollbar::-webkit-scrollbar {
@@ -1553,9 +1558,9 @@
             animation: spin-slow 8s linear infinite;
         }
     </style>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
     <script>
         // --- Regulation Modal Functions ---
         function showRegulationModal() {
@@ -1648,4 +1653,5 @@
         // --- REDESIGNED TESTIMONIAL CAROUSEL ENGINE ---
         // (Removed: Switched to Grid Layout for better visibility of 10+ reviews)
     </script>
-@endpush
+<?php $__env->stopPush(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\website\EMS-IME\public_html\resources\views/public/index.blade.php ENDPATH**/ ?>

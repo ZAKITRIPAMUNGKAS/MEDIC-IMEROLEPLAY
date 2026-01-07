@@ -501,8 +501,9 @@ class PayrollController extends Controller
                 $totalSeconds = $attendances->sum('session_duration');
                 $totalHours = PayrollHelper::convertSecondsToHours($totalSeconds);
                 $roleName = optional($user->role)->name;
-                $baseSalary = PayrollHelper::getBaseSalary($roleName);
-                $calculatedSalary = PayrollHelper::computeWeeklySalary($roleName, $totalSeconds);
+                $customSalary = $user->custom_salary ?? 0;
+                $baseSalary = PayrollHelper::getBaseSalary($roleName, $customSalary);
+                $calculatedSalary = PayrollHelper::computeWeeklySalary($roleName, $totalSeconds, $customSalary);
 
                 // Log for debugging
                 Log::info('Payroll generation calculation', [
@@ -657,8 +658,9 @@ class PayrollController extends Controller
 
             $totalHours = PayrollHelper::convertSecondsToHours($totalSeconds);
             $roleName = optional($payroll->user->role)->name;
-            $baseSalary = PayrollHelper::getBaseSalary($roleName);
-            $calculatedSalary = PayrollHelper::computeWeeklySalary($roleName, $totalSeconds);
+            $customSalary = $payroll->user->custom_salary ?? 0;
+            $baseSalary = PayrollHelper::getBaseSalary($roleName, $customSalary);
+            $calculatedSalary = PayrollHelper::computeWeeklySalary($roleName, $totalSeconds, $customSalary);
 
             $oldSalary = $payroll->calculated_salary;
 
@@ -731,8 +733,9 @@ class PayrollController extends Controller
 
                 $totalHours = PayrollHelper::convertSecondsToHours($totalSeconds);
                 $roleName = optional($payroll->user->role)->name;
-                $baseSalary = PayrollHelper::getBaseSalary($roleName);
-                $calculatedSalary = PayrollHelper::computeWeeklySalary($roleName, $totalSeconds);
+                $customSalary = $payroll->user->custom_salary ?? 0;
+                $baseSalary = PayrollHelper::getBaseSalary($roleName, $customSalary);
+                $calculatedSalary = PayrollHelper::computeWeeklySalary($roleName, $totalSeconds, $customSalary);
 
                 $oldSalary = $payroll->calculated_salary;
                 $totalOldSalary += $oldSalary;

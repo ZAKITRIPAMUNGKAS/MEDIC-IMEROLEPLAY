@@ -1,8 +1,6 @@
-@extends('layouts.app')
+<?php $__env->startSection('title', 'Struktural Organisasi EMS'); ?>
 
-@section('title', 'Struktural Organisasi EMS')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
     <main
         class="min-h-screen bg-gradient-to-br from-sky-900 via-blue-900 to-indigo-900 py-12 sm:py-16 relative overflow-hidden">
         <!-- Animated Background Particles -->
@@ -56,7 +54,7 @@
 
             <!-- Organizational Chart Structure -->
             <section class="relative" aria-label="Struktur Organisasi">
-                @php
+                <?php
                     $levelColors = [
                         'level_0' => ['gradient' => 'from-purple-500 via-pink-500 to-rose-500', 'icon' => 'fa-crown', 'glow' => 'purple'],
                         'level_1' => ['gradient' => 'from-red-500 via-orange-500 to-amber-500', 'icon' => 'fa-user-tie', 'glow' => 'red'],
@@ -67,52 +65,53 @@
                         'level_6' => ['gradient' => 'from-teal-500 via-cyan-500 to-blue-500', 'icon' => 'fa-sitemap', 'glow' => 'teal'],
                         'level_7' => ['gradient' => 'from-rose-500 via-pink-500 to-purple-500', 'icon' => 'fa-gavel', 'glow' => 'rose']
                     ];
-                @endphp
+                ?>
 
-                @foreach($hierarchy as $levelKey => $levelData)
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $hierarchy; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $levelKey => $levelData): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <!-- Organizational Level Container -->
-                    <article class="relative mb-12 sm:mb-16" role="group" aria-labelledby="level-{{ $loop->index }}-title">
+                    <article class="relative mb-12 sm:mb-16" role="group" aria-labelledby="level-<?php echo e($loop->index); ?>-title">
                         <!-- Connecting Line from previous level -->
-                        @if($loop->index > 0)
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($loop->index > 0): ?>
                             <div class="absolute left-1/2 top-0 w-0.5 h-16 sm:h-20 bg-gradient-to-b from-white/40 to-white/20 transform -translate-x-1/2 -translate-y-full z-0"
                                 aria-hidden="true"></div>
-                        @endif
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                         <!-- Level Title -->
                         <div class="text-center mb-8 sm:mb-10 relative z-10">
                             <div
-                                class="inline-flex items-center space-x-5 bg-gradient-to-r {{ $levelColors[$levelKey]['gradient'] ?? 'from-gray-500 to-gray-600' }} text-white px-8 py-5 rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-500 relative overflow-hidden">
+                                class="inline-flex items-center space-x-5 bg-gradient-to-r <?php echo e($levelColors[$levelKey]['gradient'] ?? 'from-gray-500 to-gray-600'); ?> text-white px-8 py-5 rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-500 relative overflow-hidden">
                                 <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-1000"
                                     aria-hidden="true"></div>
-                                <i class="fas {{ $levelColors[$levelKey]['icon'] ?? 'fa-user' }} text-3xl sm:text-4xl relative z-10"
+                                <i class="fas <?php echo e($levelColors[$levelKey]['icon'] ?? 'fa-user'); ?> text-3xl sm:text-4xl relative z-10"
                                     aria-hidden="true"></i>
-                                <h2 id="level-{{ $loop->index }}-title"
-                                    class="text-2xl sm:text-3xl md:text-4xl font-black relative z-10">{{ $levelData['title'] }}
+                                <h2 id="level-<?php echo e($loop->index); ?>-title"
+                                    class="text-2xl sm:text-3xl md:text-4xl font-black relative z-10"><?php echo e($levelData['title']); ?>
+
                                 </h2>
                             </div>
                         </div>
 
-                        @if(isset($levelData['positions']))
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($levelData['positions'])): ?>
                             <!-- Position Cards Section (Level 0, 1, 2) -->
                             <div class="relative">
-                                @php
+                                <?php
                                     $positionCount = count($levelData['positions']);
                                     $isMultiple = $positionCount > 1;
-                                @endphp
+                                ?>
 
                                 <!-- Main vertical line from title -->
                                 <div class="absolute left-1/2 top-0 w-0.5 h-16 sm:h-20 bg-gradient-to-b from-white/40 to-white/20 transform -translate-x-1/2 z-0"
                                     aria-hidden="true"></div>
 
-                                @if($isMultiple)
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isMultiple): ?>
                                     <!-- Horizontal connecting line -->
                                     <div class="absolute left-1/2 top-16 sm:top-20 w-3/4 h-0.5 bg-gradient-to-r from-white/20 via-white/30 to-white/20 transform -translate-x-1/2 z-0"
                                         aria-hidden="true"></div>
-                                @endif
+                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                                 <div class="flex flex-wrap justify-center gap-6 sm:gap-8 relative z-10 pt-20 sm:pt-24">
-                                    @foreach($levelData['positions'] as $position => $name)
-                                        @php
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $levelData['positions']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $position => $name): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <?php
                                             // Normalize names for better matching
                                             $normalizeName = function ($str) {
                                                 return trim(strtolower(preg_replace('/\s+/', ' ', $str)));
@@ -211,21 +210,21 @@
                                                     });
                                                 }
                                             }
-                                        @endphp
+                                        ?>
 
                                         <div class="relative group/item">
-                                            @if($isMultiple)
+                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isMultiple): ?>
                                                 <!-- Vertical line from horizontal line to card -->
                                                 <div class="absolute left-1/2 top-0 w-0.5 h-8 sm:h-10 bg-gradient-to-b from-white/30 to-white/20 transform -translate-x-1/2 -translate-y-full z-0"
                                                     aria-hidden="true"></div>
-                                            @else
+                                            <?php else: ?>
                                                 <!-- Single vertical line from main line to card -->
                                                 <div class="absolute left-1/2 top-0 w-0.5 h-8 sm:h-10 bg-gradient-to-b from-white/30 to-white/20 transform -translate-x-1/2 -translate-y-full z-0"
                                                     aria-hidden="true"></div>
-                                            @endif
+                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                                             <!-- Card glow effect -->
-                                            <div class="absolute -inset-0.5 bg-gradient-to-r {{ $levelColors[$levelKey]['gradient'] ?? 'from-gray-400 to-gray-500' }} rounded-2xl blur opacity-0 group-hover/item:opacity-30 transition-opacity duration-300"
+                                            <div class="absolute -inset-0.5 bg-gradient-to-r <?php echo e($levelColors[$levelKey]['gradient'] ?? 'from-gray-400 to-gray-500'); ?> rounded-2xl blur opacity-0 group-hover/item:opacity-30 transition-opacity duration-300"
                                                 aria-hidden="true"></div>
 
                                             <!-- Position Card -->
@@ -235,76 +234,77 @@
                                                     class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-5 text-center sm:text-left">
                                                     <!-- Profile Image -->
                                                     <div class="relative flex-shrink-0">
-                                                        @if($user)
-                                                            @if($user->profile_image)
-                                                                <div class="absolute inset-0 bg-gradient-to-r {{ $levelColors[$levelKey]['gradient'] ?? 'from-gray-400 to-gray-500' }} rounded-xl blur-md opacity-50 group-hover/item:opacity-75 transition-opacity"
+                                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user): ?>
+                                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user->profile_image): ?>
+                                                                <div class="absolute inset-0 bg-gradient-to-r <?php echo e($levelColors[$levelKey]['gradient'] ?? 'from-gray-400 to-gray-500'); ?> rounded-xl blur-md opacity-50 group-hover/item:opacity-75 transition-opacity"
                                                                     aria-hidden="true"></div>
-                                                                <img src="{{ $user->profile_image_url }}" alt="{{ $name }}"
-                                                                    onerror="this.onerror=null;this.src='{{ asset('profile.jpg') }}';"
+                                                                <img src="<?php echo e($user->profile_image_url); ?>" alt="<?php echo e($name); ?>"
+                                                                    onerror="this.onerror=null;this.src='<?php echo e(asset('profile.jpg')); ?>';"
                                                                     class="relative w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover border-4 border-white shadow-2xl group-hover/item:scale-110 transition-transform duration-300 ring-2 ring-white/50">
-                                                            @else
-                                                                {{-- User ditemukan tapi tidak ada profile_image, tampilkan gambar default --}}
-                                                                <img src="{{ asset('profile.jpg') }}" alt="{{ $name }}"
+                                                            <?php else: ?>
+                                                                
+                                                                <img src="<?php echo e(asset('profile.jpg')); ?>" alt="<?php echo e($name); ?>"
                                                                     class="relative w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover border-4 border-white shadow-2xl group-hover/item:scale-110 transition-transform duration-300 ring-2 ring-white/50">
-                                                            @endif
-                                                        @else
-                                                            {{-- User tidak ditemukan, tampilkan icon default --}}
+                                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                                        <?php else: ?>
+                                                            
                                                             <div
-                                                                class="relative w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br {{ $levelColors[$levelKey]['gradient'] ?? 'from-gray-400 to-gray-500' }} rounded-xl flex items-center justify-center border-4 border-white shadow-2xl group-hover/item:scale-110 transition-transform duration-300">
-                                                                <i class="fas {{ $levelColors[$levelKey]['icon'] ?? 'fa-user' }} text-white text-2xl sm:text-3xl"
+                                                                class="relative w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br <?php echo e($levelColors[$levelKey]['gradient'] ?? 'from-gray-400 to-gray-500'); ?> rounded-xl flex items-center justify-center border-4 border-white shadow-2xl group-hover/item:scale-110 transition-transform duration-300">
+                                                                <i class="fas <?php echo e($levelColors[$levelKey]['icon'] ?? 'fa-user'); ?> text-white text-2xl sm:text-3xl"
                                                                     aria-hidden="true"></i>
                                                             </div>
-                                                        @endif
+                                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                     </div>
 
                                                     <!-- Position Information -->
                                                     <div class="flex-1 min-w-0">
                                                         <h3
                                                             class="text-base sm:text-lg font-black text-gray-800 mb-2 line-clamp-2 group-hover/item:text-gray-900 transition-colors">
-                                                            {{ $position }}</h3>
+                                                            <?php echo e($position); ?></h3>
                                                         <p class="text-sm sm:text-base text-gray-600 break-words font-semibold mb-3">
-                                                            {{ $name }}</p>
-                                                        @if($user && $user->role)
+                                                            <?php echo e($name); ?></p>
+                                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user && $user->role): ?>
                                                             <span
-                                                                class="inline-block px-3 py-1.5 bg-gradient-to-r {{ $levelColors[$levelKey]['gradient'] ?? 'from-gray-400 to-gray-500' }} text-white text-xs rounded-xl font-bold shadow-lg">
-                                                                {{ $user->role->display_name }}
+                                                                class="inline-block px-3 py-1.5 bg-gradient-to-r <?php echo e($levelColors[$levelKey]['gradient'] ?? 'from-gray-400 to-gray-500'); ?> text-white text-xs rounded-xl font-bold shadow-lg">
+                                                                <?php echo e($user->role->display_name); ?>
+
                                                             </span>
-                                                        @endif
+                                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    @endforeach
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
                             </div>
-                        @endif
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                        @if(isset($levelData['departments']) && is_array($levelData['departments']))
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($levelData['departments']) && is_array($levelData['departments'])): ?>
                             <!-- Departments Structure Section (Level 3, 4) -->
                             <div class="relative">
-                                @php
+                                <?php
                                     $deptCount = count($levelData['departments']);
                                     $isMultipleDepts = $deptCount > 1;
-                                @endphp
+                                ?>
 
                                 <!-- Main vertical line from title -->
                                 <div class="absolute left-1/2 top-0 w-0.5 h-16 sm:h-20 bg-gradient-to-b from-white/40 to-white/20 transform -translate-x-1/2 z-0"
                                     aria-hidden="true"></div>
 
-                                @if($isMultipleDepts)
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isMultipleDepts): ?>
                                     <!-- Horizontal connecting line -->
                                     <div class="absolute left-1/2 top-12 sm:top-16 w-0.5 h-8 bg-gradient-to-b from-white/30 to-white/20 transform -translate-x-1/2 z-0"
                                         aria-hidden="true"></div>
                                     <div class="absolute left-1/2 top-20 sm:top-24 h-0.5 bg-gradient-to-r from-white/20 via-white/30 to-white/20 transform -translate-x-1/2 z-0"
                                         style="width: 70%; max-width: 600px;" aria-hidden="true"></div>
-                                @endif
+                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                                 <div
-                                    class="space-y-8 sm:space-y-10 relative z-10 {{ $isMultipleDepts ? 'pt-28 sm:pt-32' : 'pt-16 sm:pt-20' }}">
-                                    @foreach($levelData['departments'] as $deptName => $deptData)
-                                        @if(is_string($deptData))
+                                    class="space-y-8 sm:space-y-10 relative z-10 <?php echo e($isMultipleDepts ? 'pt-28 sm:pt-32' : 'pt-16 sm:pt-20'); ?>">
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $levelData['departments']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $deptName => $deptData): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(is_string($deptData)): ?>
                                             <!-- Simple Department Card (Level 3) -->
-                                            @php
+                                            <?php
                                                 // Normalize names for better matching
                                                 $normalizeName = function ($str) {
                                                     return trim(strtolower(preg_replace('/\s+/', ' ', $str)));
@@ -375,80 +375,81 @@
                                                         });
                                                     }
                                                 }
-                                            @endphp
+                                            ?>
 
                                             <div class="relative">
-                                                @if($isMultipleDepts)
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isMultipleDepts): ?>
                                                     <!-- Vertical line from horizontal line to card -->
                                                     <div class="absolute left-1/2 top-0 w-0.5 h-8 sm:h-10 bg-gradient-to-b from-white/30 to-white/20 transform -translate-x-1/2 -translate-y-full z-0"
                                                         aria-hidden="true"></div>
-                                                @else
+                                                <?php else: ?>
                                                     <!-- Single vertical line from main line to card -->
                                                     <div class="absolute left-1/2 top-0 w-0.5 h-8 sm:h-10 bg-gradient-to-b from-white/30 to-white/20 transform -translate-x-1/2 -translate-y-full z-0"
                                                         aria-hidden="true"></div>
-                                                @endif
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                                                 <div class="relative max-w-2xl mx-auto">
                                                     <div
                                                         class="bg-gradient-to-r from-blue-50 via-cyan-50 to-teal-50 rounded-2xl p-6 border-2 border-blue-200 hover:border-blue-300 transition-all shadow-lg">
                                                         <div class="flex items-center space-x-5">
-                                                            @if($user)
-                                                                @if($user->profile_image)
+                                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user): ?>
+                                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user->profile_image): ?>
                                                                     <div class="relative">
                                                                         <div class="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-xl blur-lg opacity-50"
                                                                             aria-hidden="true"></div>
-                                                                        <img src="{{ $user->profile_image_url }}" alt="{{ $deptData }}"
-                                                                            onerror="this.onerror=null;this.src='{{ asset('profile.jpg') }}';"
+                                                                        <img src="<?php echo e($user->profile_image_url); ?>" alt="<?php echo e($deptData); ?>"
+                                                                            onerror="this.onerror=null;this.src='<?php echo e(asset('profile.jpg')); ?>';"
                                                                             class="relative w-20 h-20 rounded-xl object-cover border-4 border-white shadow-xl">
                                                                     </div>
-                                                                @else
-                                                                    {{-- User ditemukan tapi tidak ada profile_image, tampilkan gambar default --}}
-                                                                    <img src="{{ asset('profile.jpg') }}" alt="{{ $deptData }}"
+                                                                <?php else: ?>
+                                                                    
+                                                                    <img src="<?php echo e(asset('profile.jpg')); ?>" alt="<?php echo e($deptData); ?>"
                                                                         class="w-20 h-20 rounded-xl object-cover border-4 border-white shadow-xl">
-                                                                @endif
-                                                            @else
+                                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                                            <?php else: ?>
                                                                 <div
                                                                     class="w-20 h-20 bg-gradient-to-br from-blue-400 to-cyan-400 rounded-xl flex items-center justify-center border-4 border-white shadow-xl">
                                                                     <i class="fas fa-user-md text-white text-3xl" aria-hidden="true"></i>
                                                                 </div>
-                                                            @endif
+                                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                             <div>
-                                                                <h3 class="text-xl font-black text-gray-800 mb-1">{{ $deptName }}</h3>
-                                                                <p class="text-gray-700 font-bold text-lg mb-1">{{ $deptData }}</p>
-                                                                @if($user && $user->role)
+                                                                <h3 class="text-xl font-black text-gray-800 mb-1"><?php echo e($deptName); ?></h3>
+                                                                <p class="text-gray-700 font-bold text-lg mb-1"><?php echo e($deptData); ?></p>
+                                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user && $user->role): ?>
                                                                     <span
-                                                                        class="text-sm text-gray-500 font-semibold">{{ $user->role->display_name }}</span>
-                                                                @endif
+                                                                        class="text-sm text-gray-500 font-semibold"><?php echo e($user->role->display_name); ?></span>
+                                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        @elseif(is_array($deptData) && !empty($deptData))
+                                        <?php elseif(is_array($deptData) && !empty($deptData)): ?>
                                             <!-- Complex Department Structure (Level 4) -->
                                             <div class="relative">
-                                                @if($isMultipleDepts)
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isMultipleDepts): ?>
                                                     <!-- Vertical line from horizontal line to card -->
                                                     <div class="absolute left-1/2 top-0 w-0.5 h-8 sm:h-10 bg-gradient-to-b from-white/30 to-white/20 transform -translate-x-1/2 -translate-y-full z-0"
                                                         aria-hidden="true"></div>
-                                                @else
+                                                <?php else: ?>
                                                     <!-- Single vertical line from main line to card -->
                                                     <div class="absolute left-1/2 top-0 w-0.5 h-8 sm:h-10 bg-gradient-to-b from-white/30 to-white/20 transform -translate-x-1/2 -translate-y-full z-0"
                                                         aria-hidden="true"></div>
-                                                @endif
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                                                 <div
                                                     class="bg-white/95 backdrop-blur-sm rounded-2xl p-8 sm:p-10 shadow-2xl border-2 border-white/50 hover:border-white/80 transition-all duration-300 hover:shadow-3xl transform hover:-translate-y-1">
                                                     <h3
                                                         class="text-2xl sm:text-3xl md:text-4xl font-black text-gray-800 mb-6 sm:mb-8 pb-6 border-b-4 border-gradient-to-r from-cyan-400 to-blue-400 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent flex items-center justify-center">
                                                         <i class="fas fa-building text-cyan-500 mr-3 text-3xl"
-                                                            aria-hidden="true"></i>{{ $deptName }}
+                                                            aria-hidden="true"></i><?php echo e($deptName); ?>
+
                                                     </h3>
 
                                                     <div class="space-y-6 sm:space-y-8">
-                                                        @foreach($deptData as $sectionName => $sectionData)
-                                                            @if(is_string($sectionData))
-                                                                @php
+                                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $deptData; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $sectionName => $sectionData): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(is_string($sectionData)): ?>
+                                                                <?php
                                                                     // Normalize names for better matching
                                                                     $normalizeName = function ($str) {
                                                                         return trim(strtolower(preg_replace('/\s+/', ' ', $str)));
@@ -474,7 +475,7 @@
                                                                             || str_contains($userName, $normalizedName)
                                                                             || str_contains($normalizedName, $userName);
                                                                     });
-                                                                @endphp
+                                                                ?>
                                                                 <div class="relative">
                                                                     <!-- Vertical line to section -->
                                                                     <div class="absolute left-1/2 top-0 w-0.5 h-6 bg-gradient-to-b from-white/30 to-white/20 transform -translate-x-1/2 -translate-y-full z-0"
@@ -483,33 +484,33 @@
                                                                     <div
                                                                         class="bg-gradient-to-r from-sky-50 via-cyan-50 to-blue-50 rounded-2xl p-6 border-2 border-sky-200 hover:shadow-xl transition-all">
                                                                         <div class="flex items-center space-x-5">
-                                                                            @if($user && $user->profile_image)
-                                                                                <img src="{{ $user->profile_image_url }}" alt="{{ $sectionData }}"
-                                                                                    onerror="this.onerror=null;this.src='{{ asset('profile.jpg') }}';"
+                                                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user && $user->profile_image): ?>
+                                                                                <img src="<?php echo e($user->profile_image_url); ?>" alt="<?php echo e($sectionData); ?>"
+                                                                                    onerror="this.onerror=null;this.src='<?php echo e(asset('profile.jpg')); ?>';"
                                                                                     class="w-16 h-16 rounded-xl object-cover border-3 border-white shadow-lg">
-                                                                            @else
+                                                                            <?php else: ?>
                                                                                 <div
                                                                                     class="w-16 h-16 bg-gradient-to-br from-sky-400 to-cyan-400 rounded-xl flex items-center justify-center border-3 border-white shadow-lg">
                                                                                     <i class="fas fa-user-md text-white text-2xl"
                                                                                         aria-hidden="true"></i>
                                                                                 </div>
-                                                                            @endif
+                                                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                                             <div>
                                                                                 <span
-                                                                                    class="font-black text-gray-800 text-lg">{{ $sectionName }}:</span>
+                                                                                    class="font-black text-gray-800 text-lg"><?php echo e($sectionName); ?>:</span>
                                                                                 <span
-                                                                                    class="text-gray-700 ml-2 font-bold text-lg">{{ $sectionData }}</span>
-                                                                                @if($user && $user->role)
+                                                                                    class="text-gray-700 ml-2 font-bold text-lg"><?php echo e($sectionData); ?></span>
+                                                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user && $user->role): ?>
                                                                                     <div class="mt-2">
                                                                                         <span
-                                                                                            class="text-xs text-gray-500 font-semibold">{{ $user->role->display_name }}</span>
+                                                                                            class="text-xs text-gray-500 font-semibold"><?php echo e($user->role->display_name); ?></span>
                                                                                     </div>
-                                                                                @endif
+                                                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                                             </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            @elseif(is_array($sectionData))
+                                                            <?php elseif(is_array($sectionData)): ?>
                                                                 <div class="relative">
                                                                     <!-- Vertical line to section -->
                                                                     <div class="absolute left-1/2 top-0 w-0.5 h-6 bg-gradient-to-b from-white/30 to-white/20 transform -translate-x-1/2 -translate-y-full z-0"
@@ -521,13 +522,14 @@
                                                                             class="text-xl sm:text-2xl font-black text-gray-800 mb-6 flex items-center justify-center">
                                                                             <i class="fas fa-building text-gray-600 mr-3 text-2xl"
                                                                                 aria-hidden="true"></i>
-                                                                            {{ $sectionName }}
+                                                                            <?php echo e($sectionName); ?>
+
                                                                         </h4>
 
                                                                         <div class="space-y-4 sm:space-y-5">
-                                                                            @foreach($sectionData as $key => $value)
-                                                                                @if(is_string($value))
-                                                                                    @php
+                                                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $sectionData; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(is_string($value)): ?>
+                                                                                    <?php
                                                                                         // Normalize names for better matching
                                                                                         $normalizeName = function ($str) {
                                                                                             return trim(strtolower(preg_replace('/\s+/', ' ', $str)));
@@ -553,41 +555,41 @@
                                                                                                 || str_contains($userName, $normalizedName)
                                                                                                 || str_contains($normalizedName, $userName);
                                                                                         });
-                                                                                    @endphp
+                                                                                    ?>
                                                                                     <div
                                                                                         class="bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all">
                                                                                         <div class="flex items-center space-x-4">
-                                                                                            @if($user && $user->profile_image)
-                                                                                                <img src="{{ $user->profile_image_url }}" alt="{{ $value }}"
-                                                                                                    onerror="this.onerror=null;this.src='{{ asset('profile.jpg') }}';"
+                                                                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user && $user->profile_image): ?>
+                                                                                                <img src="<?php echo e($user->profile_image_url); ?>" alt="<?php echo e($value); ?>"
+                                                                                                    onerror="this.onerror=null;this.src='<?php echo e(asset('profile.jpg')); ?>';"
                                                                                                     class="w-14 h-14 rounded-lg object-cover border-2 border-gray-200 shadow-md">
-                                                                                            @else
+                                                                                            <?php else: ?>
                                                                                                 <div
                                                                                                     class="w-14 h-14 bg-gradient-to-br from-gray-300 to-gray-400 rounded-lg flex items-center justify-center shadow-md">
                                                                                                     <i class="fas fa-user text-white text-lg"
                                                                                                         aria-hidden="true"></i>
                                                                                                 </div>
-                                                                                            @endif
+                                                                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                                                             <div>
                                                                                                 <span
-                                                                                                    class="font-bold text-gray-700 text-base">{{ $key }}:</span>
+                                                                                                    class="font-bold text-gray-700 text-base"><?php echo e($key); ?>:</span>
                                                                                                 <span
-                                                                                                    class="text-gray-600 ml-2 font-semibold">{{ $value }}</span>
-                                                                                                @if($user && $user->role)
+                                                                                                    class="text-gray-600 ml-2 font-semibold"><?php echo e($value); ?></span>
+                                                                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user && $user->role): ?>
                                                                                                     <div class="text-xs text-gray-500 mt-1 font-medium">
-                                                                                                        {{ $user->role->display_name }}</div>
-                                                                                                @endif
+                                                                                                        <?php echo e($user->role->display_name); ?></div>
+                                                                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
-                                                                                @elseif(is_array($value))
+                                                                                <?php elseif(is_array($value)): ?>
                                                                                     <div>
                                                                                         <span
-                                                                                            class="font-black text-gray-800 block mb-4 text-lg">{{ $key }}:</span>
+                                                                                            class="font-black text-gray-800 block mb-4 text-lg"><?php echo e($key); ?>:</span>
                                                                                         <div
                                                                                             class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                                                                                            @foreach($value as $item)
-                                                                                                @php
+                                                                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $value; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                                                                <?php
                                                                                                     // Normalize names for better matching
                                                                                                     $normalizeName = function ($str) {
                                                                                                         return trim(strtolower(preg_replace('/\s+/', ' ', $str)));
@@ -617,57 +619,57 @@
                                                                                                                 || str_contains($normalizedName, $userName);
                                                                                                         });
                                                                                                     }
-                                                                                                @endphp
+                                                                                                ?>
                                                                                                 <div
                                                                                                     class="bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-gray-300 hover:shadow-xl transition-all group transform hover:scale-105">
                                                                                                     <div class="flex items-center space-x-3">
-                                                                                                        @if($user && $user->profile_image)
-                                                                                                            <img src="{{ $user->profile_image_url }}"
-                                                                                                                alt="{{ $item ?: 'Staff' }}"
-                                                                                                                onerror="this.onerror=null;this.src='{{ asset('profile.jpg') }}';"
+                                                                                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user && $user->profile_image): ?>
+                                                                                                            <img src="<?php echo e($user->profile_image_url); ?>"
+                                                                                                                alt="<?php echo e($item ?: 'Staff'); ?>"
+                                                                                                                onerror="this.onerror=null;this.src='<?php echo e(asset('profile.jpg')); ?>';"
                                                                                                                 class="w-12 h-12 rounded-lg object-cover border-2 border-gray-200 group-hover:scale-110 transition-transform shadow-md">
-                                                                                                        @else
+                                                                                                        <?php else: ?>
                                                                                                             <div
                                                                                                                 class="w-12 h-12 bg-gradient-to-br from-gray-300 to-gray-400 rounded-lg flex items-center justify-center shadow-md">
                                                                                                                 <i class="fas fa-user text-white text-sm"
                                                                                                                     aria-hidden="true"></i>
                                                                                                             </div>
-                                                                                                        @endif
+                                                                                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                                                                         <div class="flex-1 min-w-0">
                                                                                                             <span
-                                                                                                                class="text-gray-700 text-sm font-bold block truncate">{{ $item ?: '[Belum diisi]' }}</span>
-                                                                                                            @if($user && $user->role)
+                                                                                                                class="text-gray-700 text-sm font-bold block truncate"><?php echo e($item ?: '[Belum diisi]'); ?></span>
+                                                                                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user && $user->role): ?>
                                                                                                                 <span
-                                                                                                                    class="text-xs text-gray-500 font-medium">{{ $user->role->display_name }}</span>
-                                                                                                            @endif
+                                                                                                                    class="text-xs text-gray-500 font-medium"><?php echo e($user->role->display_name); ?></span>
+                                                                                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 </div>
-                                                                                            @endforeach
+                                                                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                                                         </div>
                                                                                     </div>
-                                                                                @endif
-                                                                            @endforeach
+                                                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            @endif
-                                                        @endforeach
+                                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                     </div>
                                                 </div>
                                             </div>
-                                        @endif
-                                    @endforeach
+                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
                             </div>
-                        @endif
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </article>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             </section>
 
             <!-- Staff by Role Section -->
             <section class="mt-20 sm:mt-24 space-y-20" aria-label="Staff Berdasarkan Peran">
-                @php
+                <?php
                     $roleConfigs = [
                         'manajer' => ['title' => 'Manajer', 'icon' => 'fa-briefcase', 'gradient' => 'from-emerald-500 via-teal-500 to-cyan-500', 'bg' => 'from-emerald-50 to-teal-50'],
                         'staff_manager' => ['title' => 'Staff Manager', 'icon' => 'fa-user-tie', 'gradient' => 'from-green-500 via-emerald-500 to-teal-500', 'bg' => 'from-green-50 to-emerald-50'],
@@ -688,9 +690,9 @@
                         'perawat' => ['gradient' => 'from-amber-600 via-orange-600 to-yellow-600'],
                         'trainee' => ['gradient' => 'from-yellow-600 via-amber-600 to-orange-600'],
                     ];
-                @endphp
+                ?>
 
-                @php
+                <?php
                     // Check if there's any Roxwood staff
                     $hasAnyRoxwood = false;
                     foreach ($roleConfigs as $roleKey => $config) {
@@ -699,34 +701,34 @@
                             break;
                         }
                     }
-                @endphp
+                ?>
 
                 <!-- EMS Staff Sections (All Roles) -->
-                @foreach($roleConfigs as $roleKey => $config)
-                    @php
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $roleConfigs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $roleKey => $config): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php
                         $hasEms = isset($staffByRoleEms[$roleKey]) && $staffByRoleEms[$roleKey]->count() > 0;
-                    @endphp
+                    ?>
 
-                    @if($hasEms)
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($hasEms): ?>
                         <div class="relative mb-14">
                             <!-- Section Container -->
                             <div
                                 class="relative bg-white/5 backdrop-blur-sm rounded-3xl border border-white/10 p-6 sm:p-8 md:p-10 overflow-hidden">
                                 <!-- Subtle Background -->
-                                <div class="absolute inset-0 bg-gradient-to-br {{ $config['gradient'] }} opacity-[0.08]"></div>
+                                <div class="absolute inset-0 bg-gradient-to-br <?php echo e($config['gradient']); ?> opacity-[0.08]"></div>
 
                                 <!-- Section Header -->
                                 <header class="relative mb-8">
                                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                                         <div class="flex items-center gap-4">
                                             <div
-                                                class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br {{ $config['gradient'] }} flex items-center justify-center shadow-lg">
-                                                <i class="fas {{ $config['icon'] }} text-white text-xl sm:text-2xl"
+                                                class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br <?php echo e($config['gradient']); ?> flex items-center justify-center shadow-lg">
+                                                <i class="fas <?php echo e($config['icon']); ?> text-white text-xl sm:text-2xl"
                                                     aria-hidden="true"></i>
                                             </div>
                                             <div>
                                                 <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1">
-                                                    {{ $config['title'] }}</h2>
+                                                    <?php echo e($config['title']); ?></h2>
                                                 <p class="text-white/70 text-sm sm:text-base font-medium">Emergency Medical Services
                                                 </p>
                                             </div>
@@ -735,7 +737,7 @@
                                             <div class="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
                                                 <span class="text-white font-semibold text-sm sm:text-base">
                                                     <i class="fas fa-users mr-2"
-                                                        aria-hidden="true"></i>{{ $staffByRoleEms[$roleKey]->count() }} Staff
+                                                        aria-hidden="true"></i><?php echo e($staffByRoleEms[$roleKey]->count()); ?> Staff
                                                 </span>
                                             </div>
                                         </div>
@@ -745,62 +747,64 @@
                                 <!-- Staff Grid -->
                                 <div
                                     class="relative grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-5">
-                                    @foreach($staffByRoleEms[$roleKey] as $staff)
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $staffByRoleEms[$roleKey]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $staff): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <article class="group relative">
                                             <div
                                                 class="relative bg-white rounded-xl p-5 sm:p-6 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100">
                                                 <!-- Profile Image -->
                                                 <div class="relative mx-auto mb-4">
                                                     <div class="relative inline-block">
-                                                        @if($staff->isClockedIn())
+                                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($staff->isClockedIn()): ?>
                                                             <!-- Green Ring for Clocked In -->
                                                             <div class="absolute -inset-1.5 rounded-full bg-green-500 animate-pulse opacity-60"
                                                                 aria-hidden="true"></div>
                                                             <div class="absolute -inset-0.5 rounded-full bg-green-400" aria-hidden="true">
                                                             </div>
-                                                        @endif
-                                                        @if($staff->profile_image)
-                                                            <div class="absolute -inset-1 bg-gradient-to-r {{ $config['gradient'] }} rounded-full blur opacity-0 group-hover:opacity-30 transition-opacity"
+                                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($staff->profile_image): ?>
+                                                            <div class="absolute -inset-1 bg-gradient-to-r <?php echo e($config['gradient']); ?> rounded-full blur opacity-0 group-hover:opacity-30 transition-opacity"
                                                                 aria-hidden="true"></div>
-                                                            <img src="{{ $staff->profile_image_url }}" alt="{{ $staff->name }}"
-                                                                onerror="this.onerror=null;this.src='{{ asset('profile.jpg') }}';"
-                                                                class="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-3 {{ $staff->isClockedIn() ? 'border-green-500' : 'border-gray-200' }} group-hover:border-blue-400 transition-all duration-300">
-                                                        @else
+                                                            <img src="<?php echo e($staff->profile_image_url); ?>" alt="<?php echo e($staff->name); ?>"
+                                                                onerror="this.onerror=null;this.src='<?php echo e(asset('profile.jpg')); ?>';"
+                                                                class="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-3 <?php echo e($staff->isClockedIn() ? 'border-green-500' : 'border-gray-200'); ?> group-hover:border-blue-400 transition-all duration-300">
+                                                        <?php else: ?>
                                                             <div
-                                                                class="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-br {{ $config['gradient'] }} flex items-center justify-center border-3 {{ $staff->isClockedIn() ? 'border-green-500' : 'border-gray-200' }}">
-                                                                <i class="fas {{ $config['icon'] }} text-white text-2xl sm:text-3xl"
+                                                                class="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-br <?php echo e($config['gradient']); ?> flex items-center justify-center border-3 <?php echo e($staff->isClockedIn() ? 'border-green-500' : 'border-gray-200'); ?>">
+                                                                <i class="fas <?php echo e($config['icon']); ?> text-white text-2xl sm:text-3xl"
                                                                     aria-hidden="true"></i>
                                                             </div>
-                                                        @endif
+                                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                     </div>
                                                 </div>
 
                                                 <!-- Staff Name -->
                                                 <h3
                                                     class="text-sm sm:text-base font-semibold text-gray-800 mb-3 line-clamp-2 text-center leading-snug min-h-[2.5rem] flex items-center justify-center">
-                                                    {{ $staff->name }}
+                                                    <?php echo e($staff->name); ?>
+
                                                 </h3>
 
                                                 <!-- Role Badge -->
-                                                @if($staff->role)
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($staff->role): ?>
                                                     <div class="flex justify-center">
                                                         <span
-                                                            class="inline-block px-3 py-1.5 bg-gradient-to-r {{ $config['gradient'] }} text-white text-xs sm:text-sm rounded-lg font-semibold shadow-sm">
-                                                            {{ $staff->role->display_name }}
+                                                            class="inline-block px-3 py-1.5 bg-gradient-to-r <?php echo e($config['gradient']); ?> text-white text-xs sm:text-sm rounded-lg font-semibold shadow-sm">
+                                                            <?php echo e($staff->role->display_name); ?>
+
                                                         </span>
                                                     </div>
-                                                @endif
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                             </div>
                                         </article>
-                                    @endforeach
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
                             </div>
                         </div>
-                    @endif
-                @endforeach
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                 <!-- Section Divider (if Roxwood exists) -->
-                @if($hasAnyRoxwood)
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($hasAnyRoxwood): ?>
                     <div class="relative flex items-center justify-center py-8 my-8" role="separator"
                         aria-label="Pemisah antara EMS dan Roxwood Hospital">
                         <div class="absolute inset-0 flex items-center" aria-hidden="true">
@@ -813,24 +817,24 @@
                             <div class="w-2 h-2 rounded-full bg-amber-400 animate-pulse" aria-hidden="true"></div>
                         </div>
                     </div>
-                @endif
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                 <!-- Roxwood Hospital Staff Sections (All Roles) -->
-                @foreach($roleConfigs as $roleKey => $config)
-                    @php
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $roleConfigs; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $roleKey => $config): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php
                         $hasRoxwood = isset($staffByRoleRoxwood[$roleKey]) && $staffByRoleRoxwood[$roleKey]->count() > 0;
-                    @endphp
+                    ?>
 
-                    @if($hasRoxwood)
-                        @php
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($hasRoxwood): ?>
+                        <?php
                             $roxwoodGradient = $roxwoodConfigs[$roleKey]['gradient'] ?? 'from-amber-500 via-orange-500 to-yellow-500';
-                        @endphp
+                        ?>
                         <div class="relative mb-14">
                             <!-- Section Container -->
                             <div
                                 class="relative bg-white/5 backdrop-blur-sm rounded-3xl border border-white/10 p-6 sm:p-8 md:p-10 overflow-hidden">
                                 <!-- Subtle Background -->
-                                <div class="absolute inset-0 bg-gradient-to-br {{ $roxwoodGradient }} opacity-[0.08]"
+                                <div class="absolute inset-0 bg-gradient-to-br <?php echo e($roxwoodGradient); ?> opacity-[0.08]"
                                     aria-hidden="true"></div>
 
                                 <!-- Section Header -->
@@ -838,13 +842,13 @@
                                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                                         <div class="flex items-center gap-4">
                                             <div
-                                                class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br {{ $roxwoodGradient }} flex items-center justify-center shadow-lg">
-                                                <i class="fas {{ $config['icon'] }} text-white text-xl sm:text-2xl"
+                                                class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br <?php echo e($roxwoodGradient); ?> flex items-center justify-center shadow-lg">
+                                                <i class="fas <?php echo e($config['icon']); ?> text-white text-xl sm:text-2xl"
                                                     aria-hidden="true"></i>
                                             </div>
                                             <div>
                                                 <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1">
-                                                    {{ $config['title'] }}</h2>
+                                                    <?php echo e($config['title']); ?></h2>
                                                 <p class="text-white/70 text-sm sm:text-base font-medium">Roxwood Hospital</p>
                                             </div>
                                         </div>
@@ -852,7 +856,7 @@
                                             <div class="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
                                                 <span class="text-white font-semibold text-sm sm:text-base">
                                                     <i class="fas fa-users mr-2"
-                                                        aria-hidden="true"></i>{{ $staffByRoleRoxwood[$roleKey]->count() }} Staff
+                                                        aria-hidden="true"></i><?php echo e($staffByRoleRoxwood[$roleKey]->count()); ?> Staff
                                                 </span>
                                             </div>
                                         </div>
@@ -862,64 +866,66 @@
                                 <!-- Staff Grid -->
                                 <div
                                     class="relative grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-5">
-                                    @foreach($staffByRoleRoxwood[$roleKey] as $staff)
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $staffByRoleRoxwood[$roleKey]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $staff): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <article class="group relative">
                                             <div
                                                 class="relative bg-white rounded-xl p-5 sm:p-6 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100">
                                                 <!-- Profile Image -->
                                                 <div class="relative mx-auto mb-4">
                                                     <div class="relative inline-block">
-                                                        @if($staff->isClockedIn())
+                                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($staff->isClockedIn()): ?>
                                                             <!-- Green Ring for Clocked In -->
                                                             <div class="absolute -inset-1.5 rounded-full bg-green-500 animate-pulse opacity-60"
                                                                 aria-hidden="true"></div>
                                                             <div class="absolute -inset-0.5 rounded-full bg-green-400" aria-hidden="true">
                                                             </div>
-                                                        @endif
-                                                        @if($staff->profile_image)
-                                                            <div class="absolute -inset-1 bg-gradient-to-r {{ $roxwoodGradient }} rounded-full blur opacity-0 group-hover:opacity-30 transition-opacity"
+                                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($staff->profile_image): ?>
+                                                            <div class="absolute -inset-1 bg-gradient-to-r <?php echo e($roxwoodGradient); ?> rounded-full blur opacity-0 group-hover:opacity-30 transition-opacity"
                                                                 aria-hidden="true"></div>
-                                                            <img src="{{ $staff->profile_image_url }}" alt="{{ $staff->name }}"
-                                                                onerror="this.onerror=null;this.src='{{ asset('profile.jpg') }}';"
-                                                                class="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-3 {{ $staff->isClockedIn() ? 'border-green-500' : 'border-gray-200' }} group-hover:border-amber-400 transition-all duration-300">
-                                                        @else
+                                                            <img src="<?php echo e($staff->profile_image_url); ?>" alt="<?php echo e($staff->name); ?>"
+                                                                onerror="this.onerror=null;this.src='<?php echo e(asset('profile.jpg')); ?>';"
+                                                                class="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-3 <?php echo e($staff->isClockedIn() ? 'border-green-500' : 'border-gray-200'); ?> group-hover:border-amber-400 transition-all duration-300">
+                                                        <?php else: ?>
                                                             <div
-                                                                class="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-br {{ $roxwoodGradient }} flex items-center justify-center border-3 {{ $staff->isClockedIn() ? 'border-green-500' : 'border-gray-200' }}">
-                                                                <i class="fas {{ $config['icon'] }} text-white text-2xl sm:text-3xl"
+                                                                class="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-br <?php echo e($roxwoodGradient); ?> flex items-center justify-center border-3 <?php echo e($staff->isClockedIn() ? 'border-green-500' : 'border-gray-200'); ?>">
+                                                                <i class="fas <?php echo e($config['icon']); ?> text-white text-2xl sm:text-3xl"
                                                                     aria-hidden="true"></i>
                                                             </div>
-                                                        @endif
+                                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                     </div>
                                                 </div>
 
                                                 <!-- Staff Name -->
                                                 <h3
                                                     class="text-sm sm:text-base font-semibold text-gray-800 mb-3 line-clamp-2 text-center leading-snug min-h-[2.5rem] flex items-center justify-center">
-                                                    {{ $staff->name }}
+                                                    <?php echo e($staff->name); ?>
+
                                                 </h3>
 
                                                 <!-- Role Badge -->
-                                                @if($staff->role)
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($staff->role): ?>
                                                     <div class="flex justify-center">
                                                         <span
-                                                            class="inline-block px-3 py-1.5 bg-gradient-to-r {{ $roxwoodGradient }} text-white text-xs sm:text-sm rounded-lg font-semibold shadow-sm">
-                                                            {{ $staff->role->display_name }}
+                                                            class="inline-block px-3 py-1.5 bg-gradient-to-r <?php echo e($roxwoodGradient); ?> text-white text-xs sm:text-sm rounded-lg font-semibold shadow-sm">
+                                                            <?php echo e($staff->role->display_name); ?>
+
                                                         </span>
                                                     </div>
-                                                @endif
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                             </div>
                                         </article>
-                                    @endforeach
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
                             </div>
                         </div>
-                    @endif
-                @endforeach
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             </section>
 
             <!-- Back Button -->
             <nav class="mt-16 sm:mt-20 text-center" aria-label="Navigasi kembali">
-                <a href="{{ route('public.index') }}"
+                <a href="<?php echo e(route('public.index')); ?>"
                     class="group relative inline-flex items-center space-x-4 bg-white/10 backdrop-blur-xl hover:bg-white/20 text-white px-10 py-5 rounded-2xl font-black text-lg transition-all duration-300 transform hover:scale-105 shadow-2xl border-2 border-white/30 hover:border-white/50 overflow-hidden">
                     <div class="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
                         aria-hidden="true"></div>
@@ -930,7 +936,7 @@
         </div>
     </main>
 
-    @push('styles')
+    <?php $__env->startPush('styles'); ?>
         <style>
             @keyframes pulse-slow {
 
@@ -1024,5 +1030,6 @@
                 background: linear-gradient(180deg, #0891b2, #2563eb);
             }
         </style>
-    @endpush
-@endsection
+    <?php $__env->stopPush(); ?>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\website\EMS-IME\public_html\resources\views/public/struktural-ems.blade.php ENDPATH**/ ?>

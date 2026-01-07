@@ -369,40 +369,38 @@ class PublicController extends Controller
             'form_data.occupation' => 'nullable|string|max:255',
             'form_data.phone_number' => 'nullable|string|max:20',
             // Validasi dokter_name wajib untuk surat kesehatan, tes psikologi, surat psikolog, dan operasi plastik
-            'form_data.doctor_name' => 'required_if:form_type,surat_kesehatan,tes_psikologi,operasi_plastik|string|max:255|filled',
+            'form_data.doctor_name' => 'required_if:form_type,surat_kesehatan,tes_psikologi,surat_psikolog,operasi_plastik|string|max:255|filled',
             // Validasi untuk tes psikologi
-            'form_data.bigfive1' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:5',
-            'form_data.bigfive2' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:5',
-            'form_data.bigfive3' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:5',
-            'form_data.bigfive4' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:5',
-            'form_data.bigfive5' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:5',
-            'form_data.bigfive6' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:5',
-            'form_data.bigfive7' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:5',
-            'form_data.bigfive8' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:5',
-            'form_data.bigfive9' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:5',
-            'form_data.bigfive10' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:5',
-            'form_data.stress1' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:0|max:4',
-            'form_data.stress2' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:0|max:4',
-            'form_data.stress3' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:0|max:4',
-            'form_data.stress4' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:0|max:4',
-            'form_data.stress5' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:0|max:4',
-            'form_data.stress6' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:0|max:4',
-            'form_data.stress7' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:0|max:4',
-            'form_data.stress8' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:0|max:4',
-            'form_data.stress9' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:0|max:4',
-            'form_data.stress10' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:0|max:4',
-            'form_data.esteem1' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:4',
-            'form_data.esteem2' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:4',
-            'form_data.esteem3' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:4',
-            'form_data.esteem4' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:4',
-            'form_data.esteem5' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:4',
-            'form_data.esteem6' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:4',
-            'form_data.esteem7' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:4',
-            'form_data.esteem8' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:4',
-            'form_data.esteem9' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:4',
-            'form_data.esteem10' => 'required_if:form_type,tes_psikologi,surat_psikolog|integer|min:1|max:4',
-            // Validasi untuk tes psikologi: harus memilih surat psikolog yang sudah ada
-            'linked_psych_form_id' => 'required_if:form_type,tes_psikologi|nullable|exists:medical_forms,id',
+            'form_data.bigfive1' => 'required_if:form_type,tes_psikologi|integer|min:1|max:5',
+            'form_data.bigfive2' => 'required_if:form_type,tes_psikologi|integer|min:1|max:5',
+            'form_data.bigfive3' => 'required_if:form_type,tes_psikologi|integer|min:1|max:5',
+            'form_data.bigfive4' => 'required_if:form_type,tes_psikologi|integer|min:1|max:5',
+            'form_data.bigfive5' => 'required_if:form_type,tes_psikologi|integer|min:1|max:5',
+            'form_data.bigfive6' => 'required_if:form_type,tes_psikologi|integer|min:1|max:5',
+            'form_data.bigfive7' => 'required_if:form_type,tes_psikologi|integer|min:1|max:5',
+            'form_data.bigfive8' => 'required_if:form_type,tes_psikologi|integer|min:1|max:5',
+            'form_data.bigfive9' => 'required_if:form_type,tes_psikologi|integer|min:1|max:5',
+            'form_data.bigfive10' => 'required_if:form_type,tes_psikologi|integer|min:1|max:5',
+            'form_data.stress1' => 'required_if:form_type,tes_psikologi|integer|min:0|max:4',
+            'form_data.stress2' => 'required_if:form_type,tes_psikologi|integer|min:0|max:4',
+            'form_data.stress3' => 'required_if:form_type,tes_psikologi|integer|min:0|max:4',
+            'form_data.stress4' => 'required_if:form_type,tes_psikologi|integer|min:0|max:4',
+            'form_data.stress5' => 'required_if:form_type,tes_psikologi|integer|min:0|max:4',
+            'form_data.stress6' => 'required_if:form_type,tes_psikologi|integer|min:0|max:4',
+            'form_data.stress7' => 'required_if:form_type,tes_psikologi|integer|min:0|max:4',
+            'form_data.stress8' => 'required_if:form_type,tes_psikologi|integer|min:0|max:4',
+            'form_data.stress9' => 'required_if:form_type,tes_psikologi|integer|min:0|max:4',
+            'form_data.stress10' => 'required_if:form_type,tes_psikologi|integer|min:0|max:4',
+            'form_data.esteem1' => 'required_if:form_type,tes_psikologi|integer|min:1|max:4',
+            'form_data.esteem2' => 'required_if:form_type,tes_psikologi|integer|min:1|max:4',
+            'form_data.esteem3' => 'required_if:form_type,tes_psikologi|integer|min:1|max:4',
+            'form_data.esteem4' => 'required_if:form_type,tes_psikologi|integer|min:1|max:4',
+            'form_data.esteem5' => 'required_if:form_type,tes_psikologi|integer|min:1|max:4',
+            'form_data.esteem6' => 'required_if:form_type,tes_psikologi|integer|min:1|max:4',
+            'form_data.esteem7' => 'required_if:form_type,tes_psikologi|integer|min:1|max:4',
+            'form_data.esteem8' => 'required_if:form_type,tes_psikologi|integer|min:1|max:4',
+            'form_data.esteem9' => 'required_if:form_type,tes_psikologi|integer|min:1|max:4',
+            'form_data.esteem10' => 'required_if:form_type,tes_psikologi|integer|min:1|max:4',
             // Field khusus untuk pendaftaran karakter
             'form_data.jenis_pemakaman' => 'required_if:form_type,pendaftaran_karakter|string|in:Penguburan,Kremasi',
             'form_data.tanggal_wafat' => 'required_if:form_type,pendaftaran_karakter|date',
@@ -424,30 +422,38 @@ class PublicController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        // Validasi 1: Cek apakah surat masih status PENDING (Specific to form type)
-        $pendingForm = MedicalForm::whereRaw('LOWER(character_name) = LOWER(?)', [$request->character_name])
+        // Validasi: Cek apakah karakter dengan nama yang sama sudah mengisi form jenis yang sama hari ini (case-insensitive)
+        // Hanya cek form dengan status 'pending' atau 'approved', form 'rejected' bisa diisi lagi
+        $existingForm = MedicalForm::whereRaw('LOWER(character_name) = LOWER(?)', [$request->character_name])
             ->where('form_type', $request->form_type)
-            ->where('status', 'pending')
+            ->whereDate('created_at', today())
+            ->whereIn('status', ['pending', 'approved'])
             ->first();
 
-        if ($pendingForm) {
-            $errorMessage = "Surat atas nama karakter \"{$request->character_name}\" masih berstatus PENDING (Menunggu Persetujuan). Harap tunggu hingga surat diproses oleh staff kami sebelum mengajukan kembali.";
-            return back()
-                ->withErrors(['character_name' => $errorMessage])
-                ->withInput()
-                ->with('error', $errorMessage);
-        }
+        if ($existingForm) {
+            $formTypeLabels = [
+                'surat_kesehatan' => 'Surat Kesehatan',
+                'operasi_plastik' => 'Operasi Plastik',
+                'tes_psikologi' => 'Tes Psikologi',
+                'surat_psikolog' => 'Surat Psikolog',
+                'pendaftaran_karakter' => 'Pendaftaran Karakter',
+                'konsultasi_medis' => 'Konsultasi Medis',
+                'laporan_kecelakaan' => 'Laporan Kecelakaan',
+                'permintaan_ambulans' => 'Permintaan Ambulans',
+                'penyakit_dalam' => 'Poli Penyakit Dalam',
+                'spesialis_anak' => 'Poli Spesialis Anak',
+                'spesialis_bedah' => 'Poli Spesialis Bedah',
+                'spesialis_mata' => 'Poli Spesialis Mata',
+                'spesialis_saraf' => 'Poli Spesialis Saraf',
+                'spesialis_urologi' => 'Poli Spesialis Urologi',
+                'spesialis_tht' => 'Poli Spesialis THT',
+                'spesialis_ortopedi' => 'Poli Spesialis Ortopedi',
+            ];
 
-        // Validasi 2: Cek apakah user sudah mengisi dalam 24 jam terakhir (Cooldown - Specific to form type)
-        // Kecuali jika statusnya 'rejected' (ditolak), maka boleh mengisi lagi
-        $recentForm = MedicalForm::whereRaw('LOWER(character_name) = LOWER(?)', [$request->character_name])
-            ->where('form_type', $request->form_type)
-            ->where('created_at', '>=', now()->subHours(24))
-            ->where('status', '!=', 'rejected')
-            ->first();
+            $formTypeLabel = $formTypeLabels[$request->form_type] ?? ucfirst(str_replace('_', ' ', $request->form_type));
+            $hospitalName = $request->hospital === 'alta' ? 'Alta Hospital' : 'Roxwood Hospital';
+            $errorMessage = 'Karakter ' . $request->character_name . ' sudah mengisi form ' . $formTypeLabel . ' hari ini. Anda tidak dapat mengirim form yang sama lagi hari ini. Silakan hubungi staff medis di ' . $hospitalName . ' untuk bantuan lebih lanjut.';
 
-        if ($recentForm) {
-            $errorMessage = "Anda sudah membuat formulir ini dalam 24 jam terakhir. Mohon tunggu 24 jam sebelum membuat formulir baru.";
             return back()
                 ->withErrors(['character_name' => $errorMessage])
                 ->withInput()
@@ -520,7 +526,7 @@ class PublicController extends Controller
                 $formData['photo_skb_url'] = $skbUrl;
                 unset($formData['photo_skb']);
             }
-        } elseif (in_array($request->form_type, ['tes_psikologi', 'surat_psikolog'])) {
+        } elseif ($request->form_type === 'tes_psikologi') {
             // Calculate Psychology Test Results
 
             // 1. Big Five Inventory (BFI-10)
@@ -653,15 +659,8 @@ class PublicController extends Controller
 
         $linkedFormId = null;
 
-        // Handle linked psychology form for tes_psikologi (REQUIRED)
-        if ($request->form_type === 'tes_psikologi') {
-            if (!$request->filled('linked_psych_form_id')) {
-                return back()
-                    ->withErrors(['linked_psych_form_id' => 'Anda harus memilih Surat Psikolog yang sudah dibuat sebelumnya.'])
-                    ->withInput()
-                    ->with('error', 'Silakan pilih Surat Psikolog terlebih dahulu sebelum mengisi Tes Psikologi.');
-            }
-
+        // Handle linked psychology form for tes_psikologi
+        if ($request->form_type === 'tes_psikologi' && $request->filled('linked_psych_form_id')) {
             $linkedId = $request->input('linked_psych_form_id');
 
             // Validate the linked form exists and is pending surat_psikolog
@@ -670,42 +669,37 @@ class PublicController extends Controller
                 ->where('status', 'pending')
                 ->first();
 
-            if (!$linkedForm) {
-                return back()
-                    ->withErrors(['linked_psych_form_id' => 'Surat Psikolog tidak ditemukan atau sudah diproses.'])
-                    ->withInput()
-                    ->with('error', 'Surat Psikolog yang dipilih tidak valid atau sudah diproses. Silakan pilih yang lain.');
+            if ($linkedForm) {
+                // Auto-approve the linked psychology letter
+                $linkedForm->update([
+                    'status' => 'approved',
+                    'processed_at' => now(),
+                    'notes' => 'Disetujui otomatis melalui pengisian Tes Psikologi'
+                ]);
+
+                // Link the form
+                $linkedFormId = $linkedId;
+
+                // INHERIT DATA FROM LINKED FORM
+                // Prioritize linked form data over defaults/input
+                $characterName = $linkedForm->character_name;
+                $hospital = $linkedForm->hospital;
+
+                // Inherit form_data fields if available in linked form
+                if (isset($linkedForm->form_data['birth_date']))
+                    $formData['birth_date'] = $linkedForm->form_data['birth_date'];
+                if (isset($linkedForm->form_data['gender']))
+                    $formData['gender'] = $linkedForm->form_data['gender'];
+                if (isset($linkedForm->form_data['age']))
+                    $formData['age'] = $linkedForm->form_data['age'];
+                if (isset($linkedForm->form_data['occupation']))
+                    $formData['occupation'] = $linkedForm->form_data['occupation'];
+                if (isset($linkedForm->form_data['phone_number']))
+                    $formData['phone_number'] = $linkedForm->form_data['phone_number'];
+
+                // Add note to description
+                $description .= "\n\n[AUTO-LINKED] Terhubung dengan Surat Psikolog ID#{$linkedId} (sudah di-approve otomatis)";
             }
-
-            // Auto-approve the linked psychology letter
-            $linkedForm->update([
-                'status' => 'approved',
-                'processed_at' => now(),
-                'notes' => 'Disetujui otomatis melalui pengisian Tes Psikologi'
-            ]);
-
-            // Link the form
-            $linkedFormId = $linkedId;
-
-            // INHERIT DATA FROM LINKED FORM
-            // Prioritize linked form data over defaults/input
-            $characterName = $linkedForm->character_name;
-            $hospital = $linkedForm->hospital;
-
-            // Inherit form_data fields if available in linked form
-            if (isset($linkedForm->form_data['birth_date']))
-                $formData['birth_date'] = $linkedForm->form_data['birth_date'];
-            if (isset($linkedForm->form_data['gender']))
-                $formData['gender'] = $linkedForm->form_data['gender'];
-            if (isset($linkedForm->form_data['age']))
-                $formData['age'] = $linkedForm->form_data['age'];
-            if (isset($linkedForm->form_data['occupation']))
-                $formData['occupation'] = $linkedForm->form_data['occupation'];
-            if (isset($linkedForm->form_data['phone_number']))
-                $formData['phone_number'] = $linkedForm->form_data['phone_number'];
-
-            // Add note to description
-            $description .= "\n\n[AUTO-LINKED] Terhubung dengan Surat Psikolog ID#{$linkedId} (sudah di-approve otomatis)";
         }
 
         // Prepare form creation data
@@ -989,7 +983,7 @@ class PublicController extends Controller
                 ->get(),
             'perawat' => User::where('is_active', true)
                 ->whereHas('role', function ($q) {
-                    $q->whereIn('name', ['perawat', 'paramedic']);
+                    $q->whereIn('name', ['perawat', 'paramedic', 'nurse']);
                 })
                 ->when(!empty($rhUserIds), function ($query) use ($rhUserIds) {
                     return $query->whereNotIn('id', $rhUserIds);
@@ -1058,7 +1052,7 @@ class PublicController extends Controller
             'perawat' => !empty($rhUserIds) ? User::where('is_active', true)
                 ->whereIn('id', $rhUserIds)
                 ->whereHas('role', function ($q) {
-                    $q->whereIn('name', ['perawat', 'paramedic']);
+                    $q->whereIn('name', ['perawat', 'paramedic', 'nurse']);
                 })
                 ->with('role')
                 ->orderBy('name', 'asc')
@@ -1094,74 +1088,6 @@ class PublicController extends Controller
 
     private function buildHierarchy($users)
     {
-        // **DATABASE-DRIVEN HIERARCHY** - Read from organizational_positions table
-        $dbPositions = \App\Models\OrganizationalPosition::with(['user.role', 'parent', 'children.user'])
-            ->active()
-            ->ordered()
-            ->get();
-
-        // If we have positions in database, use them instead of hardcoded data
-        if ($dbPositions->isNotEmpty()) {
-            $positionsByLevel = $dbPositions->groupBy('level');
-            $hierarchy = [];
-
-            foreach ($positionsByLevel as $level => $levelPositions) {
-                $levelKey = 'level_' . $level;
-
-                // Use titles that match organizational structure
-                $levelTitle = "Level {$level}";
-                if ($level == 0)
-                    $levelTitle = "High Command (Pimpinan Tertinggi)";
-                elseif ($level == 1)
-                    $levelTitle = "Kepala Departemen";
-                elseif ($level == 2)
-                    $levelTitle = "Departemen & Unit";
-                elseif ($level >= 3)
-                    $levelTitle = "Staff & Tim";
-
-                $hierarchyLevel = [
-                    'title' => $levelTitle,
-                    'positions' => [],
-                    'departments' => []
-                ];
-
-                // Process ALL positions in this level
-                foreach ($levelPositions as $position) {
-                    $positionTitle = $position->title;
-                    $assignedUser = $position->user ? $position->user->name : '[Belum diisi]';
-
-                    // Check if this position has children (subordinates)
-                    $children = $dbPositions->where('parent_id', $position->id);
-
-                    // Strategy: Level 0-1 always use 'positions' (simple list)
-                    // Level 2+ use 'departments' for positions with subordinates
-                    if ($level <= 1) {
-                        // High Command level - always simple positions (no nesting)
-                        $hierarchyLevel['positions'][$positionTitle] = $assignedUser;
-                    } else {
-                        // Level 2+ - use department structure for positions with subordinates
-                        if ($children->isNotEmpty()) {
-                            // This is a department head with subordinates
-                            $staffNames = $children->filter(fn($c) => $c->user)->map(fn($c) => $c->user->name)->values()->toArray();
-
-                            $hierarchyLevel['departments'][$positionTitle] = [
-                                $positionTitle => $assignedUser,
-                                'Staff' => $staffNames
-                            ];
-                        } else {
-                            // This is a standalone position
-                            $hierarchyLevel['positions'][$positionTitle] = $assignedUser;
-                        }
-                    }
-                }
-
-                $hierarchy[$levelKey] = $hierarchyLevel;
-            }
-
-            return $hierarchy; // Early return with database data
-        }
-
-        // FALLBACK: Old hardcoded implementation (only if database is empty)
         // Mapping nama yang wajib digunakan (tidak akan diganti oleh matching database)
         // Format: 'nama yang dicari' => 'nama yang wajib ditampilkan'
         $mandatoryNames = [
