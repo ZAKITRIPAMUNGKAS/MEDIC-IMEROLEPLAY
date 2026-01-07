@@ -119,7 +119,7 @@
                                             <div class="relative">
                                                 @php
                                                     $avatarUrl = $position->user->profile_image 
-                                                        ? asset('storage/' . $position->user->profile_image) 
+                                                        ? asset('uploads/profile-images/' . basename($position->user->profile_image))
                                                         : 'https://ui-avatars.com/api/?name=' . urlencode($position->user->name) . '&background=0ea5e9&color=fff';
                                                 @endphp
                                                 <img src="{{ $avatarUrl }}" 
@@ -211,7 +211,7 @@
                                     echo '<div class="relative flex-shrink-0">';
                                         if ($user) {
                                             $avatarUrl = $user->profile_image 
-                                                ? asset('storage/' . $user->profile_image) 
+                                                ? asset('uploads/profile-images/' . basename($user->profile_image))
                                                 : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=0ea5e9&color=fff';
                                             echo "<img src='$avatarUrl' alt='{$user->name}' class='w-12 h-12 rounded-full border-2 border-green-500/50 object-cover'>";
                                         } else {
