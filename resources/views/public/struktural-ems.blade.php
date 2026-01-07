@@ -248,77 +248,200 @@
                 </div>
 
             </section>
-                        <!-- Level Title -->
-                        <div class="text-center mb-8 sm:mb-10 relative z-10">
+            <!-- Staff by Role Section -->
+            <section class="mt-20 sm:mt-24 space-y-20" aria-label="Staff Berdasarkan Peran">
+                @php
+                    $roleConfigs = [
+                        'manajer' => ['title' => 'Manajer', 'icon' => 'fa-briefcase', 'gradient' => 'from-emerald-500 via-teal-500 to-cyan-500', 'bg' => 'from-emerald-50 to-teal-50'],
+                        'staff_manager' => ['title' => 'Staff Manager', 'icon' => 'fa-user-tie', 'gradient' => 'from-green-500 via-emerald-500 to-teal-500', 'bg' => 'from-green-50 to-emerald-50'],
+                        'dokter_spesialis' => ['title' => 'Dokter Spesialis', 'icon' => 'fa-user-md', 'gradient' => 'from-blue-500 via-indigo-500 to-purple-500', 'bg' => 'from-blue-50 to-indigo-50'],
+                        'dokter_umum' => ['title' => 'Dokter Umum', 'icon' => 'fa-stethoscope', 'gradient' => 'from-cyan-500 via-blue-500 to-indigo-500', 'bg' => 'from-cyan-50 to-blue-50'],
+                        'co_ass' => ['title' => 'Co-Assistant', 'icon' => 'fa-user-graduate', 'gradient' => 'from-purple-500 via-pink-500 to-rose-500', 'bg' => 'from-purple-50 to-pink-50'],
+                        'perawat' => ['title' => 'Perawat', 'icon' => 'fa-heartbeat', 'gradient' => 'from-pink-500 via-rose-500 to-red-500', 'bg' => 'from-pink-50 to-rose-50'],
+                        'trainee' => ['title' => 'Trainee', 'icon' => 'fa-graduation-cap', 'gradient' => 'from-yellow-500 via-amber-500 to-orange-500', 'bg' => 'from-yellow-50 to-amber-50'],
+                    ];
+
+                    // Konfigurasi warna untuk Roxwood Hospital (warna emas/orange/amber)
+                    $roxwoodConfigs = [
+                        'manajer' => ['gradient' => 'from-amber-700 via-orange-700 to-yellow-700'],
+                        'staff_manager' => ['gradient' => 'from-amber-600 via-orange-600 to-yellow-600'],
+                        'dokter_spesialis' => ['gradient' => 'from-amber-500 via-orange-500 to-yellow-500'],
+                        'dokter_umum' => ['gradient' => 'from-yellow-500 via-amber-500 to-orange-500'],
+                        'co_ass' => ['gradient' => 'from-orange-500 via-red-500 to-amber-500'],
+                        'perawat' => ['gradient' => 'from-amber-600 via-orange-600 to-yellow-600'],
+                        'trainee' => ['gradient' => 'from-yellow-600 via-amber-600 to-orange-600'],
+                    ];
+                @endphp
+
+                @php
+                    // Check if there's any Roxwood staff
+                    $hasAnyRoxwood = false;
+                    foreach ($roleConfigs as $roleKey => $config) {
+                        if (isset($staffByRoleRoxwood[$roleKey]) && $staffByRoleRoxwood[$roleKey]->count() > 0) {
+                            $hasAnyRoxwood = true;
+                            break;
+                        }
+                    }
+                @endphp
+
+                <!-- EMS Staff Sections (All Roles) -->
+                @foreach($roleConfigs as $roleKey => $config)
+                    @php
+                        $hasEms = isset($staffByRoleEms[$roleKey]) && $staffByRoleEms[$roleKey]->count() > 0;
+                    @endphp
+
+                    @if($hasEms)
+                        <div class="relative mb-14">
+                            <!-- Section Container -->
                             <div
-                                class="inline-flex items-center space-x-5 bg-gradient-to-r {{ $levelColors[$levelKey]['gradient'] ?? 'from-gray-500 to-gray-600' }} text-white px-8 py-5 rounded-2xl shadow-2xl transform hover:scale-105 transition-all duration-500 relative overflow-hidden">
-                                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full hover:translate-x-full transition-transform duration-1000"
-                                    aria-hidden="true"></div>
-                                <i class="fas {{ $levelColors[$levelKey]['icon'] ?? 'fa-user' }} text-3xl sm:text-4xl relative z-10"
-                                    aria-hidden="true"></i>
-                                <h2 id="level-{{ $loop->index }}-title"
-                                    class="text-2xl sm:text-3xl md:text-4xl font-black relative z-10">{{ $levelData['title'] }}
-                                </h2>
+                                class="relative bg-white/5 backdrop-blur-sm rounded-3xl border border-white/10 p-6 sm:p-8 md:p-10 overflow-hidden">
+                                <!-- Subtle Background -->
+                                <div class="absolute inset-0 bg-gradient-to-br {{ $config['gradient'] }} opacity-[0.08]"></div>
+
+                                <!-- Section Header -->
+                                <header class="relative mb-8">
+                                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                                        <div class="flex items-center gap-4">
+                                            <div
+                                                class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br {{ $config['gradient'] }} flex items-center justify-center shadow-lg">
+                                                <i class="fas {{ $config['icon'] }} text-white text-xl sm:text-2xl"
+                                                    aria-hidden="true"></i>
+                                            </div>
+                                            <div>
+                                                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1">
+                                                    {{ $config['title'] }}</h2>
+                                                <p class="text-white/70 text-sm sm:text-base font-medium">Emergency Medical Services
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <div class="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
+                                                <span class="text-white font-semibold text-sm sm:text-base">
+                                                    <i class="fas fa-users mr-2"
+                                                        aria-hidden="true"></i>{{ $staffByRoleEms[$roleKey]->count() }} Staff
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </header>
+
+                                <!-- Staff Grid -->
+                                <div
+                                    class="relative grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-5">
+                                    @foreach($staffByRoleEms[$roleKey] as $staff)
+                                        <article class="group relative">
+                                            <div
+                                                class="relative bg-white rounded-xl p-5 sm:p-6 shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100">
+                                                <!-- Profile Image -->
+                                                <div class="relative mx-auto mb-4">
+                                                    <div class="relative inline-block">
+                                                        @if($staff->isClockedIn())
+                                                            <!-- Green Ring for Clocked In -->
+                                                            <div class="absolute -inset-1.5 rounded-full bg-green-500 animate-pulse opacity-60"
+                                                                aria-hidden="true"></div>
+                                                            <div class="absolute -inset-0.5 rounded-full bg-green-400" aria-hidden="true">
+                                                            </div>
+                                                        @endif
+                                                        @if($staff->profile_image)
+                                                            <div class="absolute -inset-1 bg-gradient-to-r {{ $config['gradient'] }} rounded-full blur opacity-0 group-hover:opacity-30 transition-opacity"
+                                                                aria-hidden="true"></div>
+                                                            <img src="{{ $staff->profile_image_url }}" alt="{{ $staff->name }}"
+                                                                onerror="this.onerror=null;this.src='{{ asset('profile.jpg') }}';"
+                                                                class="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-3 {{ $staff->isClockedIn() ? 'border-green-500' : 'border-gray-200' }} group-hover:border-blue-400 transition-all duration-300">
+                                                        @else
+                                                            <div
+                                                                class="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-br {{ $config['gradient'] }} flex items-center justify-center border-3 {{ $staff->isClockedIn() ? 'border-green-500' : 'border-gray-200' }}">
+                                                                <i class="fas {{ $config['icon'] }} text-white text-2xl sm:text-3xl"
+                                                                    aria-hidden="true"></i>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+
+                                                <!-- Staff Name -->
+                                                <h3
+                                                    class="text-sm sm:text-base font-semibold text-gray-800 mb-3 line-clamp-2 text-center leading-snug min-h-[2.5rem] flex items-center justify-center">
+                                                    {{ $staff->name }}
+                                                </h3>
+
+                                                <!-- Role Badge -->
+                                                @if($staff->role)
+                                                    <div class="flex justify-center">
+                                                        <span
+                                                            class="inline-block px-3 py-1.5 bg-gradient-to-r {{ $config['gradient'] }} text-white text-xs sm:text-sm rounded-lg font-semibold shadow-sm">
+                                                            {{ $staff->role->display_name }}
+                                                        </span>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </article>
+                                    @endforeach
+                                </div>
                             </div>
                         </div>
+                    @endif
+                @endforeach
 
-                        @if(isset($levelData['positions']))
-                            <!-- Position Cards Section (Level 0, 1, 2) -->
-                            <div class="relative">
-                                @php
-                                    $positionCount = count($levelData['positions']);
-                                    $isMultiple = $positionCount > 1;
-                                @endphp
+                <!-- Section Divider (if Roxwood exists) -->
+                @if($hasAnyRoxwood)
+                    <div class="relative flex items-center justify-center py-8 my-8" role="separator"
+                        aria-label="Pemisah antara EMS dan Roxwood Hospital">
+                        <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                            <div class="w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+                        </div>
+                        <div
+                            class="relative flex items-center gap-3 bg-gradient-to-r from-amber-500/30 via-orange-500/30 to-yellow-500/30 backdrop-blur-md px-6 py-2.5 rounded-full border border-amber-400/40 shadow-lg">
+                            <div class="w-2 h-2 rounded-full bg-amber-400 animate-pulse" aria-hidden="true"></div>
+                            <span class="text-white font-semibold text-sm sm:text-base">Roxwood Hospital</span>
+                            <div class="w-2 h-2 rounded-full bg-amber-400 animate-pulse" aria-hidden="true"></div>
+                        </div>
+                    </div>
+                @endif
 
-                                <!-- Main vertical line from title -->
-                                <div class="absolute left-1/2 top-0 w-0.5 h-16 sm:h-20 bg-gradient-to-b from-white/40 to-white/20 transform -translate-x-1/2 z-0"
+                <!-- Roxwood Hospital Staff Sections (All Roles) -->
+                @foreach($roleConfigs as $roleKey => $config)
+                    @php
+                        $hasRoxwood = isset($staffByRoleRoxwood[$roleKey]) && $staffByRoleRoxwood[$roleKey]->count() > 0;
+                    @endphp
+
+                    @if($hasRoxwood)
+                        @php
+                            $roxwoodGradient = $roxwoodConfigs[$roleKey]['gradient'] ?? 'from-amber-500 via-orange-500 to-yellow-500';
+                        @endphp
+                        <div class="relative mb-14">
+                            <!-- Section Container -->
+                            <div
+                                class="relative bg-white/5 backdrop-blur-sm rounded-3xl border border-white/10 p-6 sm:p-8 md:p-10 overflow-hidden">
+                                <!-- Subtle Background -->
+                                <div class="absolute inset-0 bg-gradient-to-br {{ $roxwoodGradient }} opacity-[0.08]"
                                     aria-hidden="true"></div>
 
-                                @if($isMultiple)
-                                    <!-- Horizontal connecting line -->
-                                    <div class="absolute left-1/2 top-16 sm:top-20 w-3/4 h-0.5 bg-gradient-to-r from-white/20 via-white/30 to-white/20 transform -translate-x-1/2 z-0"
-                                        aria-hidden="true"></div>
-                                @endif
+                                <!-- Section Header -->
+                                <header class="relative mb-8">
+                                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+                                        <div class="flex items-center gap-4">
+                                            <div
+                                                class="w-12 h-12 sm:w-14 sm:h-14 rounded-xl bg-gradient-to-br {{ $roxwoodGradient }} flex items-center justify-center shadow-lg">
+                                                <i class="fas {{ $config['icon'] }} text-white text-xl sm:text-2xl"
+                                                    aria-hidden="true"></i>
+                                            </div>
+                                            <div>
+                                                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1">
+                                                    {{ $config['title'] }}</h2>
+                                                <p class="text-white/70 text-sm sm:text-base font-medium">Roxwood Hospital</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <div class="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg border border-white/20">
+                                                <span class="text-white font-semibold text-sm sm:text-base">
+                                                    <i class="fas fa-users mr-2"
+                                                        aria-hidden="true"></i>{{ $staffByRoleRoxwood[$roleKey]->count() }} Staff
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </header>
 
-                                <div class="flex flex-wrap justify-center gap-6 sm:gap-8 relative z-10 pt-20 sm:pt-24">
-                                    @foreach($levelData['positions'] as $position => $name)
-                                        @php
-                                            // Normalize names for better matching
-                                            $normalizeName = function ($str) {
-                                                return trim(strtolower(preg_replace('/\s+/', ' ', $str)));
-                                            };
-                                            $normalizedName = $normalizeName($name);
-
-                                            // Helper to check if user should be excluded (for Tan Ackeric vs Tan Noah Rafael)
-                                            $shouldExcludeUser = function ($userName) use ($normalizeName, $normalizedName) {
-                                                $normalizedUserName = $normalizeName($userName);
-
-                                                // Jika mencari "tan ackeric", exclude semua yang mengandung "noah" atau "rafael"
-                                                if (str_contains($normalizedName, 'tan') && str_contains($normalizedName, 'ackeric')) {
-                                                    if (str_contains($normalizedUserName, 'noah') || str_contains($normalizedUserName, 'rafael')) {
-                                                        return true;
-                                                    }
-                                                }
-
-                                                return false;
-                                            };
-
-                                            // Try to find user using multiple strategies
-                                            $user = null;
-
-                                            // Strategy 1: Use userByNameMap if available (fast lookup)
-                                            if (isset($userByNameMap) && isset($userByNameMap[$normalizedName])) {
-                                                $potentialUser = $userByNameMap[$normalizedName];
-                                                if (!$shouldExcludeUser($potentialUser->name)) {
-                                                    $user = $potentialUser;
-                                                }
-                                            }
-
-                                            // Strategy 2: Exact match from users collection
-                                            if (!$user) {
-                                                $user = $users->first(function ($u) use ($normalizedName, $normalizeName, $shouldExcludeUser) {
-                
-            </section>
                                 <!-- Staff Grid -->
                                 <div
                                     class="relative grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-5">
