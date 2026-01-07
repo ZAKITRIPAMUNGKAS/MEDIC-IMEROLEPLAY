@@ -1095,7 +1095,7 @@ class PublicController extends Controller
     private function buildHierarchy($users)
     {
         // **DATABASE-DRIVEN HIERARCHY** - Read from organizational_positions table
-        $dbPositions = \App\Models\OrganizationalPosition::with(['user', 'children.user'])
+        $dbPositions = \App\Models\OrganizationalPosition::with(['user.role', 'parent', 'children.user'])
             ->active()
             ->ordered()
             ->get();
@@ -1107,8 +1107,19 @@ class PublicController extends Controller
 
             foreach ($positionsByLevel as $level => $levelPositions) {
                 $levelKey = 'level_' . $level;
-                $firstPos = $levelPositions->first();
-                $levelTitle = $firstPos->position_name ?? "Level {$level}";
+
+                // Use a generic level title
+                $levelTitle = "Level {$level}";
+                if ($level == 0)
+                    $levelTitle = "High Command";
+                elseif ($level == 1)
+                    $levelTitle = "Deputy Leadership";
+                elseif ($level == 2)
+                    $levelTitle = "Department Heads";
+                elseif ($level == 3)
+                    $levelTitle = "Unit Managers";
+                elseif ($level >= 4)
+                    $levelTitle = "Staff & Support";
 
                 $hierarchyLevel = [
                     'title' => $levelTitle,
@@ -1116,21 +1127,25 @@ class PublicController extends Controller
                     'departments' => []
                 ];
 
+                // Process ALL positions in this level
                 foreach ($levelPositions as $position) {
-                    if ($position->parent_id !== null)
-                        continue;
+                    $positionTitle = $position->title;
+                    $assignedUser = $position->user ? $position->user->name : '[Belum diisi]';
 
+                    // Check if this position has children (subordinates)
                     $children = $dbPositions->where('parent_id', $position->id);
 
                     if ($children->isNotEmpty()) {
-                        $staffNames = $children->filter(fn($c) => $c->user)->map(fn($c) => $c->user->name)->toArray();
+                        // This is a department head with subordinates
+                        $staffNames = $children->filter(fn($c) => $c->user)->map(fn($c) => $c->user->name)->values()->toArray();
 
-                        $hierarchyLevel['departments'][$position->title] = [
-                            $position->title => $position->user ? $position->user->name : '[Belum diisi]',
+                        $hierarchyLevel['departments'][$positionTitle] = [
+                            $positionTitle => $assignedUser,
                             'Staff' => $staffNames
                         ];
                     } else {
-                        $hierarchyLevel['positions'][$position->title] = $position->user ? $position->user->name : '[Belum diisi]';
+                        // This is a standalone position
+                        $hierarchyLevel['positions'][$positionTitle] = $assignedUser;
                     }
                 }
 
