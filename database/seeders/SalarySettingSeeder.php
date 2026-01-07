@@ -13,54 +13,66 @@ class SalarySettingSeeder extends Seeder
      */
     public function run(): void
     {
-        // SISTEM LAMA (HARDCODED) - Tanpa sistem lembur, hanya hourly_rate
+        // Updated to use weekly_salary column
         $settings = [
             [
                 'role_name' => 'trainee',
-                'hourly_rate' => 0,
+                'weekly_salary' => 61250,
                 'description' => 'Trainee atau magang dengan pembelajaran',
                 'is_active' => true,
             ],
             [
-                'role_name' => 'perawat',
-                'hourly_rate' => 67375,
+                'role_name' => 'nurse',
+                'weekly_salary' => 67375,
                 'description' => 'Perawat dengan tanggung jawab perawatan pasien',
                 'is_active' => true,
             ],
             [
                 'role_name' => 'co_ass',
-                'hourly_rate' => 74112,
+                'weekly_salary' => 74124,
                 'description' => 'Co-assistant dengan tanggung jawab medis',
                 'is_active' => true,
             ],
             [
-                'role_name' => 'dokter_umum',
-                'hourly_rate' => 85229,
+                'role_name' => 'general_doctor',
+                'weekly_salary' => 85229,
                 'description' => 'Dokter umum dengan tanggung jawab medis',
                 'is_active' => true,
             ],
             [
-                'role_name' => 'dokter_spesialis',
-                'hourly_rate' => 98013,
+                'role_name' => 'specialist_doctor',
+                'weekly_salary' => 98013,
                 'description' => 'Dokter spesialis dengan keahlian khusus',
                 'is_active' => true,
             ],
             [
                 'role_name' => 'staff_manager',
-                'hourly_rate' => 102174,
+                'weekly_salary' => 102174,
                 'description' => 'Staff manager dengan tanggung jawab operasional',
                 'is_active' => true,
             ],
             [
-                'role_name' => 'manajer',
-                'hourly_rate' => 112174,
+                'role_name' => 'manager',
+                'weekly_salary' => 112174,
                 'description' => 'Manajer dengan tanggung jawab tim dan operasional',
                 'is_active' => true,
             ],
             [
                 'role_name' => 'executive',
-                'hourly_rate' => 123986,
+                'weekly_salary' => 123986,
                 'description' => 'Executive dengan tanggung jawab strategis',
+                'is_active' => true,
+            ],
+            [
+                'role_name' => 'ceo',
+                'weekly_salary' => 253986,
+                'description' => 'CEO PEMEGANG SAHAM RUMAH SAKIT',
+                'is_active' => true,
+            ],
+            [
+                'role_name' => 'it_support',
+                'weekly_salary' => 150000,
+                'description' => 'Web developer & Admin',
                 'is_active' => true,
             ],
         ];

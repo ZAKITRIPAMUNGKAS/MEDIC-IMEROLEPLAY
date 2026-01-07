@@ -266,6 +266,42 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             </div>
 
                             <div>
+                                <label class="block text-sm font-medium text-gray-300 mb-3">
+                                    <i class="fas fa-money-bill-wave mr-2"></i>Gaji Per Minggu (Custom)
+                                </label>
+                                <div class="relative">
+                                    <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+                                    <input type="number" name="custom_salary" id="custom_salary"
+                                        value="<?php echo e(old('custom_salary', $user->custom_salary)); ?>"
+                                        placeholder="Otomatis dari role" step="0.01" min="0"
+                                        class="w-full bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded-lg pl-10 pr-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 transition-all duration-300">
+                                </div>
+                                <div class="mt-2 space-y-1">
+                                    <p class="text-gray-400 text-xs flex items-center">
+                                        <i class="fas fa-info-circle mr-1"></i>
+                                        Default gaji role: <span id="role-salary"
+                                            class="font-semibold text-green-400 ml-1">Loading...</span>
+                                    </p>
+                                    <p class="text-gray-400 text-xs">
+                                        Kosongkan untuk menggunakan default, atau isi untuk custom salary
+                                    </p>
+                                </div>
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['custom_salary'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <p class="text-red-300 text-sm mt-2 flex items-center">
+                                        <i class="fas fa-exclamation-circle mr-1"></i><?php echo e($message); ?>
+
+                                    </p>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                            </div>
+
+                            <div>
                                 <label class="block text-sm font-medium text-gray-300 mb-3">Status Akun</label>
                                 <div class="flex items-center space-x-6">
                                     <label class="flex items-center cursor-pointer">
@@ -392,6 +428,33 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 }
             });
         });
+
+        // Fetch and display role salary when role changes
+        const roleSelect = document.querySelector('select[name="role_id"]');
+        const salaryDisplay = document.getElementById('role-salary');
+        const customSalaryInput = document.getElementById('custom_salary');
+
+        // Role salary mapping (fetched from backend)
+        const roleSalaries = <?php echo json_encode($roles->mapWithKeys(function ($role) {
+            $salary = \App\Models\SalarySetting::where('role_name', $role->name)->first();
+            return [$role->id => $salary ? $salary->idr_per_week : 0];
+        }), 512) ?>;
+
+        function updateRoleSalary() {
+            const selectedRoleId = roleSelect.value;
+            const salary = roleSalaries[selectedRoleId] || 0;
+            salaryDisplay.textContent = '$' + Number(salary).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            // Set placeholder to show default
+            if (!customSalaryInput.value) {
+                customSalaryInput.placeholder = `Default: $${Number(salary).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+            }
+        }
+
+        roleSelect.addEventListener('change', updateRoleSalary);
+
+        // Initial load
+        updateRoleSalary();
     </script>
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\website\EMS-IME\public_html\resources\views/admin/staff/edit.blade.php ENDPATH**/ ?>

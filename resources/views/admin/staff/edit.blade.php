@@ -380,7 +380,7 @@
         // Role salary mapping (fetched from backend)
         const roleSalaries = @json($roles->mapWithKeys(function ($role) {
             $salary = \App\Models\SalarySetting::where('role_name', $role->name)->first();
-            return [$role->id => $salary ? $salary->idr_per_week : 0];
+            return [$role->id => $salary ? $salary->weekly_salary : 0];
         }));
 
         function updateRoleSalary() {
