@@ -56,794 +56,1173 @@
                     </div>
 
                     <script>
-                                document.addEventListener('DOMContentLoad                                      ed', function() {
-                                    // Ensure toast is visible by forcing Z-index and position
-                                    const toast = document.getElementById('global-toast');
-                                    if(toast) {
-                                        toast.style.position = 'fixed';
-                                        toast.style.top = '20px';
-                                        toast.style.right = '20px';
-                                        toast.style.zIndex = '99999';
-                                        toast.style.display = 'block';
-                                    }
+                        document.addEventListener('DOMContentLoad                                      ed', function () {
+                            // Ensure toast is visible by forcing Z-index and position
+                            const toast = document.getElementById('global-toast');
+                            if (toast) {
+                                toast.style.position = 'fixed';
+                                toast.style.top = '20px';
+                                toast.style.right = '20px';
+                                toast.style.zIndex = '99999';
+                                toast.style.display = 'block';
+                            }
 
-                                    // Backup: Browser Native Alert
-                                    setTimeout(function() {
-                                        @if(session('error'))
-                                            alert(@json(session('error')));
-                                        @elseif($errors->any())
-                                            alert("Gagal mengirim formulir.\nTerdapat kesalahan pada data yang diinput.\nSilakan periksa pesan error berwarna merah di formulir.");
-                                        @elseif(session('success'))
-                                            // alert(@json(session('success'))); // Optional for success
-                                        @endif
-                                    }, 500);
-                                });
-                            </script>
+                            // Backup: Browser Native Alert
+                            setTimeout(function () {
+                                @if(session('error'))
+                                    alert(@json(session('error')));
+                                @elseif($errors->any())
+                                    alert("Gagal mengirim formulir.\nTerdapat kesalahan pada data yang diinput.\nSilakan periksa pesan error berwarna merah di formulir.");
+                                @elseif(session('success'))
+                                    // alert(@json(session('success'))); // Optional for success
+                                @endif
+                                            }, 500);
+                        });
+                    </script>
                 @endif
-                    {{-- End Global Flash Message --}}
+                {{-- End Global Flash Message --}}
 
-                    <form method="POST" action="{{ route('public.form.submit') }}" id="medicalForm"
-                        enctype="multipart/form-data">
-                        @csrf
-                        <input type="hidden" name="form_type" value="{{ $type }}">
+                <form method="POST" action="{{ route('public.form.submit') }}" id="medicalForm"
+                    enctype="multipart/form-data">
+                    @csrf
+                    <input type="hidden" name="form_type" value="{{ $type }}">
 
-                        @if($type !== 'tes_psikologi')
-                            <div class="border-b border-white/10 pb-6 mb-8">
-                                <h3 class="text-xl font-semibold text-white mb-6">Informasi Data Diri</h3>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                                    <div>
-                                        <label for="hospital" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Rumah Sakit <span class="text-red-400">*</span>
-                                        </label>
-                                        <select id="hospital" name="hospital"
-                                            class="form-select @error('hospital') border-red-500 @enderror" required>
-                                            <option value="">-- Pilih Rumah Sakit --</option>
-                                            <option value="alta" @if(old('hospital') == 'alta') selected @endif
-                                                class="bg-slate-900 text-white font-bold">Alta Hospital</option>
-                                            <option value="roxwood" @if(old('hospital') == 'roxwood') selected @endif
-                                                class="bg-slate-900 text-white font-bold">Roxwood Hospital</option>
-                                        </select>
-                                        @error('hospital') <p class="form-error">{{ $message }}</p> @enderror
-                                    </div>
-                                    <div>
-                                        <label for="character_name"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Nama Lengkap <span class="text-red-400">*</span>
-                                        </label>
-                                        <input type="text" id="character_name" name="character_name"
-                                            value="{{ old('character_name') }}"
-                                            class="form-input @error('character_name') border-red-500 @enderror"
-                                            placeholder="Masukkan Nama Lengkap" required>
-                                        @error('character_name') <p class="form-error">{{ $message }}</p> @enderror
-                                    </div>
-                                    <div>
-                                        <label for="birth_date" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Tanggal Lahir <span class="text-red-400">*</span>
-                                        </label>
-                                        <input type="date" id="birth_date" name="form_data[birth_date]"
-                                            value="{{ old('form_data.birth_date') }}"
-                                            class="form-input @error('form_data.birth_date') border-red-500 @enderror" required>
-                                        @error('form_data.birth_date') <p class="form-error">{{ $message }}</p> @enderror
-                                    </div>
-                                    <div>
-                                        <label for="gender" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Gender <span class="text-red-400">*</span>
-                                        </label>
-                                        <select id="gender" name="form_data[gender]"
-                                            class="form-select @error('form_data.gender') border-red-500 @enderror" required>
-                                            <option value="" class="bg-slate-900 text-white font-bold">Pilih Gender</option>
-                                            <option value="Laki-laki" @if(old('form_data.gender') == 'Laki-laki') selected @endif
-                                                class="bg-slate-900 text-white font-bold">Laki-laki</option>
-                                            <option value="Perempuan" @if(old('form_data.gender') == 'Perempuan') selected @endif
-                                                class="bg-slate-900 text-white font-bold">Perempuan</option>
-                                        </select>
-                                        @error('form_data.gender') <p class="form-error">{{ $message }}</p> @enderror
-                                    </div>
-                                    <div>
-                                        <label for="age" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Umur <span class="text-red-400">*</span>
-                                        </label>
-                                        <input type="number" id="age" name="form_data[age]" value="{{ old('form_data.age') }}"
-                                            class="form-input @error('form_data.age') border-red-500 @enderror"
-                                            placeholder="Contoh: 25" required>
-                                        @error('form_data.age') <p class="form-error">{{ $message }}</p> @enderror
-                                    </div>
-                                    <div class="sm:col-span-2">
-                                        <label for="occupation" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Pekerjaan <span class="text-red-400">*</span>
-                                        </label>
-                                        <input type="text" id="occupation" name="form_data[occupation]"
-                                            value="{{ old('form_data.occupation') }}"
-                                            class="form-input @error('form_data.occupation') border-red-500 @enderror"
-                                            placeholder="Contoh: Pengusaha" required>
-                                        @error('form_data.occupation') <p class="form-error">{{ $message }}</p> @enderror
-                                    </div>
-                                    <div>
-                                        <label for="citizen_id"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">Citizen ID</label>
-                                        <input type="text" id="citizen_id" name="citizen_id" value="{{ old('citizen_id') }}"
-                                            class="form-input" placeholder="Contoh: 123456">
-                                    </div>
-                                    <div>
-                                        <label for="phone_number"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            No HP (IC) <span class="text-red-400">*</span>
-                                        </label>
-                                        <input type="text" id="phone_number" name="form_data[phone_number]"
-                                            value="{{ old('form_data.phone_number') }}"
-                                            class="form-input @error('form_data.phone_number') border-red-500 @enderror"
-                                            placeholder="Contoh: 08123456789" required>
-                                        @error('form_data.phone_number') <p class="form-error">{{ $message }}</p> @enderror
-                                    </div>
+                    @if($type !== 'tes_psikologi')
+                        <div class="border-b border-white/10 pb-6 mb-8">
+                            <h3 class="text-xl font-semibold text-white mb-6">Informasi Data Diri</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                                <div>
+                                    <label for="hospital" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Rumah Sakit <span class="text-red-400">*</span>
+                                    </label>
+                                    <select id="hospital" name="hospital"
+                                        class="form-select @error('hospital') border-red-500 @enderror" required>
+                                        <option value="">-- Pilih Rumah Sakit --</option>
+                                        <option value="alta" @if(old('hospital') == 'alta') selected @endif
+                                            class="bg-slate-900 text-white font-bold">Alta Hospital</option>
+                                        <option value="roxwood" @if(old('hospital') == 'roxwood') selected @endif
+                                            class="bg-slate-900 text-white font-bold">Roxwood Hospital</option>
+                                    </select>
+                                    @error('hospital') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+                                <div>
+                                    <label for="character_name"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Nama Lengkap <span class="text-red-400">*</span>
+                                    </label>
+                                    <input type="text" id="character_name" name="character_name"
+                                        value="{{ old('character_name') }}"
+                                        class="form-input @error('character_name') border-red-500 @enderror"
+                                        placeholder="Masukkan Nama Lengkap" required>
+                                    @error('character_name') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+                                <div>
+                                    <label for="birth_date" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Tanggal Lahir <span class="text-red-400">*</span>
+                                    </label>
+                                    <input type="date" id="birth_date" name="form_data[birth_date]"
+                                        value="{{ old('form_data.birth_date') }}"
+                                        class="form-input @error('form_data.birth_date') border-red-500 @enderror" required>
+                                    @error('form_data.birth_date') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+                                <div>
+                                    <label for="gender" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Gender <span class="text-red-400">*</span>
+                                    </label>
+                                    <select id="gender" name="form_data[gender]"
+                                        class="form-select @error('form_data.gender') border-red-500 @enderror" required>
+                                        <option value="" class="bg-slate-900 text-white font-bold">Pilih Gender</option>
+                                        <option value="Laki-laki" @if(old('form_data.gender') == 'Laki-laki') selected @endif
+                                            class="bg-slate-900 text-white font-bold">Laki-laki</option>
+                                        <option value="Perempuan" @if(old('form_data.gender') == 'Perempuan') selected @endif
+                                            class="bg-slate-900 text-white font-bold">Perempuan</option>
+                                    </select>
+                                    @error('form_data.gender') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+                                <div>
+                                    <label for="age" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Umur <span class="text-red-400">*</span>
+                                    </label>
+                                    <input type="number" id="age" name="form_data[age]" value="{{ old('form_data.age') }}"
+                                        class="form-input @error('form_data.age') border-red-500 @enderror"
+                                        placeholder="Contoh: 25" required>
+                                    @error('form_data.age') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <label for="occupation" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Pekerjaan <span class="text-red-400">*</span>
+                                    </label>
+                                    <input type="text" id="occupation" name="form_data[occupation]"
+                                        value="{{ old('form_data.occupation') }}"
+                                        class="form-input @error('form_data.occupation') border-red-500 @enderror"
+                                        placeholder="Contoh: Pengusaha" required>
+                                    @error('form_data.occupation') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+                                <div>
+                                    <label for="citizen_id"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">Citizen ID</label>
+                                    <input type="text" id="citizen_id" name="citizen_id" value="{{ old('citizen_id') }}"
+                                        class="form-input" placeholder="Contoh: 123456">
+                                </div>
+                                <div>
+                                    <label for="phone_number"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        No HP (IC) <span class="text-red-400">*</span>
+                                    </label>
+                                    <input type="text" id="phone_number" name="form_data[phone_number]"
+                                        value="{{ old('form_data.phone_number') }}"
+                                        class="form-input @error('form_data.phone_number') border-red-500 @enderror"
+                                        placeholder="Contoh: 08123456789" required>
+                                    @error('form_data.phone_number') <p class="form-error">{{ $message }}</p> @enderror
                                 </div>
                             </div>
-                        @endif
+                        </div>
+                    @endif
 
-                        <div class="mb-8">
-                            <h3 class="text-xl font-bold text-white mb-6">
-                                @if($type === 'pendaftaran_karakter')
-                                    Kronologi CK & Penyebab Kematian
-                                @else
-                                    Detail Kebutuhan
-                                @endif
-                            </h3>
-                            <div class="space-y-6">
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold text-white mb-6">
+                            @if($type === 'pendaftaran_karakter')
+                                Kronologi CK & Penyebab Kematian
+                            @else
+                                Detail Kebutuhan
+                            @endif
+                        </h3>
+                        <div class="space-y-6">
 
-                                @if($type === 'surat_kesehatan')
-                                    <div>
-                                        <label for="purpose_sk"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan</label>
-                                        <select id="purpose_sk" name="form_data[purpose]" class="form-select">
-                                            <option value="Pemeriksaan Rutin" class="bg-slate-900 text-white font-bold">Pemeriksaan
-                                                Rutin</option>
-                                            <option value="Lampiran Pembuatan Lisensi" class="bg-slate-900 text-white font-bold">
-                                                Lampiran Pembuatan Lisensi</option>
-                                            <option value="Lampiran Mendaftar Pekerjaan" class="bg-slate-900 text-white font-bold">
-                                                Lampiran Mendaftar Pekerjaan</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label for="doctor_name_sk"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Nama Dokter <span class="text-red-400">*</span>
-                                        </label>
-                                        <select id="doctor_name_sk" name="form_data[doctor_name]"
-                                            class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
-                                            <option value="">-- Pilih Dokter --</option>
-                                            @foreach($doctors as $doctor)
-                                                <option value="{{ $doctor->name }}"
-                                                    data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                    @if(old('form_data.doctor_name') == $doctor->name) selected @endif
-                                                    class="bg-slate-900 text-white font-bold">
-                                                    {{ $doctor->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
-                                    </div>
-
-                                @elseif($type === 'operasi_plastik')
-                                    <div>
-                                        <label for="purpose_op"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">Jenis Operasi
-                                            Plastik</label>
-                                        <select id="purpose_op" name="form_data[purpose]" class="form-select">
-                                            <option value="Rekontruksi Wajah" class="bg-slate-900 text-white font-bold">Rekontruksi
-                                                Wajah</option>
-                                            <option value="Suntik Kulit" class="bg-slate-900 text-white font-bold">Suntik Kulit
+                            @if($type === 'surat_kesehatan')
+                                <div>
+                                    <label for="purpose_sk"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan</label>
+                                    <select id="purpose_sk" name="form_data[purpose]" class="form-select">
+                                        <option value="Pemeriksaan Rutin" class="bg-slate-900 text-white font-bold">Pemeriksaan
+                                            Rutin</option>
+                                        <option value="Lampiran Pembuatan Lisensi" class="bg-slate-900 text-white font-bold">
+                                            Lampiran Pembuatan Lisensi</option>
+                                        <option value="Lampiran Mendaftar Pekerjaan" class="bg-slate-900 text-white font-bold">
+                                            Lampiran Mendaftar Pekerjaan</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="doctor_name_sk"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Nama Dokter <span class="text-red-400">*</span>
+                                    </label>
+                                    <select id="doctor_name_sk" name="form_data[doctor_name]"
+                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        <option value="">-- Pilih Dokter --</option>
+                                        @foreach($doctors as $doctor)
+                                            <option value="{{ $doctor->name }}"
+                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
+                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                                class="bg-slate-900 text-white font-bold">
+                                                {{ $doctor->name }}
                                             </option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label for="doctor_name_op"
+                                        @endforeach
+                                    </select>
+                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+
+                            @elseif($type === 'operasi_plastik')
+                                <div>
+                                    <label for="purpose_op"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">Jenis Operasi
+                                        Plastik</label>
+                                    <select id="purpose_op" name="form_data[purpose]" class="form-select">
+                                        <option value="Rekontruksi Wajah" class="bg-slate-900 text-white font-bold">Rekontruksi
+                                            Wajah</option>
+                                        <option value="Suntik Kulit" class="bg-slate-900 text-white font-bold">Suntik Kulit
+                                        </option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="doctor_name_op"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Nama Dokter <span class="text-red-400">*</span>
+                                    </label>
+                                    <select id="doctor_name_op" name="form_data[doctor_name]"
+                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        <option value="">-- Pilih Dokter --</option>
+                                        @foreach($doctors as $doctor)
+                                            <option value="{{ $doctor->name }}"
+                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
+                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                                class="bg-slate-900 text-white font-bold">
+                                                {{ $doctor->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+                                <div>
+                                    <label for="photo_ktp_op"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Upload Foto KTP <span class="text-red-400">*</span>
+                                    </label>
+                                    <input type="file" id="photo_ktp_op" name="form_data[photo_ktp]"
+                                        class="form-file @error('form_data.photo_ktp') border-red-500 @enderror"
+                                        accept="image/*" required>
+                                    @error('form_data.photo_ktp') <p class="form-error">{{ $message }}</p> @enderror
+                                    <p class="text-blue-200 text-sm mt-1">Format: JPG, PNG, GIF. Maksimal 4MB</p>
+                                </div>
+                                <div>
+                                    <label for="photo_skb_op"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Upload Foto SKB <span class="text-red-400">*</span>
+                                    </label>
+                                    <input type="file" id="photo_skb_op" name="form_data[photo_skb]"
+                                        class="form-file @error('form_data.photo_skb') border-red-500 @enderror"
+                                        accept="image/*" required>
+                                    @error('form_data.photo_skb') <p class="form-error">{{ $message }}</p> @enderror
+                                    <p class="text-blue-200 text-sm mt-1">Format: JPG, PNG, GIF. Maksimal 4MB</p>
+                                </div>
+
+                            @elseif($type === 'tes_psikologi')
+                                <div class="mb-6">
+                                    <h3 class="text-xl font-semibold text-white mb-4">Tes Psikologi Multi-Aspek</h3>
+                                    <p class="text-blue-200 text-sm mb-6">Silakan jawab pertanyaan berikut dengan jujur. Hasil
+                                        tes akan membantu psikolog dalam memberikan evaluasi yang tepat.</p>
+
+                                    {{-- Dropdown for Linking with Previous Surat Psikolog - REQUIRED --}}
+                                    <div
+                                        class="mb-8 p-6 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border-2 border-indigo-400/30 rounded-xl">
+                                        <div class="flex items-start gap-3 mb-4">
+                                            <div
+                                                class="w-10 h-10 bg-indigo-500/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                                                <i class="fas fa-link text-indigo-300 text-lg"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="text-lg font-bold text-white mb-1">Hubungkan dengan Surat Psikolog
+                                                </h4>
+                                                <p class="text-indigo-200 text-sm">Pilih <strong>Surat Psikolog</strong> yang
+                                                    sudah Anda buat sebelumnya. Surat tersebut akan otomatis disetujui setelah
+                                                    Anda menyelesaikan tes ini!</p>
+                                            </div>
+                                        </div>
+
+                                        <label for="linked_psych_form"
                                             class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Nama Dokter <span class="text-red-400">*</span>
+                                            Pilih Surat Psikolog <span class="text-red-400">*</span>
                                         </label>
-                                        <select id="doctor_name_op" name="form_data[doctor_name]"
-                                            class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
-                                            <option value="">-- Pilih Dokter --</option>
-                                            @foreach($doctors as $doctor)
-                                                <option value="{{ $doctor->name }}"
-                                                    data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                    @if(old('form_data.doctor_name') == $doctor->name) selected @endif
-                                                    class="bg-slate-900 text-white font-bold">
-                                                    {{ $doctor->name }}
+                                        <select id="linked_psych_form" name="linked_psych_form_id"
+                                            class="form-select @error('linked_psych_form_id') border-red-500 @enderror"
+                                            required>
+                                            <option value="">-- Pilih Surat Psikolog --</option>
+                                            @foreach($availablePsychForms as $psychForm)
+                                                <option value="{{ $psychForm->id }}"
+                                                    data-character="{{ $psychForm->character_name }}"
+                                                    data-hospital="{{ $psychForm->hospital }}"
+                                                    data-doctor="{{ $psychForm->form_data['doctor_name'] ?? 'N/A' }}"
+                                                    @if(old('linked_psych_form_id') == $psychForm->id) selected @endif
+                                                    class="bg-slate-900 text-white">
+                                                    [#{{ $psychForm->id }}] {{ $psychForm->character_name }} -
+                                                    {{ $psychForm->created_at->format('d M Y, H:i') }}
+                                                    ({{ ucfirst($psychForm->hospital) }})
                                                 </option>
                                             @endforeach
                                         </select>
-                                        @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
-                                    </div>
-                                    <div>
-                                        <label for="photo_ktp_op"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Upload Foto KTP <span class="text-red-400">*</span>
-                                        </label>
-                                        <input type="file" id="photo_ktp_op" name="form_data[photo_ktp]"
-                                            class="form-file @error('form_data.photo_ktp') border-red-500 @enderror"
-                                            accept="image/*" required>
-                                        @error('form_data.photo_ktp') <p class="form-error">{{ $message }}</p> @enderror
-                                        <p class="text-blue-200 text-sm mt-1">Format: JPG, PNG, GIF. Maksimal 4MB</p>
-                                    </div>
-                                    <div>
-                                        <label for="photo_skb_op"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Upload Foto SKB <span class="text-red-400">*</span>
-                                        </label>
-                                        <input type="file" id="photo_skb_op" name="form_data[photo_skb]"
-                                            class="form-file @error('form_data.photo_skb') border-red-500 @enderror"
-                                            accept="image/*" required>
-                                        @error('form_data.photo_skb') <p class="form-error">{{ $message }}</p> @enderror
-                                        <p class="text-blue-200 text-sm mt-1">Format: JPG, PNG, GIF. Maksimal 4MB</p>
-                                    </div>
+                                        @error('linked_psych_form_id') <p class="form-error">{{ $message }}</p> @enderror
 
-                                @elseif($type === 'tes_psikologi')
-                                    <div class="mb-6">
-                                        <h3 class="text-xl font-semibold text-white mb-4">Tes Psikologi Multi-Aspek</h3>
-                                        <p class="text-blue-200 text-sm mb-6">Silakan jawab pertanyaan berikut dengan jujur. Hasil
-                                            tes akan membantu psikolog dalam memberikan evaluasi yang tepat.</p>
+                                        <div class="mt-3 flex items-center gap-2 text-xs text-green-300">
+                                            <i class="fas fa-info-circle"></i>
+                                            <span>Dengan memilih surat psikolog, form tersebut akan langsung <strong>di-ACC
+                                                    otomatis</strong> setelah tes selesai!</span>
+                                        </div>
 
-                                        {{-- Dropdown for Linking with Previous Surat Psikolog - REQUIRED --}}
-                                        <div
-                                            class="mb-8 p-6 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border-2 border-indigo-400/30 rounded-xl">
-                                            <div class="flex items-start gap-3 mb-4">
-                                                <div
-                                                    class="w-10 h-10 bg-indigo-500/30 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                    <i class="fas fa-link text-indigo-300 text-lg"></i>
-                                                </div>
-                                                <div>
-                                                    <h4 class="text-lg font-bold text-white mb-1">Hubungkan dengan Surat Psikolog
-                                                    </h4>
-                                                    <p class="text-indigo-200 text-sm">Pilih <strong>Surat Psikolog</strong> yang
-                                                        sudah Anda buat sebelumnya. Surat tersebut akan otomatis disetujui setelah
-                                                        Anda menyelesaikan tes ini!</p>
+                                        @if($availablePsychForms->isEmpty())
+                                            <div class="mt-4 p-4 bg-yellow-500/10 border border-yellow-400/30 rounded-lg">
+                                                <div class="flex items-start gap-2">
+                                                    <i class="fas fa-exclamation-triangle text-yellow-300 mt-0.5"></i>
+                                                    <div class="text-sm text-yellow-200">
+                                                        <strong>Belum ada Surat Psikolog yang pending.</strong><br>
+                                                        Silakan <a href="{{ route('public.form', ['type' => 'surat_psikolog']) }}"
+                                                            class="underline hover:text-yellow-100">buat Surat Psikolog terlebih
+                                                            dahulu</a> sebelum mengisi tes psikologi.
+                                                    </div>
                                                 </div>
                                             </div>
+                                        @endif
+                                    </div>
 
-                                            <label for="linked_psych_form"
-                                                class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                                Pilih Surat Psikolog <span class="text-red-400">*</span>
-                                            </label>
-                                            <select id="linked_psych_form" name="linked_psych_form_id"
-                                                class="form-select @error('linked_psych_form_id') border-red-500 @enderror"
-                                                required>
-                                                <option value="">-- Pilih Surat Psikolog --</option>
-                                                @foreach($availablePsychForms as $psychForm)
-                                                    <option value="{{ $psychForm->id }}"
-                                                        data-character="{{ $psychForm->character_name }}"
-                                                        data-hospital="{{ $psychForm->hospital }}"
-                                                        data-doctor="{{ $psychForm->form_data['doctor_name'] ?? 'N/A' }}"
-                                                        @if(old('linked_psych_form_id') == $psychForm->id) selected @endif
-                                                        class="bg-slate-900 text-white">
-                                                        [#{{ $psychForm->id }}] {{ $psychForm->character_name }} -
-                                                        {{ $psychForm->created_at->format('d M Y, H:i') }}
-                                                        ({{ ucfirst($psychForm->hospital) }})
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            @error('linked_psych_form_id') <p class="form-error">{{ $message }}</p> @enderror
+                                    <!-- Big Five Personality Test (BFI-10) -->
+                                    <div class="mb-8">
+                                        <h4 class="text-lg font-semibold text-white mb-4">Bagian 1: Tes Kepribadian (BFI-10)
+                                        </h4>
+                                        <p class="text-blue-200 text-sm mb-4">Pilih jawaban yang paling sesuai dengan diri Anda:
+                                        </p>
 
-                                            <div class="mt-3 flex items-center gap-2 text-xs text-green-300">
-                                                <i class="fas fa-info-circle"></i>
-                                                <span>Dengan memilih surat psikolog, form tersebut akan langsung <strong>di-ACC
-                                                        otomatis</strong> setelah tes selesai!</span>
+                                        @php
+                                            $bigfive_questions = [
+                                                "Saya adalah seseorang yang cenderung ekstrovert, suka bergaul.",
+                                                "Saya adalah seseorang yang cenderung bersikap kritis, suka berdebat.",
+                                                "Saya adalah seseorang yang cenderung dapat dipercaya, tekun.",
+                                                "Saya adalah seseorang yang cenderung mudah merasa cemas, khawatir.",
+                                                "Saya adalah seseorang yang cenderung terbuka pada pengalaman baru.",
+                                                "Saya adalah seseorang yang cenderung pendiam, tertutup.",
+                                                "Saya adalah seseorang yang cenderung ramah, hangat.",
+                                                "Saya adalah seseorang yang cenderung ceroboh, kurang teliti.",
+                                                "Saya adalah seseorang yang cenderung stabil secara emosional, tenang.",
+                                                "Saya adalah seseorang yang cenderung konvensional, kurang imajinatif."
+                                            ];
+                                            $bigfive_scale = [
+                                                1 => "Sangat Tidak Setuju",
+                                                2 => "Tidak Setuju",
+                                                3 => "Netral",
+                                                4 => "Setuju",
+                                                5 => "Sangat Setuju"
+                                            ];
+                                        @endphp
+
+                                        @foreach($bigfive_questions as $i => $question)
+                                            <div
+                                                class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
+                                                <p class="text-white mb-4 font-medium text-lg">{{ $i + 1 }}. {{ $question }}</p>
+                                                <div class="flex flex-wrap items-center gap-3">
+                                                    @foreach($bigfive_scale as $val => $label)
+                                                        <label class="flex items-center cursor-pointer group">
+                                                            <input type="radio" name="form_data[bigfive{{ $i + 1 }}]" value="{{ $val }}"
+                                                                @if(old('form_data.bigfive' . ($i + 1)) == $val) checked @endif
+                                                                class="sr-only peer" required>
+                                                            <div
+                                                                class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex-1 min-w-[100px] h-24">
+                                                                <span class="text-2xl font-bold text-white">{{ $val }}</span>
+                                                                <span
+                                                                    class="text-[10px] text-gray-300 text-center leading-tight px-1">{{ $label }}</span>
+                                                            </div>
+                                                        </label>
+                                                    @endforeach
+                                                </div>
                                             </div>
+                                        @endforeach
+                                    </div>
 
-                                            @if($availablePsychForms->isEmpty())
-                                                <div class="mt-4 p-4 bg-yellow-500/10 border border-yellow-400/30 rounded-lg">
-                                                    <div class="flex items-start gap-2">
-                                                        <i class="fas fa-exclamation-triangle text-yellow-300 mt-0.5"></i>
-                                                        <div class="text-sm text-yellow-200">
-                                                            <strong>Belum ada Surat Psikolog yang pending.</strong><br>
-                                                            Silakan <a href="{{ route('public.form', ['type' => 'surat_psikolog']) }}"
-                                                                class="underline hover:text-yellow-100">buat Surat Psikolog terlebih
-                                                                dahulu</a> sebelum mengisi tes psikologi.
+                                    <!-- Stress Test (PSS-10) -->
+                                    <div class="mb-8">
+                                        <h4 class="text-lg font-semibold text-white mb-4">Bagian 2: Tes Stres (PSS-10)</h4>
+                                        <p class="text-blue-200 text-sm mb-4">Seberapa sering Anda mengalami hal-hal berikut
+                                            dalam sebulan terakhir:</p>
+
+                                        @php
+                                            $stress_questions = [
+                                                "Seberapa sering Anda merasa terganggu oleh sesuatu yang tidak terduga?",
+                                                "Seberapa sering Anda merasa tidak mampu mengendalikan hal-hal penting dalam hidup Anda?",
+                                                "Seberapa sering Anda merasa gelisah dan tertekan?",
+                                                "Seberapa sering Anda merasa percaya diri dalam kemampuan mengatasi masalah pribadi?",
+                                                "Seberapa sering Anda merasa bahwa hal-hal berjalan sesuai keinginan Anda?",
+                                                "Seberapa sering Anda merasa tidak mampu mengatasi semua hal yang harus dilakukan?",
+                                                "Seberapa sering Anda merasa dapat mengendalikan gangguan dalam hidup Anda?",
+                                                "Seberapa sering Anda merasa bahwa hal-hal di luar kendali Anda?",
+                                                "Seberapa sering Anda merasa dapat mengendalikan waktu Anda?",
+                                                "Seberapa sering Anda merasa kesulitan menanggulangi masalah?"
+                                            ];
+                                            $stress_scale = [
+                                                0 => "Tidak Pernah",
+                                                1 => "Jarang",
+                                                2 => "Kadang-Kadang",
+                                                3 => "Sering",
+                                                4 => "Sangat Sering"
+                                            ];
+                                        @endphp
+
+                                        @foreach($stress_questions as $i => $question)
+                                            <div
+                                                class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
+                                                <p class="text-white mb-4 font-medium text-lg">{{ $i + 1 }}. {{ $question }}</p>
+                                                <div class="flex flex-wrap items-center gap-3">
+                                                    @foreach($stress_scale as $val => $label)<label
+                                                        class="flex items-center cursor-pointer group"><input type="radio"
+                                                            name="form_data[stress{{ $i + 1 }}]" value="{{ $val }}"
+                                                            @if(old('form_data.stress' . ($i + 1)) == $val) checked @endif
+                                                            class="sr-only peer" required>
+                                                        <div
+                                                            class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24">
+                                                            <span class="text-2xl font-bold text-white">{{ $val }}</span><span
+                                                                class="text-xs text-gray-300 text-center leading-tight px-1">{{ $label }}</span>
                                                         </div>
-                                                    </div>
-                                                </div>
-                                            @endif
-                                        </div>
-
-                                        <!-- Big Five Personality Test (BFI-10) -->
-                                        <div class="mb-8">
-                                            <h4 class="text-lg font-semibold text-white mb-4">Bagian 1: Tes Kepribadian (BFI-10)
-                                            </h4>
-                                            <p class="text-blue-200 text-sm mb-4">Pilih jawaban yang paling sesuai dengan diri Anda:
-                                            </p>
-
-                                            @php
-                                                $bigfive_questions = [
-                                                    "Saya adalah seseorang yang cenderung ekstrovert, suka bergaul.",
-                                                    "Saya adalah seseorang yang cenderung bersikap kritis, suka berdebat.",
-                                                    "Saya adalah seseorang yang cenderung dapat dipercaya, tekun.",
-                                                    "Saya adalah seseorang yang cenderung mudah merasa cemas, khawatir.",
-                                                    "Saya adalah seseorang yang cenderung terbuka pada pengalaman baru.",
-                                                    "Saya adalah seseorang yang cenderung pendiam, tertutup.",
-                                                    "Saya adalah seseorang yang cenderung ramah, hangat.",
-                                                    "Saya adalah seseorang yang cenderung ceroboh, kurang teliti.",
-                                                    "Saya adalah seseorang yang cenderung stabil secara emosional, tenang.",
-                                                    "Saya adalah seseorang yang cenderung konvensional, kurang imajinatif."
-                                                ];
-                                                $bigfive_scale = [
-                                                    1 => "Sangat Tidak Setuju",
-                                                    2 => "Tidak Setuju",
-                                                    3 => "Netral",
-                                                    4 => "Setuju",
-                                                    5 => "Sangat Setuju"
-                                                ];
-                                            @endphp
-
-                                            @foreach($bigfive_questions as $i => $question)
-                                                <div
-                                                    class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
-                                                    <p class="text-white mb-4 font-medium text-lg">{{ $i + 1 }}. {{ $question }}</p>
-                                                    <div class="flex flex-wrap items-center gap-3">
-                                                        @foreach($bigfive_scale as $val => $label)
-                                                            <label class="flex items-center cursor-pointer group">
-                                                                <input type="radio" name="form_data[bigfive{{ $i + 1 }}]" value="{{ $val }}"
-                                                                    @if(old('form_data.bigfive' . ($i + 1)) == $val) checked @endif
-                                                                    class="sr-only peer" required>
-                                                                <div
-                                                                    class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex-1 min-w-[100px] h-24">
-                                                                    <span class="text-2xl font-bold text-white">{{ $val }}</span>
-                                                                    <span
-                                                                        class="text-[10px] text-gray-300 text-center leading-tight px-1">{{ $label }}</span>
-                                                                </div>
-                                                            </label>
-                                                        @endforeach
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-
-                                        <!-- Stress Test (PSS-10) -->
-                                        <div class="mb-8">
-                                            <h4 class="text-lg font-semibold text-white mb-4">Bagian 2: Tes Stres (PSS-10)</h4>
-                                            <p class="text-blue-200 text-sm mb-4">Seberapa sering Anda mengalami hal-hal berikut
-                                                dalam sebulan terakhir:</p>
-
-                                            @php
-                                                $stress_questions = [
-                                                    "Seberapa sering Anda merasa terganggu oleh sesuatu yang tidak terduga?",
-                                                    "Seberapa sering Anda merasa tidak mampu mengendalikan hal-hal penting dalam hidup Anda?",
-                                                    "Seberapa sering Anda merasa gelisah dan tertekan?",
-                                                    "Seberapa sering Anda merasa percaya diri dalam kemampuan mengatasi masalah pribadi?",
-                                                    "Seberapa sering Anda merasa bahwa hal-hal berjalan sesuai keinginan Anda?",
-                                                    "Seberapa sering Anda merasa tidak mampu mengatasi semua hal yang harus dilakukan?",
-                                                    "Seberapa sering Anda merasa dapat mengendalikan gangguan dalam hidup Anda?",
-                                                    "Seberapa sering Anda merasa bahwa hal-hal di luar kendali Anda?",
-                                                    "Seberapa sering Anda merasa dapat mengendalikan waktu Anda?",
-                                                    "Seberapa sering Anda merasa kesulitan menanggulangi masalah?"
-                                                ];
-                                                $stress_scale = [
-                                                    0 => "Tidak Pernah",
-                                                    1 => "Jarang",
-                                                    2 => "Kadang-Kadang",
-                                                    3 => "Sering",
-                                                    4 => "Sangat Sering"
-                                                ];
-                                            @endphp
-
-                                            @foreach($stress_questions as $i => $question)
-                                                <div
-                                                    class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
-                                                    <p class="text-white mb-4 font-medium text-lg">{{ $i + 1 }}. {{ $question }}</p>
-                                                    <div class="flex flex-wrap items-center gap-3">
-                                                        @foreach($stress_scale as $val => $label)<label
-                                                            class="flex items-center cursor-pointer group"><input type="radio"
-                                                                name="form_data[stress{{ $i + 1 }}]" value="{{ $val }}"
-                                                                @if(old('form_data.stress' . ($i + 1)) == $val) checked @endif
-                                                                class="sr-only peer" required>
-                                                            <div
-                                                                class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24">
-                                                                <span class="text-2xl font-bold text-white">{{ $val }}</span><span
-                                                                    class="text-xs text-gray-300 text-center leading-tight px-1">{{ $label }}</span>
-                                                            </div>
-                                                        </label>@endforeach</div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-
-                                        <!-- Self-Esteem Test (RSES) -->
-                                        <div class="mb-8">
-                                            <h4 class="text-lg font-semibold text-white mb-4">Bagian 3: Tes Harga Diri (RSES)</h4>
-                                            <p class="text-blue-200 text-sm mb-4">Pilih jawaban yang paling sesuai dengan perasaan
-                                                Anda:
-                                            </p>
-
-                                            @php
-                                                $esteem_questions = [
-                                                    "Saya merasa bahwa saya adalah orang yang berharga, setara dengan orang lain.",
-                                                    "Saya merasa saya memiliki sejumlah kualitas yang baik.",
-                                                    "Secara keseluruhan, saya cenderung merasa bahwa saya adalah orang yang gagal.",
-                                                    "Saya mampu melakukan sesuatu sama baiknya dengan kebanyakan orang lain.",
-                                                    "Saya merasa tidak banyak hal yang bisa saya banggakan.",
-                                                    "Saya memiliki sikap positif terhadap diri saya sendiri.",
-                                                    "Secara keseluruhan, saya puas dengan diri saya.",
-                                                    "Saya merasa tidak berguna pada beberapa kesempatan.",
-                                                    "Saya berharap dapat lebih menghargai diri saya.",
-                                                    "Kadang-kadang saya benar-benar merasa tidak berguna."
-                                                ];
-                                                $esteem_scale = [
-                                                    1 => "Sangat Tidak Setuju",
-                                                    2 => "Tidak Setuju",
-                                                    3 => "Setuju",
-                                                    4 => "Sangat Setuju"
-                                                ];
-                                            @endphp
-
-                                            @foreach($esteem_questions as $i => $question)
-                                                <div
-                                                    class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
-                                                    <p class="text-white mb-4 font-medium text-lg">{{ $i + 1 }}. {{ $question }}</p>
-                                                    <div class="flex flex-wrap items-center gap-3">
-                                                        @foreach($esteem_scale as $val => $label)<label
-                                                            class="flex items-center cursor-pointer group"><input type="radio"
-                                                                name="form_data[esteem{{ $i + 1 }}]" value="{{ $val }}"
-                                                                @if(old('form_data.esteem' . ($i + 1)) == $val) checked @endif
-                                                                class="sr-only peer" required>
-                                                            <div
-                                                                class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24">
-                                                                <span class="text-2xl font-bold text-white">{{ $val }}</span><span
-                                                                    class="text-xs text-gray-300 text-center leading-tight px-1">{{ $label }}</span>
-                                                            </div>
-                                                        </label>@endforeach</div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-
-                                        <!-- Hidden field for psychologist name (auto-filled from Surat Psikolog) -->
-                                        <input type="hidden" id="doctor_name_tp" name="form_data[doctor_name]"
-                                            value="{{ old('form_data.doctor_name') }}" required>
+                                                    </label>@endforeach</div>
+                                            </div>
+                                        @endforeach
                                     </div>
 
-                                @elseif($type === 'surat_psikolog')
-                                    <div class="mb-6">
-                                        <h3 class="text-xl font-semibold text-white mb-4">Formulir Psikologi</h3>
-                                        <p class="text-blue-200 text-sm mb-6">Lengkapi formulir dan jawab pertanyaan berikut dengan
-                                            jujur. Hasil tes akan membantu psikolog dalam memberikan evaluasi yang tepat.</p>
+                                    <!-- Self-Esteem Test (RSES) -->
+                                    <div class="mb-8">
+                                        <h4 class="text-lg font-semibold text-white mb-4">Bagian 3: Tes Harga Diri (RSES)</h4>
+                                        <p class="text-blue-200 text-sm mb-4">Pilih jawaban yang paling sesuai dengan perasaan
+                                            Anda:
+                                        </p>
 
-                                        <label for="purpose_sp"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan</label>
-                                        <select id="purpose_sp" name="form_data[purpose]" class="form-select">
-                                            <option value="Konsult asi Psikolog" class="bg-slate-900 text-white font-bold">
-                                                Konsultasi
-                                                Psikolog</option>
-                                            <option value="Lampiran Pembuatan Lisensi" class="bg-slate-900 text-white font-bold">
-                                                Lampiran
-                                                Pembuatan Lisensi</option>
-                                            <option value="Lampiran Mendaftar Pekerjaan" class="bg-slate-900 text-white font-bold">
-                                                Lampiran
-                                                Mendaftar Pekerjaan</option>
-                                        </select>
+                                        @php
+                                            $esteem_questions = [
+                                                "Saya merasa bahwa saya adalah orang yang berharga, setara dengan orang lain.",
+                                                "Saya merasa saya memiliki sejumlah kualitas yang baik.",
+                                                "Secara keseluruhan, saya cenderung merasa bahwa saya adalah orang yang gagal.",
+                                                "Saya mampu melakukan sesuatu sama baiknya dengan kebanyakan orang lain.",
+                                                "Saya merasa tidak banyak hal yang bisa saya banggakan.",
+                                                "Saya memiliki sikap positif terhadap diri saya sendiri.",
+                                                "Secara keseluruhan, saya puas dengan diri saya.",
+                                                "Saya merasa tidak berguna pada beberapa kesempatan.",
+                                                "Saya berharap dapat lebih menghargai diri saya.",
+                                                "Kadang-kadang saya benar-benar merasa tidak berguna."
+                                            ];
+                                            $esteem_scale = [
+                                                1 => "Sangat Tidak Setuju",
+                                                2 => "Tidak Setuju",
+                                                3 => "Setuju",
+                                                4 => "Sangat Setuju"
+                                            ];
+                                        @endphp
+
+                                        @foreach($esteem_questions as $i => $question)
+                                            <div
+                                                class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
+                                                <p class="text-white mb-4 font-medium text-lg">{{ $i + 1 }}. {{ $question }}</p>
+                                                <div class="flex flex-wrap items-center gap-3">
+                                                    @foreach($esteem_scale as $val => $label)<label
+                                                        class="flex items-center cursor-pointer group"><input type="radio"
+                                                            name="form_data[esteem{{ $i + 1 }}]" value="{{ $val }}"
+                                                            @if(old('form_data.esteem' . ($i + 1)) == $val) checked @endif
+                                                            class="sr-only peer" required>
+                                                        <div
+                                                            class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24">
+                                                            <span class="text-2xl font-bold text-white">{{ $val }}</span><span
+                                                                class="text-xs text-gray-300 text-center leading-tight px-1">{{ $label }}</span>
+                                                        </div>
+                                                    </label>@endforeach</div>
+                                            </div>
+                                        @endforeach
                                     </div>
 
+                                    <!-- Hidden field for psychologist name (auto-filled from Surat Psikolog) -->
+                                    <input type="hidden" id="doctor_name_tp" name="form_data[doctor_name]"
+                                        value="{{ old('form_data.doctor_name') }}" required>
+                                </div>
 
-                                    {{-- Psychology Tests Section --}}
-                                    <div class="mt-8 border-t border-white/10 pt-8">
-                                        <h4 class="text-xl font-semibold text-white mb-4">Tes Psikologi Multi-Aspek</h4>
-                                        <p class="text-blue-200 text-sm mb-6">Silakan jawab semua pertanyaan berikut untuk
-                                            melengkapi formulir Anda.</p>
+                            @elseif($type === 'surat_psikolog')
+                                <div class="mb-6">
+                                    <h3 class="text-xl font-semibold text-white mb-4">Formulir Psikologi</h3>
+                                    <p class="text-blue-200 text-sm mb-6">Lengkapi formulir dan jawab pertanyaan berikut dengan
+                                        jujur. Hasil tes akan membantu psikolog dalam memberikan evaluasi yang tepat.</p>
 
-                                        <!-- Big Five Personality Test (BFI-10) -->
-                                        <div class="mb-8">
-                                            <h4 class="text-lg font-semibold text-white mb-4">Bagian 1: Tes Kepribadian (BFI-10)
-                                            </h4>
-                                            <p class="text-blue-200 text-sm mb-4">Pilih jawaban yang paling sesuai dengan diri Anda:
-                                            </p>
+                                    <label for="purpose_sp"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan</label>
+                                    <select id="purpose_sp" name="form_data[purpose]" class="form-select">
+                                        <option value="Konsult asi Psikolog" class="bg-slate-900 text-white font-bold">
+                                            Konsultasi
+                                            Psikolog</option>
+                                        <option value="Lampiran Pembuatan Lisensi" class="bg-slate-900 text-white font-bold">
+                                            Lampiran
+                                            Pembuatan Lisensi</option>
+                                        <option value="Lampiran Mendaftar Pekerjaan" class="bg-slate-900 text-white font-bold">
+                                            Lampiran
+                                            Mendaftar Pekerjaan</option>
+                                    </select>
+                                </div>
 
-                                            @php
-                                                $bigfive_questions = [
-                                                    "Saya adalah seseorang yang cenderung ekstrovert, suka bergaul.",
-                                                    "Saya adalah seseorang yang cenderung bersikap kritis, suka berdebat.",
-                                                    "Saya adalah seseorang yang cenderung dapat dipercaya, tekun.",
-                                                    "Saya adalah seseorang yang cenderung mudah merasa cemas, khawatir.",
-                                                    "Saya adalah seseorang yang cenderung terbuka pada pengalaman baru.",
-                                                    "Saya adalah seseorang yang cenderung pendiam, tertutup.",
-                                                    "Saya adalah seseorang yang cenderung ramah, hangat.",
-                                                    "Saya adalah seseorang yang cenderung ceroboh, kurang teliti.",
-                                                    "Saya adalah seseorang yang cenderung stabil secara emosional, tenang.",
-                                                    "Saya adalah seseorang yang cenderung konvensional, kurang imajinatif."
-                                                ];
-                                                $bigfive_scale = [
-                                                    1 => "Sangat Tidak Setuju",
-                                                    2 => "Tidak Setuju",
-                                                    3 => "Netral",
-                                                    4 => "Setuju",
-                                                    5 => "Sangat Setuju"
-                                                ];
-                                            @endphp
 
-                                            @foreach($bigfive_questions as $i => $question)
-                                                <div
-                                                    class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
-                                                    <p class="text-white mb-4 font-medium text-lg">{{ $i + 1 }}. {{ $question }}</p>
-                                                    <div class="flex flex-wrap items-center gap-3">
-                                                        @foreach($bigfive_scale as $val => $label)
-                                                            <label class="flex items-center cursor-pointer group">
-                                                                <input type="radio" name="form_data[bigfive{{ $i + 1 }}]" value="{{ $val }}"
-                                                                    @if(old('form_data.bigfive' . ($i + 1)) == $val) checked @endif
-                                                                    class="sr-only peer" required>
-                                                                <div
-                                                                    class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex-1 min-w-[100px] h-24">
-                                                                    <span class="text-2xl font-bold text-white">{{ $val }}</span>
-                                                                    <span
-                                                                        class="text-[10px] text-gray-300 text-center leading-tight px-1">{{ $label }}</span>
-                                                                </div>
-                                                            </label>
-                                                        @endforeach
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
+                                {{-- Psychology Tests Section --}}
+                                <div class="mt-8 border-t border-white/10 pt-8">
+                                    <h4 class="text-xl font-semibold text-white mb-4">Tes Psikologi Multi-Aspek</h4>
+                                    <p class="text-blue-200 text-sm mb-6">Silakan jawab semua pertanyaan berikut untuk
+                                        melengkapi formulir Anda.</p>
 
-                                        <!-- Stress Test (PSS-10) -->
-                                        <div class="mb-8">
-                                            <h4 class="text-lg font-semibold text-white mb-4">Bagian 2: Tes Stres (PSS-10)</h4>
-                                            <p class="text-blue-200 text-sm mb-4">Seberapa sering Anda mengalami hal-hal berikut
-                                                dalam sebulan terakhir:</p>
+                                    <!-- Big Five Personality Test (BFI-10) -->
+                                    <div class="mb-8">
+                                        <h4 class="text-lg font-semibold text-white mb-4">Bagian 1: Tes Kepribadian (BFI-10)
+                                        </h4>
+                                        <p class="text-blue-200 text-sm mb-4">Pilih jawaban yang paling sesuai dengan diri Anda:
+                                        </p>
 
-                                            @php
-                                                $stress_questions = [
-                                                    "Seberapa sering Anda merasa terganggu oleh sesuatu yang tidak terduga?",
-                                                    "Seberapa sering Anda merasa tidak mampu mengendalikan hal-hal penting dalam hidup Anda?",
-                                                    "Seberapa sering Anda merasa gelisah dan tertekan?",
-                                                    "Seberapa sering Anda merasa percaya diri dalam kemampuan mengatasi masalah pribadi?",
-                                                    "Seberapa sering Anda merasa bahwa hal-hal berjalan sesuai keinginan Anda?",
-                                                    "Seberapa sering Anda merasa tidak mampu mengatasi semua hal yang harus dilakukan?",
-                                                    "Seberapa sering Anda merasa dapat mengendalikan gangguan dalam hidup Anda?",
-                                                    "Seberapa sering Anda merasa bahwa hal-hal di luar kendali Anda?",
-                                                    "Seberapa sering Anda merasa dapat mengendalikan waktu Anda?",
-                                                    "Seberapa sering Anda merasa kesulitan menanggulangi masalah?"
-                                                ];
-                                                $stress_scale = [
-                                                    0 => "Tidak Pernah",
-                                                    1 => "Jarang",
-                                                    2 => "Kadang-Kadang",
-                                                    3 => "Sering",
-                                                    4 => "Sangat Sering"
-                                                ];
-                                            @endphp
+                                        @php
+                                            $bigfive_questions = [
+                                                "Saya adalah seseorang yang cenderung ekstrovert, suka bergaul.",
+                                                "Saya adalah seseorang yang cenderung bersikap kritis, suka berdebat.",
+                                                "Saya adalah seseorang yang cenderung dapat dipercaya, tekun.",
+                                                "Saya adalah seseorang yang cenderung mudah merasa cemas, khawatir.",
+                                                "Saya adalah seseorang yang cenderung terbuka pada pengalaman baru.",
+                                                "Saya adalah seseorang yang cenderung pendiam, tertutup.",
+                                                "Saya adalah seseorang yang cenderung ramah, hangat.",
+                                                "Saya adalah seseorang yang cenderung ceroboh, kurang teliti.",
+                                                "Saya adalah seseorang yang cenderung stabil secara emosional, tenang.",
+                                                "Saya adalah seseorang yang cenderung konvensional, kurang imajinatif."
+                                            ];
+                                            $bigfive_scale = [
+                                                1 => "Sangat Tidak Setuju",
+                                                2 => "Tidak Setuju",
+                                                3 => "Netral",
+                                                4 => "Setuju",
+                                                5 => "Sangat Setuju"
+                                            ];
+                                        @endphp
 
-                                            @foreach($stress_questions as $i => $question)
-                                                <div
-                                                    class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
-                                                    <p class="text-white mb-4 font-medium text-lg">{{ $i + 1 }}. {{ $question }}</p>
-                                                    <div class="flex flex-wrap items-center gap-3">
-                                                        @foreach($stress_scale as $val => $label)<label
-                                                            class="flex items-center cursor-pointer group"><input type="radio"
-                                                                name="form_data[stress{{ $i + 1 }}]" value="{{ $val }}"
-                                                                @if(old('form_data.stress' . ($i + 1)) == $val) checked @endif
+                                        @foreach($bigfive_questions as $i => $question)
+                                            <div
+                                                class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
+                                                <p class="text-white mb-4 font-medium text-lg">{{ $i + 1 }}. {{ $question }}</p>
+                                                <div class="flex flex-wrap items-center gap-3">
+                                                    @foreach($bigfive_scale as $val => $label)
+                                                        <label class="flex items-center cursor-pointer group">
+                                                            <input type="radio" name="form_data[bigfive{{ $i + 1 }}]" value="{{ $val }}"
+                                                                @if(old('form_data.bigfive' . ($i + 1)) == $val) checked @endif
                                                                 class="sr-only peer" required>
                                                             <div
-                                                                class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24">
-                                                                <span class="text-2xl font-bold text-white">{{ $val }}</span><span
-                                                                    class="text-xs text-gray-300 text-center leading-tight px-1">{{ $label }}</span>
+                                                                class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex-1 min-w-[100px] h-24">
+                                                                <span class="text-2xl font-bold text-white">{{ $val }}</span>
+                                                                <span
+                                                                    class="text-[10px] text-gray-300 text-center leading-tight px-1">{{ $label }}</span>
                                                             </div>
-                                                        </label>@endforeach</div>
+                                                        </label>
+                                                    @endforeach
                                                 </div>
-                                            @endforeach
-                                        </div>
-
-                                        <!-- Self-Esteem Test (RSES) -->
-                                        <div class="mb-8">
-                                            <h4 class="text-lg font-semibold text-white mb-4">Bagian 3: Tes Harga Diri (RSES)</h4>
-                                            <p class="text-blue-200 text-sm mb-4">Pilih jawaban yang paling sesuai dengan perasaan
-                                                Anda:</p>
-
-                                            @php
-                                                $esteem_questions = [
-                                                    "Saya merasa bahwa saya adalah orang yang berharga, setara dengan orang lain.",
-                                                    "Saya merasa saya memiliki sejumlah kualitas yang baik.",
-                                                    "Secara keseluruhan, saya cenderung merasa bahwa saya adalah orang yang gagal.",
-                                                    "Saya mampu melakukan sesuatu sama baiknya dengan kebanyakan orang lain.",
-                                                    "Saya merasa tidak banyak hal yang bisa saya banggakan.",
-                                                    "Saya memiliki sikap positif terhadap diri saya sendiri.",
-                                                    "Secara keseluruhan, saya puas dengan diri saya.",
-                                                    "Saya merasa tidak berguna pada beberapa kesempatan.",
-                                                    "Saya berharap dapat lebih menghargai diri saya.",
-                                                    "Kadang-kadang saya benar-benar merasa tidak berguna."
-                                                ];
-                                                $esteem_scale = [
-                                                    1 => "Sangat Tidak Setuju",
-                                                    2 => "Tidak Setuju",
-                                                    3 => "Setuju",
-                                                    4 => "Sangat Setuju"
-                                                ];
-                                            @endphp
-
-                                            @foreach($esteem_questions as $i => $question)
-                                                <div
-                                                    class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
-                                                    <p class="text-white mb-4 font-medium text-lg">{{ $i + 1 }}. {{ $question }}</p>
-                                                    <div class="flex flex-wrap items-center gap-3">
-                                                        @foreach($esteem_scale as $val => $label)<label
-                                                            class="flex items-center cursor-pointer group"><input type="radio"
-                                                                name="form_data[esteem{{ $i + 1 }}]" value="{{ $val }}"
-                                                                @if(old('form_data.esteem' . ($i + 1)) == $val) checked @endif
-                                                                class="sr-only peer" required>
-                                                            <div
-                                                                class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24">
-                                                                <span class="text-2xl font-bold text-white">{{ $val }}</span><span
-                                                                    class="text-xs text-gray-300 text-center leading-tight px-1">{{ $label }}</span>
-                                                            </div>
-                                                        </label>@endforeach</div>
-                                                </div>
-                                            @endforeach
-                                        </div>
+                                            </div>
+                                        @endforeach
                                     </div>
 
-                                @elseif($type === 'konsultasi_medis')
-                                    <div>
-                                        <label for="purpose_km"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">Jenis
-                                            Konsultasi</label>
-                                        <select id="purpose_km" name="form_data[purpose]" class="form-select">
-                                            <option value="Konsultasi Umum" class="bg-slate-900 text-white font-bold">Konsultasi
+                                    <!-- Stress Test (PSS-10) -->
+                                    <div class="mb-8">
+                                        <h4 class="text-lg font-semibold text-white mb-4">Bagian 2: Tes Stres (PSS-10)</h4>
+                                        <p class="text-blue-200 text-sm mb-4">Seberapa sering Anda mengalami hal-hal berikut
+                                            dalam sebulan terakhir:</p>
+
+                                        @php
+                                            $stress_questions = [
+                                                "Seberapa sering Anda merasa terganggu oleh sesuatu yang tidak terduga?",
+                                                "Seberapa sering Anda merasa tidak mampu mengendalikan hal-hal penting dalam hidup Anda?",
+                                                "Seberapa sering Anda merasa gelisah dan tertekan?",
+                                                "Seberapa sering Anda merasa percaya diri dalam kemampuan mengatasi masalah pribadi?",
+                                                "Seberapa sering Anda merasa bahwa hal-hal berjalan sesuai keinginan Anda?",
+                                                "Seberapa sering Anda merasa tidak mampu mengatasi semua hal yang harus dilakukan?",
+                                                "Seberapa sering Anda merasa dapat mengendalikan gangguan dalam hidup Anda?",
+                                                "Seberapa sering Anda merasa bahwa hal-hal di luar kendali Anda?",
+                                                "Seberapa sering Anda merasa dapat mengendalikan waktu Anda?",
+                                                "Seberapa sering Anda merasa kesulitan menanggulangi masalah?"
+                                            ];
+                                            $stress_scale = [
+                                                0 => "Tidak Pernah",
+                                                1 => "Jarang",
+                                                2 => "Kadang-Kadang",
+                                                3 => "Sering",
+                                                4 => "Sangat Sering"
+                                            ];
+                                        @endphp
+
+                                        @foreach($stress_questions as $i => $question)
+                                            <div
+                                                class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
+                                                <p class="text-white mb-4 font-medium text-lg">{{ $i + 1 }}. {{ $question }}</p>
+                                                <div class="flex flex-wrap items-center gap-3">
+                                                    @foreach($stress_scale as $val => $label)<label
+                                                        class="flex items-center cursor-pointer group"><input type="radio"
+                                                            name="form_data[stress{{ $i + 1 }}]" value="{{ $val }}"
+                                                            @if(old('form_data.stress' . ($i + 1)) == $val) checked @endif
+                                                            class="sr-only peer" required>
+                                                        <div
+                                                            class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24">
+                                                            <span class="text-2xl font-bold text-white">{{ $val }}</span><span
+                                                                class="text-xs text-gray-300 text-center leading-tight px-1">{{ $label }}</span>
+                                                        </div>
+                                                    </label>@endforeach</div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+
+                                    <!-- Self-Esteem Test (RSES) -->
+                                    <div class="mb-8">
+                                        <h4 class="text-lg font-semibold text-white mb-4">Bagian 3: Tes Harga Diri (RSES)</h4>
+                                        <p class="text-blue-200 text-sm mb-4">Pilih jawaban yang paling sesuai dengan perasaan
+                                            Anda:</p>
+
+                                        @php
+                                            $esteem_questions = [
+                                                "Saya merasa bahwa saya adalah orang yang berharga, setara dengan orang lain.",
+                                                "Saya merasa saya memiliki sejumlah kualitas yang baik.",
+                                                "Secara keseluruhan, saya cenderung merasa bahwa saya adalah orang yang gagal.",
+                                                "Saya mampu melakukan sesuatu sama baiknya dengan kebanyakan orang lain.",
+                                                "Saya merasa tidak banyak hal yang bisa saya banggakan.",
+                                                "Saya memiliki sikap positif terhadap diri saya sendiri.",
+                                                "Secara keseluruhan, saya puas dengan diri saya.",
+                                                "Saya merasa tidak berguna pada beberapa kesempatan.",
+                                                "Saya berharap dapat lebih menghargai diri saya.",
+                                                "Kadang-kadang saya benar-benar merasa tidak berguna."
+                                            ];
+                                            $esteem_scale = [
+                                                1 => "Sangat Tidak Setuju",
+                                                2 => "Tidak Setuju",
+                                                3 => "Setuju",
+                                                4 => "Sangat Setuju"
+                                            ];
+                                        @endphp
+
+                                        @foreach($esteem_questions as $i => $question)
+                                            <div
+                                                class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
+                                                <p class="text-white mb-4 font-medium text-lg">{{ $i + 1 }}. {{ $question }}</p>
+                                                <div class="flex flex-wrap items-center gap-3">
+                                                    @foreach($esteem_scale as $val => $label)<label
+                                                        class="flex items-center cursor-pointer group"><input type="radio"
+                                                            name="form_data[esteem{{ $i + 1 }}]" value="{{ $val }}"
+                                                            @if(old('form_data.esteem' . ($i + 1)) == $val) checked @endif
+                                                            class="sr-only peer" required>
+                                                        <div
+                                                            class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24">
+                                                            <span class="text-2xl font-bold text-white">{{ $val }}</span><span
+                                                                class="text-xs text-gray-300 text-center leading-tight px-1">{{ $label }}</span>
+                                                        </div>
+                                                    </label>@endforeach</div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+
+                            @elseif($type === 'konsultasi_medis')
+                                <div>
+                                    <label for="purpose_km"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">Jenis
+                                        Konsultasi</label>
+                                    <select id="purpose_km" name="form_data[purpose]" class="form-select">
+                                        <option value="Konsultasi Umum" class="bg-slate-900 text-white font-bold">Konsultasi
+                                            Umum
+                                        </option>
+                                        <option value="Konsultasi Spesialis" class="bg-slate-900 text-white font-bold">
+                                            Konsultasi
+                                            Spesialis</option>
+                                        <option value="Konsultasi Darurat" class="bg-slate-900 text-white font-bold">Konsultasi
+                                            Darurat
+                                        </option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="doctor_name_km"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Nama Dokter <span class="text-red-400">*</span>
+                                    </label>
+                                    <select id="doctor_name_km" name="form_data[doctor_name]"
+                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        <option value="">-- Pilih Dokter --</option>
+                                        @foreach($doctors as $doctor)
+                                            <option value="{{ $doctor->name }}"
+                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
+                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                                class="bg-slate-900 text-white font-bold">
+                                                {{ $doctor->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+
+                            @elseif($type === 'laporan_kecelakaan')
+                                <div>
+                                    <label for="purpose_lk"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">Jenis
+                                        Kecelakaan</label>
+                                    <select id="purpose_lk" name="form_data[purpose]" class="form-select">
+                                        <option value="Kecelakaan Lalu Lintas" class="bg-slate-900 text-white font-bold">
+                                            Kecelakaan
+                                            Lalu
+                                            Lintas</option>
+                                        <option value="Kecelakaan Kerja" class="bg-slate-900 text-white font-bold">Kecelakaan
+                                            Kerja
+                                        </option>
+                                        <option value="Kecelakaan Olahraga" class="bg-slate-900 text-white font-bold">Kecelakaan
+                                            Olahraga</option>
+                                        <option value="Kecelakaan Lainnya" class="bg-slate-900 text-white font-bold">Kecelakaan
+                                            Lainnya
+                                        </option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="doctor_name_lk"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Nama Dokter <span class="text-red-400">*</span>
+                                    </label>
+                                    <select id="doctor_name_lk" name="form_data[doctor_name]"
+                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        <option value="">-- Pilih Dokter --</option>
+                                        @foreach($doctors as $doctor)
+                                            <option value="{{ $doctor->name }}"
+                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
+                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                                class="bg-slate-900 text-white font-bold">
+                                                {{ $doctor->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+
+                            @elseif($type === 'permintaan_ambulans')
+                                <div>
+                                    <label for="purpose_pa"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">Jenis
+                                        Permintaan</label>
+                                    <select id="purpose_pa" name="form_data[purpose]" class="form-select">
+                                        <option value="Ambulans Darurat" class="bg-slate-900 text-white font-bold">Ambulans
+                                            Darurat
+                                        </option>
+                                        <option value="Ambulans Transport" class="bg-slate-900 text-white font-bold">Ambulans
+                                            Transport
+                                        </option>
+                                        <option value="Ambulans ICU" class="bg-slate-900 text-white font-bold">Ambulans ICU
+                                        </option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="doctor_name_pa"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Nama Dokter <span class="text-red-400">*</span>
+                                    </label>
+                                    <select id="doctor_name_pa" name="form_data[doctor_name]"
+                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        <option value="">-- Pilih Dokter --</option>
+                                        @foreach($doctors as $doctor)
+                                            <option value="{{ $doctor->name }}"
+                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
+                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                                class="bg-slate-900 text-white font-bold">
+                                                {{ $doctor->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+
+                            @elseif($type === 'penyakit_dalam')
+                                <div>
+                                    <label for="purpose_pd"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
+                                        Konsultasi</label>
+                                    <select id="purpose_pd" name="form_data[purpose]" class="form-select">
+                                        <option value="Konsultasi Umum" class="bg-slate-900 text-white font-bold">Konsultasi
+                                            Umum
+                                        </option>
+                                        <option value="Pemeriksaan Rutin" class="bg-slate-900 text-white font-bold">Pemeriksaan
+                                            Rutin
+                                        </option>
+                                        <option value="Konsultasi Spesialis" class="bg-slate-900 text-white font-bold">
+                                            Konsultasi
+                                            Spesialis</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="doctor_name_pd"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Nama Dokter <span class="text-red-400">*</span>
+                                    </label>
+                                    <select id="doctor_name_pd" name="form_data[doctor_name]"
+                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        <option value="">-- Pilih Dokter --</option>
+                                        @foreach($doctors as $doctor)
+                                            <option value="{{ $doctor->name }}"
+                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
+                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                                class="bg-slate-900 text-white font-bold">
+                                                {{ $doctor->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+
+                            @elseif($type === 'spesialis_anak')
+                                <div>
+                                    <label for="purpose_sa"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
+                                        Konsultasi</label>
+                                    <select id="purpose_sa" name="form_data[purpose]" class="form-select">
+                                        <option value="Konsultasi Anak" class="bg-slate-900 text-white font-bold">Konsultasi
+                                            Anak
+                                        </option>
+                                        <option value="Pemeriksaan Tumbuh Kembang" class="bg-slate-900 text-white font-bold">
+                                            Pemeriksaan
+                                            Tumbuh Kembang</option>
+                                        <option value="Imunisasi" class="bg-slate-900 text-white font-bold">Imunisasi</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="doctor_name_sa"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Nama Dokter <span class="text-red-400">*</span>
+                                    </label>
+                                    <select id="doctor_name_sa" name="form_data[doctor_name]"
+                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        <option value="">-- Pilih Dokter --</option>
+                                        @foreach($doctors as $doctor)
+                                            <option value="{{ $doctor->name }}"
+                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
+                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                                class="bg-slate-900 text-white font-bold">
+                                                {{ $doctor->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+
+                            @elseif($type === 'spesialis_bedah')
+                                <div>
+                                    <label for="purpose_sb"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
+                                        Konsultasi</label>
+                                    <select id="purpose_sb" name="form_data[purpose]" class="form-select">
+                                        <option value="Konsultasi Bedah" class="bg-slate-900 text-white font-bold">Konsultasi
+                                            Bedah
+                                        </option>
+                                        <option value="Pemeriksaan Pra-Operasi" class="bg-slate-900 text-white font-bold">
+                                            Pemeriksaan
+                                            Pra-Operasi</option>
+                                        <option value="Konsultasi Pasca-Operasi" class="bg-slate-900 text-white font-bold">
+                                            Konsultasi
+                                            Pasca-Operasi</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="doctor_name_sb"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Nama Dokter <span class="text-red-400">*</span>
+                                    </label>
+                                    <select id="doctor_name_sb" name="form_data[doctor_name]"
+                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        <option value="">-- Pilih Dokter --</option>
+                                        @foreach($doctors as $doctor)
+                                            <option value="{{ $doctor->name }}"
+                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
+                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                                class="bg-slate-900 text-white font-bold">
+                                                {{ $doctor->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+
+                            @elseif($type === 'spesialis_mata')
+                                <div>
+                                    <label for="purpose_sm"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
+                                        Konsultasi</label>
+                                    <select id="purpose_sm" name="form_data[purpose]" class="form-select">
+                                        <option value="Konsultasi Mata" class="bg-slate-900 text-white font-bold">Konsultasi
+                                            Mata
+                                        </option>
+                                        <option value="Pemeriksaan Mata" class="bg-slate-900 text-white font-bold">Pemeriksaan
+                                            Mata
+                                        </option>
+                                        <option value="Konsultasi Operasi Mata" class="bg-slate-900 text-white font-bold">
+                                            Konsultasi
+                                            Operasi Mata</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="doctor_name_sm"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Nama Dokter <span class="text-red-400">*</span>
+                                    </label>
+                                    <select id="doctor_name_sm" name="form_data[doctor_name]"
+                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        <option value="">-- Pilih Dokter --</option>
+                                        @foreach($doctors as $doctor)
+                                            <option value="{{ $doctor->name }}"
+                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
+                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                                class="bg-slate-900 text-white font-bold">
+                                                {{ $doctor->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+
+                            @elseif($type === 'spesialis_urologi')
+                                <div>
+                                    <label for="purpose_km"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
+                                        Konsultasi</label>
+                                    <select id="purpose_km" name="form_data[purpose]" class="form-select">
+                                        <option value="Konsultasi Umum" class="bg-slate-900 text-white font-bold">Konsultasi
+                                            Umum
+                                        </option>
+                                        <option value="Pemeriksaan Rutin" class="bg-slate-900 text-white font-bold">Pemeriksaan
+                                            Rutin
+                                        </option>
+                                        <option value="Konsultasi Spesialis" class="bg-slate-900 text-white font-bold">
+                                            Konsultasi
+                                            Spesialis</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="doctor_name_km"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Nama Dokter <span class="text-red-400">*</span>
+                                    </label>
+                                    <select id="doctor_name_km" name="form_data[doctor_name]"
+                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        <option value="">-- Pilih Dokter --</option>
+                                        @foreach($doctors as $doctor)
+                                            <option value="{{ $doctor->name }}"
+                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
+                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                                class="bg-slate-900 text-white font-bold">
+                                                {{ $doctor->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+
+                            @elseif($type === 'spesialis_tht')
+                                <div>
+                                    <label for="purpose_lk"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">Jenis
+                                        Kecelakaan</label>
+                                    <select id="purpose_lk" name="form_data[purpose]" class="form-select">
+                                        <option value="Kecelakaan Lalu Lintas" class="bg-slate-900 text-white font-bold">
+                                            Kecelakaan
+                                            Lalu
+                                            Lintas</option>
+                                        <option value="Kecelakaan Kerja" class="bg-slate-900 text-white font-bold">Kecelakaan
+                                            Kerja
+                                        </option>
+                                        <option value="Kecelakaan Olahraga" class="bg-slate-900 text-white font-bold">Kecelakaan
+                                            Olahraga</option>
+                                        <option value="Kecelakaan Lainnya" class="bg-slate-900 text-white font-bold">Kecelakaan
+                                            Lainnya
+                                        </option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="doctor_name_lk"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Nama Dokter <span class="text-red-400">*</span>
+                                    </label>
+                                    <select id="doctor_name_lk" name="form_data[doctor_name]"
+                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        <option value="">-- Pilih Dokter --</option>
+                                        @foreach($doctors as $doctor)
+                                            <option value="{{ $doctor->name }}"
+                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
+                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                                class="bg-slate-900 text-white font-bold">
+                                                {{ $doctor->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+
+                            @elseif($type === 'spesialis_ortopedi')
+                                <div>
+                                    <label for="purpose_pa"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">Jenis
+                                        Keadaan Darurat</label>
+                                    <select id="purpose_pa" name="form_data[purpose]" class="form-select">
+                                        <option value="Kecelakaan Serius" class="bg-slate-900 text-white font-bold">Kecelakaan
+                                            Serius
+                                        </option>
+                                        <option value="Serangan Jantung" class="bg-slate-900 text-white font-bold">Serangan
+                                            Jantung
+                                        </option>
+                                        <option value="Stroke" class="bg-slate-900 text-white font-bold">Stroke</option>
+                                        <option value="Keadaan Darurat Lainnya" class="bg-slate-900 text-white font-bold">
+                                            Keadaan
+                                            Darurat Lainnya</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="doctor_name_pa"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Nama Dokter <span class="text-red-400">*</span>
+                                    </label>
+                                    <select id="doctor_name_pa" name="form_data[doctor_name]"
+                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        <option value="">-- Pilih Dokter --</option>
+                                        @foreach($doctors as $doctor)
+                                            <option value="{{ $doctor->name }}"
+                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
+                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                                class="bg-slate-900 text-white font-bold">
+                                                {{ $doctor->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+
+                            @elseif($type === 'spesialis_saraf')
+                                <div>
+                                    <label for="purpose_ss"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
+                                        Konsultasi</label>
+                                    <select id="purpose_ss" name="form_data[purpose]" class="form-select">
+                                        <option value="Konsultasi Neurologi" class="bg-slate-900 text-white font-bold">
+                                            Konsultasi
+                                            Neurologi</option>
+                                        <option value="Pemeriksaan Saraf" class="bg-slate-900 text-white font-bold">Pemeriksaan
+                                            Saraf
+                                        </option>
+                                        <option value="Konsultasi Stroke" class="bg-slate-900 text-white font-bold">Konsultasi
+                                            Stroke
+                                        </option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="doctor_name_ss"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Nama Dokter <span class="text-red-400">*</span>
+                                    </label>
+                                    <select id="doctor_name_ss" name="form_data[doctor_name]"
+                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        <option value="">-- Pilih Dokter --</option>
+                                        @foreach($doctors as $doctor)
+                                            <option value="{{ $doctor->name }}"
+                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
+                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                                class="bg-slate-900 text-white font-bold">
+                                                {{ $doctor->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+                            @elseif($type === 'spesialis_urologi')
+                                <div>
+                                    <label for="purpose_su"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
+                                        Konsultasi</label>
+                                    <select id="purpose_su" name="form_data[purpose]" class="form-select">
+                                        <option value="Konsultasi Urologi" class="bg-slate-900 text-white font-bold">Konsultasi
+                                            Urologi
+                                        </option>
+                                        <option value="Pemeriksaan Prostat" class="bg-slate-900 text-white font-bold">
+                                            Pemeriksaan
+                                            Prostat</option>
+                                        <option value="Konsultasi Ginjal" class="bg-slate-900 text-white font-bold">Konsultasi
+                                            Ginjal
+                                        </option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="doctor_name_su"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Nama Dokter <span class="text-red-400">*</span>
+                                    </label>
+                                    <select id="doctor_name_su" name="form_data[doctor_name]"
+                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        <option value="">-- Pilih Dokter --</option>
+                                        @foreach($doctors as $doctor)
+                                            <option value="{{ $doctor->name }}"
+                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
+                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                                class="bg-slate-900 text-white font-bold">
+                                                {{ $doctor->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+
+                            @elseif($type === 'spesialis_tht')
+                                <div>
+                                    <label for="purpose_st"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
+                                        Konsultasi</label>
+                                    <select id="purpose_st" name="form_data[purpose]" class="form-select">
+                                        <option value="Konsultasi THT" class="bg-slate-900 text-white font-bold">Konsultasi THT
+                                        </option>
+                                        <option value="Pemeriksaan Telinga" class="bg-slate-900 text-white font-bold">
+                                            Pemeriksaan
+                                            Telinga</option>
+                                        <option value="Pemeriksaan Hidung" class="bg-slate-900 text-white font-bold">Pemeriksaan
+                                            Hidung
+                                        </option>
+                                        <option value="Pemeriksaan Tenggorokan" class="bg-slate-900 text-white font-bold">
+                                            Pemeriksaan
+                                            Tenggorokan</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="doctor_name_st"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Nama Dokter <span class="text-red-400">*</span>
+                                    </label>
+                                    <select id="doctor_name_st" name="form_data[doctor_name]"
+                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        <option value="">-- Pilih Dokter --</option>
+                                        @foreach($doctors as $doctor)
+                                            <option value="{{ $doctor->name }}"
+                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
+                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                                class="bg-slate-900 text-white font-bold">
+                                                {{ $doctor->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+
+                            @elseif($type === 'spesialis_ortopedi')
+                                <div>
+                                    <label for="purpose_so"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
+                                        Konsultasi</label>
+                                    <select id="purpose_so" name="form_data[purpose]" class="form-select">
+                                        <option value="Konsultasi Ortopedi" class="bg-slate-900 text-white font-bold">Konsultasi
+                                            Ortopedi</option>
+                                        <option value="Pemeriksaan Tulang" class="bg-slate-900 text-white font-bold">Pemeriksaan
+                                            Tulang
+                                        </option>
+                                        <option value="Konsultasi Sendi" class="bg-slate-900 text-white font-bold">Konsultasi
+                                            Sendi
+                                        </option>
+                                        <option value="Konsultasi Cedera Olahraga" class="bg-slate-900 text-white font-bold">
+                                            Konsultasi
+                                            Cedera Olahraga</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="doctor_name_so"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Nama Dokter <span class="text-red-400">*</span>
+                                    </label>
+                                    <select id="doctor_name_so" name="form_data[doctor_name]"
+                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        <option value="">-- Pilih Dokter --</option>
+                                        @foreach($doctors as $doctor)
+                                            <option value="{{ $doctor->name }}"
+                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
+                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                                class="bg-slate-900 text-white font-bold">
+                                                {{ $doctor->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+
+                            @elseif($type === 'janji_temu')
+                                <div class="flex flex-col sm:flex-row sm:flex-nowrap gap-3 sm:gap-4">
+                                    <div class="flex-1 min-w-0">
+                                        <label for="purpose_jt"
+                                            class="block text-xs font-medium text-white mb-1.5 font-bold">Jenis
+                                            Janji Temu</label>
+                                        <select id="purpose_jt" name="form_data[purpose]" class="form-select w-full">
+                                            <option value="Janji Temu Umum" class="bg-slate-900 text-white font-bold">Janji Temu
                                                 Umum
                                             </option>
                                             <option value="Konsultasi Spesialis" class="bg-slate-900 text-white font-bold">
                                                 Konsultasi
                                                 Spesialis</option>
-                                            <option value="Konsultasi Darurat" class="bg-slate-900 text-white font-bold">Konsultasi
-                                                Darurat
-                                            </option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label for="doctor_name_km"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Nama Dokter <span class="text-red-400">*</span>
-                                        </label>
-                                        <select id="doctor_name_km" name="form_data[doctor_name]"
-                                            class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
-                                            <option value="">-- Pilih Dokter --</option>
-                                            @foreach($doctors as $doctor)
-                                                <option value="{{ $doctor->name }}"
-                                                    data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                    @if(old('form_data.doctor_name') == $doctor->name) selected @endif
-                                                    class="bg-slate-900 text-white font-bold">
-                                                    {{ $doctor->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
-                                    </div>
-
-                                @elseif($type === 'laporan_kecelakaan')
-                                    <div>
-                                        <label for="purpose_lk"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">Jenis
-                                            Kecelakaan</label>
-                                        <select id="purpose_lk" name="form_data[purpose]" class="form-select">
-                                            <option value="Kecelakaan Lalu Lintas" class="bg-slate-900 text-white font-bold">
-                                                Kecelakaan
-                                                Lalu
-                                                Lintas</option>
-                                            <option value="Kecelakaan Kerja" class="bg-slate-900 text-white font-bold">Kecelakaan
-                                                Kerja
-                                            </option>
-                                            <option value="Kecelakaan Olahraga" class="bg-slate-900 text-white font-bold">Kecelakaan
-                                                Olahraga</option>
-                                            <option value="Kecelakaan Lainnya" class="bg-slate-900 text-white font-bold">Kecelakaan
-                                                Lainnya
-                                            </option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label for="doctor_name_lk"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Nama Dokter <span class="text-red-400">*</span>
-                                        </label>
-                                        <select id="doctor_name_lk" name="form_data[doctor_name]"
-                                            class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
-                                            <option value="">-- Pilih Dokter --</option>
-                                            @foreach($doctors as $doctor)
-                                                <option value="{{ $doctor->name }}"
-                                                    data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                    @if(old('form_data.doctor_name') == $doctor->name) selected @endif
-                                                    class="bg-slate-900 text-white font-bold">
-                                                    {{ $doctor->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
-                                    </div>
-
-                                @elseif($type === 'permintaan_ambulans')
-                                    <div>
-                                        <label for="purpose_pa"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">Jenis
-                                            Permintaan</label>
-                                        <select id="purpose_pa" name="form_data[purpose]" class="form-select">
-                                            <option value="Ambulans Darurat" class="bg-slate-900 text-white font-bold">Ambulans
-                                                Darurat
-                                            </option>
-                                            <option value="Ambulans Transport" class="bg-slate-900 text-white font-bold">Ambulans
-                                                Transport
-                                            </option>
-                                            <option value="Ambulans ICU" class="bg-slate-900 text-white font-bold">Ambulans ICU
-                                            </option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label for="doctor_name_pa"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Nama Dokter <span class="text-red-400">*</span>
-                                        </label>
-                                        <select id="doctor_name_pa" name="form_data[doctor_name]"
-                                            class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
-                                            <option value="">-- Pilih Dokter --</option>
-                                            @foreach($doctors as $doctor)
-                                                <option value="{{ $doctor->name }}"
-                                                    data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                    @if(old('form_data.doctor_name') == $doctor->name) selected @endif
-                                                    class="bg-slate-900 text-white font-bold">
-                                                    {{ $doctor->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
-                                    </div>
-
-                                @elseif($type === 'penyakit_dalam')
-                                    <div>
-                                        <label for="purpose_pd"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
-                                            Konsultasi</label>
-                                        <select id="purpose_pd" name="form_data[purpose]" class="form-select">
-                                            <option value="Konsultasi Umum" class="bg-slate-900 text-white font-bold">Konsultasi
-                                                Umum
-                                            </option>
-                                            <option value="Pemeriksaan Rutin" class="bg-slate-900 text-white font-bold">Pemeriksaan
-                                                Rutin
-                                            </option>
-                                            <option value="Konsultasi Spesialis" class="bg-slate-900 text-white font-bold">
-                                                Konsultasi
-                                                Spesialis</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label for="doctor_name_pd"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Nama Dokter <span class="text-red-400">*</span>
-                                        </label>
-                                        <select id="doctor_name_pd" name="form_data[doctor_name]"
-                                            class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
-                                            <option value="">-- Pilih Dokter --</option>
-                                            @foreach($doctors as $doctor)
-                                                <option value="{{ $doctor->name }}"
-                                                    data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                    @if(old('form_data.doctor_name') == $doctor->name) selected @endif
-                                                    class="bg-slate-900 text-white font-bold">
-                                                    {{ $doctor->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
-                                    </div>
-
-                                @elseif($type === 'spesialis_anak')
-                                    <div>
-                                        <label for="purpose_sa"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
-                                            Konsultasi</label>
-                                        <select id="purpose_sa" name="form_data[purpose]" class="form-select">
-                                            <option value="Konsultasi Anak" class="bg-slate-900 text-white font-bold">Konsultasi
-                                                Anak
-                                            </option>
-                                            <option value="Pemeriksaan Tumbuh Kembang" class="bg-slate-900 text-white font-bold">
+                                            <option value="Pemeriksaan Rutin" class="bg-slate-900 text-white font-bold">
                                                 Pemeriksaan
-                                                Tumbuh Kembang</option>
-                                            <option value="Imunisasi" class="bg-slate-900 text-white font-bold">Imunisasi</option>
+                                                Rutin</option>
                                         </select>
                                     </div>
-                                    <div>
-                                        <label for="doctor_name_sa"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                    <div class="flex-1 min-w-0">
+                                        <label for="doctor_name_jt"
+                                            class="block text-xs font-medium text-white mb-1.5 font-bold">
                                             Nama Dokter <span class="text-red-400">*</span>
                                         </label>
-                                        <select id="doctor_name_sa" name="form_data[doctor_name]"
-                                            class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        <select id="doctor_name_jt" name="form_data[doctor_name]"
+                                            class="form-select w-full @error('form_data.doctor_name') border-red-500 @enderror"
+                                            required>
                                             <option value="">-- Pilih Dokter --</option>
                                             @foreach($doctors as $doctor)
                                                 <option value="{{ $doctor->name }}"
@@ -854,605 +1233,226 @@
                                                 </option>
                                             @endforeach
                                         </select>
-                                        @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                        @error('form_data.doctor_name') <p class="form-error text-xs mt-1">{{ $message }}</p>
+                                        @enderror
                                     </div>
-
-                                @elseif($type === 'spesialis_bedah')
-                                    <div>
-                                        <label for="purpose_sb"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
-                                            Konsultasi</label>
-                                        <select id="purpose_sb" name="form_data[purpose]" class="form-select">
-                                            <option value="Konsultasi Bedah" class="bg-slate-900 text-white font-bold">Konsultasi
-                                                Bedah
-                                            </option>
-                                            <option value="Pemeriksaan Pra-Operasi" class="bg-slate-900 text-white font-bold">
-                                                Pemeriksaan
-                                                Pra-Operasi</option>
-                                            <option value="Konsultasi Pasca-Operasi" class="bg-slate-900 text-white font-bold">
-                                                Konsultasi
-                                                Pasca-Operasi</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label for="doctor_name_sb"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Nama Dokter <span class="text-red-400">*</span>
+                                    <div class="flex-1 min-w-0">
+                                        <label for="appointment_date"
+                                            class="block text-xs font-medium text-white mb-1.5 font-bold">
+                                            Tanggal <span class="text-red-400">*</span>
                                         </label>
-                                        <select id="doctor_name_sb" name="form_data[doctor_name]"
-                                            class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
-                                            <option value="">-- Pilih Dokter --</option>
-                                            @foreach($doctors as $doctor)
-                                                <option value="{{ $doctor->name }}"
-                                                    data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                    @if(old('form_data.doctor_name') == $doctor->name) selected @endif
-                                                    class="bg-slate-900 text-white font-bold">
-                                                    {{ $doctor->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                        <input type="date" id="appointment_date" name="form_data[appointment_date]"
+                                            value="{{ old('form_data.appointment_date') }}"
+                                            class="form-input w-full @error('form_data.appointment_date') border-red-500 @enderror"
+                                            required>
+                                        @error('form_data.appointment_date') <p class="form-error text-xs mt-1">{{ $message }}
+                                            </p>
+                                        @enderror
                                     </div>
-
-                                @elseif($type === 'spesialis_mata')
-                                    <div>
-                                        <label for="purpose_sm"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
-                                            Konsultasi</label>
-                                        <select id="purpose_sm" name="form_data[purpose]" class="form-select">
-                                            <option value="Konsultasi Mata" class="bg-slate-900 text-white font-bold">Konsultasi
-                                                Mata
-                                            </option>
-                                            <option value="Pemeriksaan Mata" class="bg-slate-900 text-white font-bold">Pemeriksaan
-                                                Mata
-                                            </option>
-                                            <option value="Konsultasi Operasi Mata" class="bg-slate-900 text-white font-bold">
-                                                Konsultasi
-                                                Operasi Mata</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label for="doctor_name_sm"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Nama Dokter <span class="text-red-400">*</span>
+                                    <div class="flex-1 min-w-0">
+                                        <label for="appointment_time"
+                                            class="block text-xs font-medium text-white mb-1.5 font-bold">
+                                            Waktu <span class="text-red-400">*</span>
                                         </label>
-                                        <select id="doctor_name_sm" name="form_data[doctor_name]"
-                                            class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
-                                            <option value="">-- Pilih Dokter --</option>
-                                            @foreach($doctors as $doctor)
-                                                <option value="{{ $doctor->name }}"
-                                                    data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                    @if(old('form_data.doctor_name') == $doctor->name) selected @endif
-                                                    class="bg-slate-900 text-white font-bold">
-                                                    {{ $doctor->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                        <input type="time" id="appointment_time" name="form_data[appointment_time]"
+                                            value="{{ old('form_data.appointment_time') }}"
+                                            class="form-input w-full @error('form_data.appointment_time') border-red-500 @enderror"
+                                            required>
+                                        @error('form_data.appointment_time') <p class="form-error text-xs mt-1">{{ $message }}
+                                            </p>
+                                        @enderror
                                     </div>
+                                </div>
 
-                                @elseif($type === 'spesialis_urologi')
+                            @elseif($type === 'pendaftaran_karakter')
+                                <div>
+                                    <label for="jenis_pemakaman"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Jenis Pemakaman <span class="text-red-400">*</span>
+                                    </label>
+                                    <select id="jenis_pemakaman" name="form_data[jenis_pemakaman]"
+                                        class="form-select @error('form_data.jenis_pemakaman') border-red-500 @enderror"
+                                        required onchange="toggleFormFields(this.value)">
+                                        <option value="">-- Pilih Jenis Pemakaman --</option>
+                                        <option value="Penguburan" @if(old('form_data.jenis_pemakaman') == 'Penguburan') selected
+                                        @endif class="bg-slate-900 text-white font-bold">Penguburan</option>
+                                        <option value="Kremasi" @if(old('form_data.jenis_pemakaman') == 'Kremasi') selected @endif
+                                            class="bg-slate-900 text-white font-bold">Kremasi</option>
+                                    </select>
+                                    @error('form_data.jenis_pemakaman') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+
+                                <!-- Form Fields untuk Penguburan -->
+                                <div id="form_penguburan" style="display: none;">
                                     <div>
-                                        <label for="purpose_km"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
-                                            Konsultasi</label>
-                                        <select id="purpose_km" name="form_data[purpose]" class="form-select">
-                                            <option value="Konsultasi Umum" class="bg-slate-900 text-white font-bold">Konsultasi
-                                                Umum
-                                            </option>
-                                            <option value="Pemeriksaan Rutin" class="bg-slate-900 text-white font-bold">Pemeriksaan
-                                                Rutin
-                                            </option>
-                                            <option value="Konsultasi Spesialis" class="bg-slate-900 text-white font-bold">
-                                                Konsultasi
-                                                Spesialis</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label for="doctor_name_km"
+                                        <label for="tanggal_wafat_penguburan"
                                             class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Nama Dokter <span class="text-red-400">*</span>
+                                            Tanggal Wafat <span class="text-red-400">*</span>
                                         </label>
-                                        <select id="doctor_name_km" name="form_data[doctor_name]"
-                                            class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
-                                            <option value="">-- Pilih Dokter --</option>
-                                            @foreach($doctors as $doctor)
-                                                <option value="{{ $doctor->name }}"
-                                                    data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                    @if(old('form_data.doctor_name') == $doctor->name) selected @endif
-                                                    class="bg-slate-900 text-white font-bold">
-                                                    {{ $doctor->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
-                                    </div>
-
-                                @elseif($type === 'spesialis_tht')
-                                    <div>
-                                        <label for="purpose_lk"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">Jenis
-                                            Kecelakaan</label>
-                                        <select id="purpose_lk" name="form_data[purpose]" class="form-select">
-                                            <option value="Kecelakaan Lalu Lintas" class="bg-slate-900 text-white font-bold">
-                                                Kecelakaan
-                                                Lalu
-                                                Lintas</option>
-                                            <option value="Kecelakaan Kerja" class="bg-slate-900 text-white font-bold">Kecelakaan
-                                                Kerja
-                                            </option>
-                                            <option value="Kecelakaan Olahraga" class="bg-slate-900 text-white font-bold">Kecelakaan
-                                                Olahraga</option>
-                                            <option value="Kecelakaan Lainnya" class="bg-slate-900 text-white font-bold">Kecelakaan
-                                                Lainnya
-                                            </option>
-                                        </select>
+                                        <input type="date" id="tanggal_wafat_penguburan" name="form_data[tanggal_wafat]"
+                                            value="{{ old('form_data.tanggal_wafat') }}"
+                                            class="form-input @error('form_data.tanggal_wafat') border-red-500 @enderror"
+                                            data-required="true">
+                                        @error('form_data.tanggal_wafat') <p class="form-error">{{ $message }}</p> @enderror
                                     </div>
                                     <div>
-                                        <label for="doctor_name_lk"
+                                        <label for="tempat_pemakaman"
                                             class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Nama Dokter <span class="text-red-400">*</span>
+                                            Tempat Pemakaman <span class="text-red-400">*</span>
                                         </label>
-                                        <select id="doctor_name_lk" name="form_data[doctor_name]"
-                                            class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
-                                            <option value="">-- Pilih Dokter --</option>
-                                            @foreach($doctors as $doctor)
-                                                <option value="{{ $doctor->name }}"
-                                                    data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                    @if(old('form_data.doctor_name') == $doctor->name) selected @endif
-                                                    class="bg-slate-900 text-white font-bold">
-                                                    {{ $doctor->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
-                                    </div>
-
-                                @elseif($type === 'spesialis_ortopedi')
-                                    <div>
-                                        <label for="purpose_pa"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">Jenis
-                                            Keadaan Darurat</label>
-                                        <select id="purpose_pa" name="form_data[purpose]" class="form-select">
-                                            <option value="Kecelakaan Serius" class="bg-slate-900 text-white font-bold">Kecelakaan
-                                                Serius
-                                            </option>
-                                            <option value="Serangan Jantung" class="bg-slate-900 text-white font-bold">Serangan
-                                                Jantung
-                                            </option>
-                                            <option value="Stroke" class="bg-slate-900 text-white font-bold">Stroke</option>
-                                            <option value="Keadaan Darurat Lainnya" class="bg-slate-900 text-white font-bold">
-                                                Keadaan
-                                                Darurat Lainnya</option>
-                                        </select>
+                                        <input type="text" id="tempat_pemakaman" name="form_data[tempat_pemakaman]"
+                                            value="{{ old('form_data.tempat_pemakaman') }}"
+                                            class="form-input @error('form_data.tempat_pemakaman') border-red-500 @enderror"
+                                            placeholder="Masukkan lokasi pemakaman" data-required="true">
+                                        @error('form_data.tempat_pemakaman') <p class="form-error">{{ $message }}</p> @enderror
                                     </div>
                                     <div>
-                                        <label for="doctor_name_pa"
+                                        <label for="tanggal_pemakaman"
                                             class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Nama Dokter <span class="text-red-400">*</span>
+                                            Tanggal Pemakaman <span class="text-red-400">*</span>
                                         </label>
-                                        <select id="doctor_name_pa" name="form_data[doctor_name]"
-                                            class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
-                                            <option value="">-- Pilih Dokter --</option>
-                                            @foreach($doctors as $doctor)
-                                                <option value="{{ $doctor->name }}"
-                                                    data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                    @if(old('form_data.doctor_name') == $doctor->name) selected @endif
-                                                    class="bg-slate-900 text-white font-bold">
-                                                    {{ $doctor->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
-                                    </div>
-
-                                @elseif($type === 'spesialis_saraf')
-                                    <div>
-                                        <label for="purpose_ss"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
-                                            Konsultasi</label>
-                                        <select id="purpose_ss" name="form_data[purpose]" class="form-select">
-                                            <option value="Konsultasi Neurologi" class="bg-slate-900 text-white font-bold">
-                                                Konsultasi
-                                                Neurologi</option>
-                                            <option value="Pemeriksaan Saraf" class="bg-slate-900 text-white font-bold">Pemeriksaan
-                                                Saraf
-                                            </option>
-                                            <option value="Konsultasi Stroke" class="bg-slate-900 text-white font-bold">Konsultasi
-                                                Stroke
-                                            </option>
-                                        </select>
+                                        <input type="date" id="tanggal_pemakaman" name="form_data[tanggal_pemakaman]"
+                                            value="{{ old('form_data.tanggal_pemakaman') }}"
+                                            class="form-input @error('form_data.tanggal_pemakaman') border-red-500 @enderror"
+                                            data-required="true">
+                                        @error('form_data.tanggal_pemakaman') <p class="form-error">{{ $message }}</p> @enderror
                                     </div>
                                     <div>
-                                        <label for="doctor_name_ss"
+                                        <label for="kronologi_ck_penguburan"
                                             class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Nama Dokter <span class="text-red-400">*</span>
+                                            Kronologi CK & Penyebab Kematian <span class="text-red-400">*</span>
                                         </label>
-                                        <select id="doctor_name_ss" name="form_data[doctor_name]"
-                                            class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
-                                            <option value="">-- Pilih Dokter --</option>
-                                            @foreach($doctors as $doctor)
-                                                <option value="{{ $doctor->name }}"
-                                                    data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                    @if(old('form_data.doctor_name') == $doctor->name) selected @endif
-                                                    class="bg-slate-900 text-white font-bold">
-                                                    {{ $doctor->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                        <textarea id="kronologi_ck_penguburan" name="form_data[kronologi_ck]" rows="5"
+                                            class="form-input @error('form_data.kronologi_ck') border-red-500 @enderror"
+                                            placeholder="Jelaskan secara detail kronologi character kill dan penyebab kematian..."
+                                            data-required="true">{{ old('form_data.kronologi_ck') }}</textarea>
+                                        @error('form_data.kronologi_ck') <p class="form-error">{{ $message }}</p> @enderror
                                     </div>
-                                @elseif($type === 'spesialis_urologi')
+                                </div>
+
+                                <!-- Form Fields untuk Kremasi -->
+                                <div id="form_kremasi" style="display: none;">
                                     <div>
-                                        <label for="purpose_su"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
-                                            Konsultasi</label>
-                                        <select id="purpose_su" name="form_data[purpose]" class="form-select">
-                                            <option value="Konsultasi Urologi" class="bg-slate-900 text-white font-bold">Konsultasi
-                                                Urologi
-                                            </option>
-                                            <option value="Pemeriksaan Prostat" class="bg-slate-900 text-white font-bold">
-                                                Pemeriksaan
-                                                Prostat</option>
-                                            <option value="Konsultasi Ginjal" class="bg-slate-900 text-white font-bold">Konsultasi
-                                                Ginjal
-                                            </option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label for="doctor_name_su"
+                                        <label for="tanggal_wafat_kremasi"
                                             class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Nama Dokter <span class="text-red-400">*</span>
+                                            Tanggal Wafat <span class="text-red-400">*</span>
                                         </label>
-                                        <select id="doctor_name_su" name="form_data[doctor_name]"
-                                            class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
-                                            <option value="">-- Pilih Dokter --</option>
-                                            @foreach($doctors as $doctor)
-                                                <option value="{{ $doctor->name }}"
-                                                    data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                    @if(old('form_data.doctor_name') == $doctor->name) selected @endif
-                                                    class="bg-slate-900 text-white font-bold">
-                                                    {{ $doctor->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
-                                    </div>
-
-                                @elseif($type === 'spesialis_tht')
-                                    <div>
-                                        <label for="purpose_st"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
-                                            Konsultasi</label>
-                                        <select id="purpose_st" name="form_data[purpose]" class="form-select">
-                                            <option value="Konsultasi THT" class="bg-slate-900 text-white font-bold">Konsultasi THT
-                                            </option>
-                                            <option value="Pemeriksaan Telinga" class="bg-slate-900 text-white font-bold">
-                                                Pemeriksaan
-                                                Telinga</option>
-                                            <option value="Pemeriksaan Hidung" class="bg-slate-900 text-white font-bold">Pemeriksaan
-                                                Hidung
-                                            </option>
-                                            <option value="Pemeriksaan Tenggorokan" class="bg-slate-900 text-white font-bold">
-                                                Pemeriksaan
-                                                Tenggorokan</option>
-                                        </select>
+                                        <input type="date" id="tanggal_wafat_kremasi" name="form_data[tanggal_wafat]"
+                                            value="{{ old('form_data.tanggal_wafat') }}"
+                                            class="form-input @error('form_data.tanggal_wafat') border-red-500 @enderror"
+                                            data-required="true">
+                                        @error('form_data.tanggal_wafat') <p class="form-error">{{ $message }}</p> @enderror
                                     </div>
                                     <div>
-                                        <label for="doctor_name_st"
+                                        <label for="tanggal_kremasi"
                                             class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Nama Dokter <span class="text-red-400">*</span>
+                                            Tanggal Kremasi <span class="text-red-400">*</span>
                                         </label>
-                                        <select id="doctor_name_st" name="form_data[doctor_name]"
-                                            class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
-                                            <option value="">-- Pilih Dokter --</option>
-                                            @foreach($doctors as $doctor)
-                                                <option value="{{ $doctor->name }}"
-                                                    data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                    @if(old('form_data.doctor_name') == $doctor->name) selected @endif
-                                                    class="bg-slate-900 text-white font-bold">
-                                                    {{ $doctor->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
-                                    </div>
-
-                                @elseif($type === 'spesialis_ortopedi')
-                                    <div>
-                                        <label for="purpose_so"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
-                                            Konsultasi</label>
-                                        <select id="purpose_so" name="form_data[purpose]" class="form-select">
-                                            <option value="Konsultasi Ortopedi" class="bg-slate-900 text-white font-bold">Konsultasi
-                                                Ortopedi</option>
-                                            <option value="Pemeriksaan Tulang" class="bg-slate-900 text-white font-bold">Pemeriksaan
-                                                Tulang
-                                            </option>
-                                            <option value="Konsultasi Sendi" class="bg-slate-900 text-white font-bold">Konsultasi
-                                                Sendi
-                                            </option>
-                                            <option value="Konsultasi Cedera Olahraga" class="bg-slate-900 text-white font-bold">
-                                                Konsultasi
-                                                Cedera Olahraga</option>
-                                        </select>
+                                        <input type="date" id="tanggal_kremasi" name="form_data[tanggal_kremasi]"
+                                            value="{{ old('form_data.tanggal_kremasi') }}"
+                                            class="form-input @error('form_data.tanggal_kremasi') border-red-500 @enderror"
+                                            data-required="true">
+                                        @error('form_data.tanggal_kremasi') <p class="form-error">{{ $message }}</p> @enderror
                                     </div>
                                     <div>
-                                        <label for="doctor_name_so"
+                                        <label for="tempat_penyimpanan_abu"
                                             class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Nama Dokter <span class="text-red-400">*</span>
+                                            Tempat Penyimpanan Abu <span class="text-red-400">*</span>
                                         </label>
-                                        <select id="doctor_name_so" name="form_data[doctor_name]"
-                                            class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
-                                            <option value="">-- Pilih Dokter --</option>
-                                            @foreach($doctors as $doctor)
-                                                <option value="{{ $doctor->name }}"
-                                                    data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                    @if(old('form_data.doctor_name') == $doctor->name) selected @endif
-                                                    class="bg-slate-900 text-white font-bold">
-                                                    {{ $doctor->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                        <input type="text" id="tempat_penyimpanan_abu" name="form_data[tempat_penyimpanan_abu]"
+                                            value="{{ old('form_data.tempat_penyimpanan_abu') }}"
+                                            class="form-input @error('form_data.tempat_penyimpanan_abu') border-red-500 @enderror"
+                                            placeholder="Masukkan lokasi penyimpanan abu" data-required="true">
+                                        @error('form_data.tempat_penyimpanan_abu') <p class="form-error">{{ $message }}</p>
+                                        @enderror
                                     </div>
-
-                                @elseif($type === 'janji_temu')
-                                    <div class="flex flex-col sm:flex-row sm:flex-nowrap gap-3 sm:gap-4">
-                                        <div class="flex-1 min-w-0">
-                                            <label for="purpose_jt"
-                                                class="block text-xs font-medium text-white mb-1.5 font-bold">Jenis
-                                                Janji Temu</label>
-                                            <select id="purpose_jt" name="form_data[purpose]" class="form-select w-full">
-                                                <option value="Janji Temu Umum" class="bg-slate-900 text-white font-bold">Janji Temu
-                                                    Umum
-                                                </option>
-                                                <option value="Konsultasi Spesialis" class="bg-slate-900 text-white font-bold">
-                                                    Konsultasi
-                                                    Spesialis</option>
-                                                <option value="Pemeriksaan Rutin" class="bg-slate-900 text-white font-bold">
-                                                    Pemeriksaan
-                                                    Rutin</option>
-                                            </select>
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <label for="doctor_name_jt"
-                                                class="block text-xs font-medium text-white mb-1.5 font-bold">
-                                                Nama Dokter <span class="text-red-400">*</span>
-                                            </label>
-                                            <select id="doctor_name_jt" name="form_data[doctor_name]"
-                                                class="form-select w-full @error('form_data.doctor_name') border-red-500 @enderror"
-                                                required>
-                                                <option value="">-- Pilih Dokter --</option>
-                                                @foreach($doctors as $doctor)
-                                                    <option value="{{ $doctor->name }}"
-                                                        data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                        @if(old('form_data.doctor_name') == $doctor->name) selected @endif
-                                                        class="bg-slate-900 text-white font-bold">
-                                                        {{ $doctor->name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            @error('form_data.doctor_name') <p class="form-error text-xs mt-1">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <label for="appointment_date"
-                                                class="block text-xs font-medium text-white mb-1.5 font-bold">
-                                                Tanggal <span class="text-red-400">*</span>
-                                            </label>
-                                            <input type="date" id="appointment_date" name="form_data[appointment_date]"
-                                                value="{{ old('form_data.appointment_date') }}"
-                                                class="form-input w-full @error('form_data.appointment_date') border-red-500 @enderror"
-                                                required>
-                                            @error('form_data.appointment_date') <p class="form-error text-xs mt-1">{{ $message }}
-                                                </p>
-                                            @enderror
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <label for="appointment_time"
-                                                class="block text-xs font-medium text-white mb-1.5 font-bold">
-                                                Waktu <span class="text-red-400">*</span>
-                                            </label>
-                                            <input type="time" id="appointment_time" name="form_data[appointment_time]"
-                                                value="{{ old('form_data.appointment_time') }}"
-                                                class="form-input w-full @error('form_data.appointment_time') border-red-500 @enderror"
-                                                required>
-                                            @error('form_data.appointment_time') <p class="form-error text-xs mt-1">{{ $message }}
-                                                </p>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                @elseif($type === 'pendaftaran_karakter')
                                     <div>
-                                        <label for="jenis_pemakaman"
+                                        <label for="kronologi_ck_kremasi"
                                             class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Jenis Pemakaman <span class="text-red-400">*</span>
+                                            Kronologi CK & Penyebab Kematian <span class="text-red-400">*</span>
                                         </label>
-                                        <select id="jenis_pemakaman" name="form_data[jenis_pemakaman]"
-                                            class="form-select @error('form_data.jenis_pemakaman') border-red-500 @enderror"
-                                            required onchange="toggleFormFields(this.value)">
-                                            <option value="">-- Pilih Jenis Pemakaman --</option>
-                                            <option value="Penguburan" @if(old('form_data.jenis_pemakaman') == 'Penguburan') selected
-                                            @endif class="bg-slate-900 text-white font-bold">Penguburan</option>
-                                            <option value="Kremasi" @if(old('form_data.jenis_pemakaman') == 'Kremasi') selected @endif
-                                                class="bg-slate-900 text-white font-bold">Kremasi</option>
-                                        </select>
-                                        @error('form_data.jenis_pemakaman') <p class="form-error">{{ $message }}</p> @enderror
+                                        <textarea id="kronologi_ck_kremasi" name="form_data[kronologi_ck]" rows="5"
+                                            class="form-input @error('form_data.kronologi_ck') border-red-500 @enderror"
+                                            placeholder="Jelaskan secara detail kronologi character kill dan penyebab kematian..."
+                                            data-required="true">{{ old('form_data.kronologi_ck') }}</textarea>
+                                        @error('form_data.kronologi_ck') <p class="form-error">{{ $message }}</p> @enderror
                                     </div>
+                                </div>
 
-                                    <!-- Form Fields untuk Penguburan -->
-                                    <div id="form_penguburan" style="display: none;">
-                                        <div>
-                                            <label for="tanggal_wafat_penguburan"
-                                                class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                                Tanggal Wafat <span class="text-red-400">*</span>
-                                            </label>
-                                            <input type="date" id="tanggal_wafat_penguburan" name="form_data[tanggal_wafat]"
-                                                value="{{ old('form_data.tanggal_wafat') }}"
-                                                class="form-input @error('form_data.tanggal_wafat') border-red-500 @enderror"
-                                                data-required="true">
-                                            @error('form_data.tanggal_wafat') <p class="form-error">{{ $message }}</p> @enderror
-                                        </div>
-                                        <div>
-                                            <label for="tempat_pemakaman"
-                                                class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                                Tempat Pemakaman <span class="text-red-400">*</span>
-                                            </label>
-                                            <input type="text" id="tempat_pemakaman" name="form_data[tempat_pemakaman]"
-                                                value="{{ old('form_data.tempat_pemakaman') }}"
-                                                class="form-input @error('form_data.tempat_pemakaman') border-red-500 @enderror"
-                                                placeholder="Masukkan lokasi pemakaman" data-required="true">
-                                            @error('form_data.tempat_pemakaman') <p class="form-error">{{ $message }}</p> @enderror
-                                        </div>
-                                        <div>
-                                            <label for="tanggal_pemakaman"
-                                                class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                                Tanggal Pemakaman <span class="text-red-400">*</span>
-                                            </label>
-                                            <input type="date" id="tanggal_pemakaman" name="form_data[tanggal_pemakaman]"
-                                                value="{{ old('form_data.tanggal_pemakaman') }}"
-                                                class="form-input @error('form_data.tanggal_pemakaman') border-red-500 @enderror"
-                                                data-required="true">
-                                            @error('form_data.tanggal_pemakaman') <p class="form-error">{{ $message }}</p> @enderror
-                                        </div>
-                                        <div>
-                                            <label for="kronologi_ck_penguburan"
-                                                class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                                Kronologi CK & Penyebab Kematian <span class="text-red-400">*</span>
-                                            </label>
-                                            <textarea id="kronologi_ck_penguburan" name="form_data[kronologi_ck]" rows="5"
-                                                class="form-input @error('form_data.kronologi_ck') border-red-500 @enderror"
-                                                placeholder="Jelaskan secara detail kronologi character kill dan penyebab kematian..."
-                                                data-required="true">{{ old('form_data.kronologi_ck') }}</textarea>
-                                            @error('form_data.kronologi_ck') <p class="form-error">{{ $message }}</p> @enderror
-                                        </div>
-                                    </div>
-
-                                    <!-- Form Fields untuk Kremasi -->
-                                    <div id="form_kremasi" style="display: none;">
-                                        <div>
-                                            <label for="tanggal_wafat_kremasi"
-                                                class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                                Tanggal Wafat <span class="text-red-400">*</span>
-                                            </label>
-                                            <input type="date" id="tanggal_wafat_kremasi" name="form_data[tanggal_wafat]"
-                                                value="{{ old('form_data.tanggal_wafat') }}"
-                                                class="form-input @error('form_data.tanggal_wafat') border-red-500 @enderror"
-                                                data-required="true">
-                                            @error('form_data.tanggal_wafat') <p class="form-error">{{ $message }}</p> @enderror
-                                        </div>
-                                        <div>
-                                            <label for="tanggal_kremasi"
-                                                class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                                Tanggal Kremasi <span class="text-red-400">*</span>
-                                            </label>
-                                            <input type="date" id="tanggal_kremasi" name="form_data[tanggal_kremasi]"
-                                                value="{{ old('form_data.tanggal_kremasi') }}"
-                                                class="form-input @error('form_data.tanggal_kremasi') border-red-500 @enderror"
-                                                data-required="true">
-                                            @error('form_data.tanggal_kremasi') <p class="form-error">{{ $message }}</p> @enderror
-                                        </div>
-                                        <div>
-                                            <label for="tempat_penyimpanan_abu"
-                                                class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                                Tempat Penyimpanan Abu <span class="text-red-400">*</span>
-                                            </label>
-                                            <input type="text" id="tempat_penyimpanan_abu" name="form_data[tempat_penyimpanan_abu]"
-                                                value="{{ old('form_data.tempat_penyimpanan_abu') }}"
-                                                class="form-input @error('form_data.tempat_penyimpanan_abu') border-red-500 @enderror"
-                                                placeholder="Masukkan lokasi penyimpanan abu" data-required="true">
-                                            @error('form_data.tempat_penyimpanan_abu') <p class="form-error">{{ $message }}</p>
-                                            @enderror
-                                        </div>
-                                        <div>
-                                            <label for="kronologi_ck_kremasi"
-                                                class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                                Kronologi CK & Penyebab Kematian <span class="text-red-400">*</span>
-                                            </label>
-                                            <textarea id="kronologi_ck_kremasi" name="form_data[kronologi_ck]" rows="5"
-                                                class="form-input @error('form_data.kronologi_ck') border-red-500 @enderror"
-                                                placeholder="Jelaskan secara detail kronologi character kill dan penyebab kematian..."
-                                                data-required="true">{{ old('form_data.kronologi_ck') }}</textarea>
-                                            @error('form_data.kronologi_ck') <p class="form-error">{{ $message }}</p> @enderror
-                                        </div>
-                                    </div>
-
-                                @else
-                                    <div>
-                                        <label for="description"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Deskripsi Lengkap <span class="text-red-400">*</span>
-                                        </label>
-                                        <textarea id="description" name="description" rows="5"
-                                            class="form-input @error('description') border-red-500 @enderror"
-                                            placeholder="Jelaskan secara detail permintaan atau keluhan Anda..."
-                                            required>{{ old('description') }}</textarea>
-                                        @error('description') <p class="form-error">{{ $message }}</p> @enderror
-                                    </div>
-                                @endif
-                            </div>
+                            @else
+                                <div>
+                                    <label for="description"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Deskripsi Lengkap <span class="text-red-400">*</span>
+                                    </label>
+                                    <textarea id="description" name="description" rows="5"
+                                        class="form-input @error('description') border-red-500 @enderror"
+                                        placeholder="Jelaskan secara detail permintaan atau keluhan Anda..."
+                                        required>{{ old('description') }}</textarea>
+                                    @error('description') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+                            @endif
                         </div>
+                    </div>
 
-                        <div class="mb-6">
-                            <label class="inline-flex items-start">
-                                <input type="checkbox" name="confirm_data" value="1" class="mt-1 mr-3" required>
-                                <span class="text-white text-sm">Saya yakin seluruh data yang saya isi sudah benar dan saya
-                                    bertanggung
-                                    jawab atas keakuratan data tersebut.</span>
-                            </label>
-                            @error('confirm_data') <p class="form-error text-center mt-2">Harap centang persetujuan.</p>
-                            @enderror
-                        </div>
+                    <div class="mb-6">
+                        <label class="inline-flex items-start">
+                            <input type="checkbox" name="confirm_data" value="1" class="mt-1 mr-3" required>
+                            <span class="text-white text-sm">Saya yakin seluruh data yang saya isi sudah benar dan saya
+                                bertanggung
+                                jawab atas keakuratan data tersebut.</span>
+                        </label>
+                        @error('confirm_data') <p class="form-error text-center mt-2">Harap centang persetujuan.</p>
+                        @enderror
+                    </div>
 
-                        <div class="flex flex-col sm:flex-row gap-4 justify-end">
-                            <a href="{{ route('public.index') }}" class="btn-secondary">
-                                Batal
-                            </a>
-                            <button type="submit" class="w-full sm:w-auto btn-primary text-sm sm:text-base">
-                                <i class="fas fa-paper-plane mr-2"></i><span class="hidden xs:inline">Kirim Formulir</span><span
-                                    class="xs:hidden">Kirim</span>
-                            </button>
-                        </div>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-end">
+                        <a href="{{ route('public.index') }}" class="btn-secondary">
+                            Batal
+                        </a>
+                        <button type="submit" class="w-full sm:w-auto btn-primary text-sm sm:text-base">
+                            <i class="fas fa-paper-plane mr-2"></i><span class="hidden xs:inline">Kirim Formulir</span><span
+                                class="xs:hidden">Kirim</span>
+                        </button>
+                    </div>
 
-                        <script>
-                            // Psychology test radio button visual feedback
-                            document.addEventListener('DOMContentLoaded', function () {
-                                const radioInputs = document.querySelectorAll('input[type="radio"][name^="form_data[bigfive]"], input[type="radio"][name^="form_data[stress]"], input[type="radio"][name^="form_data[esteem]"]');
+                    <script>
+                        // Psychology test radio button visual feedback
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const radioInputs = document.querySelectorAll('input[type="radio"][name^="form_data[bigfive]"], input[type="radio"][name^="form_data[stress]"], input[type="radio"][name^="form_data[esteem]"]');
 
-                                radioInputs.forEach(radio => {
-                                    radio.addEventListener('change', function () {
-                                        // Remove selected state from all siblings
-                                        const name = this.getAttribute('name');
-                                        document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
-                                            const box = r.nextElementSibling;
-                                            if (box) {
-                                                box.classList.remove('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
-                                            }
-                                        });
-
-                                        // Add selected state to this one
-                                        const box = this.nextElementSibling;
-                                        if (box && this.checked) {
-                                            box.classList.add('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
+                            radioInputs.forEach(radio => {
+                                radio.addEventListener('change', function () {
+                                    // Remove selected state from all siblings
+                                    const name = this.getAttribute('name');
+                                    document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+                                        const box = r.nextElementSibling;
+                                        if (box) {
+                                            box.classList.remove('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
                                         }
                                     });
 
-                                    // Set initial state for checked radios
-                                    if (radio.checked) {
-                                        const box = radio.nextElementSibling;
-                                        if (box) {
-                                            box.classList.add('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
-                                        }
+                                    // Add selected state to this one
+                                    const box = this.nextElementSibling;
+                                    if (box && this.checked) {
+                                        box.classList.add('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
                                     }
                                 });
+
+                                // Set initial state for checked radios
+                                if (radio.checked) {
+                                    const box = radio.nextElementSibling;
+                                    if (box) {
+                                        box.classList.add('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
+                                    }
+                                }
                             });
-                        </script>
-                    </form>
-                </div>
+                        });
+                    </script>
+                </form>
             </div>
         </div>
+    </div>
 @endsection
 
 @push('scripts')
@@ -1707,11 +1707,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Initialize Select2 on psychologist/doctor dropdowns
-            $('#doctor_name_tp').select2({
-                placeholder: '-- Pilih Psikolog --',
-                allowClear: true,
-                width: '100%'
-            });
+            // Removed: do not init select2 on hidden input #doctor_name_tp
 
             // Also apply to linked form dropdown if exists
             $('#linked_psych_form').select2({
@@ -1757,14 +1753,8 @@
 
                     if (doctorName && doctorName !== 'N/A') {
                         doctorNameInput.value = doctorName; // Set hidden field
-                        if (doctorNameDisplay) {
-                            doctorNameDisplay.value = doctorName; // Set display field
-                        }
                     } else {
                         doctorNameInput.value = '';
-                        if (doctorNameDisplay) {
-                            doctorNameDisplay.value = '';
-                        }
                     }
                 });
 
