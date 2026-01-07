@@ -220,6 +220,7 @@ class StaffManagementController extends Controller
             'role_id' => 'required|exists:staff_roles,id',
             'is_active' => 'nullable|boolean',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'custom_salary' => 'nullable|numeric|min:0|max:9999999999',
         ]);
 
         $data = [
@@ -228,6 +229,7 @@ class StaffManagementController extends Controller
             'hospital' => $validated['hospital'],
             'role_id' => $validated['role_id'],
             'is_active' => $request->boolean('is_active', true),
+            'custom_salary' => $request->input('custom_salary') ?: null,
         ];
 
         if (!empty($validated['password'])) {
@@ -286,7 +288,7 @@ class StaffManagementController extends Controller
 
         $user->update($data);
 
-        return redirect()->route('admin.staff.index')->with('success', 'Data staf berhasil diperbarui.');
+        return redirect()->route('admin.staff.edit', $user)->with('success', 'Data staf berhasil diperbarui.');
     }
 
     public function destroy(User $user)
