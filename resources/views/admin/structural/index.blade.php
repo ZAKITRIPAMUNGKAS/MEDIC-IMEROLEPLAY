@@ -117,9 +117,14 @@
                                     @if($position->user)
                                         <div class="flex items-center gap-3">
                                             <div class="relative">
-                                                <img src="{{ $position->user->profile_image ? asset('storage/' . $position->user->profile_image) : 'https://ui-avatars.com/api/?name=' . urlencode($position->user->name) . '&background=random&color=fff' }}" 
+                                                @php
+                                                    $avatarUrl = $position->user->profile_image 
+                                                        ? asset('storage/' . $position->user->profile_image) 
+                                                        : 'https://ui-avatars.com/api/?name=' . urlencode($position->user->name) . '&background=0ea5e9&color=fff';
+                                                @endphp
+                                                <img src="{{ $avatarUrl }}" 
                                                      alt="{{ $position->user->name }}"
-                                                     onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($position->user->name) }}&background=random&color=fff';"
+                                                     onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ str_replace(' ', '+', $position->user->name) }}&background=0ea5e9&color=fff';"
                                                      class="w-12 h-12 rounded-full border-2 border-green-500/50 object-cover shadow-md">
                                                 <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-gray-800 rounded-full"></div>
                                             </div>
@@ -205,9 +210,10 @@
                                     // User Avatar
                                     echo '<div class="relative flex-shrink-0">';
                                         if ($user) {
-                                            $avatar = $user->profile_image ? asset('storage/' . $user->profile_image) : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=random&color=fff';
-                                            $fallback = 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=random&color=fff';
-                                            echo "<img src='$avatar' onerror=\"this.onerror=null; this.src='$fallback';\" class='w-12 h-12 rounded-full border-2 border-green-500/50 object-cover'>";
+                                            $avatarUrl = $user->profile_image 
+                                                ? asset('storage/' . $user->profile_image) 
+                                                : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=0ea5e9&color=fff';
+                                            echo "<img src='$avatarUrl' alt='{$user->name}' class='w-12 h-12 rounded-full border-2 border-green-500/50 object-cover'>";
                                         } else {
                                             echo '<div class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center border-2 border-dashed border-white/20"><i class="fas fa-user-plus text-gray-400"></i></div>';
                                         }
