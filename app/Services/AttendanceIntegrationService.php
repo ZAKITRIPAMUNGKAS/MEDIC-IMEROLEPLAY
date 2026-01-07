@@ -25,7 +25,7 @@ class AttendanceIntegrationService
         try {
             // Cari user berdasarkan player_id atau player_name
             $user = $this->findUserByPlayerId($playerId, $playerName);
-            
+
             if (!$user) {
                 Log::warning('User not found for player', [
                     'player_id' => $playerId,
@@ -39,14 +39,14 @@ class AttendanceIntegrationService
 
             // Cek apakah ada konflik dengan absensi manual
             $conflict = $this->checkManualAttendanceConflict($user->id, $clockIn, $clockOut);
-            
+
             if ($conflict['has_conflict']) {
                 return $this->handleAttendanceConflict($user, $conflict, $playerId, $playerName, $clockIn, $clockOut, $timeOnDuty);
             }
 
             // Simpan data absensi otomatis
             $absensi = $this->saveAutomaticAttendance($playerId, $playerName, $clockIn, $clockOut, $timeOnDuty);
-            
+
             // Buat record di sistem manual untuk konsistensi
             $this->createManualAttendanceRecord($user, $absensi);
 
@@ -77,7 +77,7 @@ class AttendanceIntegrationService
     {
         // Coba cari berdasarkan staff_id yang sama dengan player_id
         $user = User::where('staff_id', $playerId)->first();
-        
+
         if (!$user) {
             // Coba cari berdasarkan nama yang mirip
             $user = User::where('name', 'LIKE', '%' . $playerName . '%')->first();
@@ -96,7 +96,7 @@ class AttendanceIntegrationService
 
         // Cek apakah ada sesi aktif manual pada hari yang sama
         $activeSession = Attendance::getActiveSession($userId, $clockInDate->toDateString());
-        
+
         if ($activeSession) {
             return [
                 'has_conflict' => true,
@@ -111,11 +111,11 @@ class AttendanceIntegrationService
             ->forDate($clockInDate->toDateString())
             ->where(function ($query) use ($clockInDate, $clockOutDate) {
                 $query->whereBetween('clock_in', [$clockInDate, $clockOutDate ?? now()])
-                      ->orWhereBetween('clock_out', [$clockInDate, $clockOutDate ?? now()])
-                      ->orWhere(function ($q) use ($clockInDate, $clockOutDate) {
-                          $q->where('clock_in', '<=', $clockInDate)
+                    ->orWhereBetween('clock_out', [$clockInDate, $clockOutDate ?? now()])
+                    ->orWhere(function ($q) use ($clockInDate, $clockOutDate) {
+                        $q->where('clock_in', '<=', $clockInDate)
                             ->where('clock_out', '>=', $clockOutDate ?? now());
-                      });
+                    });
             })
             ->get();
 
@@ -141,7 +141,7 @@ class AttendanceIntegrationService
                 // Prioritas: Manual > Otomatis
                 // Update sesi manual dengan data dari otomatis
                 $activeSession = $conflict['conflicting_record'];
-                
+
                 if ($clockOut) {
                     $activeSession->clock_out = Carbon::parse($clockOut);
                     $activeSession->session_duration = $this->calculateDuration($clockIn, $clockOut);
@@ -184,14 +184,20 @@ class AttendanceIntegrationService
      */
     private function saveAutomaticAttendance($playerId, $playerName, $clockIn, $clockOut, $timeOnDuty)
     {
-        return Absensi::create([
-            'player_id' => $playerId,
-            'player_name' => $playerName,
-            'clock_in' => $clockIn,
-            'clock_out' => $clockOut,
-            'time_on_duty' => $timeOnDuty,
-            'source' => 'automatic' // Tambahkan field source untuk tracking
-        ]);
+        // Gunakan updateOrCreate untuk mencegah duplikasi
+        // Jika ada request yang sama dikirim 2x, hanya akan update record yang sudah ada
+        return Absensi::updateOrCreate(
+            [
+                'player_id' => $playerId,
+                'clock_in' => $clockIn
+            ],
+            [
+                'player_name' => $playerName,
+                'clock_out' => $clockOut,
+                'time_on_duty' => $timeOnDuty,
+                'source' => 'automatic' // Tambahkan field source untuk tracking
+            ]
+        );
     }
 
     /**
@@ -200,6 +206,25 @@ class AttendanceIntegrationService
     private function createManualAttendanceRecord($user, $absensi)
     {
         $workDate = Carbon::parse($absensi->clock_in)->toDateString();
+
+        // Cek apakah sudah ada record untuk user ini di tanggal yang sama dengan clock_in yang sama
+        $existingRecord = Attendance::where('user_id', $user->id)
+            ->where('work_date', $workDate)
+            ->where('clock_in', $absensi->clock_in)
+            ->first();
+
+        if ($existingRecord) {
+            // Jika sudah ada, update saja
+            $existingRecord->update([
+                'clock_out' => $absensi->clock_out,
+                'is_active' => !$absensi->clock_out,
+                'session_duration' => $absensi->clock_out ? $this->calculateDuration($absensi->clock_in, $absensi->clock_out) : null,
+                'total_hours' => $absensi->clock_out ? $this->calculateDuration($absensi->clock_in, $absensi->clock_out) : null
+            ]);
+            return $existingRecord;
+        }
+
+        // Jika belum ada, buat baru
         $sessionNumber = Attendance::getNextSessionNumber($user->id, $workDate);
 
         return Attendance::create([
@@ -304,9 +329,9 @@ class AttendanceIntegrationService
         $dateTo = $this->getPeriodEnd($period);
 
         $data = $this->getCombinedAttendanceData($userId, $dateFrom, $dateTo);
-        
+
         $totalMinutes = 0;
-        
+
         // Calculate from manual attendance
         foreach ($data['manual'] as $record) {
             if ($record->session_duration) {
@@ -371,7 +396,7 @@ class AttendanceIntegrationService
         $hours = floor($minutes / 60);
         $minutes = $minutes % 60;
         $seconds = ($minutes - floor($minutes)) * 60;
-        
+
         return sprintf('%02d:%02d:%02d', $hours, floor($minutes), floor($seconds));
     }
 }
