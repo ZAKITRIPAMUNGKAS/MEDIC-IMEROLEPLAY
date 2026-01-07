@@ -1108,18 +1108,16 @@ class PublicController extends Controller
             foreach ($positionsByLevel as $level => $levelPositions) {
                 $levelKey = 'level_' . $level;
 
-                // Use a generic level title
+                // Use titles that match organizational structure
                 $levelTitle = "Level {$level}";
                 if ($level == 0)
-                    $levelTitle = "High Command";
+                    $levelTitle = "High Command (Pimpinan Tertinggi)";
                 elseif ($level == 1)
-                    $levelTitle = "Deputy Leadership";
+                    $levelTitle = "Kepala Departemen";
                 elseif ($level == 2)
-                    $levelTitle = "Department Heads";
-                elseif ($level == 3)
-                    $levelTitle = "Unit Managers";
-                elseif ($level >= 4)
-                    $levelTitle = "Staff & Support";
+                    $levelTitle = "Departemen & Unit";
+                elseif ($level >= 3)
+                    $levelTitle = "Staff & Tim";
 
                 $hierarchyLevel = [
                     'title' => $levelTitle,
