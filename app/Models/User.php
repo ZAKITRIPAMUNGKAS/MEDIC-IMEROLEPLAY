@@ -60,6 +60,11 @@ class User extends Authenticatable
         return $this->belongsTo(StaffRole::class, 'role_id');
     }
 
+    public function organizationalPositions()
+    {
+        return $this->hasMany(OrganizationalPosition::class);
+    }
+
     public function attendances()
     {
         return $this->hasMany(Attendance::class);
