@@ -37,22 +37,20 @@
                         <div>
                             <h2 class="text-xl sm:text-3xl font-black mb-1 sm:mb-2">UPDATE REGULASI</h2>
                             <div class="flex flex-wrap items-center mt-2 sm:mt-3 gap-2 sm:space-x-4">
-                                <div class="flex items-center space-x-2 bg-white/20 px-3 py-1 rounded-full">
-                                    <i class="fas fa-calendar-alt text-xs sm:text-sm"></i>
-                                    <span class="text-xs sm:text-sm font-semibold">12 Oktober 2025</span>
-                                </div>
-                                <div class="flex items-center space-x-2 bg-white/20 px-3 py-1 rounded-full">
-                                    <i class="fas fa-clock text-xs sm:text-sm"></i>
-                                    <span class="text-xs sm:text-sm font-semibold">Efektif Segera</span>
-                                </div>
+                                <i class="fas fa-calendar-alt text-xs sm:text-sm"></i>
+                                <span class="text-xs sm:text-sm font-semibold">07 Januari 2026</span>
+                            </div>
+                            <div class="flex items-center space-x-2 bg-white/20 px-3 py-1 rounded-full">
+                                <i class="fas fa-clock text-xs sm:text-sm"></i>
+                                <span class="text-xs sm:text-sm font-semibold">Efektif Segera</span>
                             </div>
                         </div>
                     </div>
-                    <button onclick="closeRegulationModal()"
-                        class="absolute top-0 right-0 mt-4 mr-4 sm:relative sm:mt-0 sm:mr-0 w-10 h-10 sm:w-12 sm:h-12 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl sm:rounded-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg flex-shrink-0">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
                 </div>
+                <button onclick="closeRegulationModal()"
+                    class="absolute top-0 right-0 mt-4 mr-4 sm:relative sm:mt-0 sm:mr-0 w-10 h-10 sm:w-12 sm:h-12 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl sm:rounded-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg flex-shrink-0">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
             </div>
 
             <!-- Content -->
@@ -106,7 +104,7 @@
                                         <i class="fas fa-ambulance text-cyan-600 text-xl"></i>
                                         <span class="font-semibold text-gray-800">TREATMENT LUAR RS</span>
                                     </div>
-                                    <span class="text-2xl font-bold text-cyan-600">$215</span>
+                                    <span class="text-2xl font-bold text-cyan-600">$220</span>
                                 </div>
                             </div>
                             <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
@@ -115,7 +113,7 @@
                                     <div>
                                         <h4 class="font-semibold text-yellow-800 mb-2">Catatan Penting</h4>
                                         <p class="text-sm text-yellow-700">Jika terdapat luka dan diresepkan obat atau
-                                            bandage tambahan, akan ditambah <span class="font-bold">$15</span></p>
+                                            bandage tambahan, akan ditambah <span class="font-bold">$20</span></p>
                                     </div>
                                 </div>
                             </div>
@@ -145,8 +143,8 @@
                                         <h4 class="font-bold text-gray-800">DOKTER UMUM</h4>
                                     </div>
                                     <div class="text-right">
-                                        <span class="text-2xl font-bold text-emerald-600">$1,250</span>
-                                        <span class="text-lg text-emerald-500">- $1,875</span>
+                                        <span class="text-2xl font-bold text-emerald-600">$1,300</span>
+                                        <span class="text-lg text-emerald-500">- $1,800</span>
                                     </div>
                                 </div>
                                 <p class="text-sm text-gray-600 mb-3">Per-Konsultasi (TERGANTUNG KESULITAN)</p>
@@ -158,8 +156,8 @@
                                         <h4 class="font-bold text-gray-800">DOKTER SPESIALIS</h4>
                                     </div>
                                     <div class="text-right">
-                                        <span class="text-2xl font-bold text-teal-600">$1,875</span>
-                                        <span class="text-lg text-teal-500">- $3,125</span>
+                                        <span class="text-2xl font-bold text-teal-600">$1,900</span>
+                                        <span class="text-lg text-teal-500">- $3,500</span>
                                     </div>
                                 </div>
                                 <p class="text-sm text-gray-600 mb-3">Per-Konsultasi (TERGANTUNG KESULITAN)</p>
@@ -172,9 +170,9 @@
                                     <div>
                                         <h4 class="font-semibold text-yellow-800 mb-2">Catatan Penting</h4>
                                         <p class="text-sm text-yellow-700">Jika diresepkan pemeriksaan tambahan <span
-                                                class="font-bold">$625</span></p>
+                                                class="font-bold">$630</span></p>
                                         <p class="text-sm text-yellow-700 mt-1">Jika diresepkan obat tambahan akan ditambah
-                                            <span class="font-bold">$125</span>
+                                            <span class="font-bold">$130</span>
                                         </p>
                                     </div>
                                 </div>
@@ -209,8 +207,8 @@
                                 <div class="flex items-center justify-between mb-2">
                                     <i class="fas fa-tooth text-blue-600 text-xl"></i>
                                     <div class="text-right">
-                                        <span class="text-xl font-bold text-blue-600">$1,250</span>
-                                        <span class="text-sm text-blue-500">- $1,875</span>
+                                        <span class="text-xl font-bold text-blue-600">$1,300</span>
+                                        <span class="text-sm text-blue-500">- $1,900</span>
                                     </div>
                                 </div>
                                 <h4 class="font-bold text-gray-800 text-sm">DOKTER GIGI UMUM</h4>
@@ -221,8 +219,8 @@
                                 <div class="flex items-center justify-between mb-2">
                                     <i class="fas fa-user-md text-indigo-600 text-xl"></i>
                                     <div class="text-right">
-                                        <span class="text-xl font-bold text-indigo-600">$1,875</span>
-                                        <span class="text-sm text-indigo-500">- $3,750</span>
+                                        <span class="text-xl font-bold text-indigo-600">$1,900</span>
+                                        <span class="text-sm text-indigo-500">- $3,800</span>
                                     </div>
                                 </div>
                                 <h4 class="font-bold text-gray-800 text-sm">DOKTER SPESIALIS GIGI & BEDAH MULUT</h4>
@@ -236,9 +234,9 @@
                                     <div>
                                         <h4 class="font-semibold text-yellow-800 mb-2">Catatan Penting</h4>
                                         <p class="text-sm text-yellow-700">Jika diresepkan pemeriksaan tambahan <span
-                                                class="font-bold">$625</span></p>
+                                                class="font-bold">$650</span></p>
                                         <p class="text-sm text-yellow-700 mt-1">Jika diresepkan obat tambahan akan ditambah
-                                            <span class="font-bold">$125</span>
+                                            <span class="font-bold">$130</span>
                                         </p>
                                     </div>
                                 </div>
@@ -265,7 +263,7 @@
                                 class="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-xl border border-green-200 hover:shadow-md transition-all duration-300">
                                 <div class="flex items-center justify-between mb-2">
                                     <i class="fas fa-city text-green-600 text-xl"></i>
-                                    <span class="text-2xl font-bold text-green-600">$375</span>
+                                    <span class="text-2xl font-bold text-green-600">$380</span>
                                 </div>
                                 <h4 class="font-bold text-gray-800 text-sm">AREA KOTA</h4>
                                 <p class="text-xs text-gray-600 mt-1">Lokasi perkotaan</p>
@@ -274,7 +272,7 @@
                                 class="bg-gradient-to-br from-emerald-50 to-teal-50 p-4 rounded-xl border border-emerald-200 hover:shadow-md transition-all duration-300">
                                 <div class="flex items-center justify-between mb-2">
                                     <i class="fas fa-umbrella-beach text-emerald-600 text-xl"></i>
-                                    <span class="text-2xl font-bold text-emerald-600">$315</span>
+                                    <span class="text-2xl font-bold text-emerald-600">$320</span>
                                 </div>
                                 <h4 class="font-bold text-gray-800 text-sm">SANDY SHORES</h4>
                                 <p class="text-xs text-gray-600 mt-1">Area pantai</p>
@@ -283,7 +281,7 @@
                                 class="bg-gradient-to-br from-teal-50 to-cyan-50 p-4 rounded-xl border border-teal-200 hover:shadow-md transition-all duration-300">
                                 <div class="flex items-center justify-between mb-2">
                                     <i class="fas fa-mountain text-teal-600 text-xl"></i>
-                                    <span class="text-2xl font-bold text-teal-600">$565</span>
+                                    <span class="text-2xl font-bold text-teal-600">$550</span>
                                 </div>
                                 <h4 class="font-bold text-gray-800 text-sm">GUNUNG - LAUT</h4>
                                 <p class="text-xs text-gray-600 mt-1">Area terpencil</p>
@@ -292,7 +290,7 @@
                                 class="bg-gradient-to-br from-cyan-50 to-blue-50 p-4 rounded-xl border border-cyan-200 hover:shadow-md transition-all duration-300">
                                 <div class="flex items-center justify-between mb-2">
                                     <i class="fas fa-crosshairs text-cyan-600 text-xl"></i>
-                                    <span class="text-2xl font-bold text-cyan-600">$565</span>
+                                    <span class="text-2xl font-bold text-cyan-600">$570</span>
                                 </div>
                                 <h4 class="font-bold text-gray-800 text-sm">AREA HUNTING</h4>
                                 <p class="text-xs text-gray-600 mt-1">Zona berburu</p>
@@ -303,14 +301,14 @@
                                     <i class="fas fa-bomb text-blue-600 text-xl"></i>
                                     <span class="text-2xl font-bold text-blue-600">$500</span>
                                 </div>
-                                <h4 class="font-bold text-gray-800 text-sm">ZONA PERANG</h4>
+                                <h4 class="font-bold text-gray-800 text-sm">ZONA PERANG / PRA-SITUASI</h4>
                                 <p class="text-xs text-gray-600 mt-1">Area konflik</p>
                             </div>
                             <div
                                 class="bg-gradient-to-br from-indigo-50 to-purple-50 p-4 rounded-xl border border-indigo-200 hover:shadow-md transition-all duration-300">
                                 <div class="flex items-center justify-between mb-2">
                                     <i class="fas fa-fist-raised text-indigo-600 text-xl"></i>
-                                    <span class="text-2xl font-bold text-indigo-600">$565</span>
+                                    <span class="text-2xl font-bold text-indigo-600">$570</span>
                                 </div>
                                 <h4 class="font-bold text-gray-800 text-sm">ZONA ADU MEKANIK / UFC</h4>
                                 <p class="text-xs text-gray-600 mt-1">Area pertarungan</p>
@@ -323,7 +321,7 @@
                                     <div>
                                         <h4 class="font-semibold text-yellow-800 mb-2">Catatan Penting</h4>
                                         <p class="text-sm text-yellow-700">Jika terdapat luka dan diresepkan obat atau
-                                            bandage tambahan, akan ditambah <span class="font-bold">$15</span></p>
+                                            bandage tambahan, akan ditambah <span class="font-bold">$20</span></p>
                                     </div>
                                 </div>
                             </div>
@@ -392,7 +390,7 @@
                                         <h4 class="font-bold text-gray-800">OPERASI BESAR</h4>
                                     </div>
                                     <div class="text-right">
-                                        <span class="text-3xl font-bold text-orange-600">$6,250</span>
+                                        <span class="text-3xl font-bold text-orange-600">$6,300</span>
                                         <span class="text-lg text-orange-500">- $12,500</span>
                                     </div>
                                 </div>
@@ -408,8 +406,8 @@
                                         <h4 class="font-bold text-gray-800">OPERASI KECIL</h4>
                                     </div>
                                     <div class="text-right">
-                                        <span class="text-3xl font-bold text-red-600">$3,125</span>
-                                        <span class="text-lg text-red-500">- $6,250</span>
+                                        <span class="text-3xl font-bold text-red-600">$3,200</span>
+                                        <span class="text-lg text-red-500">- $6,300</span>
                                     </div>
                                 </div>
                                 <p class="text-sm text-gray-600 mb-3">Prosedur operasi sederhana dan ringan</p>
@@ -439,21 +437,21 @@
                                 class="bg-gradient-to-br from-teal-50 to-cyan-50 p-4 rounded-xl border border-teal-200 text-center">
                                 <i class="fas fa-band-aid text-teal-600 text-3xl mb-3"></i>
                                 <h4 class="font-bold text-gray-800 mb-2">BANDAGE</h4>
-                                <div class="text-2xl font-bold text-teal-600 mb-1">$19</div>
+                                <div class="text-2xl font-bold text-teal-600 mb-1">$20</div>
                                 <p class="text-xs text-gray-600">MAX 25 PCS</p>
                             </div>
                             <div
                                 class="bg-gradient-to-br from-cyan-50 to-blue-50 p-4 rounded-xl border border-cyan-200 text-center">
                                 <i class="fas fa-first-aid text-cyan-600 text-3xl mb-3"></i>
                                 <h4 class="font-bold text-gray-800 mb-2">IFAKS</h4>
-                                <div class="text-2xl font-bold text-cyan-600 mb-1">$63</div>
+                                <div class="text-2xl font-bold text-cyan-600 mb-1">$70</div>
                                 <p class="text-xs text-gray-600">MAX 6 PCS</p>
                             </div>
                             <div
                                 class="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-200 text-center">
                                 <i class="fas fa-pills text-blue-600 text-3xl mb-3"></i>
                                 <h4 class="font-bold text-gray-800 mb-2">PAINKILLER</h4>
-                                <div class="text-2xl font-bold text-blue-600 mb-1">$63</div>
+                                <div class="text-2xl font-bold text-blue-600 mb-1">$70</div>
                                 <p class="text-xs text-gray-600">MAX 6 PCS</p>
                             </div>
                         </div>
@@ -492,7 +490,7 @@
                                 <div class="text-center mb-4">
                                     <i class="fas fa-fire text-slate-600 text-3xl mb-3"></i>
                                     <h4 class="font-bold text-gray-800 mb-2">PAKET B. KREMASI</h4>
-                                    <div class="text-3xl font-bold text-slate-600">$18,750</div>
+                                    <div class="text-3xl font-bold text-slate-600">$18,800</div>
                                 </div>
                                 <p class="text-sm text-gray-600 mb-2 font-semibold">CASH</p>
                                 <ul class="text-sm text-gray-600 space-y-1 list-disc list-inside">
@@ -538,7 +536,7 @@
                                 class="bg-gradient-to-br from-pink-50 to-rose-50 p-6 rounded-xl border border-pink-200 text-center">
                                 <i class="fas fa-crown text-pink-600 text-3xl mb-3"></i>
                                 <h4 class="font-bold text-gray-800 mb-2">VIP ROOM</h4>
-                                <div class="text-3xl font-bold text-pink-600 mb-1">$625</div>
+                                <div class="text-3xl font-bold text-pink-600 mb-1">$650</div>
                                 <p class="text-sm text-gray-600">/ DAY</p>
                                 <p class="text-xs text-pink-700 mt-2">Kamar mewah dengan fasilitas lengkap</p>
                             </div>
@@ -546,7 +544,7 @@
                                 class="bg-gradient-to-br from-rose-50 to-pink-50 p-6 rounded-xl border border-rose-200 text-center">
                                 <i class="fas fa-star text-rose-600 text-3xl mb-3"></i>
                                 <h4 class="font-bold text-gray-800 mb-2">KELAS 1</h4>
-                                <div class="text-3xl font-bold text-rose-600 mb-1">$375</div>
+                                <div class="text-3xl font-bold text-rose-600 mb-1">$400</div>
                                 <p class="text-sm text-gray-600">/ DAY</p>
                                 <p class="text-xs text-rose-700 mt-2">Kamar standar dengan fasilitas baik</p>
                             </div>
@@ -554,7 +552,7 @@
                                 class="bg-gradient-to-br from-pink-50 to-purple-50 p-6 rounded-xl border border-pink-200 text-center">
                                 <i class="fas fa-bed text-purple-600 text-3xl mb-3"></i>
                                 <h4 class="font-bold text-gray-800 mb-2">KELAS 2</h4>
-                                <div class="text-3xl font-bold text-purple-600 mb-1">$190</div>
+                                <div class="text-3xl font-bold text-purple-600 mb-1">$200</div>
                                 <p class="text-sm text-gray-600">/ DAY</p>
                                 <p class="text-xs text-purple-700 mt-2">Kamar standar dengan fasilitas dasar</p>
                             </div>
@@ -580,7 +578,7 @@
                                 class="bg-gradient-to-br from-yellow-50 to-amber-50 p-4 rounded-xl border border-yellow-200">
                                 <div class="flex items-center justify-between mb-2">
                                     <i class="fas fa-user-check text-yellow-600 text-xl"></i>
-                                    <span class="text-xl font-bold text-yellow-600">$20,000</span>
+                                    <span class="text-xl font-bold text-yellow-600">$25,000</span>
                                 </div>
                                 <h4 class="font-bold text-gray-800 text-sm">Visum et Repertum Pada Orang Hidup</h4>
                                 <p class="text-xs text-gray-600">Pemeriksaan pada orang hidup</p>
@@ -589,7 +587,7 @@
                                 class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border border-amber-200">
                                 <div class="flex items-center justify-between mb-2">
                                     <i class="fas fa-user-times text-amber-600 text-xl"></i>
-                                    <span class="text-xl font-bold text-amber-600">$37,500</span>
+                                    <span class="text-xl font-bold text-amber-600">$38,000</span>
                                 </div>
                                 <h4 class="font-bold text-gray-800 text-sm">Visum et Repertum Post Mortem</h4>
                                 <p class="text-xs text-gray-600">Pemeriksaan setelah kematian</p>
@@ -597,7 +595,7 @@
                             <div class="bg-gradient-to-br from-orange-50 to-red-50 p-4 rounded-xl border border-orange-200">
                                 <div class="flex items-center justify-between mb-2">
                                     <i class="fas fa-microscope text-orange-600 text-xl"></i>
-                                    <span class="text-xl font-bold text-orange-600">$62,500</span>
+                                    <span class="text-xl font-bold text-orange-600">$63,000</span>
                                 </div>
                                 <h4 class="font-bold text-gray-800 text-sm">Visum et Repertum Post Mortem dengan Autopsi
                                 </h4>
@@ -606,7 +604,7 @@
                             <div class="bg-gradient-to-br from-red-50 to-pink-50 p-4 rounded-xl border border-red-200">
                                 <div class="flex items-center justify-between mb-2">
                                     <i class="fas fa-brain text-red-600 text-xl"></i>
-                                    <span class="text-xl font-bold text-red-600">$31,250</span>
+                                    <span class="text-xl font-bold text-red-600">$32,000</span>
                                 </div>
                                 <h4 class="font-bold text-gray-800 text-sm">Visum et Repertum Psikiatri</h4>
                                 <p class="text-xs text-gray-600">Pemeriksaan psikiatris</p>
@@ -614,7 +612,7 @@
                             <div class="bg-gradient-to-br from-pink-50 to-purple-50 p-4 rounded-xl border border-pink-200">
                                 <div class="flex items-center justify-between mb-2">
                                     <i class="fas fa-flask text-pink-600 text-xl"></i>
-                                    <span class="text-xl font-bold text-pink-600">$37,500</span>
+                                    <span class="text-xl font-bold text-pink-600">$38,000</span>
                                 </div>
                                 <h4 class="font-bold text-gray-800 text-sm">Laboratorium Forensik</h4>
                                 <p class="text-xs text-gray-600">Pemeriksaan laboratorium forensik</p>
@@ -623,7 +621,7 @@
                                 class="bg-gradient-to-br from-purple-50 to-indigo-50 p-4 rounded-xl border border-purple-200">
                                 <div class="flex items-center justify-between mb-2">
                                     <i class="fas fa-vial text-purple-600 text-xl"></i>
-                                    <span class="text-xl font-bold text-purple-600">$12,500</span>
+                                    <span class="text-xl font-bold text-purple-600">$13,000</span>
                                 </div>
                                 <h4 class="font-bold text-gray-800 text-sm">Laboratorium Klinis</h4>
                                 <p class="text-xs text-gray-600">Pemeriksaan laboratorium klinis</p>
@@ -634,52 +632,42 @@
 
                 <!-- OPERASI PLASTIK -->
                 <div
-                    class="bg-white rounded-3xl shadow-lg border border-indigo-200 overflow-hidden hover:shadow-xl transition-all duration-300">
-                    <div class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white p-6">
+                    class="bg-white rounded-3xl shadow-lg border border-fuchsia-200 overflow-hidden hover:shadow-xl transition-all duration-300">
+                    <div class="bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white p-6">
                         <h3 class="text-2xl font-bold flex items-center">
                             <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mr-4">
-                                <i class="fas fa-user-md text-xl"></i>
+                                <i class="fas fa-magic text-xl"></i>
                             </div>
                             OPERASI PLASTIK
                         </h3>
-                        <p class="text-indigo-100 mt-2">Layanan bedah plastik dan rekonstruksi wajah</p>
+                        <p class="text-fuchsia-100 mt-2">Layanan bedah estetika</p>
                     </div>
                     <div class="p-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-4">
                             <div
-                                class="bg-gradient-to-br from-indigo-50 to-purple-50 p-6 rounded-xl border border-indigo-200">
+                                class="bg-gradient-to-br from-fuchsia-50 to-pink-50 p-6 rounded-xl border border-fuchsia-200">
                                 <div class="flex items-center justify-between mb-4">
                                     <div class="flex items-center space-x-3">
-                                        <i class="fas fa-comments text-indigo-600 text-2xl"></i>
-                                        <h4 class="font-bold text-gray-800">Konsultasi</h4>
+                                        <i class="fas fa-comments text-fuchsia-600 text-2xl"></i>
+                                        <h4 class="font-bold text-gray-800">KONSULTASI BEDAH PLASTIK</h4>
                                     </div>
                                     <div class="text-right">
-                                        <span class="text-2xl font-bold text-indigo-600">$6,250</span>
-                                        <p class="text-sm text-indigo-500">Cash</p>
+                                        <span class="text-3xl font-bold text-fuchsia-600">$6,500</span>
                                     </div>
                                 </div>
-                                <p class="text-sm text-gray-600 mb-3">Konsultasi & tiket operasi plastik</p>
-                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                                    <p class="text-xs text-blue-800 font-semibold">Termasuk konsultasi dokter dan tiket
-                                        operasi</p>
-                                </div>
+                                <p class="text-sm text-gray-600">Konsultasi awal dengan dokter spesialis</p>
                             </div>
-                            <div
-                                class="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-xl border border-purple-200">
+                            <div class="bg-gradient-to-br from-pink-50 to-rose-50 p-6 rounded-xl border border-pink-200">
                                 <div class="flex items-center justify-between mb-4">
                                     <div class="flex items-center space-x-3">
-                                        <i class="fas fa-cut text-purple-600 text-2xl"></i>
-                                        <h4 class="font-bold text-gray-800">Operasi Bedah Plastik</h4>
+                                        <i class="fas fa-scalpel text-pink-600 text-2xl"></i>
+                                        <h4 class="font-bold text-gray-800">BIAYA OPERASI</h4>
                                     </div>
                                     <div class="text-right">
-                                        <span class="text-2xl font-bold text-purple-600">$6,250</span>
-                                        <p class="text-sm text-purple-500">Billing</p>
+                                        <span class="text-3xl font-bold text-pink-600">$6,500</span>
                                     </div>
                                 </div>
-                                <p class="text-sm text-gray-600 mb-3">Melakukan rekonstruksi wajah</p>
-                                <div class="bg-green-50 border border-green-200 rounded-lg p-3">
-                                    <p class="text-xs text-green-800 font-semibold">Prosedur rekonstruksi wajah lengkap</p>
-                                </div>
+                                <p class="text-sm text-gray-600">Prosedur operasi plastik</p>
                             </div>
                         </div>
                     </div>

@@ -118,7 +118,7 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/form/success/{id}', [PublicController::class, 'formSuccess'])->name('public.form.success');
 Route::post('/form/testimoni/{id}', [PublicController::class, 'submitTestimoni'])->name('public.form.testimoni');
 // Struktural EMS route (includes both EMS and Roxwood Hospital tables)
-Route::get('/struktural-ems', [PublicController::class, 'strukturalEms'])->name('public.struktural-ems');
+Route::get('/struktural-ems', [PublicController::class, 'strukturalEmsDb'])->name('public.struktural-ems');
 // Shortcut named routes for popular forms
 Route::get('/cek-kesehatan', function () {
     return redirect()->route('public.form', ['type' => 'surat_kesehatan']);
@@ -244,6 +244,18 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
         ->middleware('admin');
     Route::post('/structural/reorder', [\App\Http\Controllers\Admin\StructuralManagementController::class, 'reorder'])
         ->middleware('admin')->name('structural.reorder');
+
+    // Organizational Structure Management (for public struktural-ems page)
+    Route::resource('organizational-structure', \App\Http\Controllers\Admin\OrganizationalStructureController::class)
+        ->middleware('admin');
+    Route::post('/organizational-structure/{id}/activate', [\App\Http\Controllers\Admin\OrganizationalStructureController::class, 'activate'])
+        ->middleware('admin')->name('organizational-structure.activate');
+    // Simplified name editing
+    Route::get('/organizational-structure/{id}/edit-names', [\App\Http\Controllers\Admin\OrganizationalStructureController::class, 'editNames'])
+        ->middleware('admin')->name('organizational-structure.edit-names');
+    Route::put('/organizational-structure/{id}/update-names', [\App\Http\Controllers\Admin\OrganizationalStructureController::class, 'updateNames'])
+        ->middleware('admin')->name('organizational-structure.update-names');
+
 
 
     // Live Chat (Permission-based access)

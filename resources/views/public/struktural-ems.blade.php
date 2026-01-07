@@ -111,106 +111,115 @@
                                 @endif
 
                                 <div class="flex flex-wrap justify-center gap-6 sm:gap-8 relative z-10 pt-20 sm:pt-24">
-                                    @foreach($levelData['positions'] as $position => $name)
+                                    @foreach($levelData['positions'] as $posKey => $posValue)
                                         @php
-                                            // Normalize names for better matching
-                                            $normalizeName = function ($str) {
-                                                return trim(strtolower(preg_replace('/\s+/', ' ', $str)));
-                                            };
-                                            $normalizedName = $normalizeName($name);
-
-                                            // Helper to check if user should be excluded (for Tan Ackeric vs Tan Noah Rafael)
-                                            $shouldExcludeUser = function ($userName) use ($normalizeName, $normalizedName) {
-                                                $normalizedUserName = $normalizeName($userName);
-
-                                                // Jika mencari "tan ackeric", exclude semua yang mengandung "noah" atau "rafael"
-                                                if (str_contains($normalizedName, 'tan') && str_contains($normalizedName, 'ackeric')) {
-                                                    if (str_contains($normalizedUserName, 'noah') || str_contains($normalizedUserName, 'rafael')) {
-                                                        return true;
-                                                    }
-                                                }
-
-                                                return false;
-                                            };
-
-                                            // Try to find user using multiple strategies
-                                            $user = null;
-
-                                            // Strategy 1: Use userByNameMap if available (fast lookup)
-                                            if (isset($userByNameMap) && isset($userByNameMap[$normalizedName])) {
-                                                $potentialUser = $userByNameMap[$normalizedName];
-                                                if (!$shouldExcludeUser($potentialUser->name)) {
-                                                    $user = $potentialUser;
-                                                }
+                                            // Handle flexible data structure (DB array or legacy string)
+                                            if (is_array($posValue)) {
+                                                $name = $posValue['name'] ?? 'N/A';
+                                                $position = $posValue['title'] ?? $posValue['role'] ?? 'Staff';
+                                            } else {
+                                                $name = $posValue;
+                                                $position = $posKey;
                                             }
+                                        @endphp
+                                        // Normalize names for better matching
+                                        $normalizeName = function ($str) {
+                                        return trim(strtolower(preg_replace('/\s+/', ' ', $str)));
+                                        };
+                                        $normalizedName = $normalizeName($name);
 
-                                            // Strategy 2: Exact match from users collection
-                                            if (!$user) {
-                                                $user = $users->first(function ($u) use ($normalizedName, $normalizeName, $shouldExcludeUser) {
-                                                    if ($shouldExcludeUser($u->name)) {
-                                                        return false;
-                                                    }
-                                                    $userName = $normalizeName($u->name);
-                                                    return $userName === $normalizedName;
-                                                });
-                                            }
+                                        // Helper to check if user should be excluded (for Tan Ackeric vs Tan Noah Rafael)
+                                        $shouldExcludeUser = function ($userName) use ($normalizeName, $normalizedName) {
+                                        $normalizedUserName = $normalizeName($userName);
 
-                                            // Strategy 3: Contains match (either direction)
-                                            if (!$user) {
-                                                $user = $users->first(function ($u) use ($normalizedName, $normalizeName, $shouldExcludeUser) {
-                                                    if ($shouldExcludeUser($u->name)) {
-                                                        return false;
-                                                    }
-                                                    $userName = $normalizeName($u->name);
-                                                    return str_contains($userName, $normalizedName)
-                                                        || str_contains($normalizedName, $userName);
-                                                });
-                                            }
+                                        // Jika mencari "tan ackeric", exclude semua yang mengandung "noah" atau "rafael"
+                                        if (str_contains($normalizedName, 'tan') && str_contains($normalizedName, 'ackeric')) {
+                                        if (str_contains($normalizedUserName, 'noah') || str_contains($normalizedUserName, 'rafael')) {
+                                        return true;
+                                        }
+                                        }
 
-                                            // Strategy 4: First word match (for cases like "Joseph Priestley" vs "JOSEPH GANTENG")
-                                            if (!$user) {
-                                                $searchWords = array_filter(explode(' ', $normalizedName));
-                                                $firstWord = !empty($searchWords) ? $searchWords[0] : '';
+                                        return false;
+                                        };
 
-                                                if (!empty($firstWord) && strlen($firstWord) > 2) {
-                                                    // Try userByNameMap first (fast)
-                                                    if (isset($userByNameMap) && isset($userByNameMap[$firstWord])) {
-                                                        $potentialUser = $userByNameMap[$firstWord];
-                                                        if (!$shouldExcludeUser($potentialUser->name)) {
-                                                            $user = $potentialUser;
-                                                        }
-                                                    }
+                                        // Try to find user using multiple strategies
+                                        $user = null;
 
-                                                    // Fallback to collection search
-                                                    if (!$user) {
-                                                        $user = $users->first(function ($u) use ($firstWord, $normalizeName, $shouldExcludeUser) {
-                                                            if ($shouldExcludeUser($u->name)) {
-                                                                return false;
-                                                            }
-                                                            $userName = $normalizeName($u->name);
-                                                            $userWords = array_filter(explode(' ', $userName));
-                                                            return !empty($userWords) && $userWords[0] === $firstWord;
-                                                        });
-                                                    }
-                                                }
-                                            }
+                                        // Strategy 1: Use userByNameMap if available (fast lookup)
+                                        if (isset($userByNameMap) && isset($userByNameMap[$normalizedName])) {
+                                        $potentialUser = $userByNameMap[$normalizedName];
+                                        if (!$shouldExcludeUser($potentialUser->name)) {
+                                        $user = $potentialUser;
+                                        }
+                                        }
 
-                                            // Strategy 5: Last word match
-                                            if (!$user) {
-                                                $searchWords = array_filter(explode(' ', $normalizedName));
-                                                $lastWord = !empty($searchWords) ? end($searchWords) : '';
+                                        // Strategy 2: Exact match from users collection
+                                        if (!$user) {
+                                        $user = $users->first(function ($u) use ($normalizedName, $normalizeName, $shouldExcludeUser) {
+                                        if ($shouldExcludeUser($u->name)) {
+                                        return false;
+                                        }
+                                        $userName = $normalizeName($u->name);
+                                        return $userName === $normalizedName;
+                                        });
+                                        }
 
-                                                if (!empty($lastWord) && strlen($lastWord) > 2) {
-                                                    $user = $users->first(function ($u) use ($lastWord, $normalizeName, $shouldExcludeUser) {
-                                                        if ($shouldExcludeUser($u->name)) {
-                                                            return false;
-                                                        }
-                                                        $userName = $normalizeName($u->name);
-                                                        $userWords = array_filter(explode(' ', $userName));
-                                                        return !empty($userWords) && end($userWords) === $lastWord;
-                                                    });
-                                                }
-                                            }
+                                        // Strategy 3: Contains match (either direction)
+                                        if (!$user) {
+                                        $user = $users->first(function ($u) use ($normalizedName, $normalizeName, $shouldExcludeUser) {
+                                        if ($shouldExcludeUser($u->name)) {
+                                        return false;
+                                        }
+                                        $userName = $normalizeName($u->name);
+                                        return str_contains($userName, $normalizedName)
+                                        || str_contains($normalizedName, $userName);
+                                        });
+                                        }
+
+                                        // Strategy 4: First word match (for cases like "Joseph Priestley" vs "JOSEPH GANTENG")
+                                        if (!$user) {
+                                        $searchWords = array_filter(explode(' ', $normalizedName));
+                                        $firstWord = !empty($searchWords) ? $searchWords[0] : '';
+
+                                        if (!empty($firstWord) && strlen($firstWord) > 2) {
+                                        // Try userByNameMap first (fast)
+                                        if (isset($userByNameMap) && isset($userByNameMap[$firstWord])) {
+                                        $potentialUser = $userByNameMap[$firstWord];
+                                        if (!$shouldExcludeUser($potentialUser->name)) {
+                                        $user = $potentialUser;
+                                        }
+                                        }
+
+                                        // Fallback to collection search
+                                        if (!$user) {
+                                        $user = $users->first(function ($u) use ($firstWord, $normalizeName, $shouldExcludeUser) {
+                                        if ($shouldExcludeUser($u->name)) {
+                                        return false;
+                                        }
+                                        $userName = $normalizeName($u->name);
+                                        $userWords = array_filter(explode(' ', $userName));
+                                        return !empty($userWords) && $userWords[0] === $firstWord;
+                                        });
+                                        }
+                                        }
+                                        }
+
+                                        // Strategy 5: Last word match
+                                        if (!$user) {
+                                        $searchWords = array_filter(explode(' ', $normalizedName));
+                                        $lastWord = !empty($searchWords) ? end($searchWords) : '';
+
+                                        if (!empty($lastWord) && strlen($lastWord) > 2) {
+                                        $user = $users->first(function ($u) use ($lastWord, $normalizeName, $shouldExcludeUser) {
+                                        if ($shouldExcludeUser($u->name)) {
+                                        return false;
+                                        }
+                                        $userName = $normalizeName($u->name);
+                                        $userWords = array_filter(explode(' ', $userName));
+                                        return !empty($userWords) && end($userWords) === $lastWord;
+                                        });
+                                        }
+                                        }
                                         @endphp
 
                                         <div class="relative group/item">
@@ -261,9 +270,11 @@
                                                     <div class="flex-1 min-w-0">
                                                         <h3
                                                             class="text-base sm:text-lg font-black text-gray-800 mb-2 line-clamp-2 group-hover/item:text-gray-900 transition-colors">
-                                                            {{ $position }}</h3>
+                                                            {{ $position }}
+                                                        </h3>
                                                         <p class="text-sm sm:text-base text-gray-600 break-words font-semibold mb-3">
-                                                            {{ $name }}</p>
+                                                            {{ $name }}
+                                                        </p>
                                                         @if($user && $user->role)
                                                             <span
                                                                 class="inline-block px-3 py-1.5 bg-gradient-to-r {{ $levelColors[$levelKey]['gradient'] ?? 'from-gray-400 to-gray-500' }} text-white text-xs rounded-xl font-bold shadow-lg">
@@ -575,7 +586,8 @@
                                                                                                     class="text-gray-600 ml-2 font-semibold">{{ $value }}</span>
                                                                                                 @if($user && $user->role)
                                                                                                     <div class="text-xs text-gray-500 mt-1 font-medium">
-                                                                                                        {{ $user->role->display_name }}</div>
+                                                                                                        {{ $user->role->display_name }}
+                                                                                                    </div>
                                                                                                 @endif
                                                                                             </div>
                                                                                         </div>
@@ -726,7 +738,8 @@
                                             </div>
                                             <div>
                                                 <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1">
-                                                    {{ $config['title'] }}</h2>
+                                                    {{ $config['title'] }}
+                                                </h2>
                                                 <p class="text-white/70 text-sm sm:text-base font-medium">Emergency Medical Services
                                                 </p>
                                             </div>
@@ -844,7 +857,8 @@
                                             </div>
                                             <div>
                                                 <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1">
-                                                    {{ $config['title'] }}</h2>
+                                                    {{ $config['title'] }}
+                                                </h2>
                                                 <p class="text-white/70 text-sm sm:text-base font-medium">Roxwood Hospital</p>
                                             </div>
                                         </div>

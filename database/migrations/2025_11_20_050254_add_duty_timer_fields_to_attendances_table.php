@@ -11,6 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Check if table exists before modifying
+        if (!Schema::hasTable('attendances')) {
+            return;
+        }
+
         Schema::table('attendances', function (Blueprint $table) {
             $table->integer('scheduled_duty_minutes')->nullable()->after('clock_in');
             // Durasi duty yang dijadwalkan dalam menit (null = normal mode tanpa timer)
@@ -30,6 +35,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (!Schema::hasTable('attendances')) {
+            return;
+        }
+
         Schema::table('attendances', function (Blueprint $table) {
             $table->dropIndex(['scheduled_end_time']);
             $table->dropColumn(['scheduled_duty_minutes', 'scheduled_end_time', 'auto_checked_out']);

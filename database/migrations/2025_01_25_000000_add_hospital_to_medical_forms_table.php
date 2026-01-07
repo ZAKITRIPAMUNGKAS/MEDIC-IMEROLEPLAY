@@ -11,6 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Check if table exists before modifying
+        if (!Schema::hasTable('medical_forms')) {
+            return;
+        }
+
         Schema::table('medical_forms', function (Blueprint $table) {
             $table->enum('hospital', ['alta', 'roxwood'])->default('alta')->after('form_type');
         });
@@ -21,6 +26,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (!Schema::hasTable('medical_forms')) {
+            return;
+        }
+
         Schema::table('medical_forms', function (Blueprint $table) {
             $table->dropColumn('hospital');
         });

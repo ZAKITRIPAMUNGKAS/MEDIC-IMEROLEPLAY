@@ -1390,6 +1390,11 @@
                                                         <i class="fas fa-comment-dots mr-3 w-5"></i>
                                                         Laporan & Masukan
                                                     </a>
+                                                    <a href="{{ route('admin.organizational-structure.index') }}"
+                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                        <i class="fas fa-sitemap mr-3 w-5"></i>
+                                                        Struktural EMS
+                                                    </a>
                                                     <a href="{{ route('admin.roles.permissions') }}"
                                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                         <i class="fas fa-shield-alt mr-3 w-5"></i>
@@ -1501,6 +1506,9 @@
                         <a href="{{ route('admin.staff.index') }}"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-users-cog w-6 mr-2"></i>Staf</a>
+                        <a href="{{ route('admin.organizational-structure.index') }}"
+                            class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
+                                class="fas fa-sitemap w-6 mr-2"></i>Struktural EMS</a>
                         <a href="{{ route('admin.roles.permissions') }}"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-shield-alt w-6 mr-2"></i>Role Permissions</a>
@@ -2689,7 +2697,7 @@
                     @elseif($errors->any())
                         alert('Terdapat kesalahan input. Silakan periksa formulir.');
                     @endif
-                            }, 1000);
+                                    }, 1000);
             });
         </script>
         <style>

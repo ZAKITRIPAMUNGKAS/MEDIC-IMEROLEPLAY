@@ -368,8 +368,9 @@ class PublicController extends Controller
             'form_data.age' => 'nullable|integer|min:1|max:120',
             'form_data.occupation' => 'nullable|string|max:255',
             'form_data.phone_number' => 'nullable|string|max:20',
-            // Validasi dokter_name wajib untuk surat kesehatan, tes psikologi, surat psikolog, dan operasi plastik
-            'form_data.doctor_name' => 'required_if:form_type,surat_kesehatan,tes_psikologi,surat_psikolog,operasi_plastik|string|max:255|filled',
+            // Validasi dokter_name wajib untuk surat kesehatan, tes psikologi, dan operasi plastik
+            // Removed surat_psikolog from required list per user request
+            'form_data.doctor_name' => 'nullable|string|max:255',
             // Validasi untuk tes psikologi
             'form_data.bigfive1' => 'required_if:form_type,tes_psikologi|integer|min:1|max:5',
             'form_data.bigfive2' => 'required_if:form_type,tes_psikologi|integer|min:1|max:5',
@@ -1608,10 +1609,158 @@ class PublicController extends Controller
     }
 
     /**
-     * Show feedback success page
+     * Display the organizational structure page (Database Driven)
      */
-    public function feedbackSuccess()
+    public function strukturalEmsDb(Request $request)
     {
-        return view('feedback.success');
+        // Get active structures for both hospitals or filter by request
+        $hospital = $request->input('hospital', 'ems'); // Default to EMS
+
+        $structure = \App\Models\OrganizationalStructure::where('hospital_type', $hospital)
+            ->where('is_active', true)
+            ->first();
+
+        // If no active structure in DB, fall back to default hardcoded structure or empty
+        $hierarchy = [];
+
+        if ($structure && $structure->structure_data) {
+            // Transform DB structure to view format if needed
+            // The DB structure should match the view's expected format ideally
+            $hierarchy = $this->transformStructureForView($structure->structure_data);
+        } else {
+            // Fallback hardcoded structure if nothing in DB (to prevent blank page)
+            $hierarchy = $this->getDefaultStructure();
+        }
+
+        return view('public.struktural-ems', compact('hierarchy', 'hospital'));
+    }
+
+    /**
+     * Helper to transform structure data for the view
+     */
+    private function transformStructureForView($data)
+    {
+        $hierarchy = [];
+
+        // Level 0: High Command
+        if (isset($data['high_command'])) {
+            $hierarchy['level_0'] = [
+                'title' => $data['high_command']['title'] ?? 'High Command',
+                'positions' => [
+                    [
+                        'title' => 'High Command',
+                        'name' => $data['high_command']['name'] ?? 'N/A',
+                        'status' => 'Available',
+                        'image' => null
+                    ]
+                ]
+            ];
+        }
+
+        // Level 1: Departments
+        if (isset($data['departments'])) {
+            $departments = $data['departments'];
+
+            // We need to flatten this for the view or adjust the view.
+            // The current view loop iterates $hierarchy as levels.
+            // Let's create a custom structure that the view can handle, 
+            // OR we adapt the view to match our JSON structure.
+
+            // Looking at the view `public/struktural-ems.blade.php`:
+            // It expects $hierarchy as array of levels with 'title' and 'positions'.
+            // The JSON structure I saved is slightly different (nested departments).
+
+            // Let's map departments to levels. 
+            // Actually, the view seems to handle generic levels.
+
+            // To make it simple for now, I will map the JSON structure 
+            // to the specific levels expected by the view or update the view.
+            // But wait, the previous `struktural-ems.blade.php` loop was generic.
+
+            // Let's create a visual mapping for Departments
+            /*
+            $hierarchy['level_1'] = [
+                'title' => 'Departments',
+                'positions' => []
+            ];
+            */
+
+            // Actually, simply passing the raw JSON might be easier if I update the view.
+            // BUT, the user wants the public page to just work.
+            // Let's check `struktural-ems.blade.php` content again to see what it expects.
+            // It loops `$hierarchy as $levelKey => $levelData`.
+            // Inside, it uses `$levelData['positions']`.
+
+            // My JSON structure:
+            // high_command -> name
+            // departments -> [ { title, name, members: [] } ]
+
+            // I should adapt the transformation to output levels 
+            // that the existing view can render.
+
+            // Level 0: High Command
+            $hierarchy['level_0'] = [
+                'title' => 'High Command',
+                'positions' => [
+                    [
+                        'name' => $data['high_command']['name'] ?? 'N/A',
+                        'role' => 'High Command'
+                    ]
+                ]
+            ];
+
+            // Level 1: Department Heads (All of them)
+            $deptHeads = [];
+            foreach ($data['departments'] as $dept) {
+                $deptHeads[] = [
+                    'name' => $dept['name'] ?? 'N/A',
+                    'role' => $dept['title'] ?? 'Department'
+                ];
+            }
+
+            if (!empty($deptHeads)) {
+                $hierarchy['level_1'] = [
+                    'title' => 'Department Heads',
+                    'positions' => $deptHeads
+                ];
+            }
+
+            // Level 2+: Members (Grouped?)
+            // The view might expect specific levels.
+            // Let's output all members in Level 2 for now, or group them.
+
+            $members = [];
+            foreach ($data['departments'] as $dept) {
+                if (isset($dept['members'])) {
+                    foreach ($dept['members'] as $member) {
+                        $members[] = [
+                            'name' => $member['name'] ?? 'N/A',
+                            'role' => ($dept['title'] ?? '') . ' - ' . ($member['role'] ?? 'Staff')
+                        ];
+                    }
+                }
+            }
+
+            if (!empty($members)) {
+                $hierarchy['level_2'] = [
+                    'title' => 'Staff Members',
+                    'positions' => $members
+                ];
+            }
+        }
+
+        return $hierarchy;
+    }
+
+    private function getDefaultStructure()
+    {
+        // Return the same hardcoded structure that was likely there before
+        // or a default empty one.
+        return [
+            'level_0' => [
+                'title' => 'High Command',
+                'positions' => [['name' => 'N/A', 'role' => 'High Command']]
+            ]
+        ];
     }
 }

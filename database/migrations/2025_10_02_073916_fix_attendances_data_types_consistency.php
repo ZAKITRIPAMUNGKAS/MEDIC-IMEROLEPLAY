@@ -11,6 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Check if table exists before modifying
+        if (!Schema::hasTable('attendances')) {
+            return;
+        }
+
         // Fix data type consistency in attendances table
         Schema::table('attendances', function (Blueprint $table) {
             // Rename total_hours to total_seconds for clarity
@@ -26,6 +31,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (!Schema::hasTable('attendances')) {
+            return;
+        }
+
         // Revert the changes
         Schema::table('attendances', function (Blueprint $table) {
             $table->renameColumn('total_seconds', 'total_hours');

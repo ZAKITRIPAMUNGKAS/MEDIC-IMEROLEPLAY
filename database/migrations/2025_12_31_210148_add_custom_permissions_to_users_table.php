@@ -10,6 +10,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
+        // Check if table exists before modifying
+        if (!Schema::hasTable('users')) {
+            return;
+        }
+
         if (!Schema::hasColumn('users', 'custom_permissions')) {
             Schema::table('users', function (Blueprint $table) {
                 $table->json('custom_permissions')->nullable()->after('role_id');
@@ -22,6 +27,10 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        if (!Schema::hasTable('users')) {
+            return;
+        }
+
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('custom_permissions');
         });

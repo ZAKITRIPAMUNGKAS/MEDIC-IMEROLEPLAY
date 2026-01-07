@@ -11,6 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Check if table exists before modifying
+        if (!Schema::hasTable('attendances')) {
+            return;
+        }
+
         Schema::table('attendances', function (Blueprint $table) {
             // Add missing columns for session management
             if (!Schema::hasColumn('attendances', 'session_number')) {
@@ -33,6 +38,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (!Schema::hasTable('attendances')) {
+            return;
+        }
+
         Schema::table('attendances', function (Blueprint $table) {
             // Remove added columns
             $table->dropColumn(['session_number', 'session_type', 'is_active', 'session_duration']);

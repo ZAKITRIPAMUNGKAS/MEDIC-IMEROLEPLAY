@@ -11,6 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Check if table exists before modifying
+        if (!Schema::hasTable('salary_settings')) {
+            return;
+        }
+
         Schema::table('salary_settings', function (Blueprint $table) {
             $table->dropColumn(['overtime_rate', 'overtime_threshold']);
         });
@@ -21,6 +26,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (!Schema::hasTable('salary_settings')) {
+            return;
+        }
+
         Schema::table('salary_settings', function (Blueprint $table) {
             $table->decimal('overtime_rate', 10, 2)->nullable();
             $table->integer('overtime_threshold')->default(8);

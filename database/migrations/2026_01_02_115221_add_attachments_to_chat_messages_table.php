@@ -10,6 +10,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
+        // Check if table exists before modifying
+        if (!Schema::hasTable('chat_messages')) {
+            return;
+        }
+
         Schema::table('chat_messages', function (Blueprint $table) {
             $table->string('attachment_path')->nullable()->after('message');
             $table->string('attachment_type')->nullable()->after('attachment_path')->comment('image, document');
@@ -21,6 +26,10 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        if (!Schema::hasTable('chat_messages')) {
+            return;
+        }
+
         Schema::table('chat_messages', function (Blueprint $table) {
             $table->dropColumn(['attachment_path', 'attachment_type']);
         });

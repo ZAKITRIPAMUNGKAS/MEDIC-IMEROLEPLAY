@@ -10,6 +10,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
+        // Check if table exists before modifying
+        if (!Schema::hasTable('users')) {
+            return;
+        }
+
         Schema::table('users', function (Blueprint $table) {
             if (!Schema::hasColumn('users', 'custom_salary')) {
                 $table->decimal('custom_salary', 15, 2)->nullable()->after('role_id')
@@ -23,6 +28,10 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        if (!Schema::hasTable('users')) {
+            return;
+        }
+
         Schema::table('users', function (Blueprint $table) {
             if (Schema::hasColumn('users', 'custom_salary')) {
                 $table->dropColumn('custom_salary');

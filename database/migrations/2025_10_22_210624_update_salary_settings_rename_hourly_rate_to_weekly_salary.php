@@ -11,6 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Check if table exists before modifying
+        if (!Schema::hasTable('salary_settings')) {
+            return;
+        }
+
         Schema::table('salary_settings', function (Blueprint $table) {
             $table->renameColumn('hourly_rate', 'weekly_salary');
         });
@@ -21,6 +26,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (!Schema::hasTable('salary_settings')) {
+            return;
+        }
+
         Schema::table('salary_settings', function (Blueprint $table) {
             $table->renameColumn('weekly_salary', 'hourly_rate');
         });

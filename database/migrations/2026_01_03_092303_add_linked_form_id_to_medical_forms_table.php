@@ -10,6 +10,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
+        // Check if table exists before modifying
+        if (!Schema::hasTable('medical_forms')) {
+            return;
+        }
+
         Schema::table('medical_forms', function (Blueprint $table) {
             // Nullable foreign key to link psychology test with psychology letter
             $table->foreignId('linked_form_id')->nullable()->after('form_type')->constrained('medical_forms')->nullOnDelete();
@@ -21,6 +26,10 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        if (!Schema::hasTable('medical_forms')) {
+            return;
+        }
+
         Schema::table('medical_forms', function (Blueprint $table) {
             $table->dropForeign(['linked_form_id']);
             $table->dropColumn('linked_form_id');

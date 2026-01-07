@@ -12,6 +12,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Check if table exists before modifying
+        if (!Schema::hasTable('payrolls')) {
+            return;
+        }
+
         // First, convert existing data from seconds to hours
         DB::statement('UPDATE payrolls SET total_hours = total_hours / 3600');
         
@@ -26,6 +31,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (!Schema::hasTable('payrolls')) {
+            return;
+        }
+
         // Convert hours back to seconds
         DB::statement('UPDATE payrolls SET total_hours = total_hours * 3600');
         

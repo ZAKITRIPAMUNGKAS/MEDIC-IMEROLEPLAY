@@ -11,6 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Check if table exists before modifying
+        if (!Schema::hasTable('staff_roles')) {
+            return;
+        }
+
         Schema::table('staff_roles', function (Blueprint $table) {
             $table->integer('level')->default(0)->after('display_name');
         });
@@ -21,6 +26,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (!Schema::hasTable('staff_roles')) {
+            return;
+        }
+
         Schema::table('staff_roles', function (Blueprint $table) {
             $table->dropColumn('level');
         });

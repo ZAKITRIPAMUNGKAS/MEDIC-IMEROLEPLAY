@@ -10,6 +10,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
+        // Check if table exists before modifying
+        if (!Schema::hasTable('attendances')) {
+            return;
+        }
+
         Schema::table('attendances', function (Blueprint $table) {
             if (!Schema::hasColumn('attendances', 'total_hours')) {
                 $table->integer('total_hours')->nullable()->comment('Legacy: Duration in minutes for backward compatibility');
@@ -22,6 +27,10 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        if (!Schema::hasTable('attendances')) {
+            return;
+        }
+
         Schema::table('attendances', function (Blueprint $table) {
             if (Schema::hasColumn('attendances', 'total_hours')) {
                 $table->dropColumn('total_hours');

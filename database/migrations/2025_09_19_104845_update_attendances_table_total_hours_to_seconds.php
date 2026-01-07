@@ -11,6 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Check if table exists before modifying
+        if (!Schema::hasTable('attendances')) {
+            return;
+        }
+
         Schema::table('attendances', function (Blueprint $table) {
             // Add comment to clarify that total_hours is actually stored in seconds
             $table->integer('total_hours')->nullable()->comment('Total duration in seconds')->change();
@@ -22,6 +27,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (!Schema::hasTable('attendances')) {
+            return;
+        }
+
         Schema::table('attendances', function (Blueprint $table) {
             $table->integer('total_hours')->nullable()->comment('Total jam kerja dalam detik')->change();
         });

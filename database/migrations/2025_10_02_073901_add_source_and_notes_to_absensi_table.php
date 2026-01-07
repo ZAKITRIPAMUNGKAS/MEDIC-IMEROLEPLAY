@@ -11,6 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Check if table exists before modifying
+        if (!Schema::hasTable('absensi')) {
+            return;
+        }
+
         Schema::table('absensi', function (Blueprint $table) {
             $table->string('source')->default('automatic')->after('time_on_duty');
             $table->text('notes')->nullable()->after('source');
@@ -22,6 +27,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (!Schema::hasTable('absensi')) {
+            return;
+        }
+
         Schema::table('absensi', function (Blueprint $table) {
             $table->dropColumn(['source', 'notes']);
         });

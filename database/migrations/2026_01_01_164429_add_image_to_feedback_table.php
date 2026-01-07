@@ -10,6 +10,11 @@ return new class extends Migration {
      */
     public function up(): void
     {
+        // Check if table exists before modifying
+        if (!Schema::hasTable('feedback')) {
+            return;
+        }
+
         Schema::table('feedback', function (Blueprint $table) {
             $table->string('image')->nullable()->after('message');
         });
@@ -20,6 +25,10 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        if (!Schema::hasTable('feedback')) {
+            return;
+        }
+
         Schema::table('feedback', function (Blueprint $table) {
             $table->dropColumn('image');
         });
