@@ -95,6 +95,11 @@ class StructuralManagementController extends Controller
     public function show(OrganizationalPosition $structural)
     {
         $structural->load(['user.role', 'parent', 'children.user']);
+
+        if (request()->wantsJson()) {
+            return response()->json($structural);
+        }
+
         return view('admin.structural.show', compact('structural'));
     }
 
