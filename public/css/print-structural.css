@@ -1,0 +1,52 @@
+@media print {
+
+    /* Hide non-printable elements */
+    nav,
+    header,
+    footer,
+    .sidebar,
+    .fixed,
+    .hidden-print,
+    button,
+    #btnGrid,
+    #btnTree,
+    input[type="text"] {
+        display: none !important;
+    }
+
+    /* Reset text colors for printing */
+    body,
+    p,
+    h1,
+    h2,
+    h3,
+    h4,
+    span,
+    div {
+        color: black !important;
+        text-shadow: none !important;
+    }
+
+    /* Ensure background graphics are printed */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* Layout adjustments */
+    .min-h-screen {
+        min-height: auto !important;
+        padding: 0 !important;
+    }
+
+    /* Make grid/tree visible */
+    #gridView,
+    #treeView {
+        display: block !important;
+    }
+
+    /* Page breaks */
+    .level-group {
+        page-break-inside: avoid;
+    }
+}

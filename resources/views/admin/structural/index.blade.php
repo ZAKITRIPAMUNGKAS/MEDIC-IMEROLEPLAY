@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+<link rel="stylesheet" href="{{ asset('css/print-structural.css') }}">
 <div class="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
     <div class="max-w-7xl mx-auto">
         {{-- Header with Actions --}}
@@ -14,11 +15,18 @@
                     <p class="text-gray-300 mt-2">Kelola struktur organisasi dengan mudah - visualisasikan hierarki tim Anda.</p>
                 </div>
                 
-                <button onclick="openAddModal()" 
-                        class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
-                    <i class="fas fa-plus-circle mr-2"></i>
-                    Tambah Posisi Baru
-                </button>
+                <div class="flex gap-3">
+                    <button onclick="window.print()" 
+                            class="inline-flex items-center px-4 py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl font-semibold transition-all border border-white/10">
+                        <i class="fas fa-print mr-2"></i>
+                        Print / PDF
+                    </button>
+                    <button onclick="openAddModal()" 
+                            class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                        <i class="fas fa-plus-circle mr-2"></i>
+                        Tambah Posisi Baru
+                    </button>
+                </div>
             </div>
 
             {{-- View Toggle & Filter --}}
@@ -111,6 +119,7 @@
                                             <div class="relative">
                                                 <img src="{{ $position->user->profile_image ? asset('storage/' . $position->user->profile_image) : 'https://ui-avatars.com/api/?name=' . urlencode($position->user->name) . '&background=random&color=fff' }}" 
                                                      alt="{{ $position->user->name }}"
+                                                     onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name={{ urlencode($position->user->name) }}&background=random&color=fff';"
                                                      class="w-12 h-12 rounded-full border-2 border-green-500/50 object-cover shadow-md">
                                                 <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-gray-800 rounded-full"></div>
                                             </div>
@@ -197,7 +206,8 @@
                                     echo '<div class="relative flex-shrink-0">';
                                         if ($user) {
                                             $avatar = $user->profile_image ? asset('storage/' . $user->profile_image) : 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=random&color=fff';
-                                            echo "<img src='$avatar' class='w-12 h-12 rounded-full border-2 border-green-500/50 object-cover'>";
+                                            $fallback = 'https://ui-avatars.com/api/?name=' . urlencode($user->name) . '&background=random&color=fff';
+                                            echo "<img src='$avatar' onerror=\"this.onerror=null; this.src='$fallback';\" class='w-12 h-12 rounded-full border-2 border-green-500/50 object-cover'>";
                                         } else {
                                             echo '<div class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center border-2 border-dashed border-white/20"><i class="fas fa-user-plus text-gray-400"></i></div>';
                                         }
@@ -486,8 +496,16 @@
         document.getElementById('positionForm').action = `/admin/structural/${id}`;
         document.getElementById('formMethod').value = 'PUT';
         
-        fetch(`/admin/structural/${id}`)
-            .then(res => res.json())
+        fetch(`/admin/structural/${id}`, {
+            headers: {
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(res => {
+                if (!res.ok) throw new Error('Network response was not ok');
+                return res.json();
+            })
             .then(data => {
                 document.getElementById('title').value = data.title || '';
                 document.getElementById('position_name').value = data.position_name || '';
