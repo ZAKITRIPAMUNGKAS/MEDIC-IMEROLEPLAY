@@ -11,8 +11,10 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->decimal('custom_salary', 15, 2)->nullable()->after('role_id')
-                ->comment('Custom salary override for individual staff, overrides role default');
+            if (!Schema::hasColumn('users', 'custom_salary')) {
+                $table->decimal('custom_salary', 15, 2)->nullable()->after('role_id')
+                    ->comment('Custom salary override for individual staff, overrides role default');
+            }
         });
     }
 
@@ -22,7 +24,9 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('custom_salary');
+            if (Schema::hasColumn('users', 'custom_salary')) {
+                $table->dropColumn('custom_salary');
+            }
         });
     }
 };
