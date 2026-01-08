@@ -633,6 +633,11 @@ class PublicController extends Controller
             ];
             $suggestions[] = "Sifat dominan Anda adalah " . $trait_names[$top_trait] . ". Gunakan kekuatan ini dalam aktivitas Anda sehari-hari.";
 
+            // Ensure suggestions is never empty (fallback)
+            if (empty($suggestions)) {
+                $suggestions[] = "Terima kasih telah menyelesaikan tes psikologi. Hasil Anda telah disimpan dan akan segera dianalisis oleh tim psikolog kami.";
+            }
+
             $formData['suggestions'] = $suggestions;
 
             // Append result summary to description for easy reading by staff
