@@ -378,7 +378,7 @@
                     </div>
 
                     <!-- Hasil Tes Psikologi Lengkap -->
-                    @if($form->form_type === 'tes_psikologi' && is_array($form->form_data) && isset($form->form_data['suggestions']) && !empty($form->form_data['suggestions']))
+                    @if(in_array($form->form_type, ['tes_psikologi', 'surat_psikolog']) && is_array($form->form_data) && isset($form->form_data['suggestions']) && !empty($form->form_data['suggestions']))
                         <div class="backdrop-blur-xl border-2 border-indigo-400/60 rounded-2xl shadow-2xl p-6 md:p-8 mb-6"
                             style="background-color: rgba(79, 70, 229, 0.15);">
                             <h2 class="text-2xl font-bold text-white mb-6 flex items-center">

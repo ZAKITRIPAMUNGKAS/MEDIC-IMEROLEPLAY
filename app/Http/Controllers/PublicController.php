@@ -527,8 +527,8 @@ class PublicController extends Controller
                 $formData['photo_skb_url'] = $skbUrl;
                 unset($formData['photo_skb']);
             }
-        } elseif ($request->form_type === 'tes_psikologi') {
-            // Calculate Psychology Test Results
+        } elseif (in_array($request->form_type, ['tes_psikologi', 'surat_psikolog'])) {
+            // Calculate Psychology Test Results (for both tes_psikologi and surat_psikolog)
 
             // 1. Big Five Inventory (BFI-10)
             // Extraversion: 1R, 6 (1 is usually regular, 6 reversed. BFI scoring: R means Reverse-scored)
