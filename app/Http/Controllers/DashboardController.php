@@ -385,6 +385,11 @@ class DashboardController extends Controller
 
             $attendance = Attendance::create($attendanceData);
 
+            // Update user status based on session type
+            // If meeting, set status to 'meeting', otherwise set to 'working'
+            $userStatus = ($sessionType === 'meeting') ? 'meeting' : 'working';
+            $user->update(['status' => $userStatus]);
+
             DB::commit();
 
             // Log successful clock in
@@ -461,6 +466,9 @@ class DashboardController extends Controller
             if (!$closeResult) {
                 throw new \Exception('Failed to close session');
             }
+
+            // Reset user status to 'working' (default) when clocking out
+            $user->update(['status' => 'working']);
 
             DB::commit();
 
