@@ -150,7 +150,35 @@ class PublicController extends Controller
             'roxwood' => $roxwoodOnDutyCount,
         ];
 
-        return view('public.index', compact('stats', 'testimoni', 'testimonials', 'onDutyStats'));
+        // Hitung staff berdasarkan status: meeting vs working
+        // Ambil semua EMS staff yang on duty
+        $emsOnDutyUsers = $emsUsers->filter(function ($user) {
+            return $user->isClockedIn();
+        });
+
+        // Hitung berdasarkan status
+        $emsMeetingCount = $emsOnDutyUsers->where('status', 'meeting')->count();
+        $emsWorkingCount = $emsOnDutyUsers->where('status', 'working')->count();
+
+        // Hitung untuk Roxwood juga
+        $roxwoodMeetingCount = 0;
+        $roxwoodWorkingCount = 0;
+        if (!empty($rhUserIds)) {
+            $roxwoodOnDutyUsers = $roxwoodUsers->filter(function ($user) {
+                return $user->isClockedIn();
+            });
+            $roxwoodMeetingCount = $roxwoodOnDutyUsers->where('status', 'meeting')->count();
+            $roxwoodWorkingCount = $roxwoodOnDutyUsers->where('status', 'working')->count();
+        }
+
+        $staffStatusStats = [
+            'ems_meeting' => $emsMeetingCount,
+            'ems_working' => $emsWorkingCount,
+            'roxwood_meeting' => $roxwoodMeetingCount,
+            'roxwood_working' => $roxwoodWorkingCount,
+        ];
+
+        return view('public.index', compact('stats', 'testimoni', 'testimonials', 'onDutyStats', 'staffStatusStats'));
     }
 
     public function showForm($type = 'penyakit_dalam')
