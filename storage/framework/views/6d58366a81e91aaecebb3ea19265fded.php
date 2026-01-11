@@ -1363,7 +1363,7 @@
                                 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                                 
-                                <?php if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('view_reports')): ?>
+                                <?php if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('access_live_chat') || auth()->user()->hasPermission('access_feedback')): ?>
                                     <div class="relative group">
                                         <button
                                             class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
@@ -1382,30 +1382,40 @@
                                                         <i class="fas fa-users-cog mr-3 w-5"></i>
                                                         Manajemen Staf
                                                     </a>
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->hasPermission('access_live_chat')): ?>
                                                     <a href="<?php echo e(route('admin.chat.index')); ?>"
                                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                         <i class="fas fa-comments mr-3 w-5"></i>
                                                         Live Chat
                                                     </a>
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
+                                                <?php if(auth()->user()->hasPermission('access_feedback')): ?>
                                                     <a href="<?php echo e(route('admin.feedback.index')); ?>"
                                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                         <i class="fas fa-comment-dots mr-3 w-5"></i>
                                                         Laporan & Masukan
                                                     </a>
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
+                                                <?php if(auth()->user()->isAdmin()): ?>
                                                     <a href="<?php echo e(route('admin.organizational-structure.index')); ?>"
                                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                         <i class="fas fa-sitemap mr-3 w-5"></i>
                                                         Struktural EMS
                                                     </a>
+
                                                     <a href="<?php echo e(route('admin.roles.permissions')); ?>"
                                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                         <i class="fas fa-shield-alt mr-3 w-5"></i>
                                                         Role Permissions
                                                     </a>
-                                                    <div class="border-t border-gray-200 my-1"></div>
                                                 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                                                 <?php if(auth()->user()->hasPermission('view_reports')): ?>
+                                                    <div class="border-t border-gray-200 my-1"></div>
                                                     <a href="<?php echo e(route('admin.attendance-reports.index')); ?>"
                                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                         <i class="fas fa-chart-bar mr-3 w-5"></i>
@@ -2696,47 +2706,47 @@ if (isset($__slots)) unset($__slots);
         </div>
 
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                console.log('Global Toast Initialized');
-                const toast = document.getElementById('global-toast-layout');
-                if (toast) {
-                    console.log('Toast element found, ensuring visibility');
-                    toast.style.display = 'block';
-                    // Auto dismiss after 10 seconds
+              document.addEventListener('DOMContentLoaded', function () {
+                    console.log('Global Toast Initialized');
+                    const toast = document.getElementById('global-toast-layout');
+                    if (toast) {
+                        console.log('Toast element found, ensuring visibility');
+                        toast.style.display = 'block';
+                        // Auto dismiss after 10 seconds
+                        setTimeout(() => {
+                            if (toast) {
+                                toast.style.transition = 'opacity 0.5s ease-out';
+                                toast.style.opacity = '0';
+                                setTimeout(() => toast.remove(), 500);
+                            }
+                        }, 10000);
+                    }
+
+                    // Backup Alert
                     setTimeout(() => {
-                        if (toast) {
-                            toast.style.transition = 'opacity 0.5s ease-out';
-                            toast.style.opacity = '0';
-                            setTimeout(() => toast.remove(), 500);
-                        }
-                    }, 10000);
+                        <?php if(session('error')): ?>
+                            alert(<?php echo json_encode(session('error'), 15, 512) ?>);
+                        <?php elseif($errors->any()): ?>
+                            alert('Terdapat kesalahan input. Silakan periksa formulir.');
+                        <?php endif; ?>
+                                            }, 1000);
+                });
+            </script>
+            <style>
+                @keyframes shrink {
+                    from {
+                        width: 100%;
+                    }
+
+                    to {
+                        width: 0%;
+                    }
                 }
 
-                // Backup Alert
-                setTimeout(() => {
-                    <?php if(session('error')): ?>
-                        alert(<?php echo json_encode(session('error'), 15, 512) ?>);
-                    <?php elseif($errors->any()): ?>
-                        alert('Terdapat kesalahan input. Silakan periksa formulir.');
-                    <?php endif; ?>
-                                    }, 1000);
-            });
-        </script>
-        <style>
-            @keyframes shrink {
-                from {
-                    width: 100%;
+                .animate-shrink {
+                    animation: shrink 10s linear forwards;
                 }
-
-                to {
-                    width: 0%;
-                }
-            }
-
-            .animate-shrink {
-                animation: shrink 10s linear forwards;
-            }
-        </style>
+            </style>
     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
     <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::scripts(); ?>

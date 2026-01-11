@@ -265,41 +265,43 @@ endif;
 unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
 
-                            <div>
-                                <label class="block text-sm font-medium text-gray-300 mb-3">
-                                    <i class="fas fa-money-bill-wave mr-2"></i>Gaji Per Minggu (Custom)
-                                </label>
-                                <div class="relative">
-                                    <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
-                                    <input type="number" name="custom_salary" id="custom_salary"
-                                        value="<?php echo e(old('custom_salary', $user->custom_salary)); ?>"
-                                        placeholder="Otomatis dari role" step="0.01" min="0"
-                                        class="w-full bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded-lg pl-10 pr-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 transition-all duration-300">
-                                </div>
-                                <div class="mt-2 space-y-1">
-                                    <p class="text-gray-400 text-xs flex items-center">
-                                        <i class="fas fa-info-circle mr-1"></i>
-                                        Default gaji role: <span id="role-salary"
-                                            class="font-semibold text-green-400 ml-1">Loading...</span>
-                                    </p>
-                                    <p class="text-gray-400 text-xs">
-                                        Kosongkan untuk menggunakan default, atau isi untuk custom salary
-                                    </p>
-                                </div>
-                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['custom_salary'];
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->isAdmin()): ?>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-300 mb-3">
+                                        <i class="fas fa-money-bill-wave mr-2"></i>Gaji Per Minggu (Custom)
+                                    </label>
+                                    <div class="relative">
+                                        <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">$</span>
+                                        <input type="number" name="custom_salary" id="custom_salary"
+                                            value="<?php echo e(old('custom_salary', $user->custom_salary)); ?>"
+                                            placeholder="Otomatis dari role" step="0.01" min="0"
+                                            class="w-full bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded-lg pl-10 pr-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 transition-all duration-300">
+                                    </div>
+                                    <div class="mt-2 space-y-1">
+                                        <p class="text-gray-400 text-xs flex items-center">
+                                            <i class="fas fa-info-circle mr-1"></i>
+                                            Default gaji role: <span id="role-salary"
+                                                class="font-semibold text-green-400 ml-1">Loading...</span>
+                                        </p>
+                                        <p class="text-gray-400 text-xs">
+                                            Kosongkan untuk menggunakan default, atau isi untuk custom salary
+                                        </p>
+                                    </div>
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['custom_salary'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                                    <p class="text-red-300 text-sm mt-2 flex items-center">
-                                        <i class="fas fa-exclamation-circle mr-1"></i><?php echo e($message); ?>
+                                        <p class="text-red-300 text-sm mt-2 flex items-center">
+                                            <i class="fas fa-exclamation-circle mr-1"></i><?php echo e($message); ?>
 
-                                    </p>
-                                <?php unset($message);
+                                        </p>
+                                    <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                            </div>
+                                </div>
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                             <div>
                                 <label class="block text-sm font-medium text-gray-300 mb-3">Status Akun</label>
@@ -371,6 +373,24 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                     </div>
                                 </label>
                             </div>
+
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->isAdmin()): ?>
+                            <!-- Manage Users Permission (Admin Only) -->
+                            <div class="bg-white/5 rounded-lg p-4 border border-white/10">
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" name="custom_permissions[]" value="manage_users"
+                                        class="w-5 h-5 text-yellow-500 bg-white/10 border-white/20 rounded focus:ring-2 focus:ring-yellow-400"
+                                        <?php if(in_array('manage_users', old('custom_permissions', $user->custom_permissions ?? []))): echo 'checked'; endif; ?>>
+                                    <div class="ml-3">
+                                        <span class="text-white font-medium flex items-center">
+                                            <i class="fas fa-users-cog text-yellow-400 mr-2"></i>
+                                            Manajemen Users
+                                        </span>
+                                        <p class="text-gray-400 text-xs mt-1">Akses mengelola user (tanpa gaji)</p>
+                                    </div>
+                                </label>
+                            </div>
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
                     </div>
 

@@ -41,7 +41,7 @@
             </div>
 
             <!-- Psychology Test Results -->
-            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($form->form_type === 'tes_psikologi' && is_array($form->form_data) && isset($form->form_data['suggestions']) && !empty($form->form_data['suggestions'])): ?>
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(in_array($form->form_type, ['tes_psikologi', 'surat_psikolog']) && is_array($form->form_data) && isset($form->form_data['suggestions']) && !empty($form->form_data['suggestions'])): ?>
             <div class="bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 rounded-3xl p-8 mb-8 border border-indigo-200 shadow-lg text-left animate-fade-in-up" style="animation-delay: 0.3s;">
                 <div class="flex items-center justify-center mb-6">
                     <div class="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mr-3 shadow-lg">

@@ -229,8 +229,12 @@ class StaffManagementController extends Controller
             'hospital' => $validated['hospital'],
             'role_id' => $validated['role_id'],
             'is_active' => $request->boolean('is_active', true),
-            'custom_salary' => $request->input('custom_salary') ?: null,
         ];
+
+        // Only admin can set custom salary
+        if (auth()->user()->isAdmin()) {
+            $data['custom_salary'] = $request->input('custom_salary') ?: null;
+        }
 
         if (!empty($validated['password'])) {
             $data['password'] = Hash::make($validated['password']);
@@ -284,6 +288,23 @@ class StaffManagementController extends Controller
 
         // Handle custom permissions
         $customPermissions = $request->input('custom_permissions', []);
+
+        // Security check: Only admin can toggle 'manage_users' permission
+        if (!auth()->user()->isAdmin()) {
+            // Find if user ALREADY has manage_users
+            $alreadyHasPermission = in_array('manage_users', $user->custom_permissions ?? []);
+
+            // If they had it, keep it. If they didn't, ensure they don't get it.
+            if ($alreadyHasPermission) {
+                if (!in_array('manage_users', $customPermissions)) {
+                    $customPermissions[] = 'manage_users';
+                }
+            } else {
+                // Remove if tried to add
+                $customPermissions = array_values(array_diff($customPermissions, ['manage_users']));
+            }
+        }
+
         $data['custom_permissions'] = $customPermissions;
 
         $user->update($data);
