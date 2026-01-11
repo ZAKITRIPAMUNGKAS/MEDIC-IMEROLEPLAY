@@ -1048,6 +1048,9 @@
                                             {{ $form->created_at->format('d/m/Y H:i') }}
                                         </td>
                                         <td class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm font-medium">
+                                            @php
+                                                $canApprove = $form->status === 'pending' && auth()->user()->canApproveForm($form->form_type);
+                                            @endphp
                                             <div class="flex flex-col sm:flex-row gap-2">
                                                 <a href="{{ route('staff.forms.show', $form->id) }}"
                                                     class="inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gradient-to-r from-sky-500 to-cyan-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-sky-600 hover:to-cyan-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
@@ -1055,10 +1058,19 @@
                                                 </a>
 
                                                 @if($form->status === 'pending')
-                                                    <button type="button" onclick="approveForm({{ $form->id }}, this)"
-                                                        class="w-full inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
-                                                        <i class="fas fa-check mr-2"></i>Setujui
-                                                    </button>
+                                                    @if($canApprove)
+                                                        <button type="button" onclick="approveForm({{ $form->id }}, this)"
+                                                            class="w-full inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                                            <i class="fas fa-check mr-2"></i>Setujui
+                                                        </button>
+                                                    @else
+                                                        <button disabled
+                                                            class="w-full inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gray-500/50 text-gray-300 text-xs sm:text-sm font-bold rounded-xl cursor-not-allowed opacity-60"
+                                                            title="Level role Anda tidak mencukupi untuk menyetujui formulir ini">
+                                                            <i class="fas fa-lock mr-2"></i>Setujui
+                                                        </button>
+                                                    @endif
+
                                                     <button type="button" onclick="rejectForm({{ $form->id }}, this)"
                                                         class="w-full inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-red-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
                                                         <i class="fas fa-times mr-2"></i>Tolak
@@ -1190,6 +1202,9 @@
                                             @endif
                                         </td>
                                         <td class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm font-medium">
+                                            @php
+                                                $canApproveAppointment = $appointment->status === 'pending' && auth()->user()->canApproveForm($appointment->form_type);
+                                            @endphp
                                             <div class="flex flex-col sm:flex-row gap-2">
                                                 <a href="{{ route('staff.forms.show', $appointment->id) }}"
                                                     class="inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
@@ -1197,10 +1212,19 @@
                                                 </a>
 
                                                 @if($appointment->status === 'pending')
-                                                    <button type="button" onclick="approveForm({{ $appointment->id }}, this, true)"
-                                                        class="w-full inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
-                                                        <i class="fas fa-check mr-2"></i>Sudah Ditemui
-                                                    </button>
+                                                    @if($canApproveAppointment)
+                                                        <button type="button" onclick="approveForm({{ $appointment->id }}, this, true)"
+                                                            class="w-full inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                                            <i class="fas fa-check mr-2"></i>Sudah Ditemui
+                                                        </button>
+                                                    @else
+                                                        <button disabled
+                                                            class="w-full inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gray-500/50 text-gray-300 text-xs sm:text-sm font-bold rounded-xl cursor-not-allowed opacity-60"
+                                                            title="Level role Anda tidak mencukupi untuk menyetujui formulir ini">
+                                                            <i class="fas fa-lock mr-2"></i>Sudah Ditemui
+                                                        </button>
+                                                    @endif
+                                                    
                                                     <button type="button" onclick="rejectForm({{ $appointment->id }}, this, true)"
                                                         class="w-full inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-red-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
                                                         <i class="fas fa-times mr-2"></i>Tolak Formulir
@@ -1449,488 +1473,504 @@
 
 @push('scripts')
     <script>
-        // Toast Notification System
-        function showToast(type, title, message, duration = 5000) {
-            const container = document.getElementById('toastContainer');
-            if (!container) return;
+            // Toast Notific    ation System
+            function showToast(type, title, message, duration = 5000) {
+                const container = document.getElementById('toastContainer');
+                if (!container) return;
 
-            const icons = {
-                success: 'fa-check-circle',
-                error: 'fa-times-circle',
-                warning: 'fa-exclamation-triangle',
-                info: 'fa-info-circle'
-            };
+                const icons = {
+                    success: 'fa-check-circle',
+                    error: 'fa-times-circle',
+                    warning: 'fa-exclamation-triangle',
+                    info: 'fa-info-circle'
+                };
 
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-            toast.style.setProperty('--duration', `${duration}ms`);
-            console.log('🎨 NEW TOAST DESIGN v2 - White Card Design');
-            toast.innerHTML = `
-                                        <div class="toast-icon">
-                                            <i class="fas ${icons[type]} text-sm"></i>
-                                        </div>
-                                        <div class="toast-content">
-                                            <div class="toast-title">${title}</div>
-                                            <div class="toast-message">${message}</div>
-                                        </div>
-                                        <button class="toast-close" onclick="closeToast(this.parentElement)">
-                                            <i class="fas fa-times text-xs"></i>
-                                        </button>
-                                    `;
+                const toast = document.createElement('div');
+                toast.className = `toast toast-${type}`;
+                toast.style.setProperty('--duration', `${duration}ms`);
+                console.log('🎨 NEW TOAST DESIGN v2 - White Card Design');
+                toast.innerHTML = `
+                                                <div class="toast-icon">
+                                                    <i class="fas ${icons[type]} text-sm"></i>
+                                                </div>
+                                                <div class="toast-content">
+                                                    <div class="toast-title">${title}</div>
+                                                    <div class="toast-message">${message}</div>
+                                                </div>
+                                                <button class="toast-close" onclick="closeToast(this.parentElement)">
+                                                    <i class="fas fa-times text-xs"></i>
+                                                </button>
+                                            `;
 
-            container.appendChild(toast);
-            setTimeout(() => closeToast(toast), duration);
-        }
+                container.appendChild(toast);
+                setTimeout(() => closeToast(toast), duration);
+            }
 
-        // Check for session messages on page load
-        document.addEventListener('DOMContentLoaded', function () {
-            @if(session('success'))
-                showToast('success', 'Berhasil!', '{{ session('success') }}');
-            @endif
-            @if(session('error'))
-                showToast('error', 'Error!', '{{ session('error') }}');
-            @endif
-            @if(session('warning'))
-                showToast('warning', 'Perhatian!', '{{ session('warning') }}');
-            @endif
-            @if(session('info'))
-                showToast('info', 'Informasi', '{{ session('info') }}');
-            @endif
-                            });
+            // Check for session messages on page load
+            document.addEventListener('DOMContentLoaded', function () {
+                @if(session('success'))
+                    showToast('success', 'Berhasil!', '{{ session('success') }}');
+                @endif
+                @if(session('error'))
+                    showToast('error', 'Error!', '{{ session('error') }}');
+                @endif
+                @if(session('warning'))
+                    showToast('warning', 'Perhatian!', '{{ session('warning') }}');
+                @endif
+                @if(session('info'))
+                    showToast('info', 'Informasi', '{{ session('info') }}');
+                @endif
+                                    });
 
-        function closeToast(toast) {
-            if (!toast || toast.classList.contains('hiding')) return;
-            toast.classList.add('hiding');
-            setTimeout(() => toast.remove(), 300);
-        }
+            function closeToast(toast) {
+                if (!toast || toast.classList.contains('hiding')) return;
+                toast.classList.add('hiding');
+                setTimeout(() => toast.remove(), 300);
+            }
 
-        // Approve Form via AJAX
-        async function approveForm(formId, button, isAppointment = false) {
-            const originalHtml = button.innerHTML;
-            button.disabled = true;
-            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Memproses...';
+            // Approve Form via AJAX
+            async function approveForm(formId, button, isAppointment = false) {
+                // Konfirmasi sebelum approve
+                const confirmMessage = isAppointment
+                    ? 'Yakin ingin menandai janji temu ini sudah ditemui?'
+                    : 'Yakin ingin menyetujui formulir ini?';
 
-            try {
-                const response = await fetch(`/staff/forms/${formId}/approve`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'Accept': 'application/json'
-                    }
-                });
+                if (!confirm(confirmMessage)) {
+                    return; // User membatalkan
+                }
 
-                if (response.ok) {
-                    const label = isAppointment ? 'Janji temu ditandai sudah ditemui' : 'Formulir berhasil disetujui';
-                    showToast('success', 'Berhasil!', label);
+                const originalHtml = button.innerHTML;
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Memproses...';
 
-                    // Update UI - hide action buttons and show status
-                    const td = button.closest('td');
-                    if (td) {
-                        td.innerHTML = '<span class="text-green-300 font-medium">Selesai</span>';
-                    }
-
-                    // Update status badge in the same row
-                    const row = button.closest('tr');
-                    if (row) {
-                        const statusTd = row.querySelectorAll('td')[isAppointment ? 4 : 3];
-                        if (statusTd) {
-                            statusTd.innerHTML = `<span class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-green-500/20 text-green-300 border border-green-400/30">${isAppointment ? 'Sudah Ditemui' : 'Disetujui'}</span>`;
+                try {
+                    const response = await fetch(`/staff/forms/${formId}/approve`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
                         }
-                    }
-                } else {
-                    throw new Error('Gagal memproses permintaan');
-                }
-            } catch (error) {
-                showToast('error', 'Gagal', error.message || 'Terjadi kesalahan');
-                button.disabled = false;
-                button.innerHTML = originalHtml;
-            }
-        }
+                    });
 
-        // Reject Form via AJAX
-        async function rejectForm(formId, button, isAppointment = false) {
-            const originalHtml = button.innerHTML;
-            button.disabled = true;
-            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Memproses...';
+                    if (response.ok) {
+                        const label = isAppointment ? 'Janji temu ditandai sudah ditemui' : 'Formulir berhasil disetujui';
+                        showToast('success', 'Berhasil!', label);
 
-            try {
-                const response = await fetch(`/staff/forms/${formId}/reject`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'Accept': 'application/json'
-                    }
-                });
-
-                if (response.ok) {
-                    showToast('warning', 'Ditolak', isAppointment ? 'Janji temu ditolak' : 'Formulir ditolak');
-
-                    // Update UI
-                    const td = button.closest('td');
-                    if (td) {
-                        td.innerHTML = '<span class="text-red-300 font-medium">Selesai</span>';
-                    }
-
-                    // Update status badge
-                    const row = button.closest('tr');
-                    if (row) {
-                        const statusTd = row.querySelectorAll('td')[isAppointment ? 4 : 3];
-                        if (statusTd) {
-                            statusTd.innerHTML = '<span class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-red-500/20 text-red-300 border border-red-400/30">Ditolak</span>';
+                        // Update UI - hide action buttons and show status
+                        const td = button.closest('td');
+                        if (td) {
+                            td.innerHTML = '<span class="text-green-300 font-medium">Selesai</span>';
                         }
+
+                        // Update status badge in the same row
+                        const row = button.closest('tr');
+                        if (row) {
+                            const statusTd = row.querySelectorAll('td')[isAppointment ? 4 : 3];
+                            if (statusTd) {
+                                statusTd.innerHTML = `<span class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-green-500/20 text-green-300 border border-green-400/30">${isAppointment ? 'Sudah Ditemui' : 'Disetujui'}</span>`;
+                            }
+                        }
+                    } else {
+                        throw new Error('Gagal memproses permintaan');
                     }
-                } else {
-                    throw new Error('Gagal memproses permintaan');
+                } catch (error) {
+                    showToast('error', 'Gagal', error.message || 'Terjadi kesalahan');
+                    button.disabled = false;
+                    button.innerHTML = originalHtml;
                 }
-            } catch (error) {
-                showToast('error', 'Gagal', error.message || 'Terjadi kesalahan');
-                button.disabled = false;
-                button.innerHTML = originalHtml;
-            }
-        }
-
-        // Real-time duration update sudah ditangani oleh script di bagian atas halaman
-
-        // Auto checkout function for expired sessions
-        function autoCheckoutExpiredSession() {
-            // Get clock out form
-            const clockOutForm = document.getElementById('activeSessionClockOutForm');
-
-            if (!clockOutForm) {
-                console.warn('Clock out form not found, refreshing page...');
-                setTimeout(() => location.reload(), 2000);
-                return;
             }
 
-            // Create form data
-            const formData = new FormData(clockOutForm);
-            const formAction = clockOutForm.getAttribute('action') || clockOutForm.getAttribute('data-action');
-
-            if (!formAction) {
-                console.error('Form action not found');
-                setTimeout(() => location.reload(), 2000);
-                return;
-            }
-
-            // Get CSRF token
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
-                document.querySelector('input[name="_token"]')?.value;
-
-            if (!csrfToken) {
-                console.error('CSRF token not found');
-                setTimeout(() => location.reload(), 2000);
-                return;
-            }
-
-            // Show notification
-            console.log('Waktu habis! Melakukan auto checkout...');
-
-            // Submit clock out
-            fetch(formAction, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': csrfToken
+            // Reject Form via AJAX
+            async function rejectForm(formId, button, isAppointment = false) {
+                // Konfirmasi sebelum reject
+                const confirmMessage = 'Yakin ingin menolak formulir ini?';
+                
+                if (!confirm(confirmMessage)) {
+                    return; // User membatalkan
                 }
-            })
-                .then(response => {
-                    if (response.ok || response.redirected) {
-                        console.log('Auto checkout berhasil!');
-                        // Reload page to show updated state
+
+                const originalHtml = button.innerHTML;
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Memproses...';
+
+                try {
+                    const response = await fetch(`/staff/forms/${formId}/reject`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        showToast('warning', 'Ditolak', isAppointment ? 'Janji temu ditolak' : 'Formulir ditolak');
+
+                        // Update UI
+                        const td = button.closest('td');
+                        if (td) {
+                            td.innerHTML = '<span class="text-red-300 font-medium">Selesai</span>';
+                        }
+
+                        // Update status badge
+                        const row = button.closest('tr');
+                        if (row) {
+                            const statusTd = row.querySelectorAll('td')[isAppointment ? 4 : 3];
+                            if (statusTd) {
+                                statusTd.innerHTML = '<span class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-red-500/20 text-red-300 border border-red-400/30">Ditolak</span>';
+                            }
+                        }
+                    } else {
+                        throw new Error('Gagal memproses permintaan');
+                    }
+                } catch (error) {
+                    showToast('error', 'Gagal', error.message || 'Terjadi kesalahan');
+                    button.disabled = false;
+                    button.innerHTML = originalHtml;
+                }
+            }
+
+            // Real-time duration update sudah ditangani oleh script di bagian atas halaman
+
+            // Auto checkout function for expired sessions
+            function autoCheckoutExpiredSession() {
+                // Get clock out form
+                const clockOutForm = document.getElementById('activeSessionClockOutForm');
+
+                if (!clockOutForm) {
+                    console.warn('Clock out form not found, refreshing page...');
+                    setTimeout(() => location.reload(), 2000);
+                    return;
+                }
+
+                // Create form data
+                const formData = new FormData(clockOutForm);
+                const formAction = clockOutForm.getAttribute('action') || clockOutForm.getAttribute('data-action');
+
+                if (!formAction) {
+                    console.error('Form action not found');
+                    setTimeout(() => location.reload(), 2000);
+                    return;
+                }
+
+                // Get CSRF token
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
+                    document.querySelector('input[name="_token"]')?.value;
+
+                if (!csrfToken) {
+                    console.error('CSRF token not found');
+                    setTimeout(() => location.reload(), 2000);
+                    return;
+                }
+
+                // Show notification
+                console.log('Waktu habis! Melakukan auto checkout...');
+
+                // Submit clock out
+                fetch(formAction, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': csrfToken
+                    }
+                })
+                    .then(response => {
+                        if (response.ok || response.redirected) {
+                            console.log('Auto checkout berhasil!');
+                            // Reload page to show updated state
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1000);
+                        } else {
+                            throw new Error('Auto checkout failed');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Auto checkout error:', error);
+                        // Fallback: reload page after 3 seconds (scheduler might handle it)
                         setTimeout(() => {
                             location.reload();
-                        }, 1000);
-                    } else {
-                        throw new Error('Auto checkout failed');
-                    }
-                })
-                .catch(error => {
-                    console.error('Auto checkout error:', error);
-                    // Fallback: reload page after 3 seconds (scheduler might handle it)
-                    setTimeout(() => {
-                        location.reload();
-                    }, 3000);
-                });
-        }
-
-        // Dashboard Clock In & Clock Out Form Handler
-        document.addEventListener('DOMContentLoaded', function () {
-            // Clock In Form Handler - Simplified
-            const dashboardClockInForm = document.getElementById('dashboardClockInForm');
-            const dashboardClockInBtn = document.getElementById('dashboardClockInBtn');
-
-            if (dashboardClockInForm && dashboardClockInBtn) {
-                dashboardClockInForm.addEventListener('submit', function (e) {
-                    // Allow form to submit normally, just update button state
-                    dashboardClockInBtn.disabled = true;
-                    dashboardClockInBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i>Memproses...';
-
-                    // Form will submit normally - no need to preventDefault
-                    // This ensures CSRF and all form data is handled correctly by Laravel
-                });
+                        }, 3000);
+                    });
             }
 
-            // Clock Out Form Handler (for previous day session)
-            const dashboardClockOutForm = document.getElementById('dashboardClockOutForm');
-            const dashboardClockOutBtn = document.getElementById('dashboardClockOutBtn');
+            // Dashboard Clock In & Clock Out Form Handler
+            document.addEventListener('DOMContentLoaded', function () {
+                // Clock In Form Handler - Simplified
+                const dashboardClockInForm = document.getElementById('dashboardClockInForm');
+                const dashboardClockInBtn = document.getElementById('dashboardClockInBtn');
 
-            if (dashboardClockOutForm && dashboardClockOutBtn) {
-                /*
-                dashboardClockOutForm.addEventListener('submit', function (e) {
-                    e.preventDefault();
+                if (dashboardClockInForm && dashboardClockInBtn) {
+                    dashboardClockInForm.addEventListener('submit', function (e) {
+                        // Allow form to submit normally, just update button state
+                        dashboardClockInBtn.disabled = true;
+                        dashboardClockInBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i>Memproses...';
 
-                    // Show loading state
-                    const btnText = dashboardClockOutBtn.querySelector('.btn-text');
-                    const btnLoading = dashboardClockOutBtn.querySelector('.btn-loading');
-
-                    if (btnText) btnText.classList.add('hidden');
-                    if (btnLoading) btnLoading.classList.remove('hidden');
-                    dashboardClockOutBtn.disabled = true;
-
-                    // Submit form with retry mechanism
-                    if (typeof submitDashboardClockOutForm === 'function') {
-                        submitDashboardClockOutForm();
-                    } else {
-                        dashboardClockOutForm.submit();
-                    }
-                });
-                */
-                // Allow standard submission
-                dashboardClockOutForm.addEventListener('submit', function (e) {
-                    const btnText = dashboardClockOutBtn.querySelector('.btn-text');
-                    const btnLoading = dashboardClockOutBtn.querySelector('.btn-loading');
-                    if (btnText) btnText.classList.add('hidden');
-                    if (btnLoading) btnLoading.classList.remove('hidden');
-                    dashboardClockOutBtn.disabled = true;
-                });
-            }
-
-            // Clock Out Form Handler (for active session today)
-            const activeSessionClockOutForm = document.getElementById('activeSessionClockOutForm');
-            const activeSessionClockOutBtn = document.getElementById('activeSessionClockOutBtn');
-
-            if (activeSessionClockOutForm && activeSessionClockOutBtn) {
-                /*
-                activeSessionClockOutForm.addEventListener('submit', function (e) {
-                    e.preventDefault();
-
-                    // Show loading state
-                    const btnText = activeSessionClockOutBtn.querySelector('.btn-text');
-                    const btnLoading = activeSessionClockOutBtn.querySelector('.btn-loading');
-
-                    if (btnText) btnText.classList.add('hidden');
-                    if (btnLoading) btnLoading.classList.remove('hidden');
-                    activeSessionClockOutBtn.disabled = true;
-
-                    // Submit form with retry mechanism
-                    if (typeof submitActiveSessionClockOutForm === 'function') {
-                        submitActiveSessionClockOutForm();
-                    } else {
-                        activeSessionClockOutForm.submit();
-                    }
-                });
-                */
-                // Allow standard submission
-                activeSessionClockOutForm.addEventListener('submit', function (e) {
-                    const btnText = activeSessionClockOutBtn.querySelector('.btn-text');
-                    const btnLoading = activeSessionClockOutBtn.querySelector('.btn-loading');
-                    if (btnText) btnText.classList.add('hidden');
-                    if (btnLoading) btnLoading.classList.remove('hidden');
-                    activeSessionClockOutBtn.disabled = true;
-                });
-            }
-
-            function submitDashboardClockOutForm(retryCount = 0) {
-                const form = document.getElementById('dashboardClockOutForm');
-                if (!form) {
-                    console.error('Form dashboardClockOutForm not found');
-                    return;
+                        // Form will submit normally - no need to preventDefault
+                        // This ensures CSRF and all form data is handled correctly by Laravel
+                    });
                 }
 
-                // Get action from data-action attribute first (more reliable), fallback to action attribute
-                let formAction = form.getAttribute('data-action') || form.getAttribute('action');
+                // Clock Out Form Handler (for previous day session)
+                const dashboardClockOutForm = document.getElementById('dashboardClockOutForm');
+                const dashboardClockOutBtn = document.getElementById('dashboardClockOutBtn');
 
-                // Debug logging
-                console.log('[Clock Out - Previous Day] Form action (from action attr):', form.getAttribute('action'));
-                console.log('[Clock Out - Previous Day] Form action (from data-action attr):', form.getAttribute('data-action'));
-                console.log('[Clock Out - Previous Day] Form action (final):', formAction);
+                if (dashboardClockOutForm && dashboardClockOutBtn) {
+                    /*
+                    dashboardClockOutForm.addEventListener('submit', function (e) {
+                        e.preventDefault();
 
-                // Validate form action
-                if (!formAction || formAction.includes('{{') || formAction.includes('route(') || formAction.trim() === '') {
-                    console.error('[Clock Out - Previous Day] Invalid form action:', formAction);
-                    console.error('[Clock Out - Previous Day] Form HTML:', form.outerHTML);
-                    alert('Terjadi kesalahan: Form action tidak valid. Silakan refresh halaman.');
-                    return;
-                }
+                        // Show loading state
+                        const btnText = dashboardClockOutBtn.querySelector('.btn-text');
+                        const btnLoading = dashboardClockOutBtn.querySelector('.btn-loading');
 
-                const formData = new FormData(form);
+                        if (btnText) btnText.classList.add('hidden');
+                        if (btnLoading) btnLoading.classList.remove('hidden');
+                        dashboardClockOutBtn.disabled = true;
 
-                fetch(formAction, {
-                    method: 'POST',
-                    credentials: 'same-origin', // Include cookies for same-origin requests
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    redirect: 'follow'
-                })
-                    .then(response => {
-                        if (response.status === 419) {
-                            // CSRF token expired
-                            if (retryCount < 2) {
-                                console.log('CSRF token expired, refreshing and retrying...');
-                                return refreshCsrfToken().then(() => {
-                                    return submitDashboardClockOutForm(retryCount + 1);
-                                });
-                            } else {
-                                throw new Error('CSRF token refresh failed after multiple attempts');
-                            }
-                        }
-                        return response;
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            // Success - reload page to show updated state
-                            if (response.redirected) {
-                                window.location.href = response.url;
-                            } else {
-                                window.location.reload();
-                            }
+                        // Submit form with retry mechanism
+                        if (typeof submitDashboardClockOutForm === 'function') {
+                            submitDashboardClockOutForm();
                         } else {
-                            throw new Error('Clock out failed');
+                            dashboardClockOutForm.submit();
                         }
-                    })
-                    .catch(error => {
-                        console.error('Clock out error:', error);
-
-                        // Reset button state
-                        const btn = document.getElementById('dashboardClockOutBtn');
-                        if (btn) {
-                            const btnText = btn.querySelector('.btn-text');
-                            const btnLoading = btn.querySelector('.btn-loading');
-
-                            if (btnText) btnText.classList.remove('hidden');
-                            if (btnLoading) btnLoading.classList.add('hidden');
-                            btn.disabled = false;
-                        }
-
-                        // Show error message
-                        alert('Terjadi kesalahan saat clock out. Silakan coba lagi atau refresh halaman.');
                     });
-            }
-
-            function submitActiveSessionClockOutForm(retryCount = 0) {
-                const form = document.getElementById('activeSessionClockOutForm');
-                if (!form) {
-                    console.error('Form activeSessionClockOutForm not found');
-                    return;
+                    */
+                    // Allow standard submission
+                    dashboardClockOutForm.addEventListener('submit', function (e) {
+                        const btnText = dashboardClockOutBtn.querySelector('.btn-text');
+                        const btnLoading = dashboardClockOutBtn.querySelector('.btn-loading');
+                        if (btnText) btnText.classList.add('hidden');
+                        if (btnLoading) btnLoading.classList.remove('hidden');
+                        dashboardClockOutBtn.disabled = true;
+                    });
                 }
 
-                // Get action from data-action attribute first (more reliable), fallback to action attribute
-                let formAction = form.getAttribute('data-action') || form.getAttribute('action');
+                // Clock Out Form Handler (for active session today)
+                const activeSessionClockOutForm = document.getElementById('activeSessionClockOutForm');
+                const activeSessionClockOutBtn = document.getElementById('activeSessionClockOutBtn');
 
-                // Debug logging
-                console.log('[Clock Out - Active Session] Form action (from action attr):', form.getAttribute('action'));
-                console.log('[Clock Out - Active Session] Form action (from data-action attr):', form.getAttribute('data-action'));
-                console.log('[Clock Out - Active Session] Form action (final):', formAction);
+                if (activeSessionClockOutForm && activeSessionClockOutBtn) {
+                    /*
+                    activeSessionClockOutForm.addEventListener('submit', function (e) {
+                        e.preventDefault();
 
-                // Validate form action
-                if (!formAction || formAction.includes('{{') || formAction.includes('route(') || formAction.trim() === '') {
-                    console.error('[Clock Out - Active Session] Invalid form action:', formAction);
-                    console.error('[Clock Out - Active Session] Form HTML:', form.outerHTML);
-                    alert('Terjadi kesalahan: Form action tidak valid. Silakan refresh halaman.');
-                    return;
-                }
+                        // Show loading state
+                        const btnText = activeSessionClockOutBtn.querySelector('.btn-text');
+                        const btnLoading = activeSessionClockOutBtn.querySelector('.btn-loading');
 
-                const formData = new FormData(form);
+                        if (btnText) btnText.classList.add('hidden');
+                        if (btnLoading) btnLoading.classList.remove('hidden');
+                        activeSessionClockOutBtn.disabled = true;
 
-                fetch(formAction, {
-                    method: 'POST',
-                    credentials: 'same-origin', // Include cookies for same-origin requests
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                    },
-                    redirect: 'follow'
-                })
-                    .then(response => {
-                        if (response.status === 419) {
-                            // CSRF token expired
-                            if (retryCount < 2) {
-                                console.log('CSRF token expired, refreshing and retrying active session clock out...');
-                                return refreshCsrfToken().then(() => {
-                                    return submitActiveSessionClockOutForm(retryCount + 1);
-                                });
-                            } else {
-                                throw new Error('CSRF token refresh failed after multiple attempts');
-                            }
-                        }
-                        return response;
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            // Success - reload page to show updated state
-                            if (response.redirected) {
-                                window.location.href = response.url;
-                            } else {
-                                window.location.reload();
-                            }
+                        // Submit form with retry mechanism
+                        if (typeof submitActiveSessionClockOutForm === 'function') {
+                            submitActiveSessionClockOutForm();
                         } else {
-                            throw new Error('Clock out failed');
+                            activeSessionClockOutForm.submit();
                         }
-                    })
-                    .catch(error => {
-                        console.error('Active session clock out error:', error);
-
-                        // Reset button state
-                        const btn = document.getElementById('activeSessionClockOutBtn');
-                        if (btn) {
-                            const btnText = btn.querySelector('.btn-text');
-                            const btnLoading = btn.querySelector('.btn-loading');
-
-                            if (btnText) btnText.classList.remove('hidden');
-                            if (btnLoading) btnLoading.classList.add('hidden');
-                            btn.disabled = false;
-                        }
-
-                        // Show error message
-                        alert('Terjadi kesalahan saat clock out. Silakan coba lagi atau refresh halaman.');
                     });
-            }
+                    */
+                    // Allow standard submission
+                    activeSessionClockOutForm.addEventListener('submit', function (e) {
+                        const btnText = activeSessionClockOutBtn.querySelector('.btn-text');
+                        const btnLoading = activeSessionClockOutBtn.querySelector('.btn-loading');
+                        if (btnText) btnText.classList.add('hidden');
+                        if (btnLoading) btnLoading.classList.remove('hidden');
+                        activeSessionClockOutBtn.disabled = true;
+                    });
+                }
 
-            function refreshCsrfToken() {
-                return fetch('/csrf-token', {
-                    method: 'GET',
-                    credentials: 'same-origin', // Include cookies for same-origin requests
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json'
+                function submitDashboardClockOutForm(retryCount = 0) {
+                    const form = document.getElementById('dashboardClockOutForm');
+                    if (!form) {
+                        console.error('Form dashboardClockOutForm not found');
+                        return;
                     }
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.csrf_token) {
-                            // Update meta tag
-                            const metaTag = document.querySelector('meta[name="csrf-token"]');
-                            if (metaTag) {
-                                metaTag.setAttribute('content', data.csrf_token);
+
+                    // Get action from data-action attribute first (more reliable), fallback to action attribute
+                    let formAction = form.getAttribute('data-action') || form.getAttribute('action');
+
+                    // Debug logging
+                    console.log('[Clock Out - Previous Day] Form action (from action attr):', form.getAttribute('action'));
+                    console.log('[Clock Out - Previous Day] Form action (from data-action attr):', form.getAttribute('data-action'));
+                    console.log('[Clock Out - Previous Day] Form action (final):', formAction);
+
+                    // Validate form action
+                    if (!formAction || formAction.includes('{{') || formAction.includes('route(') || formAction.trim() === '') {
+                        console.error('[Clock Out - Previous Day] Invalid form action:', formAction);
+                        console.error('[Clock Out - Previous Day] Form HTML:', form.outerHTML);
+                        alert('Terjadi kesalahan: Form action tidak valid. Silakan refresh halaman.');
+                        return;
+                    }
+
+                    const formData = new FormData(form);
+
+                    fetch(formAction, {
+                        method: 'POST',
+                        credentials: 'same-origin', // Include cookies for same-origin requests
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        redirect: 'follow'
+                    })
+                        .then(response => {
+                            if (response.status === 419) {
+                                // CSRF token expired
+                                if (retryCount < 2) {
+                                    console.log('CSRF token expired, refreshing and retrying...');
+                                    return refreshCsrfToken().then(() => {
+                                        return submitDashboardClockOutForm(retryCount + 1);
+                                    });
+                                } else {
+                                    throw new Error('CSRF token refresh failed after multiple attempts');
+                                }
+                            }
+                            return response;
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                // Success - reload page to show updated state
+                                if (response.redirected) {
+                                    window.location.href = response.url;
+                                } else {
+                                    window.location.reload();
+                                }
+                            } else {
+                                throw new Error('Clock out failed');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Clock out error:', error);
+
+                            // Reset button state
+                            const btn = document.getElementById('dashboardClockOutBtn');
+                            if (btn) {
+                                const btnText = btn.querySelector('.btn-text');
+                                const btnLoading = btn.querySelector('.btn-loading');
+
+                                if (btnText) btnText.classList.remove('hidden');
+                                if (btnLoading) btnLoading.classList.add('hidden');
+                                btn.disabled = false;
                             }
 
-                            // Update all CSRF token inputs in all forms
-                            const csrfInputs = document.querySelectorAll('input[name="_token"]');
-                            csrfInputs.forEach(input => {
-                                input.value = data.csrf_token;
-                            });
+                            // Show error message
+                            alert('Terjadi kesalahan saat clock out. Silakan coba lagi atau refresh halaman.');
+                        });
+                }
 
-                            console.log('CSRF token refreshed successfully');
+                function submitActiveSessionClockOutForm(retryCount = 0) {
+                    const form = document.getElementById('activeSessionClockOutForm');
+                    if (!form) {
+                        console.error('Form activeSessionClockOutForm not found');
+                        return;
+                    }
+
+                    // Get action from data-action attribute first (more reliable), fallback to action attribute
+                    let formAction = form.getAttribute('data-action') || form.getAttribute('action');
+
+                    // Debug logging
+                    console.log('[Clock Out - Active Session] Form action (from action attr):', form.getAttribute('action'));
+                    console.log('[Clock Out - Active Session] Form action (from data-action attr):', form.getAttribute('data-action'));
+                    console.log('[Clock Out - Active Session] Form action (final):', formAction);
+
+                    // Validate form action
+                    if (!formAction || formAction.includes('{{') || formAction.includes('route(') || formAction.trim() === '') {
+                        console.error('[Clock Out - Active Session] Invalid form action:', formAction);
+                        console.error('[Clock Out - Active Session] Form HTML:', form.outerHTML);
+                        alert('Terjadi kesalahan: Form action tidak valid. Silakan refresh halaman.');
+                        return;
+                    }
+
+                    const formData = new FormData(form);
+
+                    fetch(formAction, {
+                        method: 'POST',
+                        credentials: 'same-origin', // Include cookies for same-origin requests
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        redirect: 'follow'
+                    })
+                        .then(response => {
+                            if (response.status === 419) {
+                                // CSRF token expired
+                                if (retryCount < 2) {
+                                    console.log('CSRF token expired, refreshing and retrying active session clock out...');
+                                    return refreshCsrfToken().then(() => {
+                                        return submitActiveSessionClockOutForm(retryCount + 1);
+                                    });
+                                } else {
+                                    throw new Error('CSRF token refresh failed after multiple attempts');
+                                }
+                            }
+                            return response;
+                        })
+                        .then(response => {
+                            if (response.ok) {
+                                // Success - reload page to show updated state
+                                if (response.redirected) {
+                                    window.location.href = response.url;
+                                } else {
+                                    window.location.reload();
+                                }
+                            } else {
+                                throw new Error('Clock out failed');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Active session clock out error:', error);
+
+                            // Reset button state
+                            const btn = document.getElementById('activeSessionClockOutBtn');
+                            if (btn) {
+                                const btnText = btn.querySelector('.btn-text');
+                                const btnLoading = btn.querySelector('.btn-loading');
+
+                                if (btnText) btnText.classList.remove('hidden');
+                                if (btnLoading) btnLoading.classList.add('hidden');
+                                btn.disabled = false;
+                            }
+
+                            // Show error message
+                            alert('Terjadi kesalahan saat clock out. Silakan coba lagi atau refresh halaman.');
+                        });
+                }
+
+                function refreshCsrfToken() {
+                    return fetch('/csrf-token', {
+                        method: 'GET',
+                        credentials: 'same-origin', // Include cookies for same-origin requests
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
                         }
-                    });
-            }
-        });
-    </script>
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.csrf_token) {
+                                // Update meta tag
+                                const metaTag = document.querySelector('meta[name="csrf-token"]');
+                                if (metaTag) {
+                                    metaTag.setAttribute('content', data.csrf_token);
+                                }
+
+                                // Update all CSRF token inputs in all forms
+                                const csrfInputs = document.querySelectorAll('input[name="_token"]');
+                                csrfInputs.forEach(input => {
+                                    input.value = data.csrf_token;
+                                });
+
+                                console.log('CSRF token refreshed successfully');
+                            }
+                        });
+                }
+            });
+        </script>
 @endpush
