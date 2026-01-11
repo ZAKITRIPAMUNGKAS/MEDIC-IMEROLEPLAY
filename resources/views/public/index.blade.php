@@ -857,8 +857,8 @@
                                 <div
                                     class="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-cyan-500/10 to-cyan-500/0 translate-x-[-100%] group-hover/item:translate-x-[100%] transition-transform duration-1000">
                                 </div>
-                                <div class="flex items-center justify-between relative z-10">
-                                    <div class="flex items-center gap-4">
+                                <div class="relative z-10">
+                                    <div class="flex items-center gap-4 mb-4">
                                         <div class="relative">
                                             <div
                                                 class="absolute inset-0 bg-cyan-400/40 rounded-xl blur-lg group-hover/item:opacity-75 transition-opacity duration-300">
@@ -875,12 +875,29 @@
                                             </p>
                                         </div>
                                     </div>
-                                    <div class="text-right">
-                                        <p class="text-5xl font-black text-cyan-300 leading-none drop-shadow-lg">
-                                            {{ $onDutyStats['ems'] ?? 0 }}
-                                        </p>
-                                        <p class="text-xs font-bold text-cyan-200/90 mt-1 uppercase tracking-wide">Staff
-                                            Aktif</p>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div
+                                            class="bg-gradient-to-br from-green-500/20 to-emerald-500/20 backdrop-blur-sm rounded-xl p-4 border border-green-400/30">
+                                            <div class="flex items-center gap-2 mb-2">
+                                                <i class="fas fa-briefcase-medical text-green-300 text-sm"></i>
+                                                <p class="text-xs font-bold text-green-200 uppercase">Kerja</p>
+                                            </div>
+                                            <p class="text-4xl font-black text-green-300 leading-none drop-shadow-lg">
+                                                {{ $staffStatusStats['ems_working'] ?? 0 }}
+                                            </p>
+                                            <p class="text-xs text-green-200/80 mt-1">Staff</p>
+                                        </div>
+                                        <div
+                                            class="bg-gradient-to-br from-purple-500/20 to-pink-500/20 backdrop-blur-sm rounded-xl p-4 border border-purple-400/30">
+                                            <div class="flex items-center gap-2 mb-2">
+                                                <i class="fas fa-users text-purple-300 text-sm"></i>
+                                                <p class="text-xs font-bold text-purple-200 uppercase">Meeting</p>
+                                            </div>
+                                            <p class="text-4xl font-black text-purple-300 leading-none drop-shadow-lg">
+                                                {{ $staffStatusStats['ems_meeting'] ?? 0 }}
+                                            </p>
+                                            <p class="text-xs text-purple-200/80 mt-1">Staff</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -891,29 +908,44 @@
                                 <div
                                     class="absolute inset-0 bg-gradient-to-r from-amber-500/0 via-amber-500/10 to-amber-500/0 translate-x-[-100%] group-hover/item:translate-x-[100%] transition-transform duration-1000">
                                 </div>
-                                <div class="flex items-center justify-between relative z-10">
-                                    <div class="flex items-center gap-4">
+                                <div class="relative z-10">
+                                    <div class="flex items-center gap-3 mb-3">
                                         <div class="relative">
                                             <div
                                                 class="absolute inset-0 bg-amber-400/40 rounded-xl blur-lg group-hover/item:opacity-75 transition-opacity duration-300">
                                             </div>
                                             <div
-                                                class="relative w-16 h-16 bg-gradient-to-br from-amber-500 via-orange-500 to-yellow-500 rounded-xl flex items-center justify-center shadow-xl group-hover/item:scale-110 group-hover/item:rotate-6 transition-all duration-300">
-                                                <i class="fas fa-hospital text-white text-xl"></i>
+                                                class="relative w-12 h-12 bg-gradient-to-br from-amber-500 via-orange-500 to-yellow-500 rounded-xl flex items-center justify-center shadow-xl group-hover/item:scale-110 group-hover/item:rotate-6 transition-all duration-300">
+                                                <i class="fas fa-hospital text-white text-base"></i>
                                             </div>
                                         </div>
                                         <div>
-                                            <p class="text-sm font-bold text-white uppercase tracking-wide drop-shadow-md">
+                                            <p class="text-xs font-bold text-white uppercase tracking-wide drop-shadow-md">
                                                 Roxwood Hospital</p>
-                                            <p class="text-xs text-sky-300/80 mt-1 font-medium"> Medical Care</p>
+                                            <p class="text-[10px] text-sky-300/80 font-medium"> Medical Care</p>
                                         </div>
                                     </div>
-                                    <div class="text-right">
-                                        <p class="text-5xl font-black text-amber-300 leading-none drop-shadow-lg">
-                                            {{ $onDutyStats['roxwood'] ?? 0 }}
-                                        </p>
-                                        <p class="text-xs font-bold text-amber-200/90 mt-1 uppercase tracking-wide">Staff
-                                            Aktif</p>
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div class="bg-gradient-to-br from-green-500/20 to-emerald-500/20 backdrop-blur-sm rounded-lg p-3 border border-green-400/30">
+                                            <div class="flex items-center gap-1.5 mb-1">
+                                                <i class="fas fa-briefcase-medical text-green-300 text-xs"></i>
+                                                <p class="text-[10px] font-bold text-green-200 uppercase">Kerja</p>
+                                            </div>
+                                            <p class="text-3xl font-black text-green-300 leading-none drop-shadow-lg">
+                                                {{ $staffStatusStats['roxwood_working'] ?? 0 }}
+                                            </p>
+                                            <p class="text-[10px] text-green-200/80 mt-0.5">Staff</p>
+                                        </div>
+                                        <div class="bg-gradient-to-br from-purple-500/20 to-pink-500/20 backdrop-blur-sm rounded-lg p-3 border border-purple-400/30">
+                                            <div class="flex items-center gap-1.5 mb-1">
+                                                <i class="fas fa-users text-purple-300 text-xs"></i>
+                                                <p class="text-[10px] font-bold text-purple-200 uppercase">Meeting</p>
+                                            </div>
+                                            <p class="text-3xl font-black text-purple-300 leading-none drop-shadow-lg">
+                                                {{ $staffStatusStats['roxwood_meeting'] ?? 0 }}
+                                            </p>
+                                            <p class="text-[10px] text-purple-200/80 mt-0.5">Staff</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
