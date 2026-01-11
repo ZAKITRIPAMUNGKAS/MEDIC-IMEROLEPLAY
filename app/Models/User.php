@@ -28,6 +28,7 @@ class User extends Authenticatable
         'profile_image',
         'custom_permissions',
         'custom_salary',
+        'status',
     ];
 
     /**
