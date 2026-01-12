@@ -76,7 +76,7 @@
                                 @elseif(session('success'))
                                     // alert(@json(session('success'))); // Optional for success
                                 @endif
-                                                    }, 500);
+                                                            }, 500);
                         });
                     </script>
                 @endif
@@ -202,25 +202,7 @@
                                             Lampiran Mendaftar Pekerjaan</option>
                                     </select>
                                 </div>
-                                <div>
-                                    <label for="doctor_name_sk"
-                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                        Nama Dokter <span class="text-red-400">*</span>
-                                    </label>
-                                    <select id="doctor_name_sk" name="form_data[doctor_name]"
-                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
-                                        <option value="">-- Pilih Dokter --</option>
-                                        @foreach($doctors as $doctor)
-                                            <option value="{{ $doctor->name }}"
-                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
-                                                class="bg-slate-900 text-white font-bold">
-                                                {{ $doctor->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
-                                </div>
+
 
                             @elseif($type === 'operasi_plastik')
                                 <div>
@@ -234,25 +216,7 @@
                                         </option>
                                     </select>
                                 </div>
-                                <div>
-                                    <label for="doctor_name_op"
-                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                        Nama Dokter <span class="text-red-400">*</span>
-                                    </label>
-                                    <select id="doctor_name_op" name="form_data[doctor_name]"
-                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
-                                        <option value="">-- Pilih Dokter --</option>
-                                        @foreach($doctors as $doctor)
-                                            <option value="{{ $doctor->name }}"
-                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
-                                                class="bg-slate-900 text-white font-bold">
-                                                {{ $doctor->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
-                                </div>
+
                                 <div>
                                     <label for="photo_ktp_op"
                                         class="block text-sm font-medium text-white mb-2 font-bold text-lg">
@@ -689,25 +653,7 @@
                                         </option>
                                     </select>
                                 </div>
-                                <div>
-                                    <label for="doctor_name_km"
-                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                        Nama Dokter <span class="text-red-400">*</span>
-                                    </label>
-                                    <select id="doctor_name_km" name="form_data[doctor_name]"
-                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
-                                        <option value="">-- Pilih Dokter --</option>
-                                        @foreach($doctors as $doctor)
-                                            <option value="{{ $doctor->name }}"
-                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
-                                                class="bg-slate-900 text-white font-bold">
-                                                {{ $doctor->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
-                                </div>
+
 
                             @elseif($type === 'laporan_kecelakaan')
                                 <div>
@@ -729,25 +675,7 @@
                                         </option>
                                     </select>
                                 </div>
-                                <div>
-                                    <label for="doctor_name_lk"
-                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                        Nama Dokter <span class="text-red-400">*</span>
-                                    </label>
-                                    <select id="doctor_name_lk" name="form_data[doctor_name]"
-                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
-                                        <option value="">-- Pilih Dokter --</option>
-                                        @foreach($doctors as $doctor)
-                                            <option value="{{ $doctor->name }}"
-                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
-                                                class="bg-slate-900 text-white font-bold">
-                                                {{ $doctor->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
-                                </div>
+
 
                             @elseif($type === 'permintaan_ambulans')
                                 <div>
@@ -765,25 +693,7 @@
                                         </option>
                                     </select>
                                 </div>
-                                <div>
-                                    <label for="doctor_name_pa"
-                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                        Nama Dokter <span class="text-red-400">*</span>
-                                    </label>
-                                    <select id="doctor_name_pa" name="form_data[doctor_name]"
-                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
-                                        <option value="">-- Pilih Dokter --</option>
-                                        @foreach($doctors as $doctor)
-                                            <option value="{{ $doctor->name }}"
-                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
-                                                class="bg-slate-900 text-white font-bold">
-                                                {{ $doctor->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
-                                </div>
+
 
                             @elseif($type === 'penyakit_dalam')
                                 <div>

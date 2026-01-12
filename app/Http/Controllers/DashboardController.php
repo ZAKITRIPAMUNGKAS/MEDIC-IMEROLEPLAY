@@ -26,31 +26,82 @@ class DashboardController extends Controller
         // Get weekly leaderboard data - filter berdasarkan rumah sakit
         $leaderboard = $this->getWeeklyLeaderboard($isAdmin, $userHospital);
 
-        // Get recent forms (non-appointment)
-        $recentFormsQuery = MedicalForm::with('processedBy')
-            ->whereNotIn('form_type', ['penyakit_dalam', 'spesialis_anak', 'spesialis_bedah', 'spesialis_mata', 'spesialis_saraf', 'spesialis_urologi', 'spesialis_tht', 'spesialis_ortopedi']);
+        // Appointment types definition
+        $appointmentTypes = [
+            'penyakit_dalam',
+            'spesialis_anak',
+            'spesialis_bedah',
+            'spesialis_mata',
+            'spesialis_saraf',
+            'spesialis_urologi',
+            'spesialis_tht',
+            'spesialis_ortopedi',
+            'janji_temu'
+        ];
 
+        // Get recent forms query
+        $recentFormsQuery = MedicalForm::with('processedBy');
+
+        // Get recent appointments query
+        $recentAppointmentsQuery = MedicalForm::with('processedBy');
+
+        // Get stats query
+        $statsQuery = MedicalForm::query();
+
+        // user role filtering
+        $userRole = $user->role->name ?? '';
+
+        // Role-based filtering logic
+        if ($isAdmin) {
+            // Admin: Standard View (All Forms split from Appointments)
+            $recentFormsQuery->whereNotIn('form_type', $appointmentTypes);
+            $recentAppointmentsQuery->whereIn('form_type', $appointmentTypes);
+            // Stats: All included
+
+        } elseif ($userRole === 'co_ass') {
+            // Co-Ass: Only 3 form types, NO appointments
+            $allowedForms = ['surat_kesehatan', 'tes_psikologi', 'surat_psikolog'];
+
+            $recentFormsQuery->whereIn('form_type', $allowedForms);
+
+            // Co-Ass sees no appointments
+            $recentAppointmentsQuery->whereRaw('1 = 0'); // Force empty
+
+            $statsQuery->whereIn('form_type', $allowedForms);
+
+        } elseif (in_array($userRole, ['dokter_umum', 'dokter_spesialis'])) {
+            // Doctor: Only Operasi Plastik in "Forms", but SHOW appointments in "Appointments"
+
+            // 1. Recent Forms: Only 'operasi_plastik'
+            $recentFormsQuery->where('form_type', 'operasi_plastik');
+
+            // 2. Appointments: show all appointment types
+            $recentAppointmentsQuery->whereIn('form_type', $appointmentTypes);
+
+            // 3. Stats: Include Operasi Plastik AND Appointments
+            $statsAllowed = array_merge(['operasi_plastik'], $appointmentTypes);
+            $statsQuery->whereIn('form_type', $statsAllowed);
+
+        } else {
+            // Others (Perawat, Staff Manager, etc.):
+            // Forms: Standard (Non-appointments)
+            // Appointments: HIDDEN (User request: "janji temu cuman muncul di dokter")
+
+            $recentFormsQuery->whereNotIn('form_type', $appointmentTypes);
+            $recentAppointmentsQuery->whereRaw('1 = 0'); // Force empty
+            $statsQuery->whereNotIn('form_type', $appointmentTypes);
+        }
+
+        // Apply Hospital Filter (if not admin)
         if (!$isAdmin) {
             $recentFormsQuery->where('hospital', $userHospital);
-        }
-
-        $recentForms = $recentFormsQuery->orderBy('created_at', 'desc')->limit(5)->get();
-
-        // Get recent appointments
-        $recentAppointmentsQuery = MedicalForm::with('processedBy')
-            ->whereIn('form_type', ['penyakit_dalam', 'spesialis_anak', 'spesialis_bedah', 'spesialis_mata', 'spesialis_saraf', 'spesialis_urologi', 'spesialis_tht', 'spesialis_ortopedi']);
-
-        if (!$isAdmin) {
             $recentAppointmentsQuery->where('hospital', $userHospital);
-        }
-
-        $recentAppointments = $recentAppointmentsQuery->orderBy('created_at', 'desc')->limit(5)->get();
-
-        // Get statistics
-        $statsQuery = MedicalForm::query();
-        if (!$isAdmin) {
             $statsQuery->where('hospital', $userHospital);
         }
+
+        // Execute Queries
+        $recentForms = $recentFormsQuery->orderBy('created_at', 'desc')->limit(5)->get();
+        $recentAppointments = $recentAppointmentsQuery->orderBy('created_at', 'desc')->limit(5)->get();
 
         $stats = [
             'pending_forms' => (clone $statsQuery)->pending()->count(),
@@ -115,11 +166,44 @@ class DashboardController extends Controller
         $type = $request->get('type');
         $category = $request->get('category');
 
+        // Appointment types definition
+        $appointmentTypes = [
+            'penyakit_dalam',
+            'spesialis_anak',
+            'spesialis_bedah',
+            'spesialis_mata',
+            'spesialis_saraf',
+            'spesialis_urologi',
+            'spesialis_tht',
+            'spesialis_ortopedi',
+            'janji_temu'
+        ];
+
         // Query dasar - admin melihat semua, staff hanya rumah sakit mereka
         $query = MedicalForm::with('processedBy');
 
         if (!$isAdmin) {
             $query->where('hospital', $userHospital);
+        }
+
+        // ROLE-BASED FILTERING (Mirrors DashboardController::index)
+        $userRole = $user->role->name ?? '';
+
+        if ($isAdmin) {
+            // Admin sees all, no filter needed here
+        } elseif ($userRole === 'co_ass') {
+            // Co-Ass: Only 3 form types, NO appointments
+            $allowedForms = ['surat_kesehatan', 'tes_psikologi', 'surat_psikolog'];
+            $query->whereIn('form_type', $allowedForms);
+
+        } elseif (in_array($userRole, ['dokter_umum', 'dokter_spesialis'])) {
+            // Doctor: "Operasi Plastik" AND Appointments
+            $allowedForms = array_merge(['operasi_plastik'], $appointmentTypes);
+            $query->whereIn('form_type', $allowedForms);
+
+        } else {
+            // Others (Perawat, etc.): Standard forms, NO Appointments
+            $query->whereNotIn('form_type', $appointmentTypes);
         }
 
         // Filter pencarian

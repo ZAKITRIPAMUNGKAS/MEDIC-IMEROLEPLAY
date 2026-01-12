@@ -110,107 +110,116 @@
                                 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                                 <div class="flex flex-wrap justify-center gap-6 sm:gap-8 relative z-10 pt-20 sm:pt-24">
-                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $levelData['positions']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $position => $name): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <?php $__currentLoopData = $levelData['positions']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $posKey => $posValue): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <?php
-                                            // Normalize names for better matching
-                                            $normalizeName = function ($str) {
-                                                return trim(strtolower(preg_replace('/\s+/', ' ', $str)));
-                                            };
-                                            $normalizedName = $normalizeName($name);
-
-                                            // Helper to check if user should be excluded (for Tan Ackeric vs Tan Noah Rafael)
-                                            $shouldExcludeUser = function ($userName) use ($normalizeName, $normalizedName) {
-                                                $normalizedUserName = $normalizeName($userName);
-
-                                                // Jika mencari "tan ackeric", exclude semua yang mengandung "noah" atau "rafael"
-                                                if (str_contains($normalizedName, 'tan') && str_contains($normalizedName, 'ackeric')) {
-                                                    if (str_contains($normalizedUserName, 'noah') || str_contains($normalizedUserName, 'rafael')) {
-                                                        return true;
-                                                    }
-                                                }
-
-                                                return false;
-                                            };
-
-                                            // Try to find user using multiple strategies
-                                            $user = null;
-
-                                            // Strategy 1: Use userByNameMap if available (fast lookup)
-                                            if (isset($userByNameMap) && isset($userByNameMap[$normalizedName])) {
-                                                $potentialUser = $userByNameMap[$normalizedName];
-                                                if (!$shouldExcludeUser($potentialUser->name)) {
-                                                    $user = $potentialUser;
-                                                }
-                                            }
-
-                                            // Strategy 2: Exact match from users collection
-                                            if (!$user) {
-                                                $user = $users->first(function ($u) use ($normalizedName, $normalizeName, $shouldExcludeUser) {
-                                                    if ($shouldExcludeUser($u->name)) {
-                                                        return false;
-                                                    }
-                                                    $userName = $normalizeName($u->name);
-                                                    return $userName === $normalizedName;
-                                                });
-                                            }
-
-                                            // Strategy 3: Contains match (either direction)
-                                            if (!$user) {
-                                                $user = $users->first(function ($u) use ($normalizedName, $normalizeName, $shouldExcludeUser) {
-                                                    if ($shouldExcludeUser($u->name)) {
-                                                        return false;
-                                                    }
-                                                    $userName = $normalizeName($u->name);
-                                                    return str_contains($userName, $normalizedName)
-                                                        || str_contains($normalizedName, $userName);
-                                                });
-                                            }
-
-                                            // Strategy 4: First word match (for cases like "Joseph Priestley" vs "JOSEPH GANTENG")
-                                            if (!$user) {
-                                                $searchWords = array_filter(explode(' ', $normalizedName));
-                                                $firstWord = !empty($searchWords) ? $searchWords[0] : '';
-
-                                                if (!empty($firstWord) && strlen($firstWord) > 2) {
-                                                    // Try userByNameMap first (fast)
-                                                    if (isset($userByNameMap) && isset($userByNameMap[$firstWord])) {
-                                                        $potentialUser = $userByNameMap[$firstWord];
-                                                        if (!$shouldExcludeUser($potentialUser->name)) {
-                                                            $user = $potentialUser;
-                                                        }
-                                                    }
-
-                                                    // Fallback to collection search
-                                                    if (!$user) {
-                                                        $user = $users->first(function ($u) use ($firstWord, $normalizeName, $shouldExcludeUser) {
-                                                            if ($shouldExcludeUser($u->name)) {
-                                                                return false;
-                                                            }
-                                                            $userName = $normalizeName($u->name);
-                                                            $userWords = array_filter(explode(' ', $userName));
-                                                            return !empty($userWords) && $userWords[0] === $firstWord;
-                                                        });
-                                                    }
-                                                }
-                                            }
-
-                                            // Strategy 5: Last word match
-                                            if (!$user) {
-                                                $searchWords = array_filter(explode(' ', $normalizedName));
-                                                $lastWord = !empty($searchWords) ? end($searchWords) : '';
-
-                                                if (!empty($lastWord) && strlen($lastWord) > 2) {
-                                                    $user = $users->first(function ($u) use ($lastWord, $normalizeName, $shouldExcludeUser) {
-                                                        if ($shouldExcludeUser($u->name)) {
-                                                            return false;
-                                                        }
-                                                        $userName = $normalizeName($u->name);
-                                                        $userWords = array_filter(explode(' ', $userName));
-                                                        return !empty($userWords) && end($userWords) === $lastWord;
-                                                    });
-                                                }
+                                            // Handle flexible data structure (DB array or legacy string)
+                                            if (is_array($posValue)) {
+                                                $name = $posValue['name'] ?? 'N/A';
+                                                $position = $posValue['title'] ?? $posValue['role'] ?? 'Staff';
+                                            } else {
+                                                $name = $posValue;
+                                                $position = $posKey;
                                             }
                                         ?>
+                                        // Normalize names for better matching
+                                        $normalizeName = function ($str) {
+                                        return trim(strtolower(preg_replace('/\s+/', ' ', $str)));
+                                        };
+                                        $normalizedName = $normalizeName($name);
+
+                                        // Helper to check if user should be excluded (for Tan Ackeric vs Tan Noah Rafael)
+                                        $shouldExcludeUser = function ($userName) use ($normalizeName, $normalizedName) {
+                                        $normalizedUserName = $normalizeName($userName);
+
+                                        // Jika mencari "tan ackeric", exclude semua yang mengandung "noah" atau "rafael"
+                                        if (str_contains($normalizedName, 'tan') && str_contains($normalizedName, 'ackeric')) {
+                                        if (str_contains($normalizedUserName, 'noah') || str_contains($normalizedUserName, 'rafael')) {
+                                        return true;
+                                        }
+                                        }
+
+                                        return false;
+                                        };
+
+                                        // Try to find user using multiple strategies
+                                        $user = null;
+
+                                        // Strategy 1: Use userByNameMap if available (fast lookup)
+                                        if (isset($userByNameMap) && isset($userByNameMap[$normalizedName])) {
+                                        $potentialUser = $userByNameMap[$normalizedName];
+                                        if (!$shouldExcludeUser($potentialUser->name)) {
+                                        $user = $potentialUser;
+                                        }
+                                        }
+
+                                        // Strategy 2: Exact match from users collection
+                                        if (!$user) {
+                                        $user = $users->first(function ($u) use ($normalizedName, $normalizeName, $shouldExcludeUser) {
+                                        if ($shouldExcludeUser($u->name)) {
+                                        return false;
+                                        }
+                                        $userName = $normalizeName($u->name);
+                                        return $userName === $normalizedName;
+                                        });
+                                        }
+
+                                        // Strategy 3: Contains match (either direction)
+                                        if (!$user) {
+                                        $user = $users->first(function ($u) use ($normalizedName, $normalizeName, $shouldExcludeUser) {
+                                        if ($shouldExcludeUser($u->name)) {
+                                        return false;
+                                        }
+                                        $userName = $normalizeName($u->name);
+                                        return str_contains($userName, $normalizedName)
+                                        || str_contains($normalizedName, $userName);
+                                        });
+                                        }
+
+                                        // Strategy 4: First word match (for cases like "Joseph Priestley" vs "JOSEPH GANTENG")
+                                        if (!$user) {
+                                        $searchWords = array_filter(explode(' ', $normalizedName));
+                                        $firstWord = !empty($searchWords) ? $searchWords[0] : '';
+
+                                        if (!empty($firstWord) && strlen($firstWord) > 2) {
+                                        // Try userByNameMap first (fast)
+                                        if (isset($userByNameMap) && isset($userByNameMap[$firstWord])) {
+                                        $potentialUser = $userByNameMap[$firstWord];
+                                        if (!$shouldExcludeUser($potentialUser->name)) {
+                                        $user = $potentialUser;
+                                        }
+                                        }
+
+                                        // Fallback to collection search
+                                        if (!$user) {
+                                        $user = $users->first(function ($u) use ($firstWord, $normalizeName, $shouldExcludeUser) {
+                                        if ($shouldExcludeUser($u->name)) {
+                                        return false;
+                                        }
+                                        $userName = $normalizeName($u->name);
+                                        $userWords = array_filter(explode(' ', $userName));
+                                        return !empty($userWords) && $userWords[0] === $firstWord;
+                                        });
+                                        }
+                                        }
+                                        }
+
+                                        // Strategy 5: Last word match
+                                        if (!$user) {
+                                        $searchWords = array_filter(explode(' ', $normalizedName));
+                                        $lastWord = !empty($searchWords) ? end($searchWords) : '';
+
+                                        if (!empty($lastWord) && strlen($lastWord) > 2) {
+                                        $user = $users->first(function ($u) use ($lastWord, $normalizeName, $shouldExcludeUser) {
+                                        if ($shouldExcludeUser($u->name)) {
+                                        return false;
+                                        }
+                                        $userName = $normalizeName($u->name);
+                                        $userWords = array_filter(explode(' ', $userName));
+                                        return !empty($userWords) && end($userWords) === $lastWord;
+                                        });
+                                        }
+                                        }
+                                        @endphp
 
                                         <div class="relative group/item">
                                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isMultiple): ?>
@@ -260,9 +269,13 @@
                                                     <div class="flex-1 min-w-0">
                                                         <h3
                                                             class="text-base sm:text-lg font-black text-gray-800 mb-2 line-clamp-2 group-hover/item:text-gray-900 transition-colors">
-                                                            <?php echo e($position); ?></h3>
+                                                            <?php echo e($position); ?>
+
+                                                        </h3>
                                                         <p class="text-sm sm:text-base text-gray-600 break-words font-semibold mb-3">
-                                                            <?php echo e($name); ?></p>
+                                                            <?php echo e($name); ?>
+
+                                                        </p>
                                                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user && $user->role): ?>
                                                             <span
                                                                 class="inline-block px-3 py-1.5 bg-gradient-to-r <?php echo e($levelColors[$levelKey]['gradient'] ?? 'from-gray-400 to-gray-500'); ?> text-white text-xs rounded-xl font-bold shadow-lg">
@@ -577,7 +590,9 @@
                                                                                                     class="text-gray-600 ml-2 font-semibold"><?php echo e($value); ?></span>
                                                                                                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user && $user->role): ?>
                                                                                                     <div class="text-xs text-gray-500 mt-1 font-medium">
-                                                                                                        <?php echo e($user->role->display_name); ?></div>
+                                                                                                        <?php echo e($user->role->display_name); ?>
+
+                                                                                                    </div>
                                                                                                 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                                                             </div>
                                                                                         </div>
@@ -728,7 +743,9 @@
                                             </div>
                                             <div>
                                                 <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1">
-                                                    <?php echo e($config['title']); ?></h2>
+                                                    <?php echo e($config['title']); ?>
+
+                                                </h2>
                                                 <p class="text-white/70 text-sm sm:text-base font-medium">Emergency Medical Services
                                                 </p>
                                             </div>
@@ -848,7 +865,9 @@
                                             </div>
                                             <div>
                                                 <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-1">
-                                                    <?php echo e($config['title']); ?></h2>
+                                                    <?php echo e($config['title']); ?>
+
+                                                </h2>
                                                 <p class="text-white/70 text-sm sm:text-base font-medium">Roxwood Hospital</p>
                                             </div>
                                         </div>
@@ -1032,4 +1051,4 @@
         </style>
     <?php $__env->stopPush(); ?>
 <?php $__env->stopSection(); ?>
-<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\website\EMS-IME\public_html\resources\views/public/struktural-ems.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\website\EMS-IME\public_html\resources\views\public\struktural-ems.blade.php ENDPATH**/ ?>

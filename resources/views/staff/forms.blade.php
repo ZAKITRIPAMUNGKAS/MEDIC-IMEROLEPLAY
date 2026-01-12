@@ -39,6 +39,7 @@
                 <div>
                     <select name="type" class="w-full bg-white/30 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-xl px-4 py-3 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-sm font-medium shadow-xl transition-all duration-200">
                         <option value="" class="bg-slate-800 text-slate-300">Semua Jenis</option>
+                        @if(auth()->user()->isAdmin() || in_array(optional(auth()->user()->role)->name, ['dokter_umum', 'dokter_spesialis']))
                         <option value="penyakit_dalam" class="bg-slate-800 text-slate-300" {{ request('type') == 'penyakit_dalam' ? 'selected' : '' }}>Poli Penyakit Dalam</option>
                         <option value="spesialis_anak" class="bg-slate-800 text-slate-300" {{ request('type') == 'spesialis_anak' ? 'selected' : '' }}>Poli Spesialis Anak</option>
                         <option value="spesialis_bedah" class="bg-slate-800 text-slate-300" {{ request('type') == 'spesialis_bedah' ? 'selected' : '' }}>Poli Spesialis Bedah</option>
@@ -48,6 +49,7 @@
                         <option value="spesialis_tht" class="bg-slate-800 text-slate-300" {{ request('type') == 'spesialis_tht' ? 'selected' : '' }}>Poli Spesialis THT</option>
                         <option value="spesialis_ortopedi" class="bg-slate-800 text-slate-300" {{ request('type') == 'spesialis_ortopedi' ? 'selected' : '' }}>Poli Spesialis Ortopedi</option>
                         <option value="janji_temu" class="bg-slate-800 text-slate-300" {{ request('type') == 'janji_temu' ? 'selected' : '' }}>Janji Temu</option>
+                        @endif
                         <option value="surat_kesehatan" class="bg-slate-800 text-slate-300" {{ request('type') == 'surat_kesehatan' ? 'selected' : '' }}>Surat Kesehatan</option>
                         <option value="operasi_plastik" class="bg-slate-800 text-slate-300" {{ request('type') == 'operasi_plastik' ? 'selected' : '' }}>Operasi Plastik</option>
                         <option value="tes_psikologi" class="bg-slate-800 text-slate-300" {{ request('type') == 'tes_psikologi' ? 'selected' : '' }}>Tes Psikologi</option>
@@ -58,7 +60,9 @@
                         <option value="" class="bg-slate-800 text-slate-300">Semua Kategori</option>
                         <option value="konsultasi" class="bg-slate-800 text-slate-300" {{ request('category') == 'konsultasi' ? 'selected' : '' }}>Konsultasi</option>
                         <option value="pemeriksaan" class="bg-slate-800 text-slate-300" {{ request('category') == 'pemeriksaan' ? 'selected' : '' }}>Pemeriksaan</option>
+                        @if(auth()->user()->isAdmin() || in_array(optional(auth()->user()->role)->name, ['dokter_umum', 'dokter_spesialis']))
                         <option value="janji_temu" class="bg-slate-800 text-slate-300" {{ request('category') == 'janji_temu' ? 'selected' : '' }}>Janji Temu</option>
+                        @endif
                         <option value="karakter_kill" class="bg-slate-800 text-slate-300" {{ request('category') == 'karakter_kill' ? 'selected' : '' }}>Karakter Kill</option>
                     </select>
                 </div>

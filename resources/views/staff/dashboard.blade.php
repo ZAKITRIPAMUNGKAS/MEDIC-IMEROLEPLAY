@@ -875,381 +875,384 @@
                     </div>
                 </div>
 
-                <!-- Statistik Form Mingguan (dipindah ke bawah Leaderboard) -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <!-- Menunggu Review Card -->
-                    <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl elegant-card elegant-stagger"
-                        style="background-color: rgba(7, 89, 133, 0.9);">
-                        <div class="p-4 sm:p-6 text-center">
-                            <div
-                                class="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
-                                <i class="fas fa-hourglass-half text-xl sm:text-2xl text-white"></i>
+                @if(optional(auth()->user()->role)->name !== 'perawat')
+                    <!-- Statistik Form Mingguan (dipindah ke bawah Leaderboard) -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- Menunggu Review Card -->
+                        <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl elegant-card elegant-stagger"
+                            style="background-color: rgba(7, 89, 133, 0.9);">
+                            <div class="p-4 sm:p-6 text-center">
+                                <div
+                                    class="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
+                                    <i class="fas fa-hourglass-half text-xl sm:text-2xl text-white"></i>
+                                </div>
+                                <h3 class="text-3xl font-black text-yellow-300 stat-number mb-2">{{ $stats['pending_forms'] }}
+                                </h3>
+                                <p class="text-white font-semibold">Menunggu Review</p>
                             </div>
-                            <h3 class="text-3xl font-black text-yellow-300 stat-number mb-2">{{ $stats['pending_forms'] }}
-                            </h3>
-                            <p class="text-white font-semibold">Menunggu Review</p>
+                        </div>
+
+                        <!-- Disetujui Card -->
+                        <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl elegant-card elegant-stagger"
+                            style="background-color: rgba(7, 89, 133, 0.9);">
+                            <div class="p-4 sm:p-6 text-center">
+                                <div
+                                    class="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
+                                    <i class="fas fa-check-circle text-xl sm:text-2xl text-white"></i>
+                                </div>
+                                <h3 class="text-3xl font-black text-green-300 stat-number mb-2">{{ $stats['approved_forms'] }}
+                                </h3>
+                                <p class="text-white font-semibold">Disetujui</p>
+                            </div>
+                        </div>
+
+                        <!-- Ditolak Card -->
+                        <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl elegant-card elegant-stagger"
+                            style="background-color: rgba(7, 89, 133, 0.9);">
+                            <div class="p-4 sm:p-6 text-center">
+                                <div
+                                    class="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-red-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
+                                    <i class="fas fa-times-circle text-xl sm:text-2xl text-white"></i>
+                                </div>
+                                <h3 class="text-3xl font-black text-red-300 stat-number mb-2">{{ $stats['rejected_forms'] }}
+                                </h3>
+                                <p class="text-white font-semibold">Ditolak</p>
+                            </div>
+                        </div>
+
+                        <!-- Formulir Hari Ini Card -->
+                        <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl elegant-card elegant-stagger"
+                            style="background-color: rgba(7, 89, 133, 0.9);">
+                            <div class="p-4 sm:p-6 text-center">
+                                <div
+                                    class="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
+                                    <i class="fas fa-calendar-day text-xl sm:text-2xl text-white"></i>
+                                </div>
+                                <h3 class="text-3xl font-black text-sky-300 stat-number mb-2">{{ $stats['total_forms_today'] }}
+                                </h3>
+                                <p class="text-white font-semibold">Formulir Hari Ini</p>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Disetujui Card -->
-                    <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl elegant-card elegant-stagger"
+                    <!-- Recent Forms Table -->
+                    <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl overflow-hidden elegant-card elegant-stagger"
                         style="background-color: rgba(7, 89, 133, 0.9);">
-                        <div class="p-4 sm:p-6 text-center">
-                            <div
-                                class="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
-                                <i class="fas fa-check-circle text-xl sm:text-2xl text-white"></i>
-                            </div>
-                            <h3 class="text-3xl font-black text-green-300 stat-number mb-2">{{ $stats['approved_forms'] }}
+                        <div class="px-6 sm:px-8 py-6 border-b border-sky-400/30 flex justify-between items-center">
+                            <h3 class="text-xl sm:text-2xl font-bold text-white flex items-center">
+                                <i class="fas fa-file-medical text-sky-400 mr-2 sm:mr-3"></i>Surat dari Form
                             </h3>
-                            <p class="text-white font-semibold">Disetujui</p>
+                            <a href="{{ route('staff.forms') }}"
+                                class="text-sky-300 hover:text-sky-200 text-base sm:text-lg font-semibold transition-colors flex items-center">
+                                Lihat Semua <i class="fas fa-arrow-right ml-2"></i>
+                            </a>
                         </div>
-                    </div>
-
-                    <!-- Ditolak Card -->
-                    <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl elegant-card elegant-stagger"
-                        style="background-color: rgba(7, 89, 133, 0.9);">
-                        <div class="p-4 sm:p-6 text-center">
-                            <div
-                                class="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-red-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
-                                <i class="fas fa-times-circle text-xl sm:text-2xl text-white"></i>
-                            </div>
-                            <h3 class="text-3xl font-black text-red-300 stat-number mb-2">{{ $stats['rejected_forms'] }}
-                            </h3>
-                            <p class="text-white font-semibold">Ditolak</p>
-                        </div>
-                    </div>
-
-                    <!-- Formulir Hari Ini Card -->
-                    <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl elegant-card elegant-stagger"
-                        style="background-color: rgba(7, 89, 133, 0.9);">
-                        <div class="p-4 sm:p-6 text-center">
-                            <div
-                                class="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
-                                <i class="fas fa-calendar-day text-xl sm:text-2xl text-white"></i>
-                            </div>
-                            <h3 class="text-3xl font-black text-sky-300 stat-number mb-2">{{ $stats['total_forms_today'] }}
-                            </h3>
-                            <p class="text-white font-semibold">Formulir Hari Ini</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recent Forms Table -->
-                <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl overflow-hidden elegant-card elegant-stagger"
-                    style="background-color: rgba(7, 89, 133, 0.9);">
-                    <div class="px-6 sm:px-8 py-6 border-b border-sky-400/30 flex justify-between items-center">
-                        <h3 class="text-xl sm:text-2xl font-bold text-white flex items-center">
-                            <i class="fas fa-file-medical text-sky-400 mr-2 sm:mr-3"></i>Surat dari Form
-                        </h3>
-                        <a href="{{ route('staff.forms') }}"
-                            class="text-sky-300 hover:text-sky-200 text-base sm:text-lg font-semibold transition-colors flex items-center">
-                            Lihat Semua <i class="fas fa-arrow-right ml-2"></i>
-                        </a>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full">
-                            <thead class="border-b border-sky-400/30" style="background-color: rgba(14, 165, 233, 0.4);">
-                                <tr>
-                                    <th
-                                        class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
-                                        ID</th>
-                                    <th
-                                        class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
-                                        Karakter</th>
-                                    <th
-                                        class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
-                                        Jenis</th>
-                                    <th
-                                        class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
-                                        Status</th>
-                                    <th
-                                        class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
-                                        Diproses Oleh</th>
-                                    <th
-                                        class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
-                                        Tanggal</th>
-                                    <th
-                                        class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
-                                        Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-sky-400/20">
-                                @forelse($recentForms as $form)
-                                    <tr class="hover:bg-sky-700/40 transition-all duration-300">
-                                        <td
-                                            class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm font-mono text-sky-200 font-bold">
-                                            #{{ str_pad($form->id, 6, '0', STR_PAD_LEFT) }}</td>
-                                        <td class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm font-bold text-white">
-                                            {{ $form->character_name }}
-                                        </td>
-                                        <td
-                                            class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm text-sky-300 font-medium">
-                                            {{ ucfirst(str_replace('_', ' ', $form->form_type)) }}
-                                            @if($form->form_type === 'tes_psikologi')
-                                                @php
-                                                    $data = is_array($form->form_data ?? null) ? $form->form_data : [];
-                                                    $answers = [];
-                                                    $hasAny = false;
-                                                    for ($i = 1; $i <= 10; $i++) {
-                                                        $key = 'stress' . $i;
-                                                        $raw = $data[$key] ?? null;
-                                                        if ($raw !== null && $raw !== '') {
-                                                            $hasAny = true;
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full">
+                                <thead class="border-b border-sky-400/30" style="background-color: rgba(14, 165, 233, 0.4);">
+                                    <tr>
+                                        <th
+                                            class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
+                                            ID</th>
+                                        <th
+                                            class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
+                                            Karakter</th>
+                                        <th
+                                            class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
+                                            Jenis</th>
+                                        <th
+                                            class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
+                                            Status</th>
+                                        <th
+                                            class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
+                                            Diproses Oleh</th>
+                                        <th
+                                            class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
+                                            Tanggal</th>
+                                        <th
+                                            class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
+                                            Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-sky-400/20">
+                                    @forelse($recentForms as $form)
+                                        <tr class="hover:bg-sky-700/40 transition-all duration-300">
+                                            <td
+                                                class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm font-mono text-sky-200 font-bold">
+                                                #{{ str_pad($form->id, 6, '0', STR_PAD_LEFT) }}</td>
+                                            <td class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm font-bold text-white">
+                                                {{ $form->character_name }}
+                                            </td>
+                                            <td
+                                                class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm text-sky-300 font-medium">
+                                                {{ ucfirst(str_replace('_', ' ', $form->form_type)) }}
+                                                @if($form->form_type === 'tes_psikologi')
+                                                    @php
+                                                        $data = is_array($form->form_data ?? null) ? $form->form_data : [];
+                                                        $answers = [];
+                                                        $hasAny = false;
+                                                        for ($i = 1; $i <= 10; $i++) {
+                                                            $key = 'stress' . $i;
+                                                            $raw = $data[$key] ?? null;
+                                                            if ($raw !== null && $raw !== '') {
+                                                                $hasAny = true;
+                                                            }
+                                                            $val = is_numeric($raw) ? (int) $raw : 0;
+                                                            if (in_array($i, [4, 5, 7, 9], true)) {
+                                                                $val = 4 - $val;
+                                                            }
+                                                            $answers[] = $val;
                                                         }
-                                                        $val = is_numeric($raw) ? (int) $raw : 0;
-                                                        if (in_array($i, [4, 5, 7, 9], true)) {
-                                                            $val = 4 - $val;
-                                                        }
-                                                        $answers[] = $val;
-                                                    }
-                                                    $total = array_sum($answers);
-                                                    $level = $total <= 13 ? 'Rendah' : ($total <= 26 ? 'Sedang' : 'Tinggi');
-                                                    $cls = [
-                                                        'Rendah' => 'bg-green-500/20 text-green-300 border border-green-500/30',
-                                                        'Sedang' => 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30',
-                                                        'Tinggi' => 'bg-red-500/20 text-red-300 border border-red-500/30',
-                                                    ][$level] ?? 'bg-sky-700/40 text-white border border-sky-400/50';
-                                                @endphp
-                                                @if($hasAny)
-                                                    <span
-                                                        class="ml-2 px-2 py-0.5 rounded-full text-[11px] font-bold align-middle {{ $cls }}">Stres:
-                                                        {{ $level }} ({{ $total }})</span>
-                                                @endif
-                                            @endif
-                                        </td>
-                                        <td class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap">
-                                            @if($form->status === 'pending')
-                                                <span
-                                                    class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-400/30">Menunggu</span>
-                                            @elseif($form->status === 'approved')
-                                                <span
-                                                    class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-green-500/20 text-green-300 border border-green-400/30">Disetujui</span>
-                                            @else
-                                                <span
-                                                    class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-red-500/20 text-red-300 border border-red-400/30">Ditolak</span>
-                                            @endif
-                                        </td>
-                                        <td
-                                            class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm text-sky-300 font-medium">
-                                            @if($form->processedBy && $form->status !== 'pending')
-                                                <div class="flex flex-col">
-                                                    <span class="font-semibold text-white">{{ $form->processedBy->name }}</span>
-                                                    @if($form->processed_at)
+                                                        $total = array_sum($answers);
+                                                        $level = $total <= 13 ? 'Rendah' : ($total <= 26 ? 'Sedang' : 'Tinggi');
+                                                        $cls = [
+                                                            'Rendah' => 'bg-green-500/20 text-green-300 border border-green-500/30',
+                                                            'Sedang' => 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30',
+                                                            'Tinggi' => 'bg-red-500/20 text-red-300 border border-red-500/30',
+                                                        ][$level] ?? 'bg-sky-700/40 text-white border border-sky-400/50';
+                                                    @endphp
+                                                    @if($hasAny)
                                                         <span
-                                                            class="text-xs text-sky-400">{{ $form->processed_at->format('d/m/Y H:i') }}</span>
+                                                            class="ml-2 px-2 py-0.5 rounded-full text-[11px] font-bold align-middle {{ $cls }}">Stres:
+                                                            {{ $level }} ({{ $total }})</span>
                                                     @endif
-                                                </div>
-                                            @else
-                                                <span class="text-slate-400">-</span>
-                                            @endif
-                                        </td>
-                                        <td
-                                            class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm text-sky-300 font-medium">
-                                            {{ $form->created_at->format('d/m/Y H:i') }}
-                                        </td>
-                                        <td class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm font-medium">
-                                            @php
-                                                $canApprove = $form->status === 'pending' && auth()->user()->canApproveForm($form->form_type);
-                                            @endphp
-                                            <div class="flex flex-col sm:flex-row gap-2">
-                                                <a href="{{ route('staff.forms.show', $form->id) }}"
-                                                    class="inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gradient-to-r from-sky-500 to-cyan-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-sky-600 hover:to-cyan-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
-                                                    <i class="fas fa-eye mr-2"></i>Lihat
-                                                </a>
-
+                                                @endif
+                                            </td>
+                                            <td class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap">
                                                 @if($form->status === 'pending')
-                                                    @if($canApprove)
-                                                        <button type="button" onclick="approveForm({{ $form->id }}, this)"
-                                                            class="w-full inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
-                                                            <i class="fas fa-check mr-2"></i>Setujui
+                                                    <span
+                                                        class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-400/30">Menunggu</span>
+                                                @elseif($form->status === 'approved')
+                                                    <span
+                                                        class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-green-500/20 text-green-300 border border-green-400/30">Disetujui</span>
+                                                @else
+                                                    <span
+                                                        class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-red-500/20 text-red-300 border border-red-400/30">Ditolak</span>
+                                                @endif
+                                            </td>
+                                            <td
+                                                class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm text-sky-300 font-medium">
+                                                @if($form->processedBy && $form->status !== 'pending')
+                                                    <div class="flex flex-col">
+                                                        <span class="font-semibold text-white">{{ $form->processedBy->name }}</span>
+                                                        @if($form->processed_at)
+                                                            <span
+                                                                class="text-xs text-sky-400">{{ $form->processed_at->format('d/m/Y H:i') }}</span>
+                                                        @endif
+                                                    </div>
+                                                @else
+                                                    <span class="text-slate-400">-</span>
+                                                @endif
+                                            </td>
+                                            <td
+                                                class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm text-sky-300 font-medium">
+                                                {{ $form->created_at->format('d/m/Y H:i') }}
+                                            </td>
+                                            <td class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm font-medium">
+                                                @php
+                                                    $canApprove = $form->status === 'pending' && auth()->user()->canApproveForm($form->form_type);
+                                                @endphp
+                                                <div class="flex flex-col sm:flex-row gap-2">
+                                                    <a href="{{ route('staff.forms.show', $form->id) }}"
+                                                        class="inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gradient-to-r from-sky-500 to-cyan-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-sky-600 hover:to-cyan-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                                        <i class="fas fa-eye mr-2"></i>Lihat
+                                                    </a>
+
+                                                    @if($form->status === 'pending')
+                                                        @if($canApprove)
+                                                            <button type="button" onclick="approveForm({{ $form->id }}, this)"
+                                                                class="w-full inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                                                <i class="fas fa-check mr-2"></i>Setujui
+                                                            </button>
+                                                        @else
+                                                            <button disabled
+                                                                class="w-full inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gray-500/50 text-gray-300 text-xs sm:text-sm font-bold rounded-xl cursor-not-allowed opacity-60"
+                                                                title="Level role Anda tidak mencukupi untuk menyetujui formulir ini">
+                                                                <i class="fas fa-lock mr-2"></i>Setujui
+                                                            </button>
+                                                        @endif
+
+                                                        <button type="button" onclick="rejectForm({{ $form->id }}, this)"
+                                                            class="w-full inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-red-500 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                                            <i class="fas fa-times mr-2"></i>Tolak
                                                         </button>
                                                     @else
-                                                        <button disabled
-                                                            class="w-full inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gray-500/50 text-gray-300 text-xs sm:text-sm font-bold rounded-xl cursor-not-allowed opacity-60"
-                                                            title="Level role Anda tidak mencukupi untuk menyetujui formulir ini">
-                                                            <i class="fas fa-lock mr-2"></i>Setujui
-                                                        </button>
-                                                    @endif
-
-                                                    <button type="button" onclick="rejectForm({{ $form->id }}, this)"
-                                                        class="w-full inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-red-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
-                                                        <i class="fas fa-times mr-2"></i>Tolak
-                                                    </button>
-                                                @else
-                                                    <span class="text-sky-300 font-medium">Selesai</span>
-                                                @endif
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="7" class="px-8 py-16 text-center text-sky-300 text-lg font-medium">
-                                            <div class="flex flex-col items-center">
-                                                <i class="fas fa-inbox text-4xl mb-4 text-sky-400"></i>
-                                                Belum ada formulir yang masuk.
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Recent Appointments Table -->
-                <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl overflow-hidden animate-fade-in-up"
-                    style="animation-delay: 0.6s; background-color: rgba(7, 89, 133, 0.9);">
-                    <div class="px-6 sm:px-8 py-6 border-b border-sky-400/30 flex justify-between items-center">
-                        <h3 class="text-xl sm:text-2xl font-bold text-white flex items-center">
-                            <i class="fas fa-calendar-check text-green-400 mr-2 sm:mr-3"></i>Janji Temu Terbaru
-                        </h3>
-                        <a href="{{ route('staff.forms') }}?type=appointment"
-                            class="text-green-300 hover:text-green-200 text-base sm:text-lg font-semibold transition-colors flex items-center">
-                            Lihat Semua <i class="fas fa-arrow-right ml-2"></i>
-                        </a>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full">
-                            <thead class="border-b border-sky-400/30" style="background-color: rgba(14, 165, 233, 0.4);">
-                                <tr>
-                                    <th
-                                        class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
-                                        ID</th>
-                                    <th
-                                        class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
-                                        Karakter</th>
-                                    <th
-                                        class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
-                                        Poli</th>
-                                    <th
-                                        class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
-                                        Tanggal & Waktu</th>
-                                    <th
-                                        class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
-                                        Status</th>
-                                    <th
-                                        class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
-                                        Diproses Oleh</th>
-                                    <th
-                                        class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
-                                        Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-sky-400/20">
-                                @forelse($recentAppointments as $appointment)
-                                    @php
-                                        $formData = $appointment->form_data ?? [];
-                                        $appointmentDate = $formData['appointment_date'] ?? null;
-                                        $appointmentTime = $formData['appointment_time'] ?? null;
-                                        $formTypeNames = [
-                                            'penyakit_dalam' => 'Poli Penyakit Dalam',
-                                            'spesialis_anak' => 'Poli Spesialis Anak',
-                                            'spesialis_bedah' => 'Poli Spesialis Bedah',
-                                            'spesialis_mata' => 'Poli Spesialis Mata',
-                                            'spesialis_saraf' => 'Poli Spesialis Saraf',
-                                            'spesialis_urologi' => 'Poli Spesialis Urologi',
-                                            'spesialis_tht' => 'Poli Spesialis THT',
-                                            'spesialis_ortopedi' => 'Poli Spesialis Ortopedi',
-                                        ];
-                                    @endphp
-                                    <tr class="hover:bg-sky-700/40 transition-all duration-300">
-                                        <td
-                                            class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm font-mono text-sky-200 font-bold">
-                                            #{{ str_pad($appointment->id, 6, '0', STR_PAD_LEFT) }}</td>
-                                        <td class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm font-bold text-white">
-                                            {{ $appointment->character_name }}
-                                        </td>
-                                        <td
-                                            class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm text-green-300 font-medium">
-                                            {{ $formTypeNames[$appointment->form_type] ?? ucfirst(str_replace('_', ' ', $appointment->form_type)) }}
-                                        </td>
-                                        <td
-                                            class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm text-sky-300 font-medium">
-                                            @if($appointmentDate && $appointmentTime)
-                                                {{ \Carbon\Carbon::parse($appointmentDate)->format('d/m/Y') }}
-                                                {{ $appointmentTime }}
-                                            @else
-                                                <span class="text-slate-400">-</span>
-                                            @endif
-                                        </td>
-                                        <td class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap">
-                                            @if($appointment->status === 'pending')
-                                                <span
-                                                    class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-400/30">Menunggu</span>
-                                            @elseif($appointment->status === 'approved')
-                                                <span
-                                                    class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-green-500/20 text-green-300 border border-green-400/30">Sudah
-                                                    Ditemui</span>
-                                            @else
-                                                <span
-                                                    class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-red-500/20 text-red-300 border border-red-400/30">Tolak
-                                                    Formulir</span>
-                                            @endif
-                                        </td>
-                                        <td
-                                            class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm text-sky-300 font-medium">
-                                            @if($appointment->processedBy && $appointment->status !== 'pending')
-                                                <div class="flex flex-col">
-                                                    <span
-                                                        class="font-semibold text-white">{{ $appointment->processedBy->name }}</span>
-                                                    @if($appointment->processed_at)
-                                                        <span
-                                                            class="text-xs text-sky-400">{{ $appointment->processed_at->format('d/m/Y H:i') }}</span>
+                                                        <span class="text-sky-300 font-medium">Selesai</span>
                                                     @endif
                                                 </div>
-                                            @else
-                                                <span class="text-slate-400">-</span>
-                                            @endif
-                                        </td>
-                                        <td class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm font-medium">
-                                            @php
-                                                $canApproveAppointment = $appointment->status === 'pending' && auth()->user()->canApproveForm($appointment->form_type);
-                                            @endphp
-                                            <div class="flex flex-col sm:flex-row gap-2">
-                                                <a href="{{ route('staff.forms.show', $appointment->id) }}"
-                                                    class="inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
-                                                    <i class="fas fa-eye mr-2"></i>Lihat
-                                                </a>
-
-                                                @if($appointment->status === 'pending')
-                                                    @if($canApproveAppointment)
-                                                        <button type="button" onclick="approveForm({{ $appointment->id }}, this, true)"
-                                                            class="w-full inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
-                                                            <i class="fas fa-check mr-2"></i>Sudah Ditemui
-                                                        </button>
-                                                    @else
-                                                        <button disabled
-                                                            class="w-full inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gray-500/50 text-gray-300 text-xs sm:text-sm font-bold rounded-xl cursor-not-allowed opacity-60"
-                                                            title="Level role Anda tidak mencukupi untuk menyetujui formulir ini">
-                                                            <i class="fas fa-lock mr-2"></i>Sudah Ditemui
-                                                        </button>
-                                                    @endif
-                                                    
-                                                    <button type="button" onclick="rejectForm({{ $appointment->id }}, this, true)"
-                                                        class="w-full inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-red-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
-                                                        <i class="fas fa-times mr-2"></i>Tolak Formulir
-                                                    </button>
-                                                @else
-                                                    <span class="text-green-300 font-medium">Selesai</span>
-                                                @endif
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="7" class="px-8 py-16 text-center text-sky-300 text-lg font-medium">
-                                            <div class="flex flex-col items-center">
-                                                <i class="fas fa-calendar-times text-4xl mb-4 text-green-400"></i>
-                                                Belum ada janji temu yang masuk.
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="7" class="px-8 py-16 text-center text-sky-300 text-lg font-medium">
+                                                <div class="flex flex-col items-center">
+                                                    <i class="fas fa-inbox text-4xl mb-4 text-sky-400"></i>
+                                                    Belum ada formulir yang masuk.
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
 
+                    <!-- Recent Appointments Table -->
+                    @if(auth()->user()->isAdmin() || in_array(optional(auth()->user()->role)->name, ['dokter_umum', 'dokter_spesialis']))
+                        <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl overflow-hidden animate-fade-in-up"
+                            style="animation-delay: 0.6s; background-color: rgba(7, 89, 133, 0.9);">
+                            <div class="px-6 sm:px-8 py-6 border-b border-sky-400/30 flex justify-between items-center">
+                                <h3 class="text-xl sm:text-2xl font-bold text-white flex items-center">
+                                    <i class="fas fa-calendar-check text-green-400 mr-2 sm:mr-3"></i>Janji Temu Terbaru
+                                </h3>
+                                <a href="{{ route('staff.forms') }}?type=appointment"
+                                    class="text-green-300 hover:text-green-200 text-base sm:text-lg font-semibold transition-colors flex items-center">
+                                    Lihat Semua <i class="fas fa-arrow-right ml-2"></i>
+                                </a>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full">
+                                    <thead class="border-b border-sky-400/30" style="background-color: rgba(14, 165, 233, 0.4);">
+                                        <tr>
+                                            <th
+                                                class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
+                                                ID</th>
+                                            <th
+                                                class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
+                                                Karakter</th>
+                                            <th
+                                                class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
+                                                Poli</th>
+                                            <th
+                                                class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
+                                                Tanggal & Waktu</th>
+                                            <th
+                                                class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
+                                                Status</th>
+                                            <th
+                                                class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
+                                                Diproses Oleh</th>
+                                            <th
+                                                class="px-4 sm:px-8 py-4 text-left text-xs sm:text-sm font-bold text-sky-200 uppercase tracking-wider">
+                                                Aksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-sky-400/20">
+                                        @forelse($recentAppointments as $appointment)
+                                            @php
+                                                $formData = $appointment->form_data ?? [];
+                                                $appointmentDate = $formData['appointment_date'] ?? null;
+                                                $appointmentTime = $formData['appointment_time'] ?? null;
+                                                $formTypeNames = [
+                                                    'penyakit_dalam' => 'Poli Penyakit Dalam',
+                                                    'spesialis_anak' => 'Poli Spesialis Anak',
+                                                    'spesialis_bedah' => 'Poli Spesialis Bedah',
+                                                    'spesialis_mata' => 'Poli Spesialis Mata',
+                                                    'spesialis_saraf' => 'Poli Spesialis Saraf',
+                                                    'spesialis_urologi' => 'Poli Spesialis Urologi',
+                                                    'spesialis_tht' => 'Poli Spesialis THT',
+                                                    'spesialis_ortopedi' => 'Poli Spesialis Ortopedi',
+                                                ];
+                                            @endphp
+                                            <tr class="hover:bg-sky-700/40 transition-all duration-300">
+                                                <td
+                                                    class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm font-mono text-sky-200 font-bold">
+                                                    #{{ str_pad($appointment->id, 6, '0', STR_PAD_LEFT) }}</td>
+                                                <td class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm font-bold text-white">
+                                                    {{ $appointment->character_name }}
+                                                </td>
+                                                <td
+                                                    class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm text-green-300 font-medium">
+                                                    {{ $formTypeNames[$appointment->form_type] ?? ucfirst(str_replace('_', ' ', $appointment->form_type)) }}
+                                                </td>
+                                                <td
+                                                    class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm text-sky-300 font-medium">
+                                                    @if($appointmentDate && $appointmentTime)
+                                                        {{ \Carbon\Carbon::parse($appointmentDate)->format('d/m/Y') }}
+                                                        {{ $appointmentTime }}
+                                                    @else
+                                                        <span class="text-slate-400">-</span>
+                                                    @endif
+                                                </td>
+                                                <td class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap">
+                                                    @if($appointment->status === 'pending')
+                                                        <span
+                                                            class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-400/30">Menunggu</span>
+                                                    @elseif($appointment->status === 'approved')
+                                                        <span
+                                                            class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-green-500/20 text-green-300 border border-green-400/30">Sudah
+                                                            Ditemui</span>
+                                                    @else
+                                                        <span
+                                                            class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-red-500/20 text-red-300 border border-red-400/30">Tolak
+                                                            Formulir</span>
+                                                    @endif
+                                                </td>
+                                                <td
+                                                    class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm text-sky-300 font-medium">
+                                                    @if($appointment->processedBy && $appointment->status !== 'pending')
+                                                        <div class="flex flex-col">
+                                                            <span
+                                                                class="font-semibold text-white">{{ $appointment->processedBy->name }}</span>
+                                                            @if($appointment->processed_at)
+                                                                <span
+                                                                    class="text-xs text-sky-400">{{ $appointment->processed_at->format('d/m/Y H:i') }}</span>
+                                                            @endif
+                                                        </div>
+                                                    @else
+                                                        <span class="text-slate-400">-</span>
+                                                    @endif
+                                                </td>
+                                                <td class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm font-medium">
+                                                    @php
+                                                        $canApproveAppointment = $appointment->status === 'pending' && auth()->user()->canApproveForm($appointment->form_type);
+                                                    @endphp
+                                                    <div class="flex flex-col sm:flex-row gap-2">
+                                                        <a href="{{ route('staff.forms.show', $appointment->id) }}"
+                                                            class="inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                                            <i class="fas fa-eye mr-2"></i>Lihat
+                                                        </a>
+
+                                                        @if($appointment->status === 'pending')
+                                                            @if($canApproveAppointment)
+                                                                <button type="button" onclick="approveForm({{ $appointment->id }}, this, true)"
+                                                                    class="w-full inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                                                    <i class="fas fa-check mr-2"></i>Sudah Ditemui
+                                                                </button>
+                                                            @else
+                                                                <button disabled
+                                                                    class="w-full inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gray-500/50 text-gray-300 text-xs sm:text-sm font-bold rounded-xl cursor-not-allowed opacity-60"
+                                                                    title="Level role Anda tidak mencukupi untuk menyetujui formulir ini">
+                                                                    <i class="fas fa-lock mr-2"></i>Sudah Ditemui
+                                                                </button>
+                                                            @endif
+
+                                                            <button type="button" onclick="rejectForm({{ $appointment->id }}, this, true)"
+                                                                class="w-full inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-red-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                                                <i class="fas fa-times mr-2"></i>Tolak Formulir
+                                                            </button>
+                                                        @else
+                                                            <span class="text-green-300 font-medium">Selesai</span>
+                                                        @endif
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="7" class="px-8 py-16 text-center text-sky-300 text-lg font-medium">
+                                                    <div class="flex flex-col items-center">
+                                                        <i class="fas fa-calendar-times text-4xl mb-4 text-green-400"></i>
+                                                        Belum ada janji temu yang masuk.
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                    @endif
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -1473,504 +1476,504 @@
 
 @push('scripts')
     <script>
-            // Toast Notific    ation System
-            function showToast(type, title, message, duration = 5000) {
-                const container = document.getElementById('toastContainer');
-                if (!container) return;
+        // Toast Notific    ation System
+        function showToast(type, title, message, duration = 5000) {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
 
-                const icons = {
-                    success: 'fa-check-circle',
-                    error: 'fa-times-circle',
-                    warning: 'fa-exclamation-triangle',
-                    info: 'fa-info-circle'
-                };
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-times-circle',
+                warning: 'fa-exclamation-triangle',
+                info: 'fa-info-circle'
+            };
 
-                const toast = document.createElement('div');
-                toast.className = `toast toast-${type}`;
-                toast.style.setProperty('--duration', `${duration}ms`);
-                console.log('🎨 NEW TOAST DESIGN v2 - White Card Design');
-                toast.innerHTML = `
-                                                <div class="toast-icon">
-                                                    <i class="fas ${icons[type]} text-sm"></i>
-                                                </div>
-                                                <div class="toast-content">
-                                                    <div class="toast-title">${title}</div>
-                                                    <div class="toast-message">${message}</div>
-                                                </div>
-                                                <button class="toast-close" onclick="closeToast(this.parentElement)">
-                                                    <i class="fas fa-times text-xs"></i>
-                                                </button>
-                                            `;
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.style.setProperty('--duration', `${duration}ms`);
+            console.log('🎨 NEW TOAST DESIGN v2 - White Card Design');
+            toast.innerHTML = `
+                                                    <div class="toast-icon">
+                                                        <i class="fas ${icons[type]} text-sm"></i>
+                                                    </div>
+                                                    <div class="toast-content">
+                                                        <div class="toast-title">${title}</div>
+                                                        <div class="toast-message">${message}</div>
+                                                    </div>
+                                                    <button class="toast-close" onclick="closeToast(this.parentElement)">
+                                                        <i class="fas fa-times text-xs"></i>
+                                                    </button>
+                                                `;
 
-                container.appendChild(toast);
-                setTimeout(() => closeToast(toast), duration);
+            container.appendChild(toast);
+            setTimeout(() => closeToast(toast), duration);
+        }
+
+        // Check for session messages on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            @if(session('success'))
+                showToast('success', 'Berhasil!', '{{ session('success') }}');
+            @endif
+            @if(session('error'))
+                showToast('error', 'Error!', '{{ session('error') }}');
+            @endif
+            @if(session('warning'))
+                showToast('warning', 'Perhatian!', '{{ session('warning') }}');
+            @endif
+            @if(session('info'))
+                showToast('info', 'Informasi', '{{ session('info') }}');
+            @endif
+                                        });
+
+        function closeToast(toast) {
+            if (!toast || toast.classList.contains('hiding')) return;
+            toast.classList.add('hiding');
+            setTimeout(() => toast.remove(), 300);
+        }
+
+        // Approve Form via AJAX
+        async function approveForm(formId, button, isAppointment = false) {
+            // Konfirmasi sebelum approve
+            const confirmMessage = isAppointment
+                ? 'Yakin ingin menandai janji temu ini sudah ditemui?'
+                : 'Yakin ingin menyetujui formulir ini?';
+
+            if (!confirm(confirmMessage)) {
+                return; // User membatalkan
             }
 
-            // Check for session messages on page load
-            document.addEventListener('DOMContentLoaded', function () {
-                @if(session('success'))
-                    showToast('success', 'Berhasil!', '{{ session('success') }}');
-                @endif
-                @if(session('error'))
-                    showToast('error', 'Error!', '{{ session('error') }}');
-                @endif
-                @if(session('warning'))
-                    showToast('warning', 'Perhatian!', '{{ session('warning') }}');
-                @endif
-                @if(session('info'))
-                    showToast('info', 'Informasi', '{{ session('info') }}');
-                @endif
-                                    });
+            const originalHtml = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Memproses...';
 
-            function closeToast(toast) {
-                if (!toast || toast.classList.contains('hiding')) return;
-                toast.classList.add('hiding');
-                setTimeout(() => toast.remove(), 300);
-            }
-
-            // Approve Form via AJAX
-            async function approveForm(formId, button, isAppointment = false) {
-                // Konfirmasi sebelum approve
-                const confirmMessage = isAppointment
-                    ? 'Yakin ingin menandai janji temu ini sudah ditemui?'
-                    : 'Yakin ingin menyetujui formulir ini?';
-
-                if (!confirm(confirmMessage)) {
-                    return; // User membatalkan
-                }
-
-                const originalHtml = button.innerHTML;
-                button.disabled = true;
-                button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Memproses...';
-
-                try {
-                    const response = await fetch(`/staff/forms/${formId}/approve`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                            'Accept': 'application/json'
-                        }
-                    });
-
-                    if (response.ok) {
-                        const label = isAppointment ? 'Janji temu ditandai sudah ditemui' : 'Formulir berhasil disetujui';
-                        showToast('success', 'Berhasil!', label);
-
-                        // Update UI - hide action buttons and show status
-                        const td = button.closest('td');
-                        if (td) {
-                            td.innerHTML = '<span class="text-green-300 font-medium">Selesai</span>';
-                        }
-
-                        // Update status badge in the same row
-                        const row = button.closest('tr');
-                        if (row) {
-                            const statusTd = row.querySelectorAll('td')[isAppointment ? 4 : 3];
-                            if (statusTd) {
-                                statusTd.innerHTML = `<span class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-green-500/20 text-green-300 border border-green-400/30">${isAppointment ? 'Sudah Ditemui' : 'Disetujui'}</span>`;
-                            }
-                        }
-                    } else {
-                        throw new Error('Gagal memproses permintaan');
+            try {
+                const response = await fetch(`/staff/forms/${formId}/approve`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
                     }
-                } catch (error) {
-                    showToast('error', 'Gagal', error.message || 'Terjadi kesalahan');
-                    button.disabled = false;
-                    button.innerHTML = originalHtml;
-                }
-            }
+                });
 
-            // Reject Form via AJAX
-            async function rejectForm(formId, button, isAppointment = false) {
-                // Konfirmasi sebelum reject
-                const confirmMessage = 'Yakin ingin menolak formulir ini?';
-                
-                if (!confirm(confirmMessage)) {
-                    return; // User membatalkan
-                }
+                if (response.ok) {
+                    const label = isAppointment ? 'Janji temu ditandai sudah ditemui' : 'Formulir berhasil disetujui';
+                    showToast('success', 'Berhasil!', label);
 
-                const originalHtml = button.innerHTML;
-                button.disabled = true;
-                button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Memproses...';
-
-                try {
-                    const response = await fetch(`/staff/forms/${formId}/reject`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                            'Accept': 'application/json'
-                        }
-                    });
-
-                    if (response.ok) {
-                        showToast('warning', 'Ditolak', isAppointment ? 'Janji temu ditolak' : 'Formulir ditolak');
-
-                        // Update UI
-                        const td = button.closest('td');
-                        if (td) {
-                            td.innerHTML = '<span class="text-red-300 font-medium">Selesai</span>';
-                        }
-
-                        // Update status badge
-                        const row = button.closest('tr');
-                        if (row) {
-                            const statusTd = row.querySelectorAll('td')[isAppointment ? 4 : 3];
-                            if (statusTd) {
-                                statusTd.innerHTML = '<span class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-red-500/20 text-red-300 border border-red-400/30">Ditolak</span>';
-                            }
-                        }
-                    } else {
-                        throw new Error('Gagal memproses permintaan');
+                    // Update UI - hide action buttons and show status
+                    const td = button.closest('td');
+                    if (td) {
+                        td.innerHTML = '<span class="text-green-300 font-medium">Selesai</span>';
                     }
-                } catch (error) {
-                    showToast('error', 'Gagal', error.message || 'Terjadi kesalahan');
-                    button.disabled = false;
-                    button.innerHTML = originalHtml;
+
+                    // Update status badge in the same row
+                    const row = button.closest('tr');
+                    if (row) {
+                        const statusTd = row.querySelectorAll('td')[isAppointment ? 4 : 3];
+                        if (statusTd) {
+                            statusTd.innerHTML = `<span class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-green-500/20 text-green-300 border border-green-400/30">${isAppointment ? 'Sudah Ditemui' : 'Disetujui'}</span>`;
+                        }
+                    }
+                } else {
+                    throw new Error('Gagal memproses permintaan');
                 }
+            } catch (error) {
+                showToast('error', 'Gagal', error.message || 'Terjadi kesalahan');
+                button.disabled = false;
+                button.innerHTML = originalHtml;
+            }
+        }
+
+        // Reject Form via AJAX
+        async function rejectForm(formId, button, isAppointment = false) {
+            // Konfirmasi sebelum reject
+            const confirmMessage = 'Yakin ingin menolak formulir ini?';
+
+            if (!confirm(confirmMessage)) {
+                return; // User membatalkan
             }
 
-            // Real-time duration update sudah ditangani oleh script di bagian atas halaman
+            const originalHtml = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Memproses...';
 
-            // Auto checkout function for expired sessions
-            function autoCheckoutExpiredSession() {
-                // Get clock out form
-                const clockOutForm = document.getElementById('activeSessionClockOutForm');
+            try {
+                const response = await fetch(`/staff/forms/${formId}/reject`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    }
+                });
 
-                if (!clockOutForm) {
-                    console.warn('Clock out form not found, refreshing page...');
-                    setTimeout(() => location.reload(), 2000);
+                if (response.ok) {
+                    showToast('warning', 'Ditolak', isAppointment ? 'Janji temu ditolak' : 'Formulir ditolak');
+
+                    // Update UI
+                    const td = button.closest('td');
+                    if (td) {
+                        td.innerHTML = '<span class="text-red-300 font-medium">Selesai</span>';
+                    }
+
+                    // Update status badge
+                    const row = button.closest('tr');
+                    if (row) {
+                        const statusTd = row.querySelectorAll('td')[isAppointment ? 4 : 3];
+                        if (statusTd) {
+                            statusTd.innerHTML = '<span class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-red-500/20 text-red-300 border border-red-400/30">Ditolak</span>';
+                        }
+                    }
+                } else {
+                    throw new Error('Gagal memproses permintaan');
+                }
+            } catch (error) {
+                showToast('error', 'Gagal', error.message || 'Terjadi kesalahan');
+                button.disabled = false;
+                button.innerHTML = originalHtml;
+            }
+        }
+
+        // Real-time duration update sudah ditangani oleh script di bagian atas halaman
+
+        // Auto checkout function for expired sessions
+        function autoCheckoutExpiredSession() {
+            // Get clock out form
+            const clockOutForm = document.getElementById('activeSessionClockOutForm');
+
+            if (!clockOutForm) {
+                console.warn('Clock out form not found, refreshing page...');
+                setTimeout(() => location.reload(), 2000);
+                return;
+            }
+
+            // Create form data
+            const formData = new FormData(clockOutForm);
+            const formAction = clockOutForm.getAttribute('action') || clockOutForm.getAttribute('data-action');
+
+            if (!formAction) {
+                console.error('Form action not found');
+                setTimeout(() => location.reload(), 2000);
+                return;
+            }
+
+            // Get CSRF token
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
+                document.querySelector('input[name="_token"]')?.value;
+
+            if (!csrfToken) {
+                console.error('CSRF token not found');
+                setTimeout(() => location.reload(), 2000);
+                return;
+            }
+
+            // Show notification
+            console.log('Waktu habis! Melakukan auto checkout...');
+
+            // Submit clock out
+            fetch(formAction, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': csrfToken
+                }
+            })
+                .then(response => {
+                    if (response.ok || response.redirected) {
+                        console.log('Auto checkout berhasil!');
+                        // Reload page to show updated state
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        throw new Error('Auto checkout failed');
+                    }
+                })
+                .catch(error => {
+                    console.error('Auto checkout error:', error);
+                    // Fallback: reload page after 3 seconds (scheduler might handle it)
+                    setTimeout(() => {
+                        location.reload();
+                    }, 3000);
+                });
+        }
+
+        // Dashboard Clock In & Clock Out Form Handler
+        document.addEventListener('DOMContentLoaded', function () {
+            // Clock In Form Handler - Simplified
+            const dashboardClockInForm = document.getElementById('dashboardClockInForm');
+            const dashboardClockInBtn = document.getElementById('dashboardClockInBtn');
+
+            if (dashboardClockInForm && dashboardClockInBtn) {
+                dashboardClockInForm.addEventListener('submit', function (e) {
+                    // Allow form to submit normally, just update button state
+                    dashboardClockInBtn.disabled = true;
+                    dashboardClockInBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i>Memproses...';
+
+                    // Form will submit normally - no need to preventDefault
+                    // This ensures CSRF and all form data is handled correctly by Laravel
+                });
+            }
+
+            // Clock Out Form Handler (for previous day session)
+            const dashboardClockOutForm = document.getElementById('dashboardClockOutForm');
+            const dashboardClockOutBtn = document.getElementById('dashboardClockOutBtn');
+
+            if (dashboardClockOutForm && dashboardClockOutBtn) {
+                /*
+                dashboardClockOutForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    // Show loading state
+                    const btnText = dashboardClockOutBtn.querySelector('.btn-text');
+                    const btnLoading = dashboardClockOutBtn.querySelector('.btn-loading');
+
+                    if (btnText) btnText.classList.add('hidden');
+                    if (btnLoading) btnLoading.classList.remove('hidden');
+                    dashboardClockOutBtn.disabled = true;
+
+                    // Submit form with retry mechanism
+                    if (typeof submitDashboardClockOutForm === 'function') {
+                        submitDashboardClockOutForm();
+                    } else {
+                        dashboardClockOutForm.submit();
+                    }
+                });
+                */
+                // Allow standard submission
+                dashboardClockOutForm.addEventListener('submit', function (e) {
+                    const btnText = dashboardClockOutBtn.querySelector('.btn-text');
+                    const btnLoading = dashboardClockOutBtn.querySelector('.btn-loading');
+                    if (btnText) btnText.classList.add('hidden');
+                    if (btnLoading) btnLoading.classList.remove('hidden');
+                    dashboardClockOutBtn.disabled = true;
+                });
+            }
+
+            // Clock Out Form Handler (for active session today)
+            const activeSessionClockOutForm = document.getElementById('activeSessionClockOutForm');
+            const activeSessionClockOutBtn = document.getElementById('activeSessionClockOutBtn');
+
+            if (activeSessionClockOutForm && activeSessionClockOutBtn) {
+                /*
+                activeSessionClockOutForm.addEventListener('submit', function (e) {
+                    e.preventDefault();
+
+                    // Show loading state
+                    const btnText = activeSessionClockOutBtn.querySelector('.btn-text');
+                    const btnLoading = activeSessionClockOutBtn.querySelector('.btn-loading');
+
+                    if (btnText) btnText.classList.add('hidden');
+                    if (btnLoading) btnLoading.classList.remove('hidden');
+                    activeSessionClockOutBtn.disabled = true;
+
+                    // Submit form with retry mechanism
+                    if (typeof submitActiveSessionClockOutForm === 'function') {
+                        submitActiveSessionClockOutForm();
+                    } else {
+                        activeSessionClockOutForm.submit();
+                    }
+                });
+                */
+                // Allow standard submission
+                activeSessionClockOutForm.addEventListener('submit', function (e) {
+                    const btnText = activeSessionClockOutBtn.querySelector('.btn-text');
+                    const btnLoading = activeSessionClockOutBtn.querySelector('.btn-loading');
+                    if (btnText) btnText.classList.add('hidden');
+                    if (btnLoading) btnLoading.classList.remove('hidden');
+                    activeSessionClockOutBtn.disabled = true;
+                });
+            }
+
+            function submitDashboardClockOutForm(retryCount = 0) {
+                const form = document.getElementById('dashboardClockOutForm');
+                if (!form) {
+                    console.error('Form dashboardClockOutForm not found');
                     return;
                 }
 
-                // Create form data
-                const formData = new FormData(clockOutForm);
-                const formAction = clockOutForm.getAttribute('action') || clockOutForm.getAttribute('data-action');
+                // Get action from data-action attribute first (more reliable), fallback to action attribute
+                let formAction = form.getAttribute('data-action') || form.getAttribute('action');
 
-                if (!formAction) {
-                    console.error('Form action not found');
-                    setTimeout(() => location.reload(), 2000);
+                // Debug logging
+                console.log('[Clock Out - Previous Day] Form action (from action attr):', form.getAttribute('action'));
+                console.log('[Clock Out - Previous Day] Form action (from data-action attr):', form.getAttribute('data-action'));
+                console.log('[Clock Out - Previous Day] Form action (final):', formAction);
+
+                // Validate form action
+                if (!formAction || formAction.includes('{{') || formAction.includes('route(') || formAction.trim() === '') {
+                    console.error('[Clock Out - Previous Day] Invalid form action:', formAction);
+                    console.error('[Clock Out - Previous Day] Form HTML:', form.outerHTML);
+                    alert('Terjadi kesalahan: Form action tidak valid. Silakan refresh halaman.');
                     return;
                 }
 
-                // Get CSRF token
-                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ||
-                    document.querySelector('input[name="_token"]')?.value;
+                const formData = new FormData(form);
 
-                if (!csrfToken) {
-                    console.error('CSRF token not found');
-                    setTimeout(() => location.reload(), 2000);
-                    return;
-                }
-
-                // Show notification
-                console.log('Waktu habis! Melakukan auto checkout...');
-
-                // Submit clock out
                 fetch(formAction, {
                     method: 'POST',
+                    credentials: 'same-origin', // Include cookies for same-origin requests
                     body: formData,
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': csrfToken
-                    }
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    redirect: 'follow'
                 })
                     .then(response => {
-                        if (response.ok || response.redirected) {
-                            console.log('Auto checkout berhasil!');
-                            // Reload page to show updated state
-                            setTimeout(() => {
-                                location.reload();
-                            }, 1000);
+                        if (response.status === 419) {
+                            // CSRF token expired
+                            if (retryCount < 2) {
+                                console.log('CSRF token expired, refreshing and retrying...');
+                                return refreshCsrfToken().then(() => {
+                                    return submitDashboardClockOutForm(retryCount + 1);
+                                });
+                            } else {
+                                throw new Error('CSRF token refresh failed after multiple attempts');
+                            }
+                        }
+                        return response;
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            // Success - reload page to show updated state
+                            if (response.redirected) {
+                                window.location.href = response.url;
+                            } else {
+                                window.location.reload();
+                            }
                         } else {
-                            throw new Error('Auto checkout failed');
+                            throw new Error('Clock out failed');
                         }
                     })
                     .catch(error => {
-                        console.error('Auto checkout error:', error);
-                        // Fallback: reload page after 3 seconds (scheduler might handle it)
-                        setTimeout(() => {
-                            location.reload();
-                        }, 3000);
+                        console.error('Clock out error:', error);
+
+                        // Reset button state
+                        const btn = document.getElementById('dashboardClockOutBtn');
+                        if (btn) {
+                            const btnText = btn.querySelector('.btn-text');
+                            const btnLoading = btn.querySelector('.btn-loading');
+
+                            if (btnText) btnText.classList.remove('hidden');
+                            if (btnLoading) btnLoading.classList.add('hidden');
+                            btn.disabled = false;
+                        }
+
+                        // Show error message
+                        alert('Terjadi kesalahan saat clock out. Silakan coba lagi atau refresh halaman.');
                     });
             }
 
-            // Dashboard Clock In & Clock Out Form Handler
-            document.addEventListener('DOMContentLoaded', function () {
-                // Clock In Form Handler - Simplified
-                const dashboardClockInForm = document.getElementById('dashboardClockInForm');
-                const dashboardClockInBtn = document.getElementById('dashboardClockInBtn');
-
-                if (dashboardClockInForm && dashboardClockInBtn) {
-                    dashboardClockInForm.addEventListener('submit', function (e) {
-                        // Allow form to submit normally, just update button state
-                        dashboardClockInBtn.disabled = true;
-                        dashboardClockInBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-3"></i>Memproses...';
-
-                        // Form will submit normally - no need to preventDefault
-                        // This ensures CSRF and all form data is handled correctly by Laravel
-                    });
+            function submitActiveSessionClockOutForm(retryCount = 0) {
+                const form = document.getElementById('activeSessionClockOutForm');
+                if (!form) {
+                    console.error('Form activeSessionClockOutForm not found');
+                    return;
                 }
 
-                // Clock Out Form Handler (for previous day session)
-                const dashboardClockOutForm = document.getElementById('dashboardClockOutForm');
-                const dashboardClockOutBtn = document.getElementById('dashboardClockOutBtn');
+                // Get action from data-action attribute first (more reliable), fallback to action attribute
+                let formAction = form.getAttribute('data-action') || form.getAttribute('action');
 
-                if (dashboardClockOutForm && dashboardClockOutBtn) {
-                    /*
-                    dashboardClockOutForm.addEventListener('submit', function (e) {
-                        e.preventDefault();
+                // Debug logging
+                console.log('[Clock Out - Active Session] Form action (from action attr):', form.getAttribute('action'));
+                console.log('[Clock Out - Active Session] Form action (from data-action attr):', form.getAttribute('data-action'));
+                console.log('[Clock Out - Active Session] Form action (final):', formAction);
 
-                        // Show loading state
-                        const btnText = dashboardClockOutBtn.querySelector('.btn-text');
-                        const btnLoading = dashboardClockOutBtn.querySelector('.btn-loading');
-
-                        if (btnText) btnText.classList.add('hidden');
-                        if (btnLoading) btnLoading.classList.remove('hidden');
-                        dashboardClockOutBtn.disabled = true;
-
-                        // Submit form with retry mechanism
-                        if (typeof submitDashboardClockOutForm === 'function') {
-                            submitDashboardClockOutForm();
-                        } else {
-                            dashboardClockOutForm.submit();
-                        }
-                    });
-                    */
-                    // Allow standard submission
-                    dashboardClockOutForm.addEventListener('submit', function (e) {
-                        const btnText = dashboardClockOutBtn.querySelector('.btn-text');
-                        const btnLoading = dashboardClockOutBtn.querySelector('.btn-loading');
-                        if (btnText) btnText.classList.add('hidden');
-                        if (btnLoading) btnLoading.classList.remove('hidden');
-                        dashboardClockOutBtn.disabled = true;
-                    });
+                // Validate form action
+                if (!formAction || formAction.includes('{{') || formAction.includes('route(') || formAction.trim() === '') {
+                    console.error('[Clock Out - Active Session] Invalid form action:', formAction);
+                    console.error('[Clock Out - Active Session] Form HTML:', form.outerHTML);
+                    alert('Terjadi kesalahan: Form action tidak valid. Silakan refresh halaman.');
+                    return;
                 }
 
-                // Clock Out Form Handler (for active session today)
-                const activeSessionClockOutForm = document.getElementById('activeSessionClockOutForm');
-                const activeSessionClockOutBtn = document.getElementById('activeSessionClockOutBtn');
+                const formData = new FormData(form);
 
-                if (activeSessionClockOutForm && activeSessionClockOutBtn) {
-                    /*
-                    activeSessionClockOutForm.addEventListener('submit', function (e) {
-                        e.preventDefault();
-
-                        // Show loading state
-                        const btnText = activeSessionClockOutBtn.querySelector('.btn-text');
-                        const btnLoading = activeSessionClockOutBtn.querySelector('.btn-loading');
-
-                        if (btnText) btnText.classList.add('hidden');
-                        if (btnLoading) btnLoading.classList.remove('hidden');
-                        activeSessionClockOutBtn.disabled = true;
-
-                        // Submit form with retry mechanism
-                        if (typeof submitActiveSessionClockOutForm === 'function') {
-                            submitActiveSessionClockOutForm();
-                        } else {
-                            activeSessionClockOutForm.submit();
-                        }
-                    });
-                    */
-                    // Allow standard submission
-                    activeSessionClockOutForm.addEventListener('submit', function (e) {
-                        const btnText = activeSessionClockOutBtn.querySelector('.btn-text');
-                        const btnLoading = activeSessionClockOutBtn.querySelector('.btn-loading');
-                        if (btnText) btnText.classList.add('hidden');
-                        if (btnLoading) btnLoading.classList.remove('hidden');
-                        activeSessionClockOutBtn.disabled = true;
-                    });
-                }
-
-                function submitDashboardClockOutForm(retryCount = 0) {
-                    const form = document.getElementById('dashboardClockOutForm');
-                    if (!form) {
-                        console.error('Form dashboardClockOutForm not found');
-                        return;
-                    }
-
-                    // Get action from data-action attribute first (more reliable), fallback to action attribute
-                    let formAction = form.getAttribute('data-action') || form.getAttribute('action');
-
-                    // Debug logging
-                    console.log('[Clock Out - Previous Day] Form action (from action attr):', form.getAttribute('action'));
-                    console.log('[Clock Out - Previous Day] Form action (from data-action attr):', form.getAttribute('data-action'));
-                    console.log('[Clock Out - Previous Day] Form action (final):', formAction);
-
-                    // Validate form action
-                    if (!formAction || formAction.includes('{{') || formAction.includes('route(') || formAction.trim() === '') {
-                        console.error('[Clock Out - Previous Day] Invalid form action:', formAction);
-                        console.error('[Clock Out - Previous Day] Form HTML:', form.outerHTML);
-                        alert('Terjadi kesalahan: Form action tidak valid. Silakan refresh halaman.');
-                        return;
-                    }
-
-                    const formData = new FormData(form);
-
-                    fetch(formAction, {
-                        method: 'POST',
-                        credentials: 'same-origin', // Include cookies for same-origin requests
-                        body: formData,
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        redirect: 'follow'
-                    })
-                        .then(response => {
-                            if (response.status === 419) {
-                                // CSRF token expired
-                                if (retryCount < 2) {
-                                    console.log('CSRF token expired, refreshing and retrying...');
-                                    return refreshCsrfToken().then(() => {
-                                        return submitDashboardClockOutForm(retryCount + 1);
-                                    });
-                                } else {
-                                    throw new Error('CSRF token refresh failed after multiple attempts');
-                                }
-                            }
-                            return response;
-                        })
-                        .then(response => {
-                            if (response.ok) {
-                                // Success - reload page to show updated state
-                                if (response.redirected) {
-                                    window.location.href = response.url;
-                                } else {
-                                    window.location.reload();
-                                }
-                            } else {
-                                throw new Error('Clock out failed');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Clock out error:', error);
-
-                            // Reset button state
-                            const btn = document.getElementById('dashboardClockOutBtn');
-                            if (btn) {
-                                const btnText = btn.querySelector('.btn-text');
-                                const btnLoading = btn.querySelector('.btn-loading');
-
-                                if (btnText) btnText.classList.remove('hidden');
-                                if (btnLoading) btnLoading.classList.add('hidden');
-                                btn.disabled = false;
-                            }
-
-                            // Show error message
-                            alert('Terjadi kesalahan saat clock out. Silakan coba lagi atau refresh halaman.');
-                        });
-                }
-
-                function submitActiveSessionClockOutForm(retryCount = 0) {
-                    const form = document.getElementById('activeSessionClockOutForm');
-                    if (!form) {
-                        console.error('Form activeSessionClockOutForm not found');
-                        return;
-                    }
-
-                    // Get action from data-action attribute first (more reliable), fallback to action attribute
-                    let formAction = form.getAttribute('data-action') || form.getAttribute('action');
-
-                    // Debug logging
-                    console.log('[Clock Out - Active Session] Form action (from action attr):', form.getAttribute('action'));
-                    console.log('[Clock Out - Active Session] Form action (from data-action attr):', form.getAttribute('data-action'));
-                    console.log('[Clock Out - Active Session] Form action (final):', formAction);
-
-                    // Validate form action
-                    if (!formAction || formAction.includes('{{') || formAction.includes('route(') || formAction.trim() === '') {
-                        console.error('[Clock Out - Active Session] Invalid form action:', formAction);
-                        console.error('[Clock Out - Active Session] Form HTML:', form.outerHTML);
-                        alert('Terjadi kesalahan: Form action tidak valid. Silakan refresh halaman.');
-                        return;
-                    }
-
-                    const formData = new FormData(form);
-
-                    fetch(formAction, {
-                        method: 'POST',
-                        credentials: 'same-origin', // Include cookies for same-origin requests
-                        body: formData,
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        },
-                        redirect: 'follow'
-                    })
-                        .then(response => {
-                            if (response.status === 419) {
-                                // CSRF token expired
-                                if (retryCount < 2) {
-                                    console.log('CSRF token expired, refreshing and retrying active session clock out...');
-                                    return refreshCsrfToken().then(() => {
-                                        return submitActiveSessionClockOutForm(retryCount + 1);
-                                    });
-                                } else {
-                                    throw new Error('CSRF token refresh failed after multiple attempts');
-                                }
-                            }
-                            return response;
-                        })
-                        .then(response => {
-                            if (response.ok) {
-                                // Success - reload page to show updated state
-                                if (response.redirected) {
-                                    window.location.href = response.url;
-                                } else {
-                                    window.location.reload();
-                                }
-                            } else {
-                                throw new Error('Clock out failed');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Active session clock out error:', error);
-
-                            // Reset button state
-                            const btn = document.getElementById('activeSessionClockOutBtn');
-                            if (btn) {
-                                const btnText = btn.querySelector('.btn-text');
-                                const btnLoading = btn.querySelector('.btn-loading');
-
-                                if (btnText) btnText.classList.remove('hidden');
-                                if (btnLoading) btnLoading.classList.add('hidden');
-                                btn.disabled = false;
-                            }
-
-                            // Show error message
-                            alert('Terjadi kesalahan saat clock out. Silakan coba lagi atau refresh halaman.');
-                        });
-                }
-
-                function refreshCsrfToken() {
-                    return fetch('/csrf-token', {
-                        method: 'GET',
-                        credentials: 'same-origin', // Include cookies for same-origin requests
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Accept': 'application/json'
-                        }
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.csrf_token) {
-                                // Update meta tag
-                                const metaTag = document.querySelector('meta[name="csrf-token"]');
-                                if (metaTag) {
-                                    metaTag.setAttribute('content', data.csrf_token);
-                                }
-
-                                // Update all CSRF token inputs in all forms
-                                const csrfInputs = document.querySelectorAll('input[name="_token"]');
-                                csrfInputs.forEach(input => {
-                                    input.value = data.csrf_token;
+                fetch(formAction, {
+                    method: 'POST',
+                    credentials: 'same-origin', // Include cookies for same-origin requests
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    redirect: 'follow'
+                })
+                    .then(response => {
+                        if (response.status === 419) {
+                            // CSRF token expired
+                            if (retryCount < 2) {
+                                console.log('CSRF token expired, refreshing and retrying active session clock out...');
+                                return refreshCsrfToken().then(() => {
+                                    return submitActiveSessionClockOutForm(retryCount + 1);
                                 });
-
-                                console.log('CSRF token refreshed successfully');
+                            } else {
+                                throw new Error('CSRF token refresh failed after multiple attempts');
                             }
-                        });
-                }
-            });
-        </script>
+                        }
+                        return response;
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            // Success - reload page to show updated state
+                            if (response.redirected) {
+                                window.location.href = response.url;
+                            } else {
+                                window.location.reload();
+                            }
+                        } else {
+                            throw new Error('Clock out failed');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Active session clock out error:', error);
+
+                        // Reset button state
+                        const btn = document.getElementById('activeSessionClockOutBtn');
+                        if (btn) {
+                            const btnText = btn.querySelector('.btn-text');
+                            const btnLoading = btn.querySelector('.btn-loading');
+
+                            if (btnText) btnText.classList.remove('hidden');
+                            if (btnLoading) btnLoading.classList.add('hidden');
+                            btn.disabled = false;
+                        }
+
+                        // Show error message
+                        alert('Terjadi kesalahan saat clock out. Silakan coba lagi atau refresh halaman.');
+                    });
+            }
+
+            function refreshCsrfToken() {
+                return fetch('/csrf-token', {
+                    method: 'GET',
+                    credentials: 'same-origin', // Include cookies for same-origin requests
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.csrf_token) {
+                            // Update meta tag
+                            const metaTag = document.querySelector('meta[name="csrf-token"]');
+                            if (metaTag) {
+                                metaTag.setAttribute('content', data.csrf_token);
+                            }
+
+                            // Update all CSRF token inputs in all forms
+                            const csrfInputs = document.querySelectorAll('input[name="_token"]');
+                            csrfInputs.forEach(input => {
+                                input.value = data.csrf_token;
+                            });
+
+                            console.log('CSRF token refreshed successfully');
+                        }
+                    });
+            }
+        });
+    </script>
 @endpush

@@ -176,7 +176,7 @@ class StaffController extends Controller
 
         // Webhook system removed for better performance
 
-        return redirect()->route('staff.login')->with('success', 'Staf baru berhasil didaftarkan! Silakan login dengan email dan password yang telah dibuat.');
+        return redirect()->route('staff.login')->with('success', 'Registrasi berhasil! Selamat datang di Tim EMS. Silakan login dengan email dan password yang telah Anda buat.');
     }
 
     public function updateProfile(Request $request)
