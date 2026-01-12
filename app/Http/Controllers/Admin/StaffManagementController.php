@@ -32,12 +32,32 @@ class StaffManagementController extends Controller
             $query->where('role_id', request('role'));
         }
 
-        if (request()->has('active') && request('active') !== '') {
-            $query->where('is_active', request('active') ? 1 : 0);
+        // Explicit Status Filter
+        if (request()->has('active') && request('active') !== null && request('active') !== '') {
+            $isActive = request('active') == '1';
+            $query->where('is_active', $isActive);
         }
+
+        // Clone query for counts BEFORE pagination
+        $countQuery = clone $query;
+        // Remove ordering and select for faster counting
+        $countQuery->getQuery()->orders = null;
+
+        // Calculate dynamic counts based on current filters
+        // Note: These counts reflect the CURRENT SEARCH/FILTER context
+        $stats = [
+            'total' => $query->count(),
+            'active' => (clone $query)->where('is_active', 1)->count(),
+            'inactive' => (clone $query)->where('is_active', 0)->count(),
+            'admin' => (clone $query)->whereHas('role', function ($q) {
+                $q->where('name', 'admin'); })->count(),
+        ];
 
         $staff = $query->orderBy('name')->paginate(20)->withQueryString();
         $roles = StaffRole::orderBy('display_name')->get();
+
+        // Pass stats to view
+        request()->merge(['stats' => $stats]);
 
         // Ringkas rekap absensi untuk dashboard admin (harian/mingguan/bulanan)
         // Filters: day (Y-m-d), week (YYYY-Www per input type=week), month (Y-m)
@@ -359,7 +379,7 @@ class StaffManagementController extends Controller
             $query->where('role_id', $request->get('role'));
         }
 
-        if ($request->has('active') && $request->get('active') !== '') {
+        if ($request->has('active') && $request->get('active') !== null && $request->get('active') !== '') {
             $query->where('is_active', $request->get('active') ? 1 : 0);
         }
 
