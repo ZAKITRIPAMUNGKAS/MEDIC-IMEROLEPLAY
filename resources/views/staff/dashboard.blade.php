@@ -875,7 +875,7 @@
                     </div>
                 </div>
 
-                @if(optional(auth()->user()->role)->name !== 'perawat')
+                @if(optional(auth()->user()->role)->name !== 'perawat' && optional(auth()->user()->role)->name !== 'trainee')
                     <!-- Statistik Form Mingguan (dipindah ke bawah Leaderboard) -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <!-- Menunggu Review Card -->
@@ -1493,17 +1493,17 @@
             toast.style.setProperty('--duration', `${duration}ms`);
             console.log('🎨 NEW TOAST DESIGN v2 - White Card Design');
             toast.innerHTML = `
-                                                    <div class="toast-icon">
-                                                        <i class="fas ${icons[type]} text-sm"></i>
-                                                    </div>
-                                                    <div class="toast-content">
-                                                        <div class="toast-title">${title}</div>
-                                                        <div class="toast-message">${message}</div>
-                                                    </div>
-                                                    <button class="toast-close" onclick="closeToast(this.parentElement)">
-                                                        <i class="fas fa-times text-xs"></i>
-                                                    </button>
-                                                `;
+                                                        <div class="toast-icon">
+                                                            <i class="fas ${icons[type]} text-sm"></i>
+                                                        </div>
+                                                        <div class="toast-content">
+                                                            <div class="toast-title">${title}</div>
+                                                            <div class="toast-message">${message}</div>
+                                                        </div>
+                                                        <button class="toast-close" onclick="closeToast(this.parentElement)">
+                                                            <i class="fas fa-times text-xs"></i>
+                                                        </button>
+                                                    `;
 
             container.appendChild(toast);
             setTimeout(() => closeToast(toast), duration);
@@ -1523,7 +1523,7 @@
             @if(session('info'))
                 showToast('info', 'Informasi', '{{ session('info') }}');
             @endif
-                                        });
+                                            });
 
         function closeToast(toast) {
             if (!toast || toast.classList.contains('hiding')) return;

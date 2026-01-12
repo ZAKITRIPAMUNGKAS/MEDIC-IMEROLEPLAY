@@ -83,8 +83,17 @@
                             @endforeach
                         @endisset
                     </select>
+                    </select>
                 </div>
-                <div class="sm:col-span-2 lg:col-span-2 flex gap-2">
+                <!-- Status Filter -->
+                <div class="sm:col-span-2 lg:col-span-1">
+                    <select name="active" class="w-full bg-white/10 text-white border border-white/20 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 appearance-none text-sm">
+                        <option value="">Semua Status</option>
+                        <option value="1" @selected(request('active') === '1') class="bg-slate-800 text-slate-100">Aktif</option>
+                        <option value="0" @selected(request('active') === '0') class="bg-slate-800 text-slate-100">Nonaktif</option>
+                    </select>
+                </div>
+                <div class="sm:col-span-2 lg:col-span-1 flex gap-2">
                     <button type="submit" class="flex-1 inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white rounded-lg font-semibold transition-all duration-300 text-sm">
                         <i class="fas fa-search mr-2"></i><span class="hidden xs:inline">Cari</span>
                     </button>

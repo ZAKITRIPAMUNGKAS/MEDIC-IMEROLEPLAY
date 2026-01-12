@@ -58,6 +58,12 @@ class DashboardController extends Controller
             $recentAppointmentsQuery->whereIn('form_type', $appointmentTypes);
             // Stats: All included
 
+        } elseif ($userRole === 'trainee') {
+            // Trainee: Sees NOTHING (Only Clock In/Out & Leaderboard)
+            $recentFormsQuery->whereRaw('1 = 0');
+            $recentAppointmentsQuery->whereRaw('1 = 0');
+            $statsQuery->whereRaw('1 = 0');
+
         } elseif ($userRole === 'co_ass') {
             // Co-Ass: Only 3 form types, NO appointments
             $allowedForms = ['surat_kesehatan', 'tes_psikologi', 'surat_psikolog'];
@@ -191,6 +197,9 @@ class DashboardController extends Controller
 
         if ($isAdmin) {
             // Admin sees all, no filter needed here
+        } elseif ($userRole === 'trainee') {
+            // Trainee: Sees NOTHING
+            $query->whereRaw('1 = 0');
         } elseif ($userRole === 'co_ass') {
             // Co-Ass: Only 3 form types, NO appointments
             $allowedForms = ['surat_kesehatan', 'tes_psikologi', 'surat_psikolog'];

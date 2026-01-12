@@ -70,6 +70,15 @@ class StaffController extends Controller
                 ]);
             }
 
+            // Check if user is active
+            if (!$user->is_active) {
+                \Log::warning('Inactive user tried to login', ['user_id' => $user->id]);
+                Auth::logout();
+                throw ValidationException::withMessages([
+                    'email' => 'Akun Anda belum aktif. Silakan hubungi Admin/HRD untuk aktivasi.',
+                ]);
+            }
+
             // Webhook system removed for better performance
 
             // Clear intended URL to prevent redirect loop
@@ -170,13 +179,13 @@ class StaffController extends Controller
             'password' => Hash::make($request->password),
             'role_id' => $request->role_id,
             'hospital' => $request->hospital,
-            'is_active' => true,
+            'is_active' => false,
             'profile_image' => $profileImagePath,
         ]);
 
         // Webhook system removed for better performance
 
-        return redirect()->route('staff.login')->with('success', 'Registrasi berhasil! Selamat datang di Tim EMS. Silakan login dengan email dan password yang telah Anda buat.');
+        return redirect()->route('staff.login')->with('success', 'Registrasi berhasil! Akun Anda menunggu aktivasi dari Admin/HRD sebelum bisa login.');
     }
 
     public function updateProfile(Request $request)
