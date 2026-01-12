@@ -285,7 +285,8 @@ class PayrollController extends Controller
             try {
                 $isAfterSunday = now()->isMonday() || now()->isTuesday() || now()->isWednesday() ||
                     now()->isThursday() || now()->isFriday() || now()->isSaturday();
-                $canGenerateManually = !($isAfterSunday && $lastWeekPayrollExists);
+                // $canGenerateManually = !($isAfterSunday && $lastWeekPayrollExists);
+                $canGenerateManually = true; // Allow manual generation to fix missing data
             } catch (\Exception $e) {
                 Log::warning('Error determining canGenerateManually', [
                     'error' => $e->getMessage()
@@ -569,7 +570,7 @@ class PayrollController extends Controller
                 $message .= " " . count($errors) . " error: " . implode(' ', $errors);
             }
 
-            return redirect()->route('admin.payroll.index')->with('success', $message);
+            return redirect()->route('admin.payroll.index', ['week' => $periodStart->format('Y-m-d')])->with('success', $message);
 
         } catch (\Exception $e) {
             DB::rollBack();

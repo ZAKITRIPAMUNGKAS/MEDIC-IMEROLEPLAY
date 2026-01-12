@@ -117,7 +117,10 @@ class SalarySetting extends Model
             return null;
         }
 
-        return static::where('role_name', $roleName)
+        return static::where(function ($query) use ($roleName) {
+            $query->where('role_name', $roleName)
+                ->orWhereRaw('LOWER(role_name) = ?', [strtolower($roleName)]);
+        })
             ->where('is_active', true)
             ->first();
     }

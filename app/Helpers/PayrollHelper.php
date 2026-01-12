@@ -31,7 +31,16 @@ class PayrollHelper
             }
             $salarySetting->weekly_salary = $customWeeklySalary;
         } elseif (!$salarySetting || !$salarySetting->isValidForCalculation()) {
-            return 0;
+            // Try case-insensitive lookup
+            if (!$salarySetting && $roleName) {
+                $salarySetting = SalarySetting::whereRaw('LOWER(role_name) = ?', [strtolower($roleName)])
+                    ->where('is_active', true)
+                    ->first();
+            }
+
+            if (!$salarySetting || !$salarySetting->isValidForCalculation()) {
+                return 0;
+            }
         }
 
         $totalHours = TimeHelper::secondsToHours($totalSeconds);
@@ -140,6 +149,7 @@ class PayrollHelper
         $salarySetting = SalarySetting::findByRole($roleName);
 
         if (!$salarySetting || !$salarySetting->isValidForCalculation()) {
+            \Illuminate\Support\Facades\Log::warning('PayrollHelper: Salary setting not found or invalid for user ' . $user->name . ' (Role: ' . ($roleName ?? 'None') . ')');
             return [
                 'hourly_rate' => 0,
                 'base_salary' => 0,
