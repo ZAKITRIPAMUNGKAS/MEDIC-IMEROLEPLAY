@@ -46,29 +46,20 @@ class PayrollController extends Controller
                 $query->where('status', $filters['status']);
             }
 
-            // Filter by hospital (alta/roxwood) - simplified
+            // Filter by hospital (alta/roxwood)
             if (!empty($filters['hospital'])) {
                 try {
-                    if ($filters['hospital'] === 'roxwood') {
-                        // Roxwood: name atau staff_id mengandung "rh"
-                        $query->whereHas('user', function ($sub) {
+                    $hospital = $filters['hospital'];
+                    $query->whereHas('user', function ($sub) use ($hospital) {
+                        if ($hospital === 'roxwood') {
+                            $sub->where('hospital', 'roxwood');
+                        } elseif ($hospital === 'alta') {
                             $sub->where(function ($q) {
-                                $q->whereRaw('LOWER(name) LIKE ?', ['%rh%'])
-                                    ->orWhereRaw('LOWER(staff_id) LIKE ?', ['%rh%']);
+                                $q->where('hospital', 'alta')
+                                    ->orWhereNull('hospital');
                             });
-                        });
-                    } else if ($filters['hospital'] === 'alta') {
-                        // Alta: name dan staff_id TIDAK mengandung "rh"
-                        $query->whereHas('user', function ($sub) {
-                            $sub->where(function ($q) {
-                                $q->whereRaw('LOWER(name) NOT LIKE ?', ['%rh%'])
-                                    ->where(function ($sid) {
-                                        $sid->whereNull('staff_id')
-                                            ->orWhereRaw('LOWER(staff_id) NOT LIKE ?', ['%rh%']);
-                                    });
-                            });
-                        });
-                    }
+                        }
+                    });
                 } catch (\Exception $e) {
                     Log::warning('Error filtering by hospital', [
                         'hospital' => $filters['hospital'] ?? 'unknown',
