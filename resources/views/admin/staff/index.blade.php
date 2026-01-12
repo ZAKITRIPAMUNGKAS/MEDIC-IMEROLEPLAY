@@ -17,6 +17,9 @@
                 </div>
                 <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                     <div class="text-right">
+                        <p class="text-gray-300 text-sm">Total Staf</p>
+                        <p class="text-xl sm:text-2xl font-bold text-white">{{ request('stats')['total'] ?? $staff->total() }}</p>
+                    </div>
                     <a href="{{ route('admin.staff.export', request()->query()) }}" class="w-full sm:w-auto inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg">
                         <i class="fas fa-file-excel mr-2"></i><span class="hidden xs:inline">Export Excel</span><span class="xs:hidden">Export</span>
                     </a>
@@ -27,18 +30,7 @@
             </div>
 
             <!-- Summary Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                <div class="glass-effect rounded-xl elegant-shadow-lg p-4">
-                    <div class="flex items-center">
-                        <div class="w-10 h-10 bg-sky-500/20 rounded-lg flex items-center justify-center mr-3">
-                            <i class="fas fa-users text-sky-400 text-lg"></i>
-                        </div>
-                        <div>
-                            <p class="text-gray-300 text-sm">Total Staf</p>
-                            <p class="text-xl font-bold text-white">{{ request('stats')['total'] ?? $staff->total() }}</p>
-                        </div>
-                    </div>
-                </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
                 
                 <div class="glass-effect rounded-xl elegant-shadow-lg p-4">
                     <div class="flex items-center">
