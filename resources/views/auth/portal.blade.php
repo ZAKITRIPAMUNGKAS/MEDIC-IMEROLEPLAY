@@ -311,8 +311,8 @@
     <!-- Toast Notification Container -->
     @if(session('success'))
         <div id="toast-success"
-            style="position: fixed !important; top: 2rem !important; right: 2rem !important; z-index: 99999 !important;"
-            class="bg-white border-l-4 border-green-500 rounded-lg shadow-2xl p-4 max-w-md transform transition-all duration-500 ease-out translate-x-0 opacity-100">
+            style="position: fixed !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; z-index: 99999 !important;"
+            class="bg-white border-l-4 border-green-500 rounded-lg shadow-2xl p-4 max-w-md transition-all duration-500 ease-out opacity-100">
             <div class="flex items-start">
                 <div class="flex-shrink-0">
                     <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -336,7 +336,7 @@
             setTimeout(() => {
                 const toast = document.getElementById('toast-success');
                 if (toast) {
-                    toast.classList.add('translate-x-full', 'opacity-0');
+                    toast.classList.add('opacity-0');
                     setTimeout(() => toast.remove(), 500);
                 }
             }, 5000);
@@ -345,8 +345,8 @@
 
     @if(session('error'))
         <div id="toast-error"
-            style="position: fixed !important; top: 2rem !important; right: 2rem !important; z-index: 99999 !important;"
-            class="bg-white border-l-4 border-red-500 rounded-lg shadow-2xl p-4 max-w-md transform transition-all duration-500 ease-out translate-x-0 opacity-100">
+            style="position: fixed !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; z-index: 99999 !important;"
+            class="bg-white border-l-4 border-red-500 rounded-lg shadow-2xl p-4 max-w-md transition-all duration-500 ease-out opacity-100">
             <div class="flex items-start">
                 <div class="flex-shrink-0">
                     <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -370,7 +370,7 @@
             setTimeout(() => {
                 const toast = document.getElementById('toast-error');
                 if (toast) {
-                    toast.classList.add('translate-x-full', 'opacity-0');
+                    toast.classList.add('opacity-0');
                     setTimeout(() => toast.remove(), 500);
                 }
             }, 5000);
@@ -379,8 +379,8 @@
 
     @if($errors->any())
         <div id="toast-validation"
-            style="position: fixed !important; top: 2rem !important; right: 2rem !important; z-index: 99999 !important;"
-            class="bg-white border-l-4 border-yellow-500 rounded-lg shadow-2xl p-4 max-w-md transform transition-all duration-500 ease-out translate-x-0 opacity-100">
+            style="position: fixed !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; z-index: 99999 !important;"
+            class="bg-white border-l-4 border-yellow-500 rounded-lg shadow-2xl p-4 max-w-md transition-all duration-500 ease-out opacity-100">
             <div class="flex items-start">
                 <div class="flex-shrink-0">
                     <svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -408,7 +408,7 @@
             setTimeout(() => {
                 const toast = document.getElementById('toast-validation');
                 if (toast) {
-                    toast.classList.add('translate-x-full', 'opacity-0');
+                    toast.classList.add('opacity-0');
                     setTimeout(() => toast.remove(), 500);
                 }
             }, 7000);
