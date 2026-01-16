@@ -482,8 +482,6 @@
         </script>
     @endif
 
-    @endif
-
     <div class="container-custom {{ (isset($mode) && $mode === 'register') ? 'sign-up-mode' : '' }}">
         <!-- Forms Container -->
         <div class="forms-container">

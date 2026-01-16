@@ -308,25 +308,67 @@
 
 <body class="bg-slate-50 min-h-screen">
 
-    <!-- Toast Notification Container -->
-    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(session('success')): ?>
+
+    <!-- Modern Premium Toast Notifications -->
+    
+    <!-- Backdrop Overlay for Better Focus -->
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(session('success') || session('error') || $errors->any()): ?>
+        <div id="toast-backdrop" 
+            style="position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(4px); z-index: 99998; 
+                   animation: fadeIn 0.3s ease-out;"
+            onclick="document.querySelectorAll('[id^=toast-]').forEach(t => t.remove()); this.remove();">
+        </div>
+        <style>
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { 
+                    opacity: 0; 
+                    transform: translate(-50%, -40%) scale(0.95); 
+                }
+                to { 
+                    opacity: 1; 
+                    transform: translate(-50%, -50%) scale(1); 
+                }
+            }
+            @keyframes slideDown {
+                from { 
+                    opacity: 1; 
+                    transform: translate(-50%, -50%) scale(1); 
+                }
+                to { 
+                    opacity: 0; 
+                    transform: translate(-50%, -60%) scale(0.95); 
+                }
+            }
+        </style>
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
+    <?php if(session('success')): ?>
         <div id="toast-success"
-            style="position: fixed !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; z-index: 99999 !important;"
-            class="bg-white border-l-4 border-green-500 rounded-lg shadow-2xl p-4 max-w-md transition-all duration-500 ease-out opacity-100">
-            <div class="flex items-start">
-                <div class="flex-shrink-0">
-                    <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            style="position: fixed !important; 
+                   top: 50% !important; 
+                   left: 50% !important; 
+                   transform: translate(-50%, -50%) !important; 
+                   z-index: 99999 !important;
+                   animation: slideUp 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);"
+            class="bg-gradient-to-br from-emerald-50 to-green-50 border-2 border-emerald-400 rounded-2xl shadow-2xl p-6 w-full max-w-md backdrop-blur-sm">
+            <div class="flex items-start gap-4">
+                <div class="flex-shrink-0 bg-gradient-to-br from-emerald-500 to-green-600 rounded-full p-3 shadow-lg">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                             d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </div>
-                <div class="ml-3 flex-1">
-                    <h3 class="text-sm font-bold text-gray-900">Berhasil!</h3>
-                    <p class="mt-1 text-sm text-gray-600"><?php echo e(session('success')); ?></p>
+                <div class="flex-1 pt-1">
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">✅ Berhasil!</h3>
+                    <p class="text-sm text-gray-700 leading-relaxed"><?php echo e(session('success')); ?></p>
                 </div>
-                <button type="button" onclick="document.getElementById('toast-success').remove()"
-                    class="ml-4 flex-shrink-0 text-gray-400 hover:text-gray-600">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button type="button" onclick="this.closest('#toast-success').style.animation='slideDown 0.3s ease-out'; setTimeout(() => { document.getElementById('toast-success').remove(); document.getElementById('toast-backdrop')?.remove(); }, 300);"
+                    class="flex-shrink-0 text-gray-400 hover:text-gray-700 transition-colors hover:rotate-90 transform duration-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
@@ -335,9 +377,13 @@
         <script>
             setTimeout(() => {
                 const toast = document.getElementById('toast-success');
+                const backdrop = document.getElementById('toast-backdrop');
                 if (toast) {
-                    toast.classList.add('opacity-0');
-                    setTimeout(() => toast.remove(), 500);
+                    toast.style.animation = 'slideDown 0.3s ease-out';
+                    setTimeout(() => {
+                        toast.remove();
+                        backdrop?.remove();
+                    }, 300);
                 }
             }, 5000);
         </script>
@@ -345,22 +391,27 @@
 
     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(session('error')): ?>
         <div id="toast-error"
-            style="position: fixed !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; z-index: 99999 !important;"
-            class="bg-white border-l-4 border-red-500 rounded-lg shadow-2xl p-4 max-w-md transition-all duration-500 ease-out opacity-100">
-            <div class="flex items-start">
-                <div class="flex-shrink-0">
-                    <svg class="w-6 h-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            style="position: fixed !important; 
+                   top: 50% !important; 
+                   left: 50% !important; 
+                   transform: translate(-50%, -50%) !important; 
+                   z-index: 99999 !important;
+                   animation: slideUp 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);"
+            class="bg-gradient-to-br from-red-50 to-rose-50 border-2 border-red-400 rounded-2xl shadow-2xl p-6 w-full max-w-md backdrop-blur-sm">
+            <div class="flex items-start gap-4">
+                <div class="flex-shrink-0 bg-gradient-to-br from-red-500 to-rose-600 rounded-full p-3 shadow-lg">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </div>
-                <div class="ml-3 flex-1">
-                    <h3 class="text-sm font-bold text-gray-900">Error!</h3>
-                    <p class="mt-1 text-sm text-gray-600"><?php echo e(session('error')); ?></p>
+                <div class="flex-1 pt-1">
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">❌ Error!</h3>
+                    <p class="text-sm text-gray-700 leading-relaxed"><?php echo e(session('error')); ?></p>
                 </div>
-                <button type="button" onclick="document.getElementById('toast-error').remove()"
-                    class="ml-4 flex-shrink-0 text-gray-400 hover:text-gray-600">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button type="button" onclick="this.closest('#toast-error').style.animation='slideDown 0.3s ease-out'; setTimeout(() => { document.getElementById('toast-error').remove(); document.getElementById('toast-backdrop')?.remove(); }, 300);"
+                    class="flex-shrink-0 text-gray-400 hover:text-gray-700 transition-colors hover:rotate-90 transform duration-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
@@ -369,9 +420,13 @@
         <script>
             setTimeout(() => {
                 const toast = document.getElementById('toast-error');
+                const backdrop = document.getElementById('toast-backdrop');
                 if (toast) {
-                    toast.classList.add('opacity-0');
-                    setTimeout(() => toast.remove(), 500);
+                    toast.style.animation = 'slideDown 0.3s ease-out';
+                    setTimeout(() => {
+                        toast.remove();
+                        backdrop?.remove();
+                    }, 300);
                 }
             }, 5000);
         </script>
@@ -379,26 +434,34 @@
 
     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($errors->any()): ?>
         <div id="toast-validation"
-            style="position: fixed !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; z-index: 99999 !important;"
-            class="bg-white border-l-4 border-yellow-500 rounded-lg shadow-2xl p-4 max-w-md transition-all duration-500 ease-out opacity-100">
-            <div class="flex items-start">
-                <div class="flex-shrink-0">
-                    <svg class="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            style="position: fixed !important; 
+                   top: 50% !important; 
+                   left: 50% !important; 
+                   transform: translate(-50%, -50%) !important; 
+                   z-index: 99999 !important;
+                   animation: slideUp 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);"
+            class="bg-gradient-to-br from-amber-50 to-yellow-50 border-2 border-amber-400 rounded-2xl shadow-2xl p-6 w-full max-w-md backdrop-blur-sm">
+            <div class="flex items-start gap-4">
+                <div class="flex-shrink-0 bg-gradient-to-br from-amber-500 to-yellow-600 rounded-full p-3 shadow-lg">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                             d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
                 </div>
-                <div class="ml-3 flex-1">
-                    <h3 class="text-sm font-bold text-gray-900">Validasi Error</h3>
-                    <ul class="mt-1 text-sm text-gray-600 list-disc list-inside">
+                <div class="flex-1 pt-1">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">⚠️ Validasi Error</h3>
+                    <ul class="space-y-1.5 text-sm text-gray-700">
                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                            <li><?php echo e($error); ?></li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-amber-600 mt-0.5">•</span>
+                                <span class="flex-1"><?php echo e($error); ?></span>
+                            </li>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </ul>
                 </div>
-                <button type="button" onclick="document.getElementById('toast-validation').remove()"
-                    class="ml-4 flex-shrink-0 text-gray-400 hover:text-gray-600">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <button type="button" onclick="this.closest('#toast-validation').style.animation='slideDown 0.3s ease-out'; setTimeout(() => { document.getElementById('toast-validation').remove(); document.getElementById('toast-backdrop')?.remove(); }, 300);"
+                    class="flex-shrink-0 text-gray-400 hover:text-gray-700 transition-colors hover:rotate-90 transform duration-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
@@ -407,12 +470,18 @@
         <script>
             setTimeout(() => {
                 const toast = document.getElementById('toast-validation');
+                const backdrop = document.getElementById('toast-backdrop');
                 if (toast) {
-                    toast.classList.add('opacity-0');
-                    setTimeout(() => toast.remove(), 500);
+                    toast.style.animation = 'slideDown 0.3s ease-out';
+                    setTimeout(() => {
+                        toast.remove();
+                        backdrop?.remove();
+                    }, 300);
                 }
             }, 7000);
         </script>
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
     <div class="container-custom <?php echo e((isset($mode) && $mode === 'register') ? 'sign-up-mode' : ''); ?>">
