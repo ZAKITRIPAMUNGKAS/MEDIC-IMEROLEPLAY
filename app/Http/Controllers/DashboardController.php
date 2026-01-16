@@ -48,8 +48,10 @@ class DashboardController extends Controller
         // Get stats query
         $statsQuery = MedicalForm::query();
 
+
         // user role filtering
         $userRole = $user->role->name ?? '';
+        $userLevel = $user->role->level ?? 0;
 
         // Role-based filtering logic
         if ($isAdmin) {
@@ -88,8 +90,8 @@ class DashboardController extends Controller
             $statsAllowed = array_merge(['operasi_plastik'], $appointmentTypes);
             $statsQuery->whereIn('form_type', $statsAllowed);
 
-        } elseif (($user->role->level ?? 0) >= 5) {
-            // Staff Manager and above (level 5+): Can view appointments like doctors
+        } elseif ($userLevel >= 5) {
+            // Staff Manager and above (level 5+): Can view appointments
             // Forms: Standard (Non-appointments)
             // Appointments: SHOW all appointment types
 
@@ -97,11 +99,14 @@ class DashboardController extends Controller
             $recentAppointmentsQuery->whereIn('form_type', $appointmentTypes);
             // Stats: Include all form types (no filter needed for managers)
 
-        } else {
-            // Others (Perawat, etc.):
-            // Forms: Standard (Non-appointments)
-            // Appointments: HIDDEN
+        } elseif ($userRole === 'perawat') {
+            // Perawat: Standard forms, NO Appointments
+            $recentFormsQuery->whereNotIn('form_type', $appointmentTypes);
+            $recentAppointmentsQuery->whereRaw('1 = 0'); // Force empty
+            $statsQuery->whereNotIn('form_type', $appointmentTypes);
 
+        } else {
+            // Others: Standard forms, NO Appointments
             $recentFormsQuery->whereNotIn('form_type', $appointmentTypes);
             $recentAppointmentsQuery->whereRaw('1 = 0'); // Force empty
             $statsQuery->whereNotIn('form_type', $appointmentTypes);
@@ -203,6 +208,7 @@ class DashboardController extends Controller
 
         // ROLE-BASED FILTERING (Mirrors DashboardController::index)
         $userRole = $user->role->name ?? '';
+        $userLevel = $user->role->level ?? 0;
 
         if ($isAdmin) {
             // Admin sees all, no filter needed here
@@ -219,7 +225,7 @@ class DashboardController extends Controller
             $allowedForms = array_merge(['operasi_plastik'], $appointmentTypes);
             $query->whereIn('form_type', $allowedForms);
 
-        } elseif (($user->role->level ?? 0) >= 5) {
+        } elseif ($userLevel >= 5) {
             // Staff Manager and above (level 5+): All forms INCLUDING Appointments
             // No filtering needed - they can see everything
 
