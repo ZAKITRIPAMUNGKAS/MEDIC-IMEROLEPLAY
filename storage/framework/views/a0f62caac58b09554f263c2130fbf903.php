@@ -1,8 +1,8 @@
-@extends('layouts.app')
 
-@section('title', 'Manajemen Gaji - Portal Medis MPK-BA')
 
-@section('content')
+<?php $__env->startSection('title', 'Manajemen Gaji - Portal Medis MPK-BA'); ?>
+
+<?php $__env->startSection('content'); ?>
 <div class="relative min-h-screen py-8 px-4 sm:px-6 lg:px-8">
     <div class="absolute inset-0 bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700"></div>
     <div class="absolute inset-0 bg-black bg-opacity-20"></div>
@@ -18,51 +18,51 @@
                 <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                     <div class="text-right">
                         <p class="text-gray-300 text-sm">Total Gaji</p>
-                        <p class="text-xl sm:text-2xl font-bold text-white">{{ $summary['total_payrolls'] ?? 0 }}</p>
+                        <p class="text-xl sm:text-2xl font-bold text-white"><?php echo e($summary['total_payrolls'] ?? 0); ?></p>
                     </div>
                     <div class="flex flex-col sm:flex-row gap-3">
                         <!-- Generate Payroll Button -->
-                        @if(isset($canGenerateManually) && !$canGenerateManually)
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($canGenerateManually) && !$canGenerateManually): ?>
                             <button disabled
                                     class="w-full sm:w-auto inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gray-400 text-white rounded-lg font-semibold cursor-not-allowed opacity-60"
                                     title="Generate gaji sudah dilakukan secara otomatis pada hari Minggu jam 23:59. Tidak dapat melakukan generate manual setelah auto-generate.">
                                 <i class="fas fa-lock mr-2"></i><span class="hidden xs:inline">Generate Gaji (Otomatis)</span><span class="xs:hidden">Generate (Otomatis)</span>
                             </button>
-                            @if(isset($lastWeekPayrollExists) && $lastWeekPayrollExists)
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($lastWeekPayrollExists) && $lastWeekPayrollExists): ?>
                                 <div class="flex items-center px-3 py-2 bg-green-500/20 text-green-300 rounded-lg text-sm">
                                     <i class="fas fa-check-circle mr-2"></i>
                                     <span>Auto-generated (Minggu 23:59)</span>
                                 </div>
-                            @endif
-                        @else
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        <?php else: ?>
                             <button onclick="openGenerateModal()" 
                                     class="w-full sm:w-auto inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg">
                                 <i class="fas fa-plus mr-2"></i><span class="hidden xs:inline">Generate Gaji</span><span class="xs:hidden">Generate</span>
                             </button>
-                        @endif
-                        @if(isset($currentMonthExport) && $currentMonthExport)
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($currentMonthExport) && $currentMonthExport): ?>
                             <!-- Already Exported - Disabled Button -->
                             <button disabled
                                     class="w-full sm:w-auto inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gray-400 text-white rounded-lg font-semibold cursor-not-allowed opacity-60"
-                                    title="Data gaji sudah di export bulan ini oleh {{ $currentMonthExport->exporter->name }} pada {{ $currentMonthExport->exported_at->format('d M Y H:i') }}">
+                                    title="Data gaji sudah di export bulan ini oleh <?php echo e($currentMonthExport->exporter->name); ?> pada <?php echo e($currentMonthExport->exported_at->format('d M Y H:i')); ?>">
                                 <i class="fas fa-check-circle mr-2"></i>
                                 <span class="hidden xs:inline">Sudah Di-Export</span>
                                 <span class="xs:hidden">Exported</span>
                             </button>
                             <div class="hidden sm:flex items-center px-3 py-2 bg-green-500/20 text-green-300 rounded-lg text-sm">
                                 <i class="fas fa-info-circle mr-2"></i>
-                                <span>Export oleh <strong>{{ $currentMonthExport->exporter->name }}</strong> ({{ $currentMonthExport->exported_at->format('d M Y') }})</span>
+                                <span>Export oleh <strong><?php echo e($currentMonthExport->exporter->name); ?></strong> (<?php echo e($currentMonthExport->exported_at->format('d M Y')); ?>)</span>
                             </div>
-                        @else
+                        <?php else: ?>
                             <!-- Can Export - Active Button -->
-                            <a href="{{ route('admin.payroll.export', request()->query()) }}" 
+                            <a href="<?php echo e(route('admin.payroll.export', request()->query())); ?>" 
                                class="w-full sm:w-auto inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg"
                                onclick="return confirm('Apakah Anda yakin ingin export data gaji?\n\nExport hanya bisa dilakukan 1x per bulan.')">
                                 <i class="fas fa-download mr-2"></i>
                                 <span class="hidden xs:inline">Export CSV</span>
                                 <span class="xs:hidden">Export</span>
                             </a>
-                        @endif
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         <button onclick="removeDuplicates()" 
                                 class="w-full sm:w-auto inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg"
                                 title="Hapus data gaji duplikat, simpan yang terbaru">
@@ -78,67 +78,69 @@
                     <div>
                         <h3 class="text-lg font-semibold text-white">Navigasi Minggu</h3>
                         <p class="text-sm text-gray-300">
-                            @if(!empty($filters['week']))
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($filters['week'])): ?>
                                 Menampilkan minggu terpilih
-                            @else
-                                Menampilkan minggu ini ({{ \Carbon\Carbon::now()->startOfWeek()->format('d M Y') }} - {{ \Carbon\Carbon::now()->endOfWeek()->format('d M Y') }})
-                            @endif
+                            <?php else: ?>
+                                Menampilkan minggu ini (<?php echo e(\Carbon\Carbon::now()->startOfWeek()->format('d M Y')); ?> - <?php echo e(\Carbon\Carbon::now()->endOfWeek()->format('d M Y')); ?>)
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </p>
                     </div>
                     <div class="flex flex-wrap gap-2">
-                        @if(empty($filters['week']))
-                            <a href="{{ route('admin.payroll.index', array_merge(request()->query(), ['week' => 'all'])) }}" 
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(empty($filters['week'])): ?>
+                            <a href="<?php echo e(route('admin.payroll.index', array_merge(request()->query(), ['week' => 'all']))); ?>" 
                                class="px-4 py-2 rounded-lg text-sm font-medium bg-green-500/20 text-green-300 hover:bg-green-500/30 transition-all duration-200">
                                 <i class="fas fa-calendar-alt mr-1"></i>Lihat Semua Minggu
                             </a>
-                        @else
-                            <a href="{{ route('admin.payroll.index', array_diff_key(request()->query(), ['week' => ''])) }}" 
+                        <?php else: ?>
+                            <a href="<?php echo e(route('admin.payroll.index', array_diff_key(request()->query(), ['week' => '']))); ?>" 
                                class="px-4 py-2 rounded-lg text-sm font-medium bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 transition-all duration-200">
                                 <i class="fas fa-calendar-week mr-1"></i>Minggu Ini
                             </a>
-                        @endif
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         
-                        @if(!empty($filters['week']) && $filters['week'] !== 'all')
-                            @foreach($availableWeeks ?? [] as $week)
-                                <a href="{{ route('admin.payroll.index', array_merge(request()->query(), ['week' => $week['date'] ?? ''])) }}" 
-                                   class="px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 {{ ($filters['week'] ?? '') == ($week['date'] ?? '') ? 'bg-sky-500 text-white shadow-lg' : 'bg-white/10 text-gray-300 hover:bg-white/20' }}">
-                                    {{ $week['short_label'] ?? 'Unknown' }}
+                        <?php if(!empty($filters['week']) && $filters['week'] !== 'all'): ?>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $availableWeeks ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $week): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <a href="<?php echo e(route('admin.payroll.index', array_merge(request()->query(), ['week' => $week['date'] ?? '']))); ?>" 
+                                   class="px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 <?php echo e(($filters['week'] ?? '') == ($week['date'] ?? '') ? 'bg-sky-500 text-white shadow-lg' : 'bg-white/10 text-gray-300 hover:bg-white/20'); ?>">
+                                    <?php echo e($week['short_label'] ?? 'Unknown'); ?>
+
                                 </a>
-                            @endforeach
-                        @elseif(!empty($filters['week']) && $filters['week'] === 'all')
-                            @foreach($availableWeeks ?? [] as $week)
-                                <a href="{{ route('admin.payroll.index', array_merge(request()->query(), ['week' => $week['date'] ?? ''])) }}" 
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        <?php elseif(!empty($filters['week']) && $filters['week'] === 'all'): ?>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $availableWeeks ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $week): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <a href="<?php echo e(route('admin.payroll.index', array_merge(request()->query(), ['week' => $week['date'] ?? '']))); ?>" 
                                    class="px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 bg-white/10 text-gray-300 hover:bg-white/20">
-                                    {{ $week['short_label'] ?? 'Unknown' }}
+                                    <?php echo e($week['short_label'] ?? 'Unknown'); ?>
+
                                 </a>
-                            @endforeach
-                        @endif
+                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
                 </div>
             </div>
 
             <!-- Filter Section -->
-            <form method="GET" action="{{ route('admin.payroll.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+            <form method="GET" action="<?php echo e(route('admin.payroll.index')); ?>" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">Status</label>
                     <select name="status" class="w-full bg-white/10 text-white border border-white/20 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 appearance-none text-sm">
                         <option value="">Semua Status</option>
-                        <option value="pending" @selected(($filters['status'] ?? '') == 'pending') class="bg-slate-800 text-slate-100">Pending</option>
-                        <option value="paid" @selected(($filters['status'] ?? '') == 'paid') class="bg-slate-800 text-slate-100">Dibayar</option>
-                        <option value="cancelled" @selected(($filters['status'] ?? '') == 'cancelled') class="bg-slate-800 text-slate-100">Dibatalkan</option>
+                        <option value="pending" <?php if(($filters['status'] ?? '') == 'pending'): echo 'selected'; endif; ?> class="bg-slate-800 text-slate-100">Pending</option>
+                        <option value="paid" <?php if(($filters['status'] ?? '') == 'paid'): echo 'selected'; endif; ?> class="bg-slate-800 text-slate-100">Dibayar</option>
+                        <option value="cancelled" <?php if(($filters['status'] ?? '') == 'cancelled'): echo 'selected'; endif; ?> class="bg-slate-800 text-slate-100">Dibatalkan</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">Rumah Sakit</label>
                     <select name="hospital" class="w-full bg-white/10 text-white border border-white/20 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 appearance-none text-sm">
                         <option value="">Semua Rumah Sakit</option>
-                        <option value="alta" @selected(($filters['hospital'] ?? '') == 'alta') class="bg-slate-800 text-slate-100">Alta</option>
-                        <option value="roxwood" @selected(($filters['hospital'] ?? '') == 'roxwood') class="bg-slate-800 text-slate-100">Roxwood</option>
+                        <option value="alta" <?php if(($filters['hospital'] ?? '') == 'alta'): echo 'selected'; endif; ?> class="bg-slate-800 text-slate-100">Alta</option>
+                        <option value="roxwood" <?php if(($filters['hospital'] ?? '') == 'roxwood'): echo 'selected'; endif; ?> class="bg-slate-800 text-slate-100">Roxwood</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">Nama Staf</label>
-                    <input type="text" name="staff_name" value="{{ $filters['staff_name'] ?? '' }}" 
+                    <input type="text" name="staff_name" value="<?php echo e($filters['staff_name'] ?? ''); ?>" 
                            placeholder="Cari nama staf..."
                            class="w-full bg-white/10 text-white border border-white/20 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 text-sm placeholder-gray-400">
                 </div>
@@ -146,23 +148,25 @@
                     <label class="block text-sm font-medium text-gray-300 mb-2">Dibayar Oleh</label>
                     <select name="paid_by" class="w-full bg-white/10 text-white border border-white/20 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 appearance-none text-sm">
                         <option value="">Semua</option>
-                        @foreach($paidByUsers ?? [] as $user)
-                            <option value="{{ $user->id }}" @selected(($filters['paid_by'] ?? '') == $user->id) class="bg-slate-800 text-slate-100">
-                                {{ $user->name }}
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $paidByUsers ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $user): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($user->id); ?>" <?php if(($filters['paid_by'] ?? '') == $user->id): echo 'selected'; endif; ?> class="bg-slate-800 text-slate-100">
+                                <?php echo e($user->name); ?>
+
                             </option>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-300 mb-2">Minggu</label>
                     <select name="week" class="w-full bg-white/10 text-white border border-white/20 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 appearance-none text-sm">
                         <option value="">Minggu Ini</option>
-                        <option value="all" @selected(($filters['week'] ?? '') == 'all') class="bg-slate-800 text-slate-100">Semua Minggu</option>
-                        @foreach($availableWeeks ?? [] as $week)
-                            <option value="{{ $week['date'] ?? '' }}" @selected(($filters['week'] ?? '') == ($week['date'] ?? '')) class="bg-slate-800 text-slate-100">
-                                {{ $week['label'] ?? 'Unknown' }}
+                        <option value="all" <?php if(($filters['week'] ?? '') == 'all'): echo 'selected'; endif; ?> class="bg-slate-800 text-slate-100">Semua Minggu</option>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $availableWeeks ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $week): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($week['date'] ?? ''); ?>" <?php if(($filters['week'] ?? '') == ($week['date'] ?? '')): echo 'selected'; endif; ?> class="bg-slate-800 text-slate-100">
+                                <?php echo e($week['label'] ?? 'Unknown'); ?>
+
                             </option>
-                        @endforeach
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </select>
                 </div>
                 <div class="flex items-end">
@@ -184,7 +188,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-gray-300 text-xs sm:text-sm font-medium">Total Gaji</p>
-                        <p class="text-white text-lg sm:text-xl font-bold">{{ $summary['total_payrolls'] ?? 0 }}</p>
+                        <p class="text-white text-lg sm:text-xl font-bold"><?php echo e($summary['total_payrolls'] ?? 0); ?></p>
                     </div>
                 </div>
             </div>
@@ -198,7 +202,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-gray-300 text-xs sm:text-sm font-medium">Pending</p>
-                        <p class="text-white text-lg sm:text-xl font-bold">{{ $summary['pending_payrolls'] ?? 0 }}</p>
+                        <p class="text-white text-lg sm:text-xl font-bold"><?php echo e($summary['pending_payrolls'] ?? 0); ?></p>
                     </div>
                 </div>
             </div>
@@ -212,7 +216,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-gray-300 text-xs sm:text-sm font-medium">Dibayar</p>
-                        <p class="text-white text-lg sm:text-xl font-bold">{{ $summary['paid_payrolls'] ?? 0 }}</p>
+                        <p class="text-white text-lg sm:text-xl font-bold"><?php echo e($summary['paid_payrolls'] ?? 0); ?></p>
                     </div>
                 </div>
             </div>
@@ -226,7 +230,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-gray-300 text-xs sm:text-sm font-medium">Total Dibayar</p>
-                        <p class="text-white text-lg sm:text-xl font-bold">$ {{ number_format($summary['total_amount'] ?? 0, 0, '.', ',') }}</p>
+                        <p class="text-white text-lg sm:text-xl font-bold">$ <?php echo e(number_format($summary['total_amount'] ?? 0, 0, '.', ',')); ?></p>
                     </div>
                 </div>
             </div>
@@ -234,8 +238,8 @@
 
 
         <!-- Payroll Table - Grouped by Week -->
-        @if(isset($payrolls) && $payrolls->count() > 0)
-            @foreach($payrolls as $weekStart => $weekPayrolls)
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($payrolls) && $payrolls->count() > 0): ?>
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $payrolls; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $weekStart => $weekPayrolls): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <div class="glass-effect rounded-2xl elegant-shadow-lg overflow-hidden mb-6">
                     <!-- Week Header -->
                     <div class="bg-gradient-to-r from-sky-500/20 to-blue-500/20 px-6 py-4 border-b border-white/10">
@@ -243,8 +247,8 @@
                             <div>
                                 <h3 class="text-lg font-semibold text-white">
                                     <i class="fas fa-calendar-week mr-2"></i>
-                                    @if($weekStart !== 'unknown' && !empty($weekStart))
-                                        @php
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($weekStart !== 'unknown' && !empty($weekStart)): ?>
+                                        <?php
                                             try {
                                                 $weekDate = \Carbon\Carbon::parse($weekStart);
                                                 $weekStartFormatted = $weekDate->format('d M Y');
@@ -253,39 +257,41 @@
                                                 $weekStartFormatted = $weekStart;
                                                 $weekEndFormatted = '';
                                             }
-                                        @endphp
-                                        @if(!empty($weekEndFormatted))
-                                            Minggu {{ $weekStartFormatted }} - {{ $weekEndFormatted }}
-                                        @else
-                                            Minggu {{ $weekStartFormatted }}
-                                        @endif
-                                    @else
+                                        ?>
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($weekEndFormatted)): ?>
+                                            Minggu <?php echo e($weekStartFormatted); ?> - <?php echo e($weekEndFormatted); ?>
+
+                                        <?php else: ?>
+                                            Minggu <?php echo e($weekStartFormatted); ?>
+
+                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                    <?php else: ?>
                                         Minggu Tidak Diketahui
-                                    @endif
+                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </h3>
-                                <p class="text-sm text-gray-300">{{ $weekPayrolls->count() ?? 0 }} gaji • Total: Rp {{ number_format($weekPayrolls->sum('calculated_salary') ?? 0, 0, ',', '.') }}</p>
-                                @if($weekStart !== 'unknown' && $weekStart === now()->startOfWeek()->format('Y-m-d'))
+                                <p class="text-sm text-gray-300"><?php echo e($weekPayrolls->count() ?? 0); ?> gaji • Total: Rp <?php echo e(number_format($weekPayrolls->sum('calculated_salary') ?? 0, 0, ',', '.')); ?></p>
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($weekStart !== 'unknown' && $weekStart === now()->startOfWeek()->format('Y-m-d')): ?>
                                     <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mt-1">
                                         <i class="fas fa-star mr-1"></i>Minggu Ini
                                     </span>
-                                @endif
+                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
                             <div class="flex items-center space-x-4">
                                 <div class="text-right">
                                     <div class="text-sm text-gray-300">Pending</div>
-                                    <div class="text-lg font-bold text-yellow-400">{{ $weekPayrolls->where('status', 'pending')->count() }}</div>
+                                    <div class="text-lg font-bold text-yellow-400"><?php echo e($weekPayrolls->where('status', 'pending')->count()); ?></div>
                                 </div>
                                 <div class="text-right">
                                     <div class="text-sm text-gray-300">Dibayar</div>
-                                    <div class="text-lg font-bold text-green-400">{{ $weekPayrolls->where('status', 'paid')->count() }}</div>
+                                    <div class="text-lg font-bold text-green-400"><?php echo e($weekPayrolls->where('status', 'paid')->count()); ?></div>
                                 </div>
-                                @if($weekPayrolls->where('status', 'pending')->count() > 0)
-                                    <button onclick="regenerateWeek('{{ $weekStart }}')" 
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($weekPayrolls->where('status', 'pending')->count() > 0): ?>
+                                    <button onclick="regenerateWeek('<?php echo e($weekStart); ?>')" 
                                             class="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-lg text-sm font-semibold transition-all duration-300 shadow-lg"
                                             title="Regenerate semua gaji pending minggu ini">
                                         <i class="fas fa-sync-alt mr-1"></i>Regenerate Minggu
                                     </button>
-                                @endif
+                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -305,133 +311,133 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-white/10">
-                                @foreach($weekPayrolls as $payroll)
-                                    @php
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $weekPayrolls; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $payroll): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <?php
                                         $userName = $payroll->user->name ?? 'N/A';
                                         $userEmail = $payroll->user->email ?? 'N/A';
                                         $userInitials = substr($userName, 0, 2);
-                                    @endphp
+                                    ?>
                                     <tr class="table-row-hover transition-all duration-200">
                                         <td class="px-4 sm:px-6 py-4">
                                             <div class="flex items-center">
                                                 <div class="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10">
                                                     <div class="h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-gradient-to-r from-sky-400 to-blue-500 flex items-center justify-center">
-                                                        <span class="text-white text-xs sm:text-sm font-medium">{{ $userInitials }}</span>
+                                                        <span class="text-white text-xs sm:text-sm font-medium"><?php echo e($userInitials); ?></span>
                                                     </div>
                                                 </div>
                                                 <div class="ml-3 sm:ml-4">
-                                                    <div class="text-sm sm:text-base font-medium text-white">{{ $userName }}</div>
-                                                    <div class="text-xs sm:text-sm text-gray-300">{{ $userEmail }}</div>
+                                                    <div class="text-sm sm:text-base font-medium text-white"><?php echo e($userName); ?></div>
+                                                    <div class="text-xs sm:text-sm text-gray-300"><?php echo e($userEmail); ?></div>
                                                 </div>
                                             </div>
                                         </td>
                                         <td class="px-4 sm:px-6 py-4">
-                                            <div class="text-sm sm:text-base text-white">{{ $payroll->period_description ?? '-' }}</div>
+                                            <div class="text-sm sm:text-base text-white"><?php echo e($payroll->period_description ?? '-'); ?></div>
                                         </td>
                                         <td class="px-4 sm:px-6 py-4">
-                                            <div class="text-sm sm:text-base text-white">{{ $payroll->formatted_hours ?? '00:00:00' }}</div>
+                                            <div class="text-sm sm:text-base text-white"><?php echo e($payroll->formatted_hours ?? '00:00:00'); ?></div>
                                         </td>
                                         <td class="px-4 sm:px-6 py-4">
-                                            <div class="text-sm sm:text-base font-semibold text-green-400">{{ $payroll->formatted_salary ?? '$ 0' }}</div>
+                                            <div class="text-sm sm:text-base font-semibold text-green-400"><?php echo e($payroll->formatted_salary ?? '$ 0'); ?></div>
                                         </td>
                                         <td class="px-4 sm:px-6 py-4">
-                                            @if($payroll->status === 'paid')
+                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($payroll->status === 'paid'): ?>
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                     <i class="fas fa-check-circle mr-1"></i>Dibayar
                                                 </span>
-                                            @elseif($payroll->status === 'pending')
+                                            <?php elseif($payroll->status === 'pending'): ?>
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                                                     <i class="fas fa-clock mr-1"></i>Pending
                                                 </span>
-                                            @else
+                                            <?php else: ?>
                                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                                                     <i class="fas fa-times-circle mr-1"></i>Dibatalkan
                                                 </span>
-                                            @endif
+                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                         </td>
                                         <td class="px-4 sm:px-6 py-4">
-                                            @if($payroll->paid_at)
-                                                @php
+                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($payroll->paid_at): ?>
+                                                <?php
                                                     try {
                                                         $paidAtFormatted = $payroll->paid_at->format('d M Y');
                                                     } catch (\Exception $e) {
                                                         $paidAtFormatted = $payroll->paid_at ?? '-';
                                                     }
-                                                @endphp
-                                                <div class="text-sm text-white">{{ $paidAtFormatted }}</div>
-                                                <div class="text-xs text-gray-300">oleh {{ $payroll->paidBy->name ?? 'Admin' }}</div>
-                                            @else
+                                                ?>
+                                                <div class="text-sm text-white"><?php echo e($paidAtFormatted); ?></div>
+                                                <div class="text-xs text-gray-300">oleh <?php echo e($payroll->paidBy->name ?? 'Admin'); ?></div>
+                                            <?php else: ?>
                                                 <div class="text-sm text-gray-400">-</div>
-                                            @endif
+                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                         </td>
                                         <td class="px-4 sm:px-6 py-4">
                                             <div class="flex space-x-2">
-                                                <a href="{{ route('admin.payroll.show', $payroll) }}" 
+                                                <a href="<?php echo e(route('admin.payroll.show', $payroll)); ?>" 
                                                    class="text-sky-400 hover:text-sky-300 transition-colors duration-200">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
-                                                @if($payroll->status === 'pending')
-                                                    <button onclick="regeneratePayroll({{ $payroll->id }})" 
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($payroll->status === 'pending'): ?>
+                                                    <button onclick="regeneratePayroll(<?php echo e($payroll->id); ?>)" 
                                                             class="text-purple-400 hover:text-purple-300 transition-colors duration-200"
                                                             title="Regenerate - Hitung ulang dengan formula terbaru">
                                                         <i class="fas fa-sync-alt"></i>
                                                     </button>
-                                                    <button onclick="markAsPaid({{ $payroll->id }})" 
+                                                    <button onclick="markAsPaid(<?php echo e($payroll->id); ?>)" 
                                                             class="text-green-400 hover:text-green-300 transition-colors duration-200">
                                                         <i class="fas fa-check"></i>
                                                     </button>
-                                                    <button onclick="cancelPayroll({{ $payroll->id }})" 
+                                                    <button onclick="cancelPayroll(<?php echo e($payroll->id); ?>)" 
                                                             class="text-red-400 hover:text-red-300 transition-colors duration-200"
                                                             title="Tolak">
                                                         <i class="fas fa-times"></i>
                                                     </button>
-                                                    <button onclick="deletePayroll({{ $payroll->id }})" 
+                                                    <button onclick="deletePayroll(<?php echo e($payroll->id); ?>)" 
                                                             class="text-orange-400 hover:text-orange-300 transition-colors duration-200"
                                                             title="Hapus Data Duplikat">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
-                                                @endif
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                             </div>
                                         </td>
                                     </tr>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </tbody>
                         </table>
                     </div>
                 </div>
-            @endforeach
-        @else
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+        <?php else: ?>
             <!-- Empty State -->
             <div class="glass-effect rounded-2xl elegant-shadow-lg p-8 text-center">
                 <i class="fas fa-inbox text-6xl text-gray-400 mb-4"></i>
                 <h3 class="text-xl font-semibold text-white mb-2">
-                    @if(!empty($filters['week']) && $filters['week'] === 'all')
+                    <?php if(!empty($filters['week']) && $filters['week'] === 'all'): ?>
                         Tidak ada data gaji untuk semua minggu
-                    @elseif(!empty($filters['week']))
+                    <?php elseif(!empty($filters['week'])): ?>
                         Tidak ada data gaji untuk minggu terpilih
-                    @else
+                    <?php else: ?>
                         Tidak ada data gaji untuk minggu ini
-                    @endif
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </h3>
                 <p class="text-gray-300 mb-6">
-                    @if(!empty($filters['week']) && $filters['week'] === 'all')
+                    <?php if(!empty($filters['week']) && $filters['week'] === 'all'): ?>
                         Belum ada gaji yang di-generate untuk periode apapun
-                    @elseif(!empty($filters['week']))
+                    <?php elseif(!empty($filters['week'])): ?>
                         Belum ada gaji yang di-generate untuk minggu ini
-                    @else
+                    <?php else: ?>
                         Belum ada gaji yang di-generate untuk minggu ini
-                    @endif
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </p>
                 <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                    @if(empty($filters['week']))
-                        <a href="{{ route('admin.payroll.index', array_merge(request()->query(), ['week' => 'all'])) }}" 
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(empty($filters['week'])): ?>
+                        <a href="<?php echo e(route('admin.payroll.index', array_merge(request()->query(), ['week' => 'all']))); ?>" 
                            class="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-lg">
                             <i class="fas fa-calendar-alt mr-2"></i>Lihat Semua Minggu
                         </a>
-                    @endif
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </div>
             </div>
-        @endif
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
     </div>
 </div>
 
@@ -442,7 +448,7 @@
         <div class="bg-white rounded-2xl p-6 w-full max-w-md">
             <h3 class="text-lg font-semibold text-gray-900 mb-4">Tandai sebagai Dibayar</h3>
             <form id="markPaidForm" method="POST">
-                @csrf
+                <?php echo csrf_field(); ?>
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Catatan (Opsional)</label>
@@ -489,8 +495,8 @@
         </div>
         
         <!-- Form -->
-        <form id="generateForm" method="POST" action="{{ route('admin.payroll.generate') }}" class="p-8">
-            @csrf
+        <form id="generateForm" method="POST" action="<?php echo e(route('admin.payroll.generate')); ?>" class="p-8">
+            <?php echo csrf_field(); ?>
             
             <div class="space-y-6">
                 <!-- Period Selection -->
@@ -500,7 +506,7 @@
                             <i class="fas fa-calendar-alt text-blue-500 mr-2"></i>Periode Mulai
                         </label>
                         <input type="date" name="period_start" required
-                               value="{{ \Carbon\Carbon::now()->subWeek()->startOfWeek()->format('Y-m-d') }}"
+                               value="<?php echo e(\Carbon\Carbon::now()->subWeek()->startOfWeek()->format('Y-m-d')); ?>"
                                class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white">
                     </div>
                     
@@ -509,7 +515,7 @@
                             <i class="fas fa-calendar-check text-blue-500 mr-2"></i>Periode Akhir
                         </label>
                         <input type="date" name="period_end" required
-                               value="{{ \Carbon\Carbon::now()->subWeek()->endOfWeek()->format('Y-m-d') }}"
+                               value="<?php echo e(\Carbon\Carbon::now()->subWeek()->endOfWeek()->format('Y-m-d')); ?>"
                                class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white">
                     </div>
                 </div>
@@ -559,7 +565,7 @@ function cancelPayroll(payrollId) {
         const csrfToken = document.createElement('input');
         csrfToken.type = 'hidden';
         csrfToken.name = '_token';
-        csrfToken.value = '{{ csrf_token() }}';
+        csrfToken.value = '<?php echo e(csrf_token()); ?>';
         
         form.appendChild(csrfToken);
         document.body.appendChild(form);
@@ -581,7 +587,7 @@ function deletePayroll(payrollId) {
         const csrfToken = document.createElement('input');
         csrfToken.type = 'hidden';
         csrfToken.name = '_token';
-        csrfToken.value = '{{ csrf_token() }}';
+        csrfToken.value = '<?php echo e(csrf_token()); ?>';
         
         form.appendChild(methodInput);
         form.appendChild(csrfToken);
@@ -599,7 +605,7 @@ function removeDuplicates() {
         const csrfToken = document.createElement('input');
         csrfToken.type = 'hidden';
         csrfToken.name = '_token';
-        csrfToken.value = '{{ csrf_token() }}';
+        csrfToken.value = '<?php echo e(csrf_token()); ?>';
         
         form.appendChild(csrfToken);
         document.body.appendChild(form);
@@ -634,7 +640,7 @@ function regeneratePayroll(payrollId) {
         const csrfToken = document.createElement('input');
         csrfToken.type = 'hidden';
         csrfToken.name = '_token';
-        csrfToken.value = '{{ csrf_token() }}';
+        csrfToken.value = '<?php echo e(csrf_token()); ?>';
         
         form.appendChild(csrfToken);
         document.body.appendChild(form);
@@ -651,7 +657,7 @@ function regenerateWeek(weekStart) {
         const csrfToken = document.createElement('input');
         csrfToken.type = 'hidden';
         csrfToken.name = '_token';
-        csrfToken.value = '{{ csrf_token() }}';
+        csrfToken.value = '<?php echo e(csrf_token()); ?>';
         
         const weekInput = document.createElement('input');
         weekInput.type = 'hidden';
@@ -667,5 +673,7 @@ function regenerateWeek(weekStart) {
 
 
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
 
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\website\EMS-IME\public_html\resources\views/admin/payroll/index.blade.php ENDPATH**/ ?>

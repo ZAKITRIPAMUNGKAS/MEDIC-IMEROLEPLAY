@@ -1,0 +1,316 @@
+﻿=== VERIFY CO-ASS SALARY FIX ===
+
+Standard Co-Ass Weekly Salary: $88948.00
+
+Total Co-Ass Payroll Records: 359
+--------------------------------------------------------------------------------
+Γ£ô Correct base salary ($88948.00): 68
+Γ£ù Incorrect base salary: 291
+--------------------------------------------------------------------------------
+
+Γ¥î FAILED! Found 291 payroll records with incorrect base salary:
+
+Base Salary: $61250.00 (should be $88948.00) - 21 payrolls
+  - ID: 560 | Anasera Santhya Atmadja | Period: 2025-11-10 to 2025-11-16
+  - ID: 795 | Anasera Santhya Atmadja | Period: 2025-11-17 to 2025-11-23
+  - ID: 800 | Olmi Minatozaki | Period: 2025-11-17 to 2025-11-23
+  - ID: 803 | Benedict Valencrest | Period: 2025-11-17 to 2025-11-23
+  - ID: 813 | Thalassa Luna | Period: 2025-11-17 to 2025-11-23
+  - ID: 700 | Fernando Bryan | Period: 2025-11-10 to 2025-11-16
+  - ID: 828 | Fernando Bryan | Period: 2025-11-17 to 2025-11-23
+  - ID: 2396 | Fernando Bryan | Period: 2025-11-24 to 2025-12-01
+  - ID: 717 | RH - Ryctas Clarke | Period: 2025-11-10 to 2025-11-16
+  - ID: 721 | RH - Michael Moore | Period: 2025-11-10 to 2025-11-16
+  - ID: 727 | RH - Ayden Joestar | Period: 2025-11-10 to 2025-11-16
+  - ID: 735 | RH - Pangeran Julian | Period: 2025-11-10 to 2025-11-16
+  - ID: 737 | Joeru Shironomi | Period: 2025-11-10 to 2025-11-16
+  - ID: 832 | Joeru Shironomi | Period: 2025-11-17 to 2025-11-23
+  - ID: 2399 | Joeru Shironomi | Period: 2025-11-24 to 2025-12-01
+  - ID: 764 | RH - Mitski Shironomi | Period: 2025-11-10 to 2025-11-16
+  - ID: 765 | RH - Kuroto Roland | Period: 2025-11-10 to 2025-11-16
+  - ID: 769 | Chiphunk Valencrest | Period: 2025-11-10 to 2025-11-16
+  - ID: 848 | Odra Dyle Valencrest | Period: 2025-11-17 to 2025-11-23
+  - ID: 1782 | Odra Dyle Valencrest | Period: 2025-11-24 to 2025-12-01
+  - ID: 3057 | Odra Dyle Valencrest | Period: 2025-12-01 to 2025-12-07
+
+Base Salary: $67375.00 (should be $88948.00) - 111 payrolls
+  - ID: 2419 | Anasera Santhya Atmadja | Period: 2025-11-24 to 2025-12-01
+  - ID: 3079 | Anasera Santhya Atmadja | Period: 2025-12-01 to 2025-12-07
+  - ID: 3464 | Anasera Santhya Atmadja | Period: 2025-12-08 to 2025-12-14
+  - ID: 3702 | Anasera Santhya Atmadja | Period: 2025-12-15 to 2025-12-21
+  - ID: 3925 | Anasera Santhya Atmadja | Period: 2025-12-22 to 2025-12-28
+  - ID: 565 | Kara Rothschild | Period: 2025-11-10 to 2025-11-16
+  - ID: 864 | Kara Rothschild | Period: 2025-11-17 to 2025-11-23
+  - ID: 3083 | Kara Rothschild | Period: 2025-12-01 to 2025-12-07
+  - ID: 3549 | Kara Rothschild | Period: 2025-12-08 to 2025-12-14
+  - ID: 3773 | Kara Rothschild | Period: 2025-12-15 to 2025-12-21
+  - ID: 1830 | Olmi Minatozaki | Period: 2025-11-24 to 2025-12-01
+  - ID: 3085 | Olmi Minatozaki | Period: 2025-12-01 to 2025-12-07
+  - ID: 3595 | Olmi Minatozaki | Period: 2025-12-08 to 2025-12-14
+  - ID: 3822 | Olmi Minatozaki | Period: 2025-12-15 to 2025-12-21
+  - ID: 581 | Fortune Fukushima | Period: 2025-11-10 to 2025-11-16
+  - ID: 869 | Fortune Fukushima | Period: 2025-11-17 to 2025-11-23
+  - ID: 2661 | Benedict Valencrest | Period: 2025-11-24 to 2025-11-30
+  - ID: 3092 | Benedict Valencrest | Period: 2025-12-01 to 2025-12-07
+  - ID: 3540 | Benedict Valencrest | Period: 2025-12-08 to 2025-12-14
+  - ID: 3711 | Benedict Valencrest | Period: 2025-12-15 to 2025-12-21
+  - ID: 603 | Masaru Enatsu | Period: 2025-11-10 to 2025-11-16
+  - ID: 874 | Masaru Enatsu | Period: 2025-11-17 to 2025-11-23
+  - ID: 612 | Vanillasky Lannister | Period: 2025-11-10 to 2025-11-16
+  - ID: 876 | Vanillasky Lannister | Period: 2025-11-17 to 2025-11-23
+  - ID: 2431 | Vanillasky Lannister | Period: 2025-11-24 to 2025-12-01
+  - ID: 3682 | Vanillasky Lannister | Period: 2025-12-08 to 2025-12-14
+  - ID: 3903 | Vanillasky Lannister | Period: 2025-12-15 to 2025-12-21
+  - ID: 4141 | Vanillasky Lannister | Period: 2025-12-22 to 2025-12-28
+  - ID: 1852 | Thalassa Luna | Period: 2025-11-24 to 2025-12-01
+  - ID: 3100 | Thalassa Luna | Period: 2025-12-01 to 2025-12-07
+  - ID: 3678 | Thalassa Luna | Period: 2025-12-08 to 2025-12-14
+  - ID: 3900 | Thalassa Luna | Period: 2025-12-15 to 2025-12-21
+  - ID: 630 | Kai Aldridge | Period: 2025-11-10 to 2025-11-16
+  - ID: 883 | Kai Aldridge | Period: 2025-11-17 to 2025-11-23
+  - ID: 1860 | Kai Aldridge | Period: 2025-11-24 to 2025-12-01
+  - ID: 3105 | Kai Aldridge | Period: 2025-12-01 to 2025-12-07
+  - ID: 3547 | Kai Aldridge | Period: 2025-12-08 to 2025-12-14
+  - ID: 654 | Dyren Geraldo | Period: 2025-11-10 to 2025-11-16
+  - ID: 900 | Dyren Geraldo | Period: 2025-11-17 to 2025-11-23
+  - ID: 2634 | Dyren Geraldo | Period: 2025-11-24 to 2025-11-30
+  - ID: 3515 | Dyren Geraldo | Period: 2025-12-08 to 2025-12-14
+  - ID: 3734 | Dyren Geraldo | Period: 2025-12-15 to 2025-12-21
+  - ID: 3962 | Dyren Geraldo | Period: 2025-12-22 to 2025-12-28
+  - ID: 658 | Druga Valencrest | Period: 2025-11-10 to 2025-11-16
+  - ID: 902 | Druga Valencrest | Period: 2025-11-17 to 2025-11-23
+  - ID: 676 | Ryutayo Kanashiro | Period: 2025-11-10 to 2025-11-16
+  - ID: 682 | Abaay Shironomi | Period: 2025-11-10 to 2025-11-16
+  - ID: 913 | Abaay Shironomi | Period: 2025-11-17 to 2025-11-23
+  - ID: 1929 | Abaay Shironomi | Period: 2025-11-24 to 2025-12-01
+  - ID: 3131 | Abaay Shironomi | Period: 2025-12-01 to 2025-12-07
+  - ID: 3447 | Abaay Shironomi | Period: 2025-12-08 to 2025-12-14
+  - ID: 3693 | Abaay Shironomi | Period: 2025-12-15 to 2025-12-21
+  - ID: 694 | Serend Jacqueline | Period: 2025-11-10 to 2025-11-16
+  - ID: 918 | Serend Jacqueline | Period: 2025-11-17 to 2025-11-23
+  - ID: 2465 | Serend Jacqueline | Period: 2025-11-24 to 2025-12-01
+  - ID: 3136 | Serend Jacqueline | Period: 2025-12-01 to 2025-12-07
+  - ID: 3669 | Serend Jacqueline | Period: 2025-12-08 to 2025-12-14
+  - ID: 3892 | Serend Jacqueline | Period: 2025-12-15 to 2025-12-21
+  - ID: 3140 | Fernando Bryan | Period: 2025-12-01 to 2025-12-07
+  - ID: 3522 | Fernando Bryan | Period: 2025-12-08 to 2025-12-14
+  - ID: 703 | Chou Zhaovelle Elstone | Period: 2025-11-10 to 2025-11-16
+  - ID: 923 | Chou Zhaovelle Elstone | Period: 2025-11-17 to 2025-11-23
+  - ID: 2469 | Chou Zhaovelle Elstone | Period: 2025-11-24 to 2025-12-01
+  - ID: 3142 | Chou Zhaovelle Elstone | Period: 2025-12-01 to 2025-12-07
+  - ID: 1040 | RH - Ryctas Clarke | Period: 2025-11-17 to 2025-11-23
+  - ID: 2763 | RH - Ryctas Clarke | Period: 2025-11-24 to 2025-11-30
+  - ID: 3172 | RH - Ryctas Clarke | Period: 2025-12-01 to 2025-12-07
+  - ID: 3644 | RH - Ryctas Clarke | Period: 2025-12-08 to 2025-12-14
+  - ID: 1042 | RH - Michael Moore | Period: 2025-11-17 to 2025-11-23
+  - ID: 2754 | RH - Michael Moore | Period: 2025-11-24 to 2025-11-30
+  - ID: 2498 | RH - Michael Moore | Period: 2025-11-24 to 2025-12-01
+  - ID: 3173 | RH - Michael Moore | Period: 2025-12-01 to 2025-12-07
+  - ID: 1043 | RH - Ayden Joestar | Period: 2025-11-17 to 2025-11-23
+  - ID: 2499 | RH - Ayden Joestar | Period: 2025-11-24 to 2025-12-01
+  - ID: 3174 | RH - Ayden Joestar | Period: 2025-12-01 to 2025-12-07
+  - ID: 3611 | RH - Ayden Joestar | Period: 2025-12-08 to 2025-12-14
+  - ID: 3837 | RH - Ayden Joestar | Period: 2025-12-15 to 2025-12-21
+  - ID: 4065 | RH - Ayden Joestar | Period: 2025-12-22 to 2025-12-28
+  - ID: 1044 | RH - Pangeran Julian | Period: 2025-11-17 to 2025-11-23
+  - ID: 2778 | RH - Pangeran Julian | Period: 2025-11-24 to 2025-11-30
+  - ID: 3175 | RH - Pangeran Julian | Period: 2025-12-01 to 2025-12-07
+  - ID: 3658 | RH - Pangeran Julian | Period: 2025-12-08 to 2025-12-14
+  - ID: 3146 | Joeru Shironomi | Period: 2025-12-01 to 2025-12-07
+  - ID: 3537 | Joeru Shironomi | Period: 2025-12-08 to 2025-12-14
+  - ID: 1053 | RH - Mitski Shironomi | Period: 2025-11-17 to 2025-11-23
+  - ID: 2507 | RH - Mitski Shironomi | Period: 2025-11-24 to 2025-12-01
+  - ID: 3183 | RH - Mitski Shironomi | Period: 2025-12-01 to 2025-12-07
+  - ID: 3634 | RH - Mitski Shironomi | Period: 2025-12-08 to 2025-12-14
+  - ID: 1054 | RH - Kuroto Roland | Period: 2025-11-17 to 2025-11-23
+  - ID: 2750 | RH - Kuroto Roland | Period: 2025-11-24 to 2025-11-30
+  - ID: 3184 | RH - Kuroto Roland | Period: 2025-12-01 to 2025-12-07
+  - ID: 3629 | RH - Kuroto Roland | Period: 2025-12-08 to 2025-12-14
+  - ID: 3154 | Chiphunk Valencrest | Period: 2025-12-01 to 2025-12-07
+  - ID: 3504 | Chiphunk Valencrest | Period: 2025-12-08 to 2025-12-14
+  - ID: 3719 | Chiphunk Valencrest | Period: 2025-12-15 to 2025-12-21
+  - ID: 3946 | Chiphunk Valencrest | Period: 2025-12-22 to 2025-12-28
+  - ID: 3592 | Odra Dyle Valencrest | Period: 2025-12-08 to 2025-12-14
+  - ID: 3819 | Odra Dyle Valencrest | Period: 2025-12-15 to 2025-12-21
+  - ID: 4043 | Odra Dyle Valencrest | Period: 2025-12-22 to 2025-12-28
+  - ID: 949 | Maya Aldridge | Period: 2025-11-17 to 2025-11-23
+  - ID: 3161 | Maya Aldridge | Period: 2025-12-01 to 2025-12-07
+  - ID: 3573 | Maya Aldridge | Period: 2025-12-08 to 2025-12-14
+  - ID: 3799 | Maya Aldridge | Period: 2025-12-15 to 2025-12-21
+  - ID: 951 | RH - MICAEL WILSON | Period: 2025-11-17 to 2025-11-23
+  - ID: 2753 | RH - MICAEL WILSON | Period: 2025-11-24 to 2025-11-30
+  - ID: 3162 | RH - MICAEL WILSON | Period: 2025-12-01 to 2025-12-07
+  - ID: 3632 | RH - MICAEL WILSON | Period: 2025-12-08 to 2025-12-14
+  - ID: 3856 | RH - MICAEL WILSON | Period: 2025-12-15 to 2025-12-21
+  - ID: 3164 | Micel McCartney | Period: 2025-12-01 to 2025-12-07
+  - ID: 3577 | Micel McCartney | Period: 2025-12-08 to 2025-12-14
+  - ID: 3803 | Micel McCartney | Period: 2025-12-15 to 2025-12-21
+
+Base Salary: $80850.00 (should be $88948.00) - 8 payrolls
+  - ID: 4172 | Anasera Santhya Atmadja | Period: 2025-12-29 to 2026-01-04
+  - ID: 4383 | Vanillasky Lannister | Period: 2025-12-29 to 2026-01-04
+  - ID: 4611 | Vanillasky Lannister | Period: 2026-01-05 to 2026-01-11
+  - ID: 4206 | Dyren Geraldo | Period: 2025-12-29 to 2026-01-04
+  - ID: 4452 | Dyren Geraldo | Period: 2026-01-05 to 2026-01-11
+  - ID: 4192 | Chiphunk Valencrest | Period: 2025-12-29 to 2026-01-04
+  - ID: 4280 | Odra Dyle Valencrest | Period: 2025-12-29 to 2026-01-04
+  - ID: 4529 | Odra Dyle Valencrest | Period: 2026-01-05 to 2026-01-11
+
+Base Salary: $74124.00 (should be $88948.00) - 134 payrolls
+  - ID: 563 | Paijo Aldridge | Period: 2025-11-10 to 2025-11-16
+  - ID: 956 | Paijo Aldridge | Period: 2025-11-17 to 2025-11-23
+  - ID: 2033 | Paijo Aldridge | Period: 2025-11-24 to 2025-12-01
+  - ID: 3186 | Paijo Aldridge | Period: 2025-12-01 to 2025-12-07
+  - ID: 3598 | Paijo Aldridge | Period: 2025-12-08 to 2025-12-14
+  - ID: 3825 | Paijo Aldridge | Period: 2025-12-15 to 2025-12-21
+  - ID: 4050 | Paijo Aldridge | Period: 2025-12-22 to 2025-12-28
+  - ID: 3998 | Kara Rothschild | Period: 2025-12-22 to 2025-12-28
+  - ID: 4047 | Olmi Minatozaki | Period: 2025-12-22 to 2025-12-28
+  - ID: 2039 | Fortune Fukushima | Period: 2025-11-24 to 2025-12-01
+  - ID: 3188 | Fortune Fukushima | Period: 2025-12-01 to 2025-12-07
+  - ID: 3524 | Fortune Fukushima | Period: 2025-12-08 to 2025-12-14
+  - ID: 3744 | Fortune Fukushima | Period: 2025-12-15 to 2025-12-21
+  - ID: 3974 | Fortune Fukushima | Period: 2025-12-22 to 2025-12-28
+  - ID: 3688 | Yuki Hayakawa | Period: 2025-12-08 to 2025-12-14
+  - ID: 3910 | Yuki Hayakawa | Period: 2025-12-15 to 2025-12-21
+  - ID: 4154 | Yuki Hayakawa | Period: 2025-12-22 to 2025-12-28
+  - ID: 3937 | Benedict Valencrest | Period: 2025-12-22 to 2025-12-28
+  - ID: 595 | Indra Izero | Period: 2025-11-10 to 2025-11-16
+  - ID: 960 | Indra Izero | Period: 2025-11-17 to 2025-11-23
+  - ID: 3751 | Indra Izero | Period: 2025-12-15 to 2025-12-21
+  - ID: 3979 | Indra Izero | Period: 2025-12-22 to 2025-12-28
+  - ID: 3800 | Mayura Atmadja | Period: 2025-12-15 to 2025-12-21
+  - ID: 4028 | Mayura Atmadja | Period: 2025-12-22 to 2025-12-28
+  - ID: 2696 | Masaru Enatsu | Period: 2025-11-24 to 2025-11-30
+  - ID: 3189 | Masaru Enatsu | Period: 2025-12-01 to 2025-12-07
+  - ID: 4139 | Thalassa Luna | Period: 2025-12-22 to 2025-12-28
+  - ID: 3771 | Kai Aldridge | Period: 2025-12-15 to 2025-12-21
+  - ID: 3996 | Kai Aldridge | Period: 2025-12-22 to 2025-12-28
+  - ID: 639 | Kazukii Hayakawa | Period: 2025-11-10 to 2025-11-16
+  - ID: 963 | Kazukii Hayakawa | Period: 2025-11-17 to 2025-11-23
+  - ID: 2672 | Kazukii Hayakawa | Period: 2025-11-24 to 2025-11-30
+  - ID: 3192 | Kazukii Hayakawa | Period: 2025-12-01 to 2025-12-07
+  - ID: 3551 | Kazukii Hayakawa | Period: 2025-12-08 to 2025-12-14
+  - ID: 3775 | Kazukii Hayakawa | Period: 2025-12-15 to 2025-12-21
+  - ID: 4001 | Kazukii Hayakawa | Period: 2025-12-22 to 2025-12-28
+  - ID: 2058 | Druga Valencrest | Period: 2025-11-24 to 2025-12-01
+  - ID: 3194 | Druga Valencrest | Period: 2025-12-01 to 2025-12-07
+  - ID: 3513 | Druga Valencrest | Period: 2025-12-08 to 2025-12-14
+  - ID: 3732 | Druga Valencrest | Period: 2025-12-15 to 2025-12-21
+  - ID: 3960 | Druga Valencrest | Period: 2025-12-22 to 2025-12-28
+  - ID: 968 | Tere Chana Malakh Adhiraharjo | Period: 2025-11-17 to 2025-11-23
+  - ID: 671 | Araiii Hayakawa | Period: 2025-11-10 to 2025-11-16
+  - ID: 969 | Araiii Hayakawa | Period: 2025-11-17 to 2025-11-23
+  - ID: 2520 | Araiii Hayakawa | Period: 2025-11-24 to 2025-12-01
+  - ID: 3196 | Araiii Hayakawa | Period: 2025-12-01 to 2025-12-07
+  - ID: 3703 | Araiii Hayakawa | Period: 2025-12-15 to 2025-12-21
+  - ID: 3926 | Araiii Hayakawa | Period: 2025-12-22 to 2025-12-28
+  - ID: 970 | Ryutayo Kanashiro | Period: 2025-11-17 to 2025-11-23
+  - ID: 2067 | Ryutayo Kanashiro | Period: 2025-11-24 to 2025-12-01
+  - ID: 3197 | Ryutayo Kanashiro | Period: 2025-12-01 to 2025-12-07
+  - ID: 3676 | Ryutayo Kanashiro | Period: 2025-12-08 to 2025-12-14
+  - ID: 3898 | Ryutayo Kanashiro | Period: 2025-12-15 to 2025-12-21
+  - ID: 4128 | Ryutayo Kanashiro | Period: 2025-12-22 to 2025-12-28
+  - ID: 3915 | Abaay Shironomi | Period: 2025-12-22 to 2025-12-28
+  - ID: 3753 | Jatmiko Tjokronugroho | Period: 2025-12-15 to 2025-12-21
+  - ID: 3981 | Jatmiko Tjokronugroho | Period: 2025-12-22 to 2025-12-28
+  - ID: 693 | Maru Halus | Period: 2025-11-10 to 2025-11-16
+  - ID: 3798 | Maru Halus | Period: 2025-12-15 to 2025-12-21
+  - ID: 4023 | Maru Halus | Period: 2025-12-22 to 2025-12-28
+  - ID: 4132 | Serend Jacqueline | Period: 2025-12-22 to 2025-12-28
+  - ID: 3741 | Fernando Bryan | Period: 2025-12-15 to 2025-12-21
+  - ID: 3970 | Fernando Bryan | Period: 2025-12-22 to 2025-12-28
+  - ID: 3505 | Chou Zhaovelle Elstone | Period: 2025-12-08 to 2025-12-14
+  - ID: 3720 | Chou Zhaovelle Elstone | Period: 2025-12-15 to 2025-12-21
+  - ID: 3947 | Chou Zhaovelle Elstone | Period: 2025-12-22 to 2025-12-28
+  - ID: 711 | RH - EURECA EVANTHIA | Period: 2025-11-10 to 2025-11-16
+  - ID: 973 | RH - EURECA EVANTHIA | Period: 2025-11-17 to 2025-11-23
+  - ID: 2741 | RH - EURECA EVANTHIA | Period: 2025-11-24 to 2025-11-30
+  - ID: 3199 | RH - EURECA EVANTHIA | Period: 2025-12-01 to 2025-12-07
+  - ID: 3618 | RH - EURECA EVANTHIA | Period: 2025-12-08 to 2025-12-14
+  - ID: 3841 | RH - EURECA EVANTHIA | Period: 2025-12-15 to 2025-12-21
+  - ID: 4070 | RH - EURECA EVANTHIA | Period: 2025-12-22 to 2025-12-28
+  - ID: 714 | RH - FHAREN FIRGIAWAN | Period: 2025-11-10 to 2025-11-16
+  - ID: 974 | RH - FHAREN FIRGIAWAN | Period: 2025-11-17 to 2025-11-23
+  - ID: 2769 | RH - FHAREN FIRGIAWAN | Period: 2025-11-24 to 2025-11-30
+  - ID: 3200 | RH - FHAREN FIRGIAWAN | Period: 2025-12-01 to 2025-12-07
+  - ID: 3620 | RH - FHAREN FIRGIAWAN | Period: 2025-12-08 to 2025-12-14
+  - ID: 3843 | RH - FHAREN FIRGIAWAN | Period: 2025-12-15 to 2025-12-21
+  - ID: 3868 | RH - Ryctas Clarke | Period: 2025-12-15 to 2025-12-21
+  - ID: 4103 | RH - Ryctas Clarke | Period: 2025-12-22 to 2025-12-28
+  - ID: 3633 | RH - Michael Moore | Period: 2025-12-08 to 2025-12-14
+  - ID: 3857 | RH - Michael Moore | Period: 2025-12-15 to 2025-12-21
+  - ID: 4091 | RH - Michael Moore | Period: 2025-12-22 to 2025-12-28
+  - ID: 725 | RH - Firza Lion | Period: 2025-11-10 to 2025-11-16
+  - ID: 976 | RH - Firza Lion | Period: 2025-11-17 to 2025-11-23
+  - ID: 2743 | RH - Firza Lion | Period: 2025-11-24 to 2025-11-30
+  - ID: 3201 | RH - Firza Lion | Period: 2025-12-01 to 2025-12-07
+  - ID: 3621 | RH - Firza Lion | Period: 2025-12-08 to 2025-12-14
+  - ID: 3844 | RH - Firza Lion | Period: 2025-12-15 to 2025-12-21
+  - ID: 4071 | RH - Firza Lion | Period: 2025-12-22 to 2025-12-28
+  - ID: 728 | RH - KenzoCleavers | Period: 2025-11-10 to 2025-11-16
+  - ID: 977 | RH - KenzoCleavers | Period: 2025-11-17 to 2025-11-23
+  - ID: 2773 | RH - KenzoCleavers | Period: 2025-11-24 to 2025-11-30
+  - ID: 3653 | RH - KenzoCleavers | Period: 2025-12-08 to 2025-12-14
+  - ID: 3876 | RH - KenzoCleavers | Period: 2025-12-15 to 2025-12-21
+  - ID: 732 | RH - Faisal Andhika | Period: 2025-11-10 to 2025-11-16
+  - ID: 979 | RH - Faisal Andhika | Period: 2025-11-17 to 2025-11-23
+  - ID: 2742 | RH - Faisal Andhika | Period: 2025-11-24 to 2025-11-30
+  - ID: 3203 | RH - Faisal Andhika | Period: 2025-12-01 to 2025-12-07
+  - ID: 3619 | RH - Faisal Andhika | Period: 2025-12-08 to 2025-12-14
+  - ID: 3842 | RH - Faisal Andhika | Period: 2025-12-15 to 2025-12-21
+  - ID: 3880 | RH - Pangeran Julian | Period: 2025-12-15 to 2025-12-21
+  - ID: 4118 | RH - Pangeran Julian | Period: 2025-12-22 to 2025-12-28
+  - ID: 3758 | Joeru Shironomi | Period: 2025-12-15 to 2025-12-21
+  - ID: 3985 | Joeru Shironomi | Period: 2025-12-22 to 2025-12-28
+  - ID: 750 | Bruce McLaren | Period: 2025-11-10 to 2025-11-16
+  - ID: 981 | Bruce McLaren | Period: 2025-11-17 to 2025-11-23
+  - ID: 3858 | RH - Mitski Shironomi | Period: 2025-12-15 to 2025-12-21
+  - ID: 4092 | RH - Mitski Shironomi | Period: 2025-12-22 to 2025-12-28
+  - ID: 3853 | RH - Kuroto Roland | Period: 2025-12-15 to 2025-12-21
+  - ID: 4084 | RH - Kuroto Roland | Period: 2025-12-22 to 2025-12-28
+  - ID: 982 | RH-OTOENG MANGKUNINGRAT | Period: 2025-11-17 to 2025-11-23
+  - ID: 779 | RH - Joshua Van Leuween | Period: 2025-11-10 to 2025-11-16
+  - ID: 983 | RH - Joshua Van Leuween | Period: 2025-11-17 to 2025-11-23
+  - ID: 2745 | RH - Joshua Van Leuween | Period: 2025-11-24 to 2025-11-30
+  - ID: 2530 | RH - Joshua Van Leuween | Period: 2025-11-24 to 2025-12-01
+  - ID: 3205 | RH - Joshua Van Leuween | Period: 2025-12-01 to 2025-12-07
+  - ID: 3624 | RH - Joshua Van Leuween | Period: 2025-12-08 to 2025-12-14
+  - ID: 3847 | RH - Joshua Van Leuween | Period: 2025-12-15 to 2025-12-21
+  - ID: 4078 | RH - Joshua Van Leuween | Period: 2025-12-22 to 2025-12-28
+  - ID: 4026 | Maya Aldridge | Period: 2025-12-22 to 2025-12-28
+  - ID: 4090 | RH - MICAEL WILSON | Period: 2025-12-22 to 2025-12-28
+  - ID: 984 | Carissa Blanche | Period: 2025-11-17 to 2025-11-23
+  - ID: 2531 | Carissa Blanche | Period: 2025-11-24 to 2025-12-01
+  - ID: 3206 | Carissa Blanche | Period: 2025-12-01 to 2025-12-07
+  - ID: 3494 | Carissa Blanche | Period: 2025-12-08 to 2025-12-14
+  - ID: 3715 | Carissa Blanche | Period: 2025-12-15 to 2025-12-21
+  - ID: 2752 | RH - Madeleine Theresia | Period: 2025-11-24 to 2025-11-30
+  - ID: 2767 | RH - Sora Moon Van Jesper | Period: 2025-11-24 to 2025-11-30
+  - ID: 4031 | Micel McCartney | Period: 2025-12-22 to 2025-12-28
+  - ID: 3793 | Luigi El Dallgona | Period: 2025-12-15 to 2025-12-21
+  - ID: 4017 | Luigi El Dallgona | Period: 2025-12-22 to 2025-12-28
+  - ID: 4120 | RH - UDIN LUSIRMAN | Period: 2025-12-22 to 2025-12-28
+
+Base Salary: $102174.00 (should be $88948.00) - 16 payrolls
+  - ID: 587 | Yuki Hayakawa | Period: 2025-11-10 to 2025-11-16
+  - ID: 1002 | Yuki Hayakawa | Period: 2025-11-17 to 2025-11-23
+  - ID: 2812 | Yuki Hayakawa | Period: 2025-11-24 to 2025-11-30
+  - ID: 3233 | Yuki Hayakawa | Period: 2025-12-01 to 2025-12-07
+  - ID: 601 | Mayura Atmadja | Period: 2025-11-10 to 2025-11-16
+  - ID: 1008 | Mayura Atmadja | Period: 2025-11-17 to 2025-11-23
+  - ID: 2168 | Mayura Atmadja | Period: 2025-11-24 to 2025-12-01
+  - ID: 3240 | Mayura Atmadja | Period: 2025-12-01 to 2025-12-07
+  - ID: 3574 | Mayura Atmadja | Period: 2025-12-08 to 2025-12-14
+  - ID: 622 | Ousmane Sulaiman | Period: 2025-11-10 to 2025-11-16
+  - ID: 1013 | Ousmane Sulaiman | Period: 2025-11-17 to 2025-11-23
+  - ID: 2557 | Ousmane Sulaiman | Period: 2025-11-24 to 2025-12-01
+  - ID: 3244 | Ousmane Sulaiman | Period: 2025-12-01 to 2025-12-07
+  - ID: 3597 | Ousmane Sulaiman | Period: 2025-12-08 to 2025-12-14
+  - ID: 3824 | Ousmane Sulaiman | Period: 2025-12-15 to 2025-12-21
+  - ID: 4049 | Ousmane Sulaiman | Period: 2025-12-22 to 2025-12-28
+
+Base Salary: $122609.00 (should be $88948.00) - 1 payrolls
+  - ID: 4285 | Ousmane Sulaiman | Period: 2025-12-29 to 2026-01-04
+
+Please run fix_coas_base_salary.php to fix these issues.

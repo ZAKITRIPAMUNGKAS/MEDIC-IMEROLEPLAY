@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Payroll;
 use App\Models\PayrollNotification;
+use App\Models\PayrollExport;
 use App\Models\User;
 use App\Models\Attendance;
 use App\Helpers\PayrollHelper;
@@ -313,6 +314,9 @@ class PayrollController extends Controller
             // FIX: Assign availableWeeks to weeks as well to prevent "Undefined variable $weeks" in view
             $weeks = $availableWeeks;
 
+            // Check if export already done this month
+            $currentMonthExport = PayrollExport::getCurrentMonthExport();
+
             return view('admin.payroll.index', compact(
                 'payrolls',
                 'users',
@@ -322,7 +326,8 @@ class PayrollController extends Controller
                 'availableWeeks',
                 'weeks', // Added this to fix the error from your log
                 'canGenerateManually',
-                'lastWeekPayrollExists'
+                'lastWeekPayrollExists',
+                'currentMonthExport' // NEW: Monthly export tracking
             ));
 
         } catch (\Exception $e) {
@@ -872,6 +877,17 @@ class PayrollController extends Controller
      */
     public function export(Request $request)
     {
+        // Check if already exported this month
+        if (PayrollExport::existsForCurrentMonth()) {
+            $existingExport = PayrollExport::getCurrentMonthExport();
+
+            return redirect()->back()->with('error', sprintf(
+                'Data gaji sudah di export bulan ini oleh %s pada tanggal %s',
+                $existingExport->exporter->name,
+                $existingExport->exported_at->format('d M Y H:i')
+            ));
+        }
+
         $filters = [
             'status' => $request->get('status'),
             'user_id' => $request->get('user_id'),
@@ -938,6 +954,16 @@ class PayrollController extends Controller
         }
 
         $payrolls = $query->orderBy('period_start', 'desc')->get();
+
+        // Create export record BEFORE streaming
+        PayrollExport::create([
+            'export_year' => now()->year,
+            'export_month' => now()->month,
+            'exported_by' => auth()->id(),
+            'exported_at' => now(),
+            'filters' => $filters,
+            'records_count' => $payrolls->count(),
+        ]);
 
         $filename = 'payroll_export_' . now()->format('Y-m-d_H-i-s') . '.csv';
 
