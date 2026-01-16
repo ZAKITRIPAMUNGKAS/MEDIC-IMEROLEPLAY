@@ -95,7 +95,7 @@ class DashboardController extends Controller
 
             $recentFormsQuery->whereNotIn('form_type', $appointmentTypes);
             $recentAppointmentsQuery->whereIn('form_type', $appointmentTypes);
-            $statsQuery->query(); // Include all form types
+            // Stats: Include all form types (no filter needed for managers)
 
         } else {
             // Others (Perawat, etc.):
