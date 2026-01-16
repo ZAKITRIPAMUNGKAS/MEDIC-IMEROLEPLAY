@@ -44,14 +44,14 @@
                             <!-- Already Exported - Disabled Button -->
                             <button disabled
                                     class="w-full sm:w-auto inline-flex items-center justify-center px-4 sm:px-6 py-3 bg-gray-400 text-white rounded-lg font-semibold cursor-not-allowed opacity-60"
-                                    title="Data gaji sudah di export bulan ini oleh {{ $currentMonthExport->exporter->name }} pada {{ $currentMonthExport->exported_at->format('d M Y H:i') }}">
+                                    title="Data gaji sudah di export bulan ini oleh {{ optional($currentMonthExport->exporter)->name ?? 'Unknown User' }} pada {{ $currentMonthExport->exported_at->format('d M Y H:i') }}">
                                 <i class="fas fa-check-circle mr-2"></i>
                                 <span class="hidden xs:inline">Sudah Di-Export</span>
                                 <span class="xs:hidden">Exported</span>
                             </button>
                             <div class="hidden sm:flex items-center px-3 py-2 bg-green-500/20 text-green-300 rounded-lg text-sm">
                                 <i class="fas fa-info-circle mr-2"></i>
-                                <span>Export oleh <strong>{{ $currentMonthExport->exporter->name }}</strong> ({{ $currentMonthExport->exported_at->format('d M Y') }})</span>
+                                <span>Export oleh <strong>{{ optional($currentMonthExport->exporter)->name ?? 'Unknown User' }}</strong> ({{ $currentMonthExport->exported_at->format('d M Y') }})</span>
                             </div>
                         @else
                             <!-- Can Export - Active Button -->

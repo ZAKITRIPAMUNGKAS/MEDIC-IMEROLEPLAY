@@ -883,7 +883,7 @@ class PayrollController extends Controller
 
             return redirect()->back()->with('error', sprintf(
                 'Data gaji sudah di export bulan ini oleh %s pada tanggal %s',
-                $existingExport->exporter->name,
+                optional($existingExport->exporter)->name ?? 'Unknown User',
                 $existingExport->exported_at->format('d M Y H:i')
             ));
         }
@@ -956,14 +956,26 @@ class PayrollController extends Controller
         $payrolls = $query->orderBy('period_start', 'desc')->get();
 
         // Create export record BEFORE streaming
-        PayrollExport::create([
-            'export_year' => now()->year,
-            'export_month' => now()->month,
-            'exported_by' => auth()->id(),
-            'exported_at' => now(),
-            'filters' => $filters,
-            'records_count' => $payrolls->count(),
-        ]);
+        // Wrapped in try-catch to handle race condition if 2 users export simultaneously
+        try {
+            PayrollExport::create([
+                'export_year' => now()->year,
+                'export_month' => now()->month,
+                'exported_by' => auth()->id(),
+                'exported_at' => now(),
+                'filters' => $filters,
+                'records_count' => $payrolls->count(),
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Handle duplicate key error (unique constraint violation)
+            if ($e->getCode() == 23000 || str_contains($e->getMessage(), 'Duplicate entry')) {
+                return redirect()->back()->with(
+                    'error',
+                    'Data gaji sudah di export bulan ini oleh user lain. Silakan refresh halaman.'
+                );
+            }
+            throw $e; // Re-throw if it's a different error
+        }
 
         $filename = 'payroll_export_' . now()->format('Y-m-d_H-i-s') . '.csv';
 
