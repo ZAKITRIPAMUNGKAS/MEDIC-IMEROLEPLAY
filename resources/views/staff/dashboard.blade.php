@@ -1098,7 +1098,11 @@
                     </div>
 
                     <!-- Recent Appointments Table -->
-                    @if(auth()->user()->isAdmin() || in_array(optional(auth()->user()->role)->name, ['dokter_umum', 'dokter_spesialis']))
+                    @if(
+                            auth()->user()->isAdmin() ||
+                            in_array(optional(auth()->user()->role)->name, ['dokter_umum', 'dokter_spesialis']) ||
+                            (optional(auth()->user()->role)->level ?? 0) >= 5
+                        )
                         <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl overflow-hidden animate-fade-in-up"
                             style="animation-delay: 0.6s; background-color: rgba(7, 89, 133, 0.9);">
                             <div class="px-6 sm:px-8 py-6 border-b border-sky-400/30 flex justify-between items-center">
@@ -1493,17 +1497,17 @@
             toast.style.setProperty('--duration', `${duration}ms`);
             console.log('🎨 NEW TOAST DESIGN v2 - White Card Design');
             toast.innerHTML = `
-                                                        <div class="toast-icon">
-                                                            <i class="fas ${icons[type]} text-sm"></i>
-                                                        </div>
-                                                        <div class="toast-content">
-                                                            <div class="toast-title">${title}</div>
-                                                            <div class="toast-message">${message}</div>
-                                                        </div>
-                                                        <button class="toast-close" onclick="closeToast(this.parentElement)">
-                                                            <i class="fas fa-times text-xs"></i>
-                                                        </button>
-                                                    `;
+                                                            <div class="toast-icon">
+                                                                <i class="fas ${icons[type]} text-sm"></i>
+                                                            </div>
+                                                            <div class="toast-content">
+                                                                <div class="toast-title">${title}</div>
+                                                                <div class="toast-message">${message}</div>
+                                                            </div>
+                                                            <button class="toast-close" onclick="closeToast(this.parentElement)">
+                                                                <i class="fas fa-times text-xs"></i>
+                                                            </button>
+                                                        `;
 
             container.appendChild(toast);
             setTimeout(() => closeToast(toast), duration);
@@ -1523,7 +1527,7 @@
             @if(session('info'))
                 showToast('info', 'Informasi', '{{ session('info') }}');
             @endif
-                                            });
+                                                });
 
         function closeToast(toast) {
             if (!toast || toast.classList.contains('hiding')) return;
