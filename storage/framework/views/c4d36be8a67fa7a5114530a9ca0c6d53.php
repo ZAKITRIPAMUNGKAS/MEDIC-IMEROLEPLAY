@@ -482,8 +482,6 @@
         </script>
     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-
     <div class="container-custom <?php echo e((isset($mode) && $mode === 'register') ? 'sign-up-mode' : ''); ?>">
         <!-- Forms Container -->
         <div class="forms-container">

@@ -88,10 +88,19 @@ class DashboardController extends Controller
             $statsAllowed = array_merge(['operasi_plastik'], $appointmentTypes);
             $statsQuery->whereIn('form_type', $statsAllowed);
 
-        } else {
-            // Others (Perawat, Staff Manager, etc.):
+        } elseif (($user->role->level ?? 0) >= 5) {
+            // Staff Manager and above (level 5+): Can view appointments like doctors
             // Forms: Standard (Non-appointments)
-            // Appointments: HIDDEN (User request: "janji temu cuman muncul di dokter")
+            // Appointments: SHOW all appointment types
+
+            $recentFormsQuery->whereNotIn('form_type', $appointmentTypes);
+            $recentAppointmentsQuery->whereIn('form_type', $appointmentTypes);
+            $statsQuery->query(); // Include all form types
+
+        } else {
+            // Others (Perawat, etc.):
+            // Forms: Standard (Non-appointments)
+            // Appointments: HIDDEN
 
             $recentFormsQuery->whereNotIn('form_type', $appointmentTypes);
             $recentAppointmentsQuery->whereRaw('1 = 0'); // Force empty
@@ -209,6 +218,10 @@ class DashboardController extends Controller
             // Doctor: "Operasi Plastik" AND Appointments
             $allowedForms = array_merge(['operasi_plastik'], $appointmentTypes);
             $query->whereIn('form_type', $allowedForms);
+
+        } elseif (($user->role->level ?? 0) >= 5) {
+            // Staff Manager and above (level 5+): All forms INCLUDING Appointments
+            // No filtering needed - they can see everything
 
         } else {
             // Others (Perawat, etc.): Standard forms, NO Appointments
