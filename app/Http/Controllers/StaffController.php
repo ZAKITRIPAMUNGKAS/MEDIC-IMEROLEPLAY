@@ -151,34 +151,41 @@ class StaffController extends Controller
         $allowedRoles = ['trainee', 'perawat'];
         $allowedRoleIds = StaffRole::whereIn('name', $allowedRoles)->pluck('id')->toArray();
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'staff_id' => 'nullable|string|max:50|unique:users,staff_id', // ADDED: unique validation for staff_id
-            'role_id' => [
-                'required',
-                'exists:staff_roles,id',
-                function ($attribute, $value, $fail) use ($allowedRoleIds) {
-                    if (!in_array($value, $allowedRoleIds)) {
-                        $fail('Hanya role Trainee dan Perawat yang dapat dipilih saat registrasi.');
-                    }
-                },
-            ],
-            'hospital' => 'required|in:alta,roxwood',
-            'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ], [
-            // Custom error messages
-            'email.unique' => 'Email sudah digunakan oleh akun lain. Gunakan email yang berbeda.',
-            'email.required' => 'Email wajib diisi.',
-            'email.email' => 'Format email tidak valid.',
-            'password.min' => 'Password minimal harus 8 karakter.',
-            'password.confirmed' => 'Konfirmasi password tidak cocok.',
-            'staff_id.unique' => 'Staff ID sudah digunakan. Gunakan ID yang berbeda.',
-            'name.required' => 'Nama lengkap wajib diisi.',
-            'role_id.required' => 'Role wajib dipilih.',
-            'hospital.required' => 'Rumah sakit wajib dipilih.',
-        ]);
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8|confirmed',
+                'staff_id' => 'nullable|string|max:50|unique:users,staff_id',
+                'role_id' => [
+                    'required',
+                    'exists:staff_roles,id',
+                    function ($attribute, $value, $fail) use ($allowedRoleIds) {
+                        if (!in_array($value, $allowedRoleIds)) {
+                            $fail('Hanya role Trainee dan Perawat yang dapat dipilih saat registrasi.');
+                        }
+                    },
+                ],
+                'hospital' => 'required|in:alta,roxwood',
+                'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            ], [
+                // Custom error messages
+                'email.unique' => 'Email sudah digunakan oleh akun lain. Gunakan email yang berbeda.',
+                'email.required' => 'Email wajib diisi.',
+                'email.email' => 'Format email tidak valid.',
+                'password.min' => 'Password minimal harus 8 karakter.',
+                'password.confirmed' => 'Konfirmasi password tidak cocok.',
+                'staff_id.unique' => 'Staff ID sudah digunakan. Gunakan ID yang berbeda.',
+                'name.required' => 'Nama lengkap wajib diisi.',
+                'role_id.required' => 'Role wajib dipilih.',
+                'hospital.required' => 'Rumah sakit wajib dipilih.',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Redirect back to registration page (with old input) instead of login page
+            return redirect()->back()
+                ->withInput($request->except('password', 'password_confirmation'))
+                ->withErrors($e->validator->errors());
+        }
 
         $profileImagePath = null;
         if ($request->hasFile('profile_image')) {
@@ -189,7 +196,7 @@ class StaffController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'staff_id' => $request->staff_id, // Save staff_id if provided
+            'staff_id' => $request->staff_id,
             'role_id' => $request->role_id,
             'hospital' => $request->hospital,
             'is_active' => false,

@@ -490,7 +490,7 @@
                                 class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-sky-500 transition-colors">
                                 <i class="fas fa-user"></i>
                             </div>
-                            <input type="text" name="name" autocomplete="off"
+                            <input type="text" name="name" autocomplete="off" value="{{ old('name') }}"
                                 class="form-input w-full pl-11 pr-4 py-3 rounded-xl text-sm bg-slate-100 border-transparent focus:bg-white"
                                 placeholder="Nama Lengkap" required>
                         </div>
@@ -500,7 +500,7 @@
                                 class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-sky-500 transition-colors">
                                 <i class="fas fa-envelope"></i>
                             </div>
-                            <input type="email" name="email"
+                            <input type="email" name="email" value="{{ old('email') }}"
                                 class="form-input w-full pl-11 pr-4 py-3 rounded-xl text-sm bg-slate-100 border-transparent focus:bg-white"
                                 placeholder="Email Address" required>
                         </div>
@@ -512,10 +512,11 @@
                             </div>
                             <select name="role_id" required
                                 class="form-input w-full pl-11 pr-4 py-3 rounded-xl text-sm bg-slate-100 border-transparent focus:bg-white appearance-none cursor-pointer text-slate-600">
-                                <option value="" disabled selected>Pilih Peran Staf</option>
+                                <option value="" disabled {{ old('role_id') ? '' : 'selected' }}>Pilih Peran Staf
+                                </option>
                                 @if(isset($roles))
                                     @foreach($roles as $role)
-                                        <option value="{{ $role->id }}">
+                                        <option value="{{ $role->id }}" {{ old('role_id') == $role->id ? 'selected' : '' }}>
                                             {{ ucfirst($role->display_name ?? str_replace('_', ' ', (string) $role->name)) }}
                                         </option>
                                     @endforeach
@@ -535,9 +536,12 @@
                             </div>
                             <select name="hospital" required
                                 class="form-input w-full pl-11 pr-4 py-3 rounded-xl text-sm bg-slate-100 border-transparent focus:bg-white appearance-none cursor-pointer text-slate-600">
-                                <option value="" disabled selected>Pilih Rumah Sakit</option>
-                                <option value="alta">Alta Hospital (EMS)</option>
-                                <option value="roxwood">Roxwood Hospital</option>
+                                <option value="" disabled {{ old('hospital') ? '' : 'selected' }}>Pilih Rumah Sakit
+                                </option>
+                                <option value="alta" {{ old('hospital') == 'alta' ? 'selected' : '' }}>Alta Hospital (EMS)
+                                </option>
+                                <option value="roxwood" {{ old('hospital') == 'roxwood' ? 'selected' : '' }}>Roxwood
+                                    Hospital</option>
                             </select>
                             <div
                                 class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400">
