@@ -284,4 +284,27 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    // Auto-sync Jenis Surat dan Kategori dropdown
+    document.addEventListener('DOMContentLoaded', function() {
+        const typeSelect = document.querySelector('select[name="type"]');
+        const categorySelect = document.querySelector('select[name="category"]');
+        
+        if (typeSelect && categorySelect) {
+            typeSelect.addEventListener('change', function() {
+                if (this.value === 'janji_temu') {
+                    // Set kategori ke janji_temu jika opsi tersedia
+                    const janjiTemuOption = categorySelect.querySelector('option[value="janji_temu"]');
+                    if (janjiTemuOption) {
+                        categorySelect.value = 'janji_temu';
+                    }
+                }
+            });
+        }
+    });
+</script>
+@endpush
+
 @endsection
