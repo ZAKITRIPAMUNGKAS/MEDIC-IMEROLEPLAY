@@ -24,70 +24,79 @@
             </div>
 
             <!-- Filter Section -->
-            <form method="GET" action="{{ route('staff.forms') }}" class="grid grid-cols-1 md:grid-cols-6 gap-4">
-                <div class="md:col-span-2">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama karakter atau deskripsi..." class="w-full bg-white/30 backdrop-blur-xl text-white placeholder-slate-200 border-2 border-sky-400/40 rounded-xl px-4 py-3 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-sm font-medium shadow-xl transition-all duration-200">
+            <form method="GET" action="{{ route('staff.forms') }}" class="space-y-4">
+                <!-- Baris 1: Search, Status, Type, Category -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama karakter atau deskripsi..." class="w-full bg-white/30 backdrop-blur-xl text-white placeholder-slate-200 border-2 border-sky-400/40 rounded-xl px-4 py-3 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-sm font-medium shadow-xl transition-all duration-200">
+                    </div>
+                    <div>
+                        <select name="status" class="w-full bg-white/30 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-xl px-4 py-3 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-sm font-medium shadow-xl transition-all duration-200">
+                            <option value="" class="bg-slate-800 text-slate-300">Semua Status</option>
+                            <option value="pending" class="bg-slate-800 text-slate-300" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
+                            <option value="approved" class="bg-slate-800 text-slate-300" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
+                            <option value="rejected" class="bg-slate-800 text-slate-300" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select name="type" class="w-full bg-white/30 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-xl px-4 py-3 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-sm font-medium shadow-xl transition-all duration-200">
+                            <option value="" class="bg-slate-800 text-slate-300">Semua Jenis</option>
+                            @if(auth()->user()->isAdmin() || in_array(optional(auth()->user()->role)->name, ['dokter_umum', 'dokter_spesialis']))
+                            <option value="penyakit_dalam" class="bg-slate-800 text-slate-300" {{ request('type') == 'penyakit_dalam' ? 'selected' : '' }}>Poli Penyakit Dalam</option>
+                            <option value="spesialis_anak" class="bg-slate-800 text-slate-300" {{ request('type') == 'spesialis_anak' ? 'selected' : '' }}>Poli Spesialis Anak</option>
+                            <option value="spesialis_bedah" class="bg-slate-800 text-slate-300" {{ request('type') == 'spesialis_bedah' ? 'selected' : '' }}>Poli Spesialis Bedah</option>
+                            <option value="spesialis_mata" class="bg-slate-800 text-slate-300" {{ request('type') == 'spesialis_mata' ? 'selected' : '' }}>Poli Spesialis Mata</option>
+                            <option value="spesialis_saraf" class="bg-slate-800 text-slate-300" {{ request('type') == 'spesialis_saraf' ? 'selected' : '' }}>Poli Spesialis Saraf</option>
+                            <option value="spesialis_urologi" class="bg-slate-800 text-slate-300" {{ request('type') == 'spesialis_urologi' ? 'selected' : '' }}>Poli Spesialis Urologi</option>
+                            <option value="spesialis_tht" class="bg-slate-800 text-slate-300" {{ request('type') == 'spesialis_tht' ? 'selected' : '' }}>Poli Spesialis THT</option>
+                            <option value="spesialis_ortopedi" class="bg-slate-800 text-slate-300" {{ request('type') == 'spesialis_ortopedi' ? 'selected' : '' }}>Poli Spesialis Ortopedi</option>
+                            <option value="janji_temu" class="bg-slate-800 text-slate-300" {{ request('type') == 'janji_temu' ? 'selected' : '' }}>Janji Temu</option>
+                            @endif
+                            <option value="surat_kesehatan" class="bg-slate-800 text-slate-300" {{ request('type') == 'surat_kesehatan' ? 'selected' : '' }}>Surat Kesehatan</option>
+                            <option value="operasi_plastik" class="bg-slate-800 text-slate-300" {{ request('type') == 'operasi_plastik' ? 'selected' : '' }}>Operasi Plastik</option>
+                            <option value="tes_psikologi" class="bg-slate-800 text-slate-300" {{ request('type') == 'tes_psikologi' ? 'selected' : '' }}>Tes Psikologi</option>
+                        </select>
+                    </div>
+                    <div>
+                        <select name="category" class="w-full bg-white/30 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-xl px-4 py-3 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-sm font-medium shadow-xl transition-all duration-200">
+                            <option value="" class="bg-slate-800 text-slate-300">Semua Kategori</option>
+                            <option value="konsultasi" class="bg-slate-800 text-slate-300" {{ request('category') == 'konsultasi' ? 'selected' : '' }}>Konsultasi</option>
+                            <option value="pemeriksaan" class="bg-slate-800 text-slate-300" {{ request('category') == 'pemeriksaan' ? 'selected' : '' }}>Pemeriksaan</option>
+                            @if(auth()->user()->isAdmin() || in_array(optional(auth()->user()->role)->name, ['dokter_umum', 'dokter_spesialis']))
+                            <option value="janji_temu" class="bg-slate-800 text-slate-300" {{ request('category') == 'janji_temu' ? 'selected' : '' }}>Janji Temu</option>
+                            @endif
+                            <option value="karakter_kill" class="bg-slate-800 text-slate-300" {{ request('category') == 'karakter_kill' ? 'selected' : '' }}>Karakter Kill</option>
+                        </select>
+                    </div>
                 </div>
-                <div>
-                    <select name="status" class="w-full bg-white/30 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-xl px-4 py-3 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-sm font-medium shadow-xl transition-all duration-200">
-                        <option value="" class="bg-slate-800 text-slate-300">Semua Status</option>
-                        <option value="pending" class="bg-slate-800 text-slate-300" {{ request('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="approved" class="bg-slate-800 text-slate-300" {{ request('status') == 'approved' ? 'selected' : '' }}>Approved</option>
-                        <option value="rejected" class="bg-slate-800 text-slate-300" {{ request('status') == 'rejected' ? 'selected' : '' }}>Rejected</option>
-                    </select>
-                </div>
-                <div>
-                    <select name="type" class="w-full bg-white/30 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-xl px-4 py-3 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-sm font-medium shadow-xl transition-all duration-200">
-                        <option value="" class="bg-slate-800 text-slate-300">Semua Jenis</option>
-                        @if(auth()->user()->isAdmin() || in_array(optional(auth()->user()->role)->name, ['dokter_umum', 'dokter_spesialis']))
-                        <option value="penyakit_dalam" class="bg-slate-800 text-slate-300" {{ request('type') == 'penyakit_dalam' ? 'selected' : '' }}>Poli Penyakit Dalam</option>
-                        <option value="spesialis_anak" class="bg-slate-800 text-slate-300" {{ request('type') == 'spesialis_anak' ? 'selected' : '' }}>Poli Spesialis Anak</option>
-                        <option value="spesialis_bedah" class="bg-slate-800 text-slate-300" {{ request('type') == 'spesialis_bedah' ? 'selected' : '' }}>Poli Spesialis Bedah</option>
-                        <option value="spesialis_mata" class="bg-slate-800 text-slate-300" {{ request('type') == 'spesialis_mata' ? 'selected' : '' }}>Poli Spesialis Mata</option>
-                        <option value="spesialis_saraf" class="bg-slate-800 text-slate-300" {{ request('type') == 'spesialis_saraf' ? 'selected' : '' }}>Poli Spesialis Saraf</option>
-                        <option value="spesialis_urologi" class="bg-slate-800 text-slate-300" {{ request('type') == 'spesialis_urologi' ? 'selected' : '' }}>Poli Spesialis Urologi</option>
-                        <option value="spesialis_tht" class="bg-slate-800 text-slate-300" {{ request('type') == 'spesialis_tht' ? 'selected' : '' }}>Poli Spesialis THT</option>
-                        <option value="spesialis_ortopedi" class="bg-slate-800 text-slate-300" {{ request('type') == 'spesialis_ortopedi' ? 'selected' : '' }}>Poli Spesialis Ortopedi</option>
-                        <option value="janji_temu" class="bg-slate-800 text-slate-300" {{ request('type') == 'janji_temu' ? 'selected' : '' }}>Janji Temu</option>
-                        @endif
-                        <option value="surat_kesehatan" class="bg-slate-800 text-slate-300" {{ request('type') == 'surat_kesehatan' ? 'selected' : '' }}>Surat Kesehatan</option>
-                        <option value="operasi_plastik" class="bg-slate-800 text-slate-300" {{ request('type') == 'operasi_plastik' ? 'selected' : '' }}>Operasi Plastik</option>
-                        <option value="tes_psikologi" class="bg-slate-800 text-slate-300" {{ request('type') == 'tes_psikologi' ? 'selected' : '' }}>Tes Psikologi</option>
-                    </select>
-                </div>
-                <div>
-                    <select name="category" class="w-full bg-white/30 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-xl px-4 py-3 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-sm font-medium shadow-xl transition-all duration-200">
-                        <option value="" class="bg-slate-800 text-slate-300">Semua Kategori</option>
-                        <option value="konsultasi" class="bg-slate-800 text-slate-300" {{ request('category') == 'konsultasi' ? 'selected' : '' }}>Konsultasi</option>
-                        <option value="pemeriksaan" class="bg-slate-800 text-slate-300" {{ request('category') == 'pemeriksaan' ? 'selected' : '' }}>Pemeriksaan</option>
-                        @if(auth()->user()->isAdmin() || in_array(optional(auth()->user()->role)->name, ['dokter_umum', 'dokter_spesialis']))
-                        <option value="janji_temu" class="bg-slate-800 text-slate-300" {{ request('category') == 'janji_temu' ? 'selected' : '' }}>Janji Temu</option>
-                        @endif
-                        <option value="karakter_kill" class="bg-slate-800 text-slate-300" {{ request('category') == 'karakter_kill' ? 'selected' : '' }}>Karakter Kill</option>
-                    </select>
-                </div>
-                @if(auth()->user()->isAdmin() || in_array(optional(auth()->user()->role)->name, ['dokter_umum', 'dokter_spesialis']) || (optional(auth()->user()->role)->level ?? 0) >= 5)
-                <div>
-                    <select name="appointment_type" class="w-full bg-white/30 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-xl px-4 py-3 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-sm font-medium shadow-xl transition-all duration-200">
-                        <option value="" class="bg-slate-800 text-slate-300">Jenis Janji Temu</option>
-                        <option value="penyakit_dalam" class="bg-slate-800 text-slate-300" {{ request('appointment_type') == 'penyakit_dalam' ? 'selected' : '' }}>Poli Penyakit Dalam</option>
-                        <option value="spesialis_anak" class="bg-slate-800 text-slate-300" {{ request('appointment_type') == 'spesialis_anak' ? 'selected' : '' }}>Poli Spesialis Anak</option>
-                        <option value="spesialis_bedah" class="bg-slate-800 text-slate-300" {{ request('appointment_type') == 'spesialis_bedah' ? 'selected' : '' }}>Poli Spesialis Bedah</option>
-                        <option value="spesialis_mata" class="bg-slate-800 text-slate-300" {{ request('appointment_type') == 'spesialis_mata' ? 'selected' : '' }}>Poli Spesialis Mata</option>
-                        <option value="spesialis_saraf" class="bg-slate-800 text-slate-300" {{ request('appointment_type') == 'spesialis_saraf' ? 'selected' : '' }}>Poli Spesialis Saraf</option>
-                        <option value="spesialis_urologi" class="bg-slate-800 text-slate-300" {{ request('appointment_type') == 'spesialis_urologi' ? 'selected' : '' }}>Poli Spesialis Urologi</option>
-                        <option value="spesialis_tht" class="bg-slate-800 text-slate-300" {{ request('appointment_type') == 'spesialis_tht' ? 'selected' : '' }}>Poli Spesialis THT</option>
-                        <option value="spesialis_ortopedi" class="bg-slate-800 text-slate-300" {{ request('appointment_type') == 'spesialis_ortopedi' ? 'selected' : '' }}>Poli Spesialis Ortopedi</option>
-                    </select>
-                </div>
-                @endif
-                <div class="flex gap-2">
-                    <button type="submit" class="flex-1 bg-gradient-to-r from-sky-500 to-cyan-500 text-white py-3 px-4 rounded-xl font-medium text-sm hover:from-sky-600 hover:to-cyan-600 transition-all duration-200 transform hover:scale-105 shadow-lg">
-                        <i class="fas fa-search mr-2"></i>Filter
-                    </button>
-                    <a href="{{ route('staff.forms') }}" class="flex-1 bg-white/30 text-white py-3 px-4 rounded-xl font-medium text-sm hover:bg-white/40 transition-all duration-200 text-center border-2 border-sky-400/40 shadow-xl">
-                        <i class="fas fa-times mr-2"></i>Reset
-                    </a>
+
+                <!-- Baris 2: Appointment Type & Buttons -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    @if(auth()->user()->isAdmin() || in_array(optional(auth()->user()->role)->name, ['dokter_umum', 'dokter_spesialis']) || (optional(auth()->user()->role)->level ?? 0) >= 5)
+                    <div>
+                        <select name="appointment_type" class="w-full bg-white/30 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-xl px-4 py-3 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-sm font-medium shadow-xl transition-all duration-200">
+                            <option value="" class="bg-slate-800 text-slate-300">Jenis Janji Temu</option>
+                            <option value="penyakit_dalam" class="bg-slate-800 text-slate-300" {{ request('appointment_type') == 'penyakit_dalam' ? 'selected' : '' }}>Poli Penyakit Dalam</option>
+                            <option value="spesialis_anak" class="bg-slate-800 text-slate-300" {{ request('appointment_type') == 'spesialis_anak' ? 'selected' : '' }}>Poli Spesialis Anak</option>
+                            <option value="spesialis_bedah" class="bg-slate-800 text-slate-300" {{ request('appointment_type') == 'spesialis_bedah' ? 'selected' : '' }}>Poli Spesialis Bedah</option>
+                            <option value="spesialis_mata" class="bg-slate-800 text-slate-300" {{ request('appointment_type') == 'spesialis_mata' ? 'selected' : '' }}>Poli Spesialis Mata</option>
+                            <option value="spesialis_saraf" class="bg-slate-800 text-slate-300" {{ request('appointment_type') == 'spesialis_saraf' ? 'selected' : '' }}>Poli Spesialis Saraf</option>
+                            <option value="spesialis_urologi" class="bg-slate-800 text-slate-300" {{ request('appointment_type') == 'spesialis_urologi' ? 'selected' : '' }}>Poli Spesialis Urologi</option>
+                            <option value="spesialis_tht" class="bg-slate-800 text-slate-300" {{ request('appointment_type') == 'spesialis_tht' ? 'selected' : '' }}>Poli Spesialis THT</option>
+                            <option value="spesialis_ortopedi" class="bg-slate-800 text-slate-300" {{ request('appointment_type') == 'spesialis_ortopedi' ? 'selected' : '' }}>Poli Spesialis Ortopedi</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2 flex gap-2">
+                    @else
+                    <div class="md:col-span-3 flex gap-2">
+                    @endif
+                        <button type="submit" class="flex-1 bg-gradient-to-r from-sky-500 to-cyan-500 text-white py-3 px-4 rounded-xl font-medium text-sm hover:from-sky-600 hover:to-cyan-600 transition-all duration-200 transform hover:scale-105 shadow-lg">
+                            <i class="fas fa-search mr-2"></i>Filter
+                        </button>
+                        <a href="{{ route('staff.forms') }}" class="flex-1 bg-white/30 text-white py-3 px-4 rounded-xl font-medium text-sm hover:bg-white/40 transition-all duration-200 text-center border-2 border-sky-400/40 shadow-xl">
+                            <i class="fas fa-times mr-2"></i>Reset
+                        </a>
+                    </div>
                 </div>
             </form>
         </div>
