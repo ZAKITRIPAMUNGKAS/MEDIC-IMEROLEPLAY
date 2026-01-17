@@ -185,7 +185,6 @@ class DashboardController extends Controller
         $status = $request->get('status');
         $type = $request->get('type');
         $category = $request->get('category');
-        $appointmentType = $request->get('appointment_type');
 
         // Appointment types definition
         $appointmentTypes = [
@@ -269,11 +268,6 @@ class DashboardController extends Controller
             } elseif ($category === 'karakter_kill') {
                 $query->where('form_type', 'pendaftaran_karakter');
             }
-        }
-
-        // Filter jenis janji temu (appointment type)
-        if ($appointmentType && $appointmentType !== '') {
-            $query->where('form_type', $appointmentType);
         }
 
         // Ambil data dengan paginasi
