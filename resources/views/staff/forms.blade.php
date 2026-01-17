@@ -24,7 +24,7 @@
             </div>
 
             <!-- Filter Section -->
-            <form method="GET" action="{{ route('staff.forms') }}" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <form method="GET" action="{{ route('staff.forms') }}" class="grid grid-cols-1 md:grid-cols-6 gap-4">
                 <div class="md:col-span-2">
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama karakter atau deskripsi..." class="w-full bg-white/30 backdrop-blur-xl text-white placeholder-slate-200 border-2 border-sky-400/40 rounded-xl px-4 py-3 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-sm font-medium shadow-xl transition-all duration-200">
                 </div>
@@ -66,6 +66,21 @@
                         <option value="karakter_kill" class="bg-slate-800 text-slate-300" {{ request('category') == 'karakter_kill' ? 'selected' : '' }}>Karakter Kill</option>
                     </select>
                 </div>
+                @if(auth()->user()->isAdmin() || in_array(optional(auth()->user()->role)->name, ['dokter_umum', 'dokter_spesialis']) || (optional(auth()->user()->role)->level ?? 0) >= 5)
+                <div>
+                    <select name="appointment_type" class="w-full bg-white/30 backdrop-blur-xl text-white border-2 border-sky-400/40 rounded-xl px-4 py-3 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-sm font-medium shadow-xl transition-all duration-200">
+                        <option value="" class="bg-slate-800 text-slate-300">Jenis Janji Temu</option>
+                        <option value="penyakit_dalam" class="bg-slate-800 text-slate-300" {{ request('appointment_type') == 'penyakit_dalam' ? 'selected' : '' }}>Poli Penyakit Dalam</option>
+                        <option value="spesialis_anak" class="bg-slate-800 text-slate-300" {{ request('appointment_type') == 'spesialis_anak' ? 'selected' : '' }}>Poli Spesialis Anak</option>
+                        <option value="spesialis_bedah" class="bg-slate-800 text-slate-300" {{ request('appointment_type') == 'spesialis_bedah' ? 'selected' : '' }}>Poli Spesialis Bedah</option>
+                        <option value="spesialis_mata" class="bg-slate-800 text-slate-300" {{ request('appointment_type') == 'spesialis_mata' ? 'selected' : '' }}>Poli Spesialis Mata</option>
+                        <option value="spesialis_saraf" class="bg-slate-800 text-slate-300" {{ request('appointment_type') == 'spesialis_saraf' ? 'selected' : '' }}>Poli Spesialis Saraf</option>
+                        <option value="spesialis_urologi" class="bg-slate-800 text-slate-300" {{ request('appointment_type') == 'spesialis_urologi' ? 'selected' : '' }}>Poli Spesialis Urologi</option>
+                        <option value="spesialis_tht" class="bg-slate-800 text-slate-300" {{ request('appointment_type') == 'spesialis_tht' ? 'selected' : '' }}>Poli Spesialis THT</option>
+                        <option value="spesialis_ortopedi" class="bg-slate-800 text-slate-300" {{ request('appointment_type') == 'spesialis_ortopedi' ? 'selected' : '' }}>Poli Spesialis Ortopedi</option>
+                    </select>
+                </div>
+                @endif
                 <div class="flex gap-2">
                     <button type="submit" class="flex-1 bg-gradient-to-r from-sky-500 to-cyan-500 text-white py-3 px-4 rounded-xl font-medium text-sm hover:from-sky-600 hover:to-cyan-600 transition-all duration-200 transform hover:scale-105 shadow-lg">
                         <i class="fas fa-search mr-2"></i>Filter
