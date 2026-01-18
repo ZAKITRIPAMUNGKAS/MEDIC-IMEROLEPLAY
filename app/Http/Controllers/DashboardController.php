@@ -251,7 +251,7 @@ class DashboardController extends Controller
         if ($type && $type !== '') {
             if ($type === 'janji_temu') {
                 // Filter untuk semua jenis janji temu
-                $query->whereIn('form_type', ['penyakit_dalam', 'spesialis_anak', 'spesialis_bedah', 'spesialis_mata', 'spesialis_saraf', 'spesialis_urologi', 'spesialis_tht', 'spesialis_ortopedi']);
+                $query->whereIn('form_type', ['janji_temu', 'penyakit_dalam', 'spesialis_anak', 'spesialis_bedah', 'spesialis_mata', 'spesialis_saraf', 'spesialis_urologi', 'spesialis_tht', 'spesialis_ortopedi']);
             } else {
                 $query->where('form_type', $type);
             }
@@ -260,7 +260,7 @@ class DashboardController extends Controller
         // Filter kategori
         if ($category && $category !== '') {
             if ($category === 'janji_temu') {
-                $query->whereIn('form_type', ['penyakit_dalam', 'spesialis_anak', 'spesialis_bedah', 'spesialis_mata', 'spesialis_saraf', 'spesialis_urologi', 'spesialis_tht', 'spesialis_ortopedi']);
+                $query->whereIn('form_type', ['janji_temu', 'penyakit_dalam', 'spesialis_anak', 'spesialis_bedah', 'spesialis_mata', 'spesialis_saraf', 'spesialis_urologi', 'spesialis_tht', 'spesialis_ortopedi']);
             } elseif ($category === 'konsultasi') {
                 $query->whereIn('form_type', ['konsultasi_medis', 'laporan_kecelakaan', 'permintaan_ambulans']);
             } elseif ($category === 'pemeriksaan') {
