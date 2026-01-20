@@ -102,10 +102,10 @@ class DashboardController extends Controller
             // Stats: Include all form types (no filter needed for managers)
 
         } elseif ($userRole === 'perawat') {
-            // Perawat: Standard forms, NO Appointments
-            $recentFormsQuery->whereNotIn('form_type', $appointmentTypes);
-            $recentAppointmentsQuery->whereRaw('1 = 0'); // Force empty
-            $statsQuery->whereNotIn('form_type', $appointmentTypes);
+            // Perawat: Sees NOTHING (Same as Trainee - Only Clock In/Out & Leaderboard)
+            $recentFormsQuery->whereRaw('1 = 0');
+            $recentAppointmentsQuery->whereRaw('1 = 0');
+            $statsQuery->whereRaw('1 = 0');
 
         } else {
             // Others: Standard forms, NO Appointments
@@ -230,6 +230,10 @@ class DashboardController extends Controller
         } elseif ($userLevel >= 5) {
             // Staff Manager and above (level 5+): All forms INCLUDING Appointments
             // No filtering needed - they can see everything
+
+        } elseif ($userRole === 'perawat') {
+            // Perawat: Sees NOTHING (Same as Trainee)
+            $query->whereRaw('1 = 0');
 
         } else {
             // Others (Perawat, etc.): Standard forms, NO Appointments
