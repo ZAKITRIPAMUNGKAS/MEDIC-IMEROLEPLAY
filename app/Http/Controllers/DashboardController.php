@@ -78,16 +78,18 @@ class DashboardController extends Controller
             $statsQuery->whereIn('form_type', $allowedForms);
 
         } elseif (in_array($userRole, ['dokter_umum', 'dokter_spesialis'])) {
-            // Doctor: Only Operasi Plastik in "Forms", but SHOW appointments in "Appointments"
+            // Doctor: Can see ALL forms that Co-ass can see, PLUS Operasi Plastik AND Appointments
+            // Dokter >= Level 3, so they inherit Level 2 (Co-ass) access
 
-            // 1. Recent Forms: Only 'operasi_plastik'
-            $recentFormsQuery->where('form_type', 'operasi_plastik');
+            // 1. Recent Forms: surat_kesehatan, tes_psikologi, surat_psikolog, AND operasi_plastik
+            $allowedForms = ['surat_kesehatan', 'tes_psikologi', 'surat_psikolog', 'operasi_plastik'];
+            $recentFormsQuery->whereIn('form_type', $allowedForms);
 
             // 2. Appointments: show all appointment types
             $recentAppointmentsQuery->whereIn('form_type', $appointmentTypes);
 
-            // 3. Stats: Include Operasi Plastik AND Appointments
-            $statsAllowed = array_merge(['operasi_plastik'], $appointmentTypes);
+            // 3. Stats: Include all allowed forms AND Appointments
+            $statsAllowed = array_merge($allowedForms, $appointmentTypes);
             $statsQuery->whereIn('form_type', $statsAllowed);
 
         } elseif ($userLevel >= 5) {
@@ -221,8 +223,8 @@ class DashboardController extends Controller
             $query->whereIn('form_type', $allowedForms);
 
         } elseif (in_array($userRole, ['dokter_umum', 'dokter_spesialis'])) {
-            // Doctor: "Operasi Plastik" AND Appointments
-            $allowedForms = array_merge(['operasi_plastik'], $appointmentTypes);
+            // Doctor: Can see ALL forms that Co-ass can see, PLUS "Operasi Plastik" AND Appointments
+            $allowedForms = array_merge(['surat_kesehatan', 'tes_psikologi', 'surat_psikolog', 'operasi_plastik'], $appointmentTypes);
             $query->whereIn('form_type', $allowedForms);
 
         } elseif ($userLevel >= 5) {
