@@ -1,8 +1,8 @@
-@extends('layouts.app')
 
-@section('title', 'Dashboard Staf - Portal Medis')
 
-@section('content')
+<?php $__env->startSection('title', 'Dashboard Staf - Portal Medis'); ?>
+
+<?php $__env->startSection('content'); ?>
     <style>
         /* Custom styles for animations, heatmap, and visual enhancements */
         .heatmap-day {
@@ -470,7 +470,7 @@
         });
 
         function changeYear(year) {
-            window.location.href = '{{ route("staff.dashboard") }}?year=' + year;
+            window.location.href = '<?php echo e(route("staff.dashboard")); ?>?year=' + year;
         }
     </script>
 
@@ -492,12 +492,12 @@
                     class="text-4xl sm:text-5xl md:text-6xl font-black bg-gradient-to-r from-sky-300 to-cyan-300 bg-clip-text text-transparent mb-4">
                     Dashboard Staf Medis</h1>
                 <p class="text-lg sm:text-xl text-sky-200 max-w-3xl mx-auto">Selamat datang kembali, <span
-                        class="font-bold text-sky-100">{{ auth()->user()->name }}</span>. Kelola operasional medis Anda di
+                        class="font-bold text-sky-100"><?php echo e(auth()->user()->name); ?></span>. Kelola operasional medis Anda di
                     sini.</p>
             </div>
 
             <!-- Warning for Active Session from Previous Day -->
-            @if(isset($anyActiveSession) && $anyActiveSession && !isset($activeSession))
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($anyActiveSession) && $anyActiveSession && !isset($activeSession)): ?>
                 <div class="relative overflow-hidden bg-gradient-to-br from-red-500 to-red-600 rounded-2xl shadow-2xl animate-fade-in-up mb-8 border border-red-400/50"
                     style="animation-delay: 0.05s;">
                     <div class="relative p-6 sm:p-8">
@@ -519,15 +519,17 @@
                                         <p class="text-white text-sm font-medium mb-1">
                                             Sesi belum di-clock out dari
                                             <span class="bg-yellow-400 text-black px-2 py-1 rounded font-bold text-sm">
-                                                {{ isset($anyActiveSession) && $anyActiveSession ? $anyActiveSession->work_date->format('d/m/Y') : '' }}
+                                                <?php echo e(isset($anyActiveSession) && $anyActiveSession ? $anyActiveSession->work_date->format('d/m/Y') : ''); ?>
+
                                             </span>
                                         </p>
                                         <p class="text-yellow-200 text-sm">
                                             Durasi:
                                             <span id="previous-session-duration"
-                                                data-clock-in="{{ isset($anyActiveSession) && $anyActiveSession ? $anyActiveSession->clock_in->toISOString() : '' }}"
+                                                data-clock-in="<?php echo e(isset($anyActiveSession) && $anyActiveSession ? $anyActiveSession->clock_in->toISOString() : ''); ?>"
                                                 class="bg-white/20 text-white px-2 py-1 rounded font-bold">
-                                                {{ isset($anyActiveSession) && $anyActiveSession ? \App\Helpers\TimeHelper::formatDuration($anyActiveSession->calculateTotalHours()) : '0:00:00' }}
+                                                <?php echo e(isset($anyActiveSession) && $anyActiveSession ? \App\Helpers\TimeHelper::formatDuration($anyActiveSession->calculateTotalHours()) : '0:00:00'); ?>
+
                                             </span>
                                         </p>
                                     </div>
@@ -536,9 +538,9 @@
 
                             <!-- Right side - Clock Out Button -->
                             <div class="w-full lg:w-auto">
-                                <form method="POST" action="{{ route('staff.attendance.clock-out') }}"
-                                    id="dashboardClockOutForm" data-action="{{ route('staff.attendance.clock-out') }}">
-                                    @csrf
+                                <form method="POST" action="<?php echo e(route('staff.attendance.clock-out')); ?>"
+                                    id="dashboardClockOutForm" data-action="<?php echo e(route('staff.attendance.clock-out')); ?>">
+                                    <?php echo csrf_field(); ?>
                                     <button type="submit"
                                         class="w-full bg-gradient-to-r from-red-600 to-red-700 text-white px-8 py-4 rounded-xl font-bold hover:from-red-700 hover:to-red-800 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center border border-red-400/50"
                                         id="dashboardClockOutBtn">
@@ -556,14 +558,14 @@
                         </div>
                     </div>
                 </div>
-            @endif
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
             <!-- Clock In/Out Section - Paling Atas -->
-            @if(!(isset($anyActiveSession) && $anyActiveSession && !isset($activeSession)))
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!(isset($anyActiveSession) && $anyActiveSession && !isset($activeSession))): ?>
                 <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl animate-fade-in-up mb-8"
                     style="animation-delay: 0.05s; background-color: rgba(7, 89, 133, 0.9);">
                     <div class="p-6 sm:p-8">
-                        @if(isset($activeSession) && $activeSession)
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($activeSession) && $activeSession): ?>
                             <!-- Active Session -->
                             <div
                                 class="bg-gradient-to-br from-yellow-500/50 to-orange-500/50 rounded-2xl p-4 sm:p-6 border-2 border-yellow-400/60 shadow-xl">
@@ -575,36 +577,39 @@
                                         </div>
                                         <div>
                                             <h4 class="text-xl sm:text-2xl font-bold text-white mb-1 sm:mb-2">Sesi
-                                                {{ isset($activeSession) && $activeSession ? $activeSession->session_number : '' }}
+                                                <?php echo e(isset($activeSession) && $activeSession ? $activeSession->session_number : ''); ?>
+
                                                 Sedang Aktif
                                             </h4>
                                             <p class="text-yellow-200">Dimulai
-                                                {{ isset($activeSession) && $activeSession ? $activeSession->clock_in->diffForHumans() : '' }}
+                                                <?php echo e(isset($activeSession) && $activeSession ? $activeSession->clock_in->diffForHumans() : ''); ?>
+
                                             </p>
-                                            @if(isset($activeSession) && $activeSession && $activeSession->scheduled_duty_minutes)
+                                            <?php if(isset($activeSession) && $activeSession && $activeSession->scheduled_duty_minutes): ?>
                                                 <p class="text-yellow-300 text-sm">
                                                     Waktu Tersisa:
                                                     <span id="remaining-time"
-                                                        data-end-time="{{ $activeSession->scheduled_end_time ? $activeSession->scheduled_end_time->toISOString() : '' }}"
+                                                        data-end-time="<?php echo e($activeSession->scheduled_end_time ? $activeSession->scheduled_end_time->toISOString() : ''); ?>"
                                                         class="remaining-time-display bg-white/20 text-white px-2 py-1 rounded font-bold text-base">
-                                                        @php
+                                                        <?php
                                                             $remainingTime = $activeSession->getRemainingTime();
-                                                        @endphp
-                                                        {{ $remainingTime !== null ? \App\Helpers\TimeHelper::formatDuration($remainingTime) : '00:00:00' }}
+                                                        ?>
+                                                        <?php echo e($remainingTime !== null ? \App\Helpers\TimeHelper::formatDuration($remainingTime) : '00:00:00'); ?>
+
                                                     </span>
                                                     <span
-                                                        class="text-xs text-yellow-200 ml-1">({{ $activeSession->scheduled_duty_minutes }}m)</span>
+                                                        class="text-xs text-yellow-200 ml-1">(<?php echo e($activeSession->scheduled_duty_minutes); ?>m)</span>
                                                 </p>
-                                            @else
+                                            <?php else: ?>
                                                 <p class="text-yellow-300 text-sm">Durasi: <span id="active-session-duration"
-                                                        data-clock-in="{{ isset($activeSession) && $activeSession ? $activeSession->clock_in->toISOString() : '' }}">{{ isset($activeSession) && $activeSession ? \App\Helpers\TimeHelper::formatDuration($activeSession->calculateTotalHours()) : '0:00:00' }}</span>
+                                                        data-clock-in="<?php echo e(isset($activeSession) && $activeSession ? $activeSession->clock_in->toISOString() : ''); ?>"><?php echo e(isset($activeSession) && $activeSession ? \App\Helpers\TimeHelper::formatDuration($activeSession->calculateTotalHours()) : '0:00:00'); ?></span>
                                                 </p>
-                                            @endif
+                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                         </div>
                                     </div>
-                                    <form method="POST" action="{{ route('staff.attendance.clock-out') }}"
-                                        id="activeSessionClockOutForm" data-action="{{ route('staff.attendance.clock-out') }}">
-                                        @csrf
+                                    <form method="POST" action="<?php echo e(route('staff.attendance.clock-out')); ?>"
+                                        id="activeSessionClockOutForm" data-action="<?php echo e(route('staff.attendance.clock-out')); ?>">
+                                        <?php echo csrf_field(); ?>
                                         <button type="submit" id="activeSessionClockOutBtn"
                                             class="w-full lg:w-auto bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl font-bold hover:from-red-600 hover:to-orange-600 transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center">
                                             <span class="btn-text">
@@ -617,7 +622,7 @@
                                     </form>
                                 </div>
                             </div>
-                        @else
+                        <?php else: ?>
                             <!-- Start New Session -->
                             <div
                                 class="bg-gradient-to-br from-sky-500/50 to-cyan-500/50 rounded-2xl p-4 sm:p-6 border-2 border-sky-400/60 shadow-xl">
@@ -633,10 +638,10 @@
                                             <p class="text-sky-100 font-medium">Masukkan durasi kerja untuk memulai</p>
                                         </div>
                                     </div>
-                                    <form id="dashboardClockInForm" method="POST" action="{{ route('staff.attendance.clock-in') }}"
-                                        data-action="{{ route('staff.attendance.clock-in') }}"
+                                    <form id="dashboardClockInForm" method="POST" action="<?php echo e(route('staff.attendance.clock-in')); ?>"
+                                        data-action="<?php echo e(route('staff.attendance.clock-in')); ?>"
                                         class="w-full lg:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                                        @csrf
+                                        <?php echo csrf_field(); ?>
                                         <select name="session_type"
                                             class="px-4 py-3 rounded-xl bg-white/30 text-white border-2 border-white/50 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all shadow-xl">
                                             <option value="work" class="text-gray-800">Kerja</option>
@@ -656,16 +661,16 @@
                                     </form>
                                 </div>
                             </div>
-                        @endif
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
                 </div>
-            @endif
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-            @php
+            <?php
                 $weeklyHoursFormatted = optional($weeklyStats)->total_hours_formatted ?? '00:00:00';
                 $weeklyActiveDays = optional($weeklyStats)->total_days ?? 0;
                 $accumulatedEmsHours = $totalEmsHours['formatted'] ?? null;
-            @endphp
+            ?>
 
             <div class="flex flex-col gap-8">
 
@@ -689,17 +694,18 @@
                                 </div>
                             </div>
                             <div class="text-3xl sm:text-4xl font-black text-white stat-number mb-2">
-                                {{ $weeklyHoursFormatted }}
+                                <?php echo e($weeklyHoursFormatted); ?>
+
                             </div>
-                            @if($weeklyActiveDays > 0)
-                                <p class="text-xs sm:text-sm text-sky-100 font-medium">{{ $weeklyActiveDays }} hari kerja aktif
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($weeklyActiveDays > 0): ?>
+                                <p class="text-xs sm:text-sm text-sky-100 font-medium"><?php echo e($weeklyActiveDays); ?> hari kerja aktif
                                 </p>
-                            @endif
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
                     </div>
 
                     <!-- Akumulasi Jam Sebagai EMS -->
-                    @if(!empty($accumulatedEmsHours))
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($accumulatedEmsHours)): ?>
                         <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl elegant-card elegant-stagger"
                             style="background-color: rgba(7, 89, 133, 0.9);">
                             <div class="p-5 sm:p-6">
@@ -717,11 +723,12 @@
                                     </div>
                                 </div>
                                 <div class="text-3xl sm:text-4xl font-black text-white stat-number mb-2">
-                                    {{ $accumulatedEmsHours }}
+                                    <?php echo e($accumulatedEmsHours); ?>
+
                                 </div>
                             </div>
                         </div>
-                    @endif
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </div>
 
                 <!-- Today's Sessions Card -->
@@ -733,52 +740,54 @@
                         </h3>
                         <span
                             class="px-3 py-1 bg-sky-500/30 text-sky-200 text-sm font-medium rounded-full border-2 border-sky-400/50 shadow-md">
-                            {{ isset($todaySessions) ? $todaySessions->count() : 0 }} Sesi
+                            <?php echo e(isset($todaySessions) ? $todaySessions->count() : 0); ?> Sesi
                         </span>
                     </div>
                     <div class="p-6 sm:p-8">
-                        @if(isset($todaySessions) && $todaySessions->count() > 0)
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($todaySessions) && $todaySessions->count() > 0): ?>
                             <div class="space-y-3 max-h-60 overflow-y-auto custom-scrollbar pr-2">
-                                @foreach(isset($todaySessions) ? $todaySessions : [] as $session)
-                                    <div class="bg-sky-700/40 rounded-xl p-4 flex items-center justify-between transition-all duration-300 border-2 {{ $session->is_active ? 'border-yellow-400/70' : 'border-sky-400/50' }} shadow-lg"
-                                        data-session-active="{{ $session->is_active ? 'true' : 'false' }}"
-                                        data-clock-in="{{ $session->is_active ? $session->clock_in->toISOString() : '' }}">
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = isset($todaySessions) ? $todaySessions : []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $session): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <div class="bg-sky-700/40 rounded-xl p-4 flex items-center justify-between transition-all duration-300 border-2 <?php echo e($session->is_active ? 'border-yellow-400/70' : 'border-sky-400/50'); ?> shadow-lg"
+                                        data-session-active="<?php echo e($session->is_active ? 'true' : 'false'); ?>"
+                                        data-clock-in="<?php echo e($session->is_active ? $session->clock_in->toISOString() : ''); ?>">
                                         <div class="flex items-center space-x-4">
                                             <div
-                                                class="w-10 h-10 rounded-lg flex items-center justify-center {{ $session->is_active ? 'bg-yellow-500' : 'bg-green-500' }} shadow-md">
-                                                <span class="font-bold text-white">{{ $session->session_number }}</span>
+                                                class="w-10 h-10 rounded-lg flex items-center justify-center <?php echo e($session->is_active ? 'bg-yellow-500' : 'bg-green-500'); ?> shadow-md">
+                                                <span class="font-bold text-white"><?php echo e($session->session_number); ?></span>
                                             </div>
                                             <div>
                                                 <p class="font-semibold text-white">
-                                                    Sesi {{ $session->session_number }} - <span
-                                                        class="font-normal">{{ ucfirst($session->session_type) }}</span>
+                                                    Sesi <?php echo e($session->session_number); ?> - <span
+                                                        class="font-normal"><?php echo e(ucfirst($session->session_type)); ?></span>
                                                 </p>
                                                 <p class="text-sm text-sky-300">
-                                                    {{ $session->clock_in->format('H:i') }} -
-                                                    {{ $session->clock_out ? $session->clock_out->format('H:i') : '...' }}
+                                                    <?php echo e($session->clock_in->format('H:i')); ?> -
+                                                    <?php echo e($session->clock_out ? $session->clock_out->format('H:i') : '...'); ?>
+
                                                 </p>
                                             </div>
                                         </div>
                                         <div class="text-right">
-                                            @if($session->is_active)
+                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($session->is_active): ?>
                                                 <span class="font-bold text-lg text-yellow-300" data-duration>00:00:00</span>
                                                 <p class="text-xs text-yellow-400">Sedang Berlangsung</p>
-                                            @else
+                                            <?php else: ?>
                                                 <span class="font-bold text-lg text-white">
-                                                    {{ \App\Helpers\TimeHelper::formatDuration($session->session_duration ?: $session->clock_in->diffInSeconds($session->clock_out)) }}
+                                                    <?php echo e(\App\Helpers\TimeHelper::formatDuration($session->session_duration ?: $session->clock_in->diffInSeconds($session->clock_out))); ?>
+
                                                 </span>
                                                 <p class="text-xs text-green-300">Selesai</p>
-                                            @endif
+                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                         </div>
                                     </div>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
-                        @else
+                        <?php else: ?>
                             <div class="text-center py-10 bg-sky-700/40 rounded-xl border-2 border-sky-400/50 shadow-lg">
                                 <i class="fas fa-moon text-4xl text-sky-400 mb-4"></i>
                                 <p class="text-sky-200">Belum ada sesi yang dimulai hari ini.</p>
                             </div>
-                        @endif
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
                 </div>
 
@@ -797,73 +806,79 @@
                             </div>
                             <div
                                 class="px-3 py-1 bg-sky-500/40 text-sky-100 text-sm font-medium rounded-full border-2 border-sky-400/70 shadow-lg">
-                                {{ $leaderboard->count() }} Staf
+                                <?php echo e($leaderboard->count()); ?> Staf
                             </div>
                         </div>
                     </div>
                     <div class="p-6 sm:p-8 space-y-4">
-                        @forelse($leaderboard as $index => $staff)
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $leaderboard; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $staff): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                             <div
-                                class="bg-gradient-to-r from-sky-700/50 to-sky-800/40 backdrop-blur-xl rounded-2xl p-4 sm:p-6 hover:from-sky-700/60 hover:to-sky-800/50 transition-all duration-300 card-hover group border-2 border-sky-400/50 hover:border-sky-400/70 shadow-xl {{ $index < 3 ? 'ring-2 ring-yellow-400/70 shadow-2xl' : '' }}">
+                                class="bg-gradient-to-r from-sky-700/50 to-sky-800/40 backdrop-blur-xl rounded-2xl p-4 sm:p-6 hover:from-sky-700/60 hover:to-sky-800/50 transition-all duration-300 card-hover group border-2 border-sky-400/50 hover:border-sky-400/70 shadow-xl <?php echo e($index < 3 ? 'ring-2 ring-yellow-400/70 shadow-2xl' : ''); ?>">
                                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                                     <div class="flex items-center space-x-3 sm:space-x-4">
                                         <div class="relative">
-                                            @if($index < 3)
+                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($index < 3): ?>
                                                 <div
-                                                    class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br {{ $index === 0 ? 'from-yellow-500 to-orange-500' : ($index === 1 ? 'from-gray-400 to-gray-500' : 'from-amber-600 to-amber-700') }} text-white rounded-2xl flex items-center justify-center text-lg font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                                    {{ $index + 1 }}
+                                                    class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br <?php echo e($index === 0 ? 'from-yellow-500 to-orange-500' : ($index === 1 ? 'from-gray-400 to-gray-500' : 'from-amber-600 to-amber-700')); ?> text-white rounded-2xl flex items-center justify-center text-lg font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                                    <?php echo e($index + 1); ?>
+
                                                 </div>
-                                                @if($index === 0)
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($index === 0): ?>
                                                     <div
                                                         class="absolute -top-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 bg-yellow-400 rounded-full flex items-center justify-center">
                                                         <i class="fas fa-crown text-yellow-800 text-xs"></i>
                                                     </div>
-                                                @endif
-                                            @else
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                            <?php else: ?>
                                                 <div
                                                     class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-sky-500 to-cyan-500 text-white rounded-2xl flex items-center justify-center text-lg font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">
-                                                    {{ $index + 1 }}
+                                                    <?php echo e($index + 1); ?>
+
                                                 </div>
-                                            @endif
+                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                         </div>
                                         <div class="flex-1">
                                             <div class="flex items-center space-x-2 mb-1">
                                                 <p
                                                     class="font-bold text-base sm:text-lg text-white group-hover:text-sky-200 transition-colors duration-300">
-                                                    {{ $staff->name }}
+                                                    <?php echo e($staff->name); ?>
+
                                                 </p>
-                                                @if(isset($staff->total_juara_1_count) && $staff->total_juara_1_count > 0)
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($staff->total_juara_1_count) && $staff->total_juara_1_count > 0): ?>
                                                     <div
                                                         class="flex items-center gap-1 px-2 py-1 bg-yellow-500/20 border border-yellow-400/30 rounded-full">
                                                         <i class="fas fa-star text-yellow-400 text-xs"></i>
                                                         <span
-                                                            class="text-xs font-bold text-yellow-300">x{{ $staff->total_juara_1_count }}</span>
+                                                            class="text-xs font-bold text-yellow-300">x<?php echo e($staff->total_juara_1_count); ?></span>
                                                     </div>
-                                                @endif
-                                                @if($index < 3)
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($index < 3): ?>
                                                     <span
-                                                        class="px-2 py-1 text-xs font-medium rounded-full {{ $index === 0 ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-400/30' : ($index === 1 ? 'bg-gray-500/20 text-gray-300 border border-gray-400/30' : 'bg-amber-500/20 text-amber-300 border border-amber-400/30') }}">
-                                                        {{ $index === 0 ? 'Juara 1' : ($index === 1 ? 'Juara 2' : 'Juara 3') }}
+                                                        class="px-2 py-1 text-xs font-medium rounded-full <?php echo e($index === 0 ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-400/30' : ($index === 1 ? 'bg-gray-500/20 text-gray-300 border border-gray-400/30' : 'bg-amber-500/20 text-amber-300 border border-amber-400/30')); ?>">
+                                                        <?php echo e($index === 0 ? 'Juara 1' : ($index === 1 ? 'Juara 2' : 'Juara 3')); ?>
+
                                                     </span>
-                                                @endif
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                             </div>
                                             <p class="text-sky-300 font-medium text-sm sm:text-base">
-                                                {{ $staff->role->display_name ?? 'Staf' }}
+                                                <?php echo e($staff->role->display_name ?? 'Staf'); ?>
+
                                             </p>
                                         </div>
                                     </div>
                                     <div class="text-right">
                                         <p
                                             class="font-black text-2xl sm:text-3xl text-sky-200 group-hover:text-white transition-colors duration-300 drop-shadow-lg leaderboard-number">
-                                            {{ \App\Helpers\TimeHelper::formatDuration($staff->attendances_sum_session_duration ?: 0) }}
+                                            <?php echo e(\App\Helpers\TimeHelper::formatDuration($staff->attendances_sum_session_duration ?: 0)); ?>
+
                                         </p>
                                         <p class="text-sky-300 font-medium text-sm sm:text-lg">
-                                            {{ $staff->unique_work_days ?? $staff->attendances_count }} hari kerja
+                                            <?php echo e($staff->unique_work_days ?? $staff->attendances_count); ?> hari kerja
                                         </p>
                                     </div>
                                 </div>
                             </div>
-                        @empty
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                             <div class="text-center py-12">
                                 <div class="w-16 h-16 mx-auto mb-4 bg-white/10 rounded-full flex items-center justify-center">
                                     <i class="fas fa-chart-line text-sky-400 text-2xl"></i>
@@ -871,11 +886,11 @@
                                 <p class="text-sky-200 text-lg font-medium">Belum ada data absensi minggu ini.</p>
                                 <p class="text-sky-300 text-sm mt-2">Mulai clock in untuk melihat peringkat Anda!</p>
                             </div>
-                        @endforelse
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
                 </div>
 
-                @if(auth()->user()->isAdmin() || (optional(auth()->user()->role)->level ?? 0) >= 2)
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(optional(auth()->user()->role)->name !== 'perawat' && optional(auth()->user()->role)->name !== 'trainee'): ?>
                     <!-- Statistik Form Mingguan (dipindah ke bawah Leaderboard) -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <!-- Menunggu Review Card -->
@@ -886,7 +901,8 @@
                                     class="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
                                     <i class="fas fa-hourglass-half text-xl sm:text-2xl text-white"></i>
                                 </div>
-                                <h3 class="text-3xl font-black text-yellow-300 stat-number mb-2">{{ $stats['pending_forms'] }}
+                                <h3 class="text-3xl font-black text-yellow-300 stat-number mb-2"><?php echo e($stats['pending_forms']); ?>
+
                                 </h3>
                                 <p class="text-white font-semibold">Menunggu Review</p>
                             </div>
@@ -900,7 +916,8 @@
                                     class="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
                                     <i class="fas fa-check-circle text-xl sm:text-2xl text-white"></i>
                                 </div>
-                                <h3 class="text-3xl font-black text-green-300 stat-number mb-2">{{ $stats['approved_forms'] }}
+                                <h3 class="text-3xl font-black text-green-300 stat-number mb-2"><?php echo e($stats['approved_forms']); ?>
+
                                 </h3>
                                 <p class="text-white font-semibold">Disetujui</p>
                             </div>
@@ -914,7 +931,8 @@
                                     class="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-red-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
                                     <i class="fas fa-times-circle text-xl sm:text-2xl text-white"></i>
                                 </div>
-                                <h3 class="text-3xl font-black text-red-300 stat-number mb-2">{{ $stats['rejected_forms'] }}
+                                <h3 class="text-3xl font-black text-red-300 stat-number mb-2"><?php echo e($stats['rejected_forms']); ?>
+
                                 </h3>
                                 <p class="text-white font-semibold">Ditolak</p>
                             </div>
@@ -928,7 +946,8 @@
                                     class="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
                                     <i class="fas fa-calendar-day text-xl sm:text-2xl text-white"></i>
                                 </div>
-                                <h3 class="text-3xl font-black text-sky-300 stat-number mb-2">{{ $stats['total_forms_today'] }}
+                                <h3 class="text-3xl font-black text-sky-300 stat-number mb-2"><?php echo e($stats['total_forms_today']); ?>
+
                                 </h3>
                                 <p class="text-white font-semibold">Formulir Hari Ini</p>
                             </div>
@@ -942,7 +961,7 @@
                             <h3 class="text-xl sm:text-2xl font-bold text-white flex items-center">
                                 <i class="fas fa-file-medical text-sky-400 mr-2 sm:mr-3"></i>Surat dari Form
                             </h3>
-                            <a href="{{ route('staff.forms') }}"
+                            <a href="<?php echo e(route('staff.forms')); ?>"
                                 class="text-sky-300 hover:text-sky-200 text-base sm:text-lg font-semibold transition-colors flex items-center">
                                 Lihat Semua <i class="fas fa-arrow-right ml-2"></i>
                             </a>
@@ -975,19 +994,21 @@
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-sky-400/20">
-                                    @forelse($recentForms as $form)
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $recentForms; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $form): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                                         <tr class="hover:bg-sky-700/40 transition-all duration-300">
                                             <td
                                                 class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm font-mono text-sky-200 font-bold">
-                                                #{{ str_pad($form->id, 6, '0', STR_PAD_LEFT) }}</td>
+                                                #<?php echo e(str_pad($form->id, 6, '0', STR_PAD_LEFT)); ?></td>
                                             <td class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm font-bold text-white">
-                                                {{ $form->character_name }}
+                                                <?php echo e($form->character_name); ?>
+
                                             </td>
                                             <td
                                                 class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm text-sky-300 font-medium">
-                                                {{ ucfirst(str_replace('_', ' ', $form->form_type)) }}
-                                                @if($form->form_type === 'tes_psikologi')
-                                                    @php
+                                                <?php echo e(ucfirst(str_replace('_', ' ', $form->form_type))); ?>
+
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($form->form_type === 'tes_psikologi'): ?>
+                                                    <?php
                                                         $data = is_array($form->form_data ?? null) ? $form->form_data : [];
                                                         $answers = [];
                                                         $hasAny = false;
@@ -1010,79 +1031,80 @@
                                                             'Sedang' => 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30',
                                                             'Tinggi' => 'bg-red-500/20 text-red-300 border border-red-500/30',
                                                         ][$level] ?? 'bg-sky-700/40 text-white border border-sky-400/50';
-                                                    @endphp
-                                                    @if($hasAny)
+                                                    ?>
+                                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($hasAny): ?>
                                                         <span
-                                                            class="ml-2 px-2 py-0.5 rounded-full text-[11px] font-bold align-middle {{ $cls }}">Stres:
-                                                            {{ $level }} ({{ $total }})</span>
-                                                    @endif
-                                                @endif
+                                                            class="ml-2 px-2 py-0.5 rounded-full text-[11px] font-bold align-middle <?php echo e($cls); ?>">Stres:
+                                                            <?php echo e($level); ?> (<?php echo e($total); ?>)</span>
+                                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                             </td>
                                             <td class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap">
-                                                @if($form->status === 'pending')
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($form->status === 'pending'): ?>
                                                     <span
                                                         class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-400/30">Menunggu</span>
-                                                @elseif($form->status === 'approved')
+                                                <?php elseif($form->status === 'approved'): ?>
                                                     <span
                                                         class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-green-500/20 text-green-300 border border-green-400/30">Disetujui</span>
-                                                @else
+                                                <?php else: ?>
                                                     <span
                                                         class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-red-500/20 text-red-300 border border-red-400/30">Ditolak</span>
-                                                @endif
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                             </td>
                                             <td
                                                 class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm text-sky-300 font-medium">
-                                                @if($form->processedBy && $form->status !== 'pending')
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($form->processedBy && $form->status !== 'pending'): ?>
                                                     <div class="flex flex-col">
-                                                        <span class="font-semibold text-white">{{ $form->processedBy->name }}</span>
-                                                        @if($form->processed_at)
+                                                        <span class="font-semibold text-white"><?php echo e($form->processedBy->name); ?></span>
+                                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($form->processed_at): ?>
                                                             <span
-                                                                class="text-xs text-sky-400">{{ $form->processed_at->format('d/m/Y H:i') }}</span>
-                                                        @endif
+                                                                class="text-xs text-sky-400"><?php echo e($form->processed_at->format('d/m/Y H:i')); ?></span>
+                                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                     </div>
-                                                @else
+                                                <?php else: ?>
                                                     <span class="text-slate-400">-</span>
-                                                @endif
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                             </td>
                                             <td
                                                 class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm text-sky-300 font-medium">
-                                                {{ $form->created_at->format('d/m/Y H:i') }}
+                                                <?php echo e($form->created_at->format('d/m/Y H:i')); ?>
+
                                             </td>
                                             <td class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm font-medium">
-                                                @php
+                                                <?php
                                                     $canApprove = $form->status === 'pending' && auth()->user()->canApproveForm($form->form_type);
-                                                @endphp
+                                                ?>
                                                 <div class="flex flex-col sm:flex-row gap-2">
-                                                    <a href="{{ route('staff.forms.show', $form->id) }}"
+                                                    <a href="<?php echo e(route('staff.forms.show', $form->id)); ?>"
                                                         class="inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gradient-to-r from-sky-500 to-cyan-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-sky-600 hover:to-cyan-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
                                                         <i class="fas fa-eye mr-2"></i>Lihat
                                                     </a>
 
-                                                    @if($form->status === 'pending')
-                                                        @if($canApprove)
-                                                            <button type="button" onclick="approveForm({{ $form->id }}, this)"
+                                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($form->status === 'pending'): ?>
+                                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($canApprove): ?>
+                                                            <button type="button" onclick="approveForm(<?php echo e($form->id); ?>, this)"
                                                                 class="w-full inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
                                                                 <i class="fas fa-check mr-2"></i>Setujui
                                                             </button>
-                                                        @else
+                                                        <?php else: ?>
                                                             <button disabled
                                                                 class="w-full inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gray-500/50 text-gray-300 text-xs sm:text-sm font-bold rounded-xl cursor-not-allowed opacity-60"
                                                                 title="Level role Anda tidak mencukupi untuk menyetujui formulir ini">
                                                                 <i class="fas fa-lock mr-2"></i>Setujui
                                                             </button>
-                                                        @endif
+                                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                                                        <button type="button" onclick="rejectForm({{ $form->id }}, this)"
+                                                        <button type="button" onclick="rejectForm(<?php echo e($form->id); ?>, this)"
                                                             class="w-full inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-red-500 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
                                                             <i class="fas fa-times mr-2"></i>Tolak
                                                         </button>
-                                                    @else
+                                                    <?php else: ?>
                                                         <span class="text-sky-300 font-medium">Selesai</span>
-                                                    @endif
+                                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                 </div>
                                             </td>
                                         </tr>
-                                    @empty
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                         <tr>
                                             <td colspan="7" class="px-8 py-16 text-center text-sky-300 text-lg font-medium">
                                                 <div class="flex flex-col items-center">
@@ -1091,21 +1113,25 @@
                                                 </div>
                                             </td>
                                         </tr>
-                                    @endforelse
+                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </tbody>
                             </table>
                         </div>
                     </div>
 
                     <!-- Recent Appointments Table -->
-                    @if(auth()->user()->isAdmin() || (optional(auth()->user()->role)->level ?? 0) >= 3)
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(
+                            auth()->user()->isAdmin() ||
+                            in_array(optional(auth()->user()->role)->name, ['dokter_umum', 'dokter_spesialis']) ||
+                            (optional(auth()->user()->role)->level ?? 0) >= 5
+                        ): ?>
                         <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl overflow-hidden animate-fade-in-up"
                             style="animation-delay: 0.6s; background-color: rgba(7, 89, 133, 0.9);">
                             <div class="px-6 sm:px-8 py-6 border-b border-sky-400/30 flex justify-between items-center">
                                 <h3 class="text-xl sm:text-2xl font-bold text-white flex items-center">
                                     <i class="fas fa-calendar-check text-green-400 mr-2 sm:mr-3"></i>Janji Temu Terbaru
                                 </h3>
-                                <a href="{{ route('staff.forms') }}?type=appointment"
+                                <a href="<?php echo e(route('staff.forms')); ?>?type=appointment"
                                     class="text-green-300 hover:text-green-200 text-base sm:text-lg font-semibold transition-colors flex items-center">
                                     Lihat Semua <i class="fas fa-arrow-right ml-2"></i>
                                 </a>
@@ -1138,8 +1164,8 @@
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-sky-400/20">
-                                        @forelse($recentAppointments as $appointment)
-                                            @php
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $recentAppointments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $appointment): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                                            <?php
                                                 $formData = $appointment->form_data ?? [];
                                                 $appointmentDate = $formData['appointment_date'] ?? null;
                                                 $appointmentTime = $formData['appointment_time'] ?? null;
@@ -1153,91 +1179,95 @@
                                                     'spesialis_tht' => 'Poli Spesialis THT',
                                                     'spesialis_ortopedi' => 'Poli Spesialis Ortopedi',
                                                 ];
-                                            @endphp
+                                            ?>
                                             <tr class="hover:bg-sky-700/40 transition-all duration-300">
                                                 <td
                                                     class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm font-mono text-sky-200 font-bold">
-                                                    #{{ str_pad($appointment->id, 6, '0', STR_PAD_LEFT) }}</td>
+                                                    #<?php echo e(str_pad($appointment->id, 6, '0', STR_PAD_LEFT)); ?></td>
                                                 <td class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm font-bold text-white">
-                                                    {{ $appointment->character_name }}
+                                                    <?php echo e($appointment->character_name); ?>
+
                                                 </td>
                                                 <td
                                                     class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm text-green-300 font-medium">
-                                                    {{ $formTypeNames[$appointment->form_type] ?? ucfirst(str_replace('_', ' ', $appointment->form_type)) }}
+                                                    <?php echo e($formTypeNames[$appointment->form_type] ?? ucfirst(str_replace('_', ' ', $appointment->form_type))); ?>
+
                                                 </td>
                                                 <td
                                                     class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm text-sky-300 font-medium">
-                                                    @if($appointmentDate && $appointmentTime)
-                                                        {{ \Carbon\Carbon::parse($appointmentDate)->format('d/m/Y') }}
-                                                        {{ $appointmentTime }}
-                                                    @else
+                                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($appointmentDate && $appointmentTime): ?>
+                                                        <?php echo e(\Carbon\Carbon::parse($appointmentDate)->format('d/m/Y')); ?>
+
+                                                        <?php echo e($appointmentTime); ?>
+
+                                                    <?php else: ?>
                                                         <span class="text-slate-400">-</span>
-                                                    @endif
+                                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                 </td>
                                                 <td class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap">
-                                                    @if($appointment->status === 'pending')
+                                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($appointment->status === 'pending'): ?>
                                                         <span
                                                             class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-400/30">Menunggu</span>
-                                                    @elseif($appointment->status === 'approved')
+                                                    <?php elseif($appointment->status === 'approved'): ?>
                                                         <span
                                                             class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-green-500/20 text-green-300 border border-green-400/30">Sudah
                                                             Ditemui</span>
-                                                    @else
+                                                    <?php else: ?>
                                                         <span
                                                             class="px-3 py-1 sm:px-4 sm:py-2 text-xs sm:text-sm font-bold rounded-full bg-red-500/20 text-red-300 border border-red-400/30">Tolak
                                                             Formulir</span>
-                                                    @endif
+                                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                 </td>
                                                 <td
                                                     class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm text-sky-300 font-medium">
-                                                    @if($appointment->processedBy && $appointment->status !== 'pending')
+                                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($appointment->processedBy && $appointment->status !== 'pending'): ?>
                                                         <div class="flex flex-col">
                                                             <span
-                                                                class="font-semibold text-white">{{ $appointment->processedBy->name }}</span>
-                                                            @if($appointment->processed_at)
+                                                                class="font-semibold text-white"><?php echo e($appointment->processedBy->name); ?></span>
+                                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($appointment->processed_at): ?>
                                                                 <span
-                                                                    class="text-xs text-sky-400">{{ $appointment->processed_at->format('d/m/Y H:i') }}</span>
-                                                            @endif
+                                                                    class="text-xs text-sky-400"><?php echo e($appointment->processed_at->format('d/m/Y H:i')); ?></span>
+                                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                         </div>
-                                                    @else
+                                                    <?php else: ?>
                                                         <span class="text-slate-400">-</span>
-                                                    @endif
+                                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                 </td>
                                                 <td class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm font-medium">
-                                                    @php
+                                                    <?php
                                                         $canApproveAppointment = $appointment->status === 'pending' && auth()->user()->canApproveForm($appointment->form_type);
-                                                    @endphp
+                                                    ?>
                                                     <div class="flex flex-col sm:flex-row gap-2">
-                                                        <a href="{{ route('staff.forms.show', $appointment->id) }}"
+                                                        <a href="<?php echo e(route('staff.forms.show', $appointment->id)); ?>"
                                                             class="inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
                                                             <i class="fas fa-eye mr-2"></i>Lihat
                                                         </a>
 
-                                                        @if($appointment->status === 'pending')
-                                                            @if($canApproveAppointment)
-                                                                <button type="button" onclick="approveForm({{ $appointment->id }}, this, true)"
+                                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($appointment->status === 'pending'): ?>
+                                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($canApproveAppointment): ?>
+                                                                <button type="button" onclick="approveForm(<?php echo e($appointment->id); ?>, this, true)"
                                                                     class="w-full inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-green-600 hover:to-emerald-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
                                                                     <i class="fas fa-check mr-2"></i>Sudah Ditemui
                                                                 </button>
-                                                            @else
+                                                            <?php else: ?>
                                                                 <button disabled
                                                                     class="w-full inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gray-500/50 text-gray-300 text-xs sm:text-sm font-bold rounded-xl cursor-not-allowed opacity-60"
                                                                     title="Level role Anda tidak mencukupi untuk menyetujui formulir ini">
                                                                     <i class="fas fa-lock mr-2"></i>Sudah Ditemui
                                                                 </button>
-                                                            @endif
+                                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                                                            <button type="button" onclick="rejectForm({{ $appointment->id }}, this, true)"
+                                                            <button type="button" onclick="rejectForm(<?php echo e($appointment->id); ?>, this, true)"
                                                                 class="w-full inline-flex items-center justify-center px-3 py-2 sm:px-4 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-red-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
                                                                 <i class="fas fa-times mr-2"></i>Tolak Formulir
                                                             </button>
-                                                        @else
+                                                        <?php else: ?>
                                                             <span class="text-green-300 font-medium">Selesai</span>
-                                                        @endif
+                                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                     </div>
                                                 </td>
                                             </tr>
-                                        @empty
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                                             <tr>
                                                 <td colspan="7" class="px-8 py-16 text-center text-sky-300 text-lg font-medium">
                                                     <div class="flex flex-col items-center">
@@ -1246,13 +1276,13 @@
                                                     </div>
                                                 </td>
                                             </tr>
-                                        @endforelse
+                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </tbody>
                                 </table>
                             </div>
-                    @endif
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
-                @endif
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             </div>
         </div>
     </div>
@@ -1472,9 +1502,9 @@
             }
         }
     </style>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
     <script>
         // Toast Notific    ation System
         function showToast(type, title, message, duration = 5000) {
@@ -1493,17 +1523,17 @@
             toast.style.setProperty('--duration', `${duration}ms`);
             console.log('🎨 NEW TOAST DESIGN v2 - White Card Design');
             toast.innerHTML = `
-                                                                <div class="toast-icon">
-                                                                    <i class="fas ${icons[type]} text-sm"></i>
-                                                                </div>
-                                                                <div class="toast-content">
-                                                                    <div class="toast-title">${title}</div>
-                                                                    <div class="toast-message">${message}</div>
-                                                                </div>
-                                                                <button class="toast-close" onclick="closeToast(this.parentElement)">
-                                                                    <i class="fas fa-times text-xs"></i>
-                                                                </button>
-                                                            `;
+                                                            <div class="toast-icon">
+                                                                <i class="fas ${icons[type]} text-sm"></i>
+                                                            </div>
+                                                            <div class="toast-content">
+                                                                <div class="toast-title">${title}</div>
+                                                                <div class="toast-message">${message}</div>
+                                                            </div>
+                                                            <button class="toast-close" onclick="closeToast(this.parentElement)">
+                                                                <i class="fas fa-times text-xs"></i>
+                                                            </button>
+                                                        `;
 
             container.appendChild(toast);
             setTimeout(() => closeToast(toast), duration);
@@ -1511,19 +1541,19 @@
 
         // Check for session messages on page load
         document.addEventListener('DOMContentLoaded', function () {
-            @if(session('success'))
-                showToast('success', 'Berhasil!', '{{ session('success') }}');
-            @endif
-            @if(session('error'))
-                showToast('error', 'Error!', '{{ session('error') }}');
-            @endif
-            @if(session('warning'))
-                showToast('warning', 'Perhatian!', '{{ session('warning') }}');
-            @endif
-            @if(session('info'))
-                showToast('info', 'Informasi', '{{ session('info') }}');
-            @endif
-                                                    });
+            <?php if(session('success')): ?>
+                showToast('success', 'Berhasil!', '<?php echo e(session('success')); ?>');
+            <?php endif; ?>
+            <?php if(session('error')): ?>
+                showToast('error', 'Error!', '<?php echo e(session('error')); ?>');
+            <?php endif; ?>
+            <?php if(session('warning')): ?>
+                showToast('warning', 'Perhatian!', '<?php echo e(session('warning')); ?>');
+            <?php endif; ?>
+            <?php if(session('info')): ?>
+                showToast('info', 'Informasi', '<?php echo e(session('info')); ?>');
+            <?php endif; ?>
+                                                });
 
         function closeToast(toast) {
             if (!toast || toast.classList.contains('hiding')) return;
@@ -1976,4 +2006,5 @@
             }
         });
     </script>
-@endpush
+<?php $__env->stopPush(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\website\EMS-IME\public_html\resources\views/staff/dashboard.blade.php ENDPATH**/ ?>
