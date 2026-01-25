@@ -1,6 +1,0 @@
---- PERMISSION CHECK RESULTS ---
-ROLE: admin | Display: Administrator
-ROLE: manajer | Display: Manajer
-ROLE: executive | Display: Executive
-ROLE: ceo | Display: CEO (Pemegang Saham Rumah Sakit)
---- END RESULTS ---
