@@ -249,6 +249,12 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/reimbursements/{reimbursement}/reimburse', [\App\Http\Controllers\Admin\SalaryReimbursementController::class, 'markAsReimbursed'])
         ->middleware('admin')->name('reimbursements.reimburse');
 
+    // Duty Tracking & Ranking (Admin only)
+    Route::get('/duty-tracking', [\App\Http\Controllers\Admin\DutyTrackingController::class, 'index'])
+        ->middleware('admin')->name('duty-tracking.index');
+    Route::get('/duty-tracking/{user}', [\App\Http\Controllers\Admin\DutyTrackingController::class, 'show'])
+        ->middleware('admin')->name('duty-tracking.show');
+
     // Structural/Organizational Management (Admin only - no specific permission check yet)
     Route::resource('structural', \App\Http\Controllers\Admin\StructuralManagementController::class)
         ->middleware('admin');
