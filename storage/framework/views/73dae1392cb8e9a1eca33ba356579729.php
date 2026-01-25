@@ -70,54 +70,44 @@
             </div>
 
             
-            <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-6 mb-6 border border-white border-opacity-20">
-                <form method="GET" action="<?php echo e(route('admin.reimbursements.index')); ?>"
-                    class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div>
-                        <label class="block text-sky-200 text-sm font-medium mb-2">Period Start</label>
-                        <input type="date" name="period_start" value="<?php echo e(request('period_start')); ?>"
-                            class="w-full px-4 py-2 rounded-lg bg-white bg-opacity-10 border border-white border-opacity-20 text-white placeholder-gray-400 focus:outline-none focus:border-sky-400">
-                    </div>
-                    <div>
-                        <label class="block text-sky-200 text-sm font-medium mb-2">Period End</label>
-                        <input type="date" name="period_end" value="<?php echo e(request('period_end')); ?>"
-                            class="w-full px-4 py-2 rounded-lg bg-white bg-opacity-10 border border-white border-opacity-20 text-white placeholder-gray-400 focus:outline-none focus:border-sky-400">
-                    </div>
-                    <div>
-                        <label class="block text-sky-200 text-sm font-medium mb-2">Manager</label>
-                        <select name="manager_id"
-                            class="w-full px-4 py-2 rounded-lg bg-white bg-opacity-10 border border-white border-opacity-20 text-white focus:outline-none focus:border-sky-400">
-                            <option value="">All Managers</option>
-                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $managers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $manager): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                <option value="<?php echo e($manager->id); ?>" <?php echo e(request('manager_id') == $manager->id ? 'selected' : ''); ?>>
-                                    <?php echo e($manager->name); ?>
+        <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-6 mb-6 border border-white border-opacity-20">
+            <form method="GET" action="<?php echo e(route('admin.reimbursements.index')); ?>" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-sky-200 text-sm font-medium mb-2">Minggu</label>
+                    <input type="week" name="week" value="<?php echo e(request('week')); ?>" 
+                        class="w-full px-4 py-2 rounded-lg bg-white bg-opacity-10 border border-white border-opacity-20 text-white placeholder-gray-400 focus:outline-none focus:border-sky-400"
+                        placeholder="Pilih minggu">
+                </div>
+                <div>
+                    <label class="block text-sky-200 text-sm font-medium mb-2">Manager</label>
+                    <select name="manager_id" class="w-full px-4 py-2 rounded-lg bg-white bg-opacity-10 border border-white border-opacity-20 text-white focus:outline-none focus:border-sky-400">
+                        <option value="">Semua Manager</option>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $managers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $manager): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <option value="<?php echo e($manager->id); ?>" <?php echo e(request('manager_id') == $manager->id ? 'selected' : ''); ?>>
+                                <?php echo e($manager->name); ?>
 
-                                </option>
-                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sky-200 text-sm font-medium mb-2">Status</label>
-                        <select name="status"
-                            class="w-full px-4 py-2 rounded-lg bg-white bg-opacity-10 border border-white border-opacity-20 text-white focus:outline-none focus:border-sky-400">
-                            <option value="">All Status</option>
-                            <option value="pending" <?php echo e(request('status') == 'pending' ? 'selected' : ''); ?>>Pending</option>
-                            <option value="reimbursed" <?php echo e(request('status') == 'reimbursed' ? 'selected' : ''); ?>>Reimbursed
                             </option>
-                        </select>
-                    </div>
-                    <div class="md:col-span-4 flex gap-2">
-                        <button type="submit"
-                            class="bg-sky-500 bg-opacity-80 hover:bg-opacity-100 text-white px-6 py-2 rounded-lg font-medium transition-all">
-                            <i class="fas fa-filter mr-2"></i>Apply Filters
-                        </button>
-                        <a href="<?php echo e(route('admin.reimbursements.index')); ?>"
-                            class="bg-gray-500 bg-opacity-50 hover:bg-opacity-70 text-white px-6 py-2 rounded-lg font-medium transition-all">
-                            <i class="fas fa-times mr-2"></i>Clear
-                        </a>
-                    </div>
-                </form>
-            </div>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sky-200 text-sm font-medium mb-2">Status</label>
+                    <select name="status" class="w-full px-4 py-2 rounded-lg bg-white bg-opacity-10 border border-white border-opacity-20 text-white focus:outline-none focus:border-sky-400">
+                        <option value="">Semua Status</option>
+                        <option value="pending" <?php echo e(request('status') == 'pending' ? 'selected' : ''); ?>>Pending</option>
+                        <option value="reimbursed" <?php echo e(request('status') == 'reimbursed' ? 'selected' : ''); ?>>Reimbursed</option>
+                    </select>
+                </div>
+                <div class="md:col-span-3 flex gap-2">
+                    <button type="submit" class="bg-sky-500 bg-opacity-80 hover:bg-opacity-100 text-white px-6 py-2 rounded-lg font-medium transition-all">
+                        <i class="fas fa-filter mr-2"></i>Filter
+                    </button>
+                    <a href="<?php echo e(route('admin.reimbursements.index')); ?>" class="bg-gray-500 bg-opacity-50 hover:bg-opacity-70 text-white px-6 py-2 rounded-lg font-medium transition-all">
+                        <i class="fas fa-times mr-2"></i>Clear
+                    </a>
+                </div>
+            </form>
+        </div>
 
             
             <div
@@ -250,30 +240,24 @@
             </div>
 
             <form id="calculateForm" onsubmit="submitCalculate(event)">
-                <?php echo csrf_field(); ?>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sky-200 text-sm font-medium mb-2">Period Start</label>
-                        <input type="date" id="calc_period_start" required
-                            class="w-full px-4 py-2 rounded-lg bg-white bg-opacity-10 border border-white border-opacity-20 text-white focus:outline-none focus:border-sky-400">
-                    </div>
-                    <div>
-                        <label class="block text-sky-200 text-sm font-medium mb-2">Period End</label>
-                        <input type="date" id="calc_period_end" required
-                            class="w-full px-4 py-2 rounded-lg bg-white bg-opacity-10 border border-white border-opacity-20 text-white focus:outline-none focus:border-sky-400">
-                    </div>
-                    <div class="flex gap-3 pt-4">
-                        <button type="submit"
-                            class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium transition-all">
-                            <i class="fas fa-check mr-2"></i>Calculate
-                        </button>
-                        <button type="button" onclick="closeCalculateModal()"
-                            class="flex-1 bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition-all">
-                            <i class="fas fa-times mr-2"></i>Cancel
-                        </button>
-                    </div>
+            <?php echo csrf_field(); ?>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sky-200 text-sm font-medium mb-2">Pilih Minggu</label>
+                    <input type="week" id="calc_week" required 
+                        class="w-full px-4 py-2 rounded-lg bg-white bg-opacity-10 border border-white border-opacity-20 text-white focus:outline-none focus:border-sky-400">
                 </div>
-            </form>
+                <div class="flex gap-3 pt-4">
+                    <button type="submit" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium transition-all">
+                        <i class="fas fa-check mr-2"></i>Calculate
+                    </button>
+                    <button type="button" onclick="closeCalculateModal()" 
+                        class="flex-1 bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition-all">
+                        <i class="fas fa-times mr-2"></i>Cancel
+                    </button>
+                </div>
+            </div>
+        </form>
         </div>
     </div>
 
@@ -289,36 +273,55 @@
         }
 
         function submitCalculate(event) {
-            event.preventDefault();
-
-            const periodStart = document.getElementById('calc_period_start').value;
-            const periodEnd = document.getElementById('calc_period_end').value;
-
-            fetch('<?php echo e(route("admin.reimbursements.calculate")); ?>', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>'
-                },
-                body: JSON.stringify({
-                    period_start: periodStart,
-                    period_end: periodEnd
-                })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert(data.message);
-                        window.location.reload();
-                    } else {
-                        alert(data.message);
-                    }
-                })
-                .catch(error => {
-                    alert('Error: ' + error.message);
-                });
+    event.preventDefault();
+    
+    const weekInput = document.getElementById('calc_week').value;
+    if (!weekInput) {
+        alert('Silakan pilih minggu');
+        return;
+    }
+    
+    // Convert week input (YYYY-Www) to start and end dates
+    const [year, week] = weekInput.split('-W');
+    const firstDayOfYear = new Date(year, 0, 1);
+    const daysOffset = (parseInt(week) - 1) * 7;
+    const weekStart = new Date(firstDayOfYear.getTime() + daysOffset * 24 * 60 * 60 * 1000);
+    
+    // Adjust to Monday (week starts on Monday)
+    const dayOfWeek = weekStart.getDay();
+    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    weekStart.setDate(weekStart.getDate() + diff);
+    
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6); // Sunday
+    
+    const periodStart = weekStart.toISOString().split('T')[0];
+    const periodEnd = weekEnd.toISOString().split('T')[0];
+    
+    fetch('<?php echo e(route("admin.reimbursements.calculate")); ?>', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>'
+        },
+        body: JSON.stringify({
+            period_start: periodStart,
+            period_end: periodEnd
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            window.location.reload();
+        } else {
+            alert(data.message);
         }
-
+    })
+    .catch(error => {
+        alert('Error: ' + error.message);
+    });
+}
         function markAsReimbursed(reimbursementId) {
             if (!confirm('Are you sure you want to mark this as reimbursed?')) {
                 return;

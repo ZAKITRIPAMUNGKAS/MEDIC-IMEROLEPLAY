@@ -132,7 +132,7 @@
                         </thead>
                         <tbody class="divide-y divide-white divide-opacity-10">
                             @forelse($reimbursements as $reimbursement)
-                                <tr class="hover:bg-white hover:bg-opacity-5 transition-all">
+                                <tr class="hover:bg-black hover:bg-opacity-20 transition-all">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
                                             <div class="flex-shrink-0 h-10 w-10">
