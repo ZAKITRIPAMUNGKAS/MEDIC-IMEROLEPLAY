@@ -135,10 +135,10 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm font-bold text-yellow-300">
-                                        {{ number_format($attendance->duration_seconds / 3600, 1) }} jam
+                                        {{ number_format($attendance->session_duration / 3600, 1) }} jam
                                     </div>
                                     <div class="text-xs text-sky-300">
-                                        {{ gmdate('H:i:s', $attendance->duration_seconds) }}
+                                        {{ gmdate('H:i:s', $attendance->session_duration) }}
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">

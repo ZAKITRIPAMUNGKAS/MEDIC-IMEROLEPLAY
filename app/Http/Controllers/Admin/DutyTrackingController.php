@@ -39,9 +39,9 @@ class DutyTrackingController extends Controller
 
         // Build query for rankings
         $rankings = User::select('users.*')
-            ->selectRaw('SUM(attendances.duration_seconds) as total_duty_seconds')
+            ->selectRaw('SUM(attendances.session_duration) as total_duty_seconds')
             ->selectRaw('COUNT(attendances.id) as session_count')
-            ->selectRaw('AVG(attendances.duration_seconds) as avg_duty_seconds')
+            ->selectRaw('AVG(attendances.session_duration) as avg_duty_seconds')
             ->join('attendances', 'users.id', '=', 'attendances.user_id')
             ->whereIn(DB::raw('DATE_FORMAT(attendances.clock_in, "%Y-%m")'), $selectedMonths)
             ->whereNotNull('attendances.clock_out')
@@ -71,13 +71,13 @@ class DutyTrackingController extends Controller
             'total_staff' => $rankings->total(),
             'total_duty_seconds' => Attendance::whereIn(DB::raw('DATE_FORMAT(clock_in, "%Y-%m")'), $selectedMonths)
                 ->whereNotNull('clock_out')
-                ->sum('duration_seconds'),
+                ->sum('session_duration'),
             'total_sessions' => Attendance::whereIn(DB::raw('DATE_FORMAT(clock_in, "%Y-%m")'), $selectedMonths)
                 ->whereNotNull('clock_out')
                 ->count(),
             'avg_duty_seconds' => Attendance::whereIn(DB::raw('DATE_FORMAT(clock_in, "%Y-%m")'), $selectedMonths)
                 ->whereNotNull('clock_out')
-                ->avg('duration_seconds'),
+                ->avg('session_duration'),
         ];
 
         return view('admin.duty-tracking.index', compact('rankings', 'stats', 'selectedMonths', 'availableMonths'));
@@ -113,12 +113,12 @@ class DutyTrackingController extends Controller
             'total_duty_seconds' => Attendance::where('user_id', $user->id)
                 ->whereIn(DB::raw('DATE_FORMAT(clock_in, "%Y-%m")'), $selectedMonths)
                 ->whereNotNull('clock_out')
-                ->sum('duration_seconds'),
+                ->sum('session_duration'),
             'session_count' => $attendances->total(),
             'avg_duty_seconds' => Attendance::where('user_id', $user->id)
                 ->whereIn(DB::raw('DATE_FORMAT(clock_in, "%Y-%m")'), $selectedMonths)
                 ->whereNotNull('clock_out')
-                ->avg('duration_seconds'),
+                ->avg('session_duration'),
         ];
 
         // Get available months for this user
