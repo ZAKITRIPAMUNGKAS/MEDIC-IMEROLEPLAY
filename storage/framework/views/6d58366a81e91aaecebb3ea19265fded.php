@@ -4,47 +4,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <meta name="cache-buster" content="{{ time() }}">
-    <title>@yield('title', 'Portal Medis iMe Roleplay')</title>
+    <meta name="cache-buster" content="<?php echo e(time()); ?>">
+    <title><?php echo $__env->yieldContent('title', 'Portal Medis iMe Roleplay'); ?></title>
 
     <!-- Meta Tags for SEO -->
     <meta name="description"
-        content="@yield('meta_description', 'Portal Medis iMe Roleplay - Layanan medis terpadu untuk komunitas roleplay')">
+        content="<?php echo $__env->yieldContent('meta_description', 'Portal Medis iMe Roleplay - Layanan medis terpadu untuk komunitas roleplay'); ?>">
     <meta name="keywords"
-        content="@yield('meta_keywords', 'ime roleplay, portal medis ime roleplay, motion ime roleplay, gta roleplay, motionlife roleplay')">
+        content="<?php echo $__env->yieldContent('meta_keywords', 'ime roleplay, portal medis ime roleplay, motion ime roleplay, gta roleplay, motionlife roleplay'); ?>">
     <meta name="author" content="Motion Medical Center">
     <meta name="robots" content="index, follow">
 
 
     <!-- Tailwind CSS (Local - Compiled) -->
-    <link href="{{ asset('css/app.css') }}?v={{ time() }}" rel="stylesheet">
+    <link href="<?php echo e(asset('css/app.css')); ?>?v=<?php echo e(time()); ?>" rel="stylesheet">
 
     <!-- Google Fonts (Local) -->
-    <link href="{{ asset('css/inter-font.css') }}?v={{ time() }}" rel="stylesheet">
+    <link href="<?php echo e(asset('css/inter-font.css')); ?>?v=<?php echo e(time()); ?>" rel="stylesheet">
 
     <!-- Font Awesome (Local) -->
-    <link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="<?php echo e(asset('css/font-awesome.min.css')); ?>?v=<?php echo e(time()); ?>">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/motionlife-logo.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/motionlife-logo.png') }}">
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/motionlife-logo.png') }}">
-    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('images/motionlife-logo.png') }}">
-    <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('images/motionlife-logo.png') }}">
-    <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" type="image/x-icon" href="<?php echo e(asset('favicon.ico')); ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo e(asset('images/motionlife-logo.png')); ?>">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?php echo e(asset('images/motionlife-logo.png')); ?>">
+    <link rel="apple-touch-icon" sizes="180x180" href="<?php echo e(asset('images/motionlife-logo.png')); ?>">
+    <link rel="icon" type="image/png" sizes="192x192" href="<?php echo e(asset('images/motionlife-logo.png')); ?>">
+    <link rel="icon" type="image/png" sizes="512x512" href="<?php echo e(asset('images/motionlife-logo.png')); ?>">
+    <link rel="shortcut icon" href="<?php echo e(asset('favicon.ico')); ?>">
 
     <!-- Inline Image Error Handler - Must load early to prevent 404 errors -->
-    @stack('styles')
-    @livewireStyles
+    <?php echo $__env->yieldPushContent('styles'); ?>
+    <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::styles(); ?>
+
     <script>
         (function () {
             'use strict';
-            var defaultProfileImage = '{{ asset("profile.jpg") }}';
+            var defaultProfileImage = '<?php echo e(asset("profile.jpg")); ?>';
             var handledErrors = new Set();
 
             // Global error handler for all images (catches errors before they reach console)
@@ -175,7 +176,8 @@
     </script>
 
     <style>
-        /* Cache busting: {{ time() }}
+        /* Cache busting: <?php echo e(time()); ?>
+
         */ :root {
             --ml-bg-start: #0c4a6e;
             /* sky-900 - biru gelap medis */
@@ -691,7 +693,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-image: url('{{ asset("images/hero.webp") }}');
+            background-image: url('<?php echo e(asset("images/hero.webp")); ?>');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -1275,7 +1277,7 @@
             }
         }
     </style>
-    @stack('styles')
+    <?php echo $__env->yieldPushContent('styles'); ?>
 </head>
 
 <body class="min-h-screen">
@@ -1284,11 +1286,11 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
-                    <a href="{{ route('public.index') }}" class="flex-shrink-0 flex items-center group">
+                    <a href="<?php echo e(route('public.index')); ?>" class="flex-shrink-0 flex items-center group">
                         <!-- Logo MOTIONLIFE ROLEPLAY -->
                         <div
                             class="h-10 w-10 flex items-center justify-center bg-white rounded-lg elegant-shadow group-hover:shadow-lg transition-all duration-300">
-                            <img src="{{ asset('images/motionlife-logo.png') }}" alt="MOTIONLIFE ROLEPLAY"
+                            <img src="<?php echo e(asset('images/motionlife-logo.png')); ?>" alt="MOTIONLIFE ROLEPLAY"
                                 class="h-6 w-6 object-contain">
                         </div>
                         <div class="ml-3">
@@ -1310,21 +1312,21 @@
                     </button>
                 </div>
                 <div class="hidden sm:flex items-center space-x-2 sm:space-x-4" id="desktop-menu">
-                    @guest
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->guest()): ?>
                         <!-- Show Recruitment button only when not logged in -->
                         <button onclick="openRecruitmentModal()"
                             class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center mr-2">
                             <i class="fas fa-user-plus mr-2"></i>
                             <span>Recruitment</span>
                         </button>
-                    @endguest
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                    @auth
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->check()): ?>
                         <!-- User Info -->
                         <div class="flex items-center space-x-4">
                             <div class="text-right">
                                 <div class="text-white text-sm font-medium">Selamat datang,</div>
-                                <div class="text-gray-300 text-xs">{{ auth()->user()->name }}</div>
+                                <div class="text-gray-300 text-xs"><?php echo e(auth()->user()->name); ?></div>
                             </div>
                         </div>
 
@@ -1332,36 +1334,36 @@
                         <div class="flex items-center space-x-2">
                             <!-- Primary Menu Items -->
                             <div class="flex items-center space-x-2">
-                                <a href="{{ route('staff.dashboard') }}"
+                                <a href="<?php echo e(route('staff.dashboard')); ?>"
                                     class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
                                     <i class="fas fa-tachometer-alt mr-2"></i>
                                     <span>Dashboard</span>
                                 </a>
 
-                                <a href="{{ route('staff.profile') }}"
+                                <a href="<?php echo e(route('staff.profile')); ?>"
                                     class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
                                     <i class="fas fa-user-cog mr-2"></i>
                                     <span>Profil</span>
                                 </a>
 
-                                @if(auth()->user()->hasPermission('access_live_chat'))
-                                    <a href="{{ route('admin.chat.index') }}"
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->hasPermission('access_live_chat')): ?>
+                                    <a href="<?php echo e(route('admin.chat.index')); ?>"
                                         class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
                                         <i class="fas fa-comments mr-2"></i>
                                         <span>Live Chat</span>
                                     </a>
-                                @endif
+                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                                @if(auth()->user()->hasPermission('access_feedback'))
-                                    <a href="{{ route('admin.feedback.index') }}"
+                                <?php if(auth()->user()->hasPermission('access_feedback')): ?>
+                                    <a href="<?php echo e(route('admin.feedback.index')); ?>"
                                         class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
                                         <i class="fas fa-paper-plane mr-2"></i>
                                         <span>Feedback</span>
                                     </a>
-                                @endif
+                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                                {{-- Admin Dropdown Menu --}}
-                                @if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('access_live_chat') || auth()->user()->hasPermission('access_feedback'))
+                                
+                                <?php if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('access_live_chat') || auth()->user()->hasPermission('access_feedback')): ?>
                                     <div class="relative group">
                                         <button
                                             class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
@@ -1370,60 +1372,60 @@
                                             <i class="fas fa-chevron-down ml-2 text-xs"></i>
                                         </button>
 
-                                        {{-- Dropdown Menu --}}
+                                        
                                         <div
                                             class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                                             <div class="py-2">
-                                                @if(auth()->user()->hasPermission('manage_users'))
-                                                    <a href="{{ route('admin.staff.index') }}"
+                                                <?php if(auth()->user()->hasPermission('manage_users')): ?>
+                                                    <a href="<?php echo e(route('admin.staff.index')); ?>"
                                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                         <i class="fas fa-users-cog mr-3 w-5"></i>
                                                         Manajemen Staf
                                                     </a>
-                                                @endif
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                                                @if(auth()->user()->hasPermission('access_live_chat'))
-                                                    <a href="{{ route('admin.chat.index') }}"
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->hasPermission('access_live_chat')): ?>
+                                                    <a href="<?php echo e(route('admin.chat.index')); ?>"
                                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                         <i class="fas fa-comments mr-3 w-5"></i>
                                                         Live Chat
                                                     </a>
-                                                @endif
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                                                @if(auth()->user()->hasPermission('access_feedback'))
-                                                    <a href="{{ route('admin.feedback.index') }}"
+                                                <?php if(auth()->user()->hasPermission('access_feedback')): ?>
+                                                    <a href="<?php echo e(route('admin.feedback.index')); ?>"
                                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                         <i class="fas fa-comment-dots mr-3 w-5"></i>
                                                         Laporan & Masukan
                                                     </a>
-                                                @endif
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                                                @if(auth()->user()->isAdmin())
-                                                    <a href="{{ route('admin.organizational-structure.index') }}"
+                                                <?php if(auth()->user()->isAdmin()): ?>
+                                                    <a href="<?php echo e(route('admin.organizational-structure.index')); ?>"
                                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                         <i class="fas fa-sitemap mr-3 w-5"></i>
                                                         Struktural EMS
                                                     </a>
 
-                                                    <a href="{{ route('admin.roles.permissions') }}"
+                                                    <a href="<?php echo e(route('admin.roles.permissions')); ?>"
                                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                         <i class="fas fa-shield-alt mr-3 w-5"></i>
                                                         Role Permissions
                                                     </a>
-                                                @endif
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                                                @if(auth()->user()->hasPermission('view_reports'))
+                                                <?php if(auth()->user()->hasPermission('view_reports')): ?>
                                                     <div class="border-t border-gray-200 my-1"></div>
-                                                    <a href="{{ route('admin.attendance-reports.index') }}"
+                                                    <a href="<?php echo e(route('admin.attendance-reports.index')); ?>"
                                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                         <i class="fas fa-chart-bar mr-3 w-5"></i>
                                                         Laporan Absensi
                                                     </a>
-                                                @endif
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                             </div>
                                         </div>
                                     </div>
-                                @endif
+                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
 
                             <!-- Payroll Menu Dropdown -->
@@ -1439,39 +1441,31 @@
                                 <div
                                     class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                                     <div class="py-2">
-                                        @if(auth()->user()->hasPermission('manage_payroll'))
-                                            <a href="{{ route('admin.payroll.index') }}"
+                                        <?php if(auth()->user()->hasPermission('manage_payroll')): ?>
+                                            <a href="<?php echo e(route('admin.payroll.index')); ?>"
                                                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                 <i class="fas fa-list mr-2"></i>
                                                 Daftar Gaji
                                             </a>
-                                            <a href="{{ route('admin.salary-settings.index') }}"
+                                            <a href="<?php echo e(route('admin.salary-settings.index')); ?>"
                                                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                 <i class="fas fa-cog mr-2"></i>
                                                 Atur Gaji
                                             </a>
-                                            @if(auth()->user()->isAdmin())
-                                                <div class="border-t border-gray-200 my-1"></div>
-                                                <a href="{{ route('admin.reimbursements.index') }}"
-                                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                    <i class="fas fa-file-invoice-dollar mr-2"></i>
-                                                    Reimbursement Tracking
-                                                </a>
-                                            @endif
-                                        @else
-                                            <a href="{{ route('staff.payroll.index') }}"
+                                        <?php else: ?>
+                                            <a href="<?php echo e(route('staff.payroll.index')); ?>"
                                                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                 <i class="fas fa-list mr-2"></i>
                                                 Gaji Saya
                                             </a>
-                                        @endif
+                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Logout Button -->
-                            <form method="POST" action="{{ route('staff.logout') }}" class="inline">
-                                @csrf
+                            <form method="POST" action="<?php echo e(route('staff.logout')); ?>" class="inline">
+                                <?php echo csrf_field(); ?>
                                 <button type="submit"
                                     class="bg-red-500 bg-opacity-20 text-white px-4 py-2 rounded-lg hover:bg-opacity-30 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-red-400 border-opacity-30 flex items-center">
                                     <i class="fas fa-sign-out-alt mr-2"></i>
@@ -1479,14 +1473,14 @@
                                 </button>
                             </form>
                         </div>
-                    @endauth
-                    @guest
-                        <a href="{{ route('staff.login') }}"
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->guest()): ?>
+                        <a href="<?php echo e(route('staff.login')); ?>"
                             class="bg-white bg-opacity-10 text-white px-4 py-2 sm:px-6 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-xs sm:text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
                             <i class="fas fa-user-md mr-2"></i>
                             <span>Login Staf</span>
                         </a>
-                    @endguest
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </div>
             </div>
         </div>
@@ -1494,79 +1488,74 @@
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="sm:hidden hidden">
             <div class="px-2 pt-2 pb-3 space-y-1">
-                @guest
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->guest()): ?>
                     <!-- Show Recruitment button only when not logged in -->
                     <button onclick="openRecruitmentModal()"
                         class="w-full text-left text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
                         <i class="fas fa-user-plus w-6 mr-2"></i>Recruitment
                     </button>
-                @endguest
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                @auth
-                    <div class="text-white text-sm font-medium px-3 py-2">Selamat datang, {{ auth()->user()->name }}</div>
-                    <a href="{{ route('staff.dashboard') }}"
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->check()): ?>
+                    <div class="text-white text-sm font-medium px-3 py-2">Selamat datang, <?php echo e(auth()->user()->name); ?></div>
+                    <a href="<?php echo e(route('staff.dashboard')); ?>"
                         class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                             class="fas fa-tachometer-alt w-6 mr-2"></i>Dashboard</a>
-                    <a href="{{ route('staff.profile') }}"
+                    <a href="<?php echo e(route('staff.profile')); ?>"
                         class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                             class="fas fa-user-cog w-6 mr-2"></i>Profil</a>
-                    @if(auth()->user()->hasPermission('access_live_chat'))
-                        <a href="{{ route('admin.chat.index') }}"
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->hasPermission('access_live_chat')): ?>
+                        <a href="<?php echo e(route('admin.chat.index')); ?>"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-comments w-6 mr-2"></i>Live Chat</a>
-                    @endif
-                    @if(auth()->user()->hasPermission('access_feedback'))
-                        <a href="{{ route('admin.feedback.index') }}"
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    <?php if(auth()->user()->hasPermission('access_feedback')): ?>
+                        <a href="<?php echo e(route('admin.feedback.index')); ?>"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-paper-plane w-6 mr-2"></i>Feedback</a>
-                    @endif
-                    @if(auth()->user()->hasPermission('manage_users'))
-                        <a href="{{ route('admin.staff.index') }}"
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    <?php if(auth()->user()->hasPermission('manage_users')): ?>
+                        <a href="<?php echo e(route('admin.staff.index')); ?>"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-users-cog w-6 mr-2"></i>Staf</a>
-                        <a href="{{ route('admin.organizational-structure.index') }}"
+                        <a href="<?php echo e(route('admin.organizational-structure.index')); ?>"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-sitemap w-6 mr-2"></i>Struktural EMS</a>
-                        <a href="{{ route('admin.roles.permissions') }}"
+                        <a href="<?php echo e(route('admin.roles.permissions')); ?>"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-shield-alt w-6 mr-2"></i>Role Permissions</a>
-                    @endif
-                    @if(auth()->user()->hasPermission('view_reports'))
-                        <a href="{{ route('admin.attendance-reports.index') }}"
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    <?php if(auth()->user()->hasPermission('view_reports')): ?>
+                        <a href="<?php echo e(route('admin.attendance-reports.index')); ?>"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-chart-bar w-6 mr-2"></i>Laporan</a>
-                    @endif
-                    @if(auth()->user()->hasPermission('manage_payroll'))
-                        <a href="{{ route('admin.payroll.index') }}"
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    <?php if(auth()->user()->hasPermission('manage_payroll')): ?>
+                        <a href="<?php echo e(route('admin.payroll.index')); ?>"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-list w-6 mr-2"></i>Daftar Gaji</a>
-                        <a href="{{ route('admin.salary-settings.index') }}"
+                        <a href="<?php echo e(route('admin.salary-settings.index')); ?>"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-cog w-6 mr-2"></i>Atur Gaji</a>
-                        @if(auth()->user()->isAdmin())
-                            <a href="{{ route('admin.reimbursements.index') }}"
-                                class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
-                                    class="fas fa-file-invoice-dollar w-6 mr-2"></i>Reimbursement</a>
-                        @endif
-                    @else
-                        <a href="{{ route('staff.payroll.index') }}"
+                    <?php else: ?>
+                        <a href="<?php echo e(route('staff.payroll.index')); ?>"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-dollar-sign w-6 mr-2"></i>Gaji Saya</a>
-                    @endif
-                    <form method="POST" action="{{ route('staff.logout') }}" class="block">
-                        @csrf
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    <form method="POST" action="<?php echo e(route('staff.logout')); ?>" class="block">
+                        <?php echo csrf_field(); ?>
                         <button type="submit"
                             class="w-full text-left text-gray-300 hover:bg-red-500/20 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
                             <i class="fas fa-sign-out-alt w-6 mr-2"></i>Logout
                         </button>
                     </form>
-                @endauth
-                @guest
-                    <a href="{{ route('staff.login') }}"
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->guest()): ?>
+                    <a href="<?php echo e(route('staff.login')); ?>"
                         class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
                         <i class="fas fa-user-md w-6 mr-2"></i>Login Staf
                     </a>
-                @endguest
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             </div>
         </div>
     </nav>
@@ -1609,7 +1598,7 @@
 
     <!-- Main Content -->
     <main class="pt-16">
-        @yield('content')
+        <?php echo $__env->yieldContent('content'); ?>
     </main>
 
     <!-- Footer -->
@@ -1619,7 +1608,7 @@
                 <div class="flex justify-center items-center mb-4">
                     <!-- Logo MOTIONLIFE ROLEPLAY -->
                     <div class="h-8 w-8 flex items-center justify-center mr-3 bg-white rounded-lg elegant-shadow">
-                        <img src="{{ asset('images/motionlife-logo.png') }}" alt="MOTIONLIFE ROLEPLAY"
+                        <img src="<?php echo e(asset('images/motionlife-logo.png')); ?>" alt="MOTIONLIFE ROLEPLAY"
                             class="h-5 w-5 object-contain">
                     </div>
                     <span class="text-lg font-semibold text-white">MOTIONLIFE ROLEPLAY</span>
@@ -1647,7 +1636,7 @@
         </div>
     </footer>
 
-    @stack('scripts')
+    <?php echo $__env->yieldPushContent('scripts'); ?>
 
     <!-- Global Image Error Handler - Prevents 404 errors for missing profile images -->
     <script>
@@ -1655,7 +1644,7 @@
             'use strict';
 
             // Default fallback image for profile images
-            const defaultProfileImage = '{{ asset("profile.jpg") }}';
+            const defaultProfileImage = '<?php echo e(asset("profile.jpg")); ?>';
 
             // Function to handle image error
             function handleImageError(img) {
@@ -1760,7 +1749,7 @@
     </script>
 
     <!-- Chart.js Local -->
-    <script src="{{ asset('js/chart.min.js') }}"></script>
+    <script src="<?php echo e(asset('js/chart.min.js')); ?>"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const mobileMenuButton = document.getElementById('mobile-menu-button');
@@ -2600,25 +2589,25 @@
         });
     </script>
 
-    {{-- Floating Wrapped Button (left bottom corner) --}}
-    @auth
-        <a href="{{ route('wrapped.show', ['year' => now()->year]) }}" class="fixed bottom-6 left-6 z-[100] group"
-            title="Lihat Wrapped {{ now()->year }}">
+    
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->check()): ?>
+        <a href="<?php echo e(route('wrapped.show', ['year' => now()->year])); ?>" class="fixed bottom-6 left-6 z-[100] group"
+            title="Lihat Wrapped <?php echo e(now()->year); ?>">
             <div class="relative">
-                {{-- Glow effect --}}
+                
                 <div
                     class="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 rounded-2xl blur-xl opacity-60 group-hover:opacity-100 animate-pulse transition-opacity duration-300">
                 </div>
 
-                {{-- Button --}}
+                
                 <div
                     class="relative w-14 h-14 bg-gradient-to-br from-purple-600 via-pink-600 to-orange-600 rounded-2xl shadow-2xl flex items-center justify-center transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-12 border-2 border-white/20">
-                    {{-- Sparkle animation overlay --}}
+                    
                     <div
                         class="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/40 to-white/0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     </div>
 
-                    {{-- Icon: Calendar with Chart (Year Recap) --}}
+                    
                     <svg class="w-7 h-7 text-white relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <!-- Calendar base -->
                         <rect x="3" y="4" width="18" height="18" rx="2" ry="2" stroke-width="2" stroke-linecap="round"
@@ -2632,45 +2621,65 @@
                         <line x1="17" y1="18" x2="17" y2="15" stroke-width="1.5" stroke-linecap="round" />
                     </svg>
 
-                    {{-- Badge notification dot (optional, if you want to show "new" indicator) --}}
+                    
                     <div
                         class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white animate-ping">
                     </div>
                     <div class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white"></div>
                 </div>
 
-                {{-- Tooltip --}}
+                
                 <div
                     class="absolute bottom-full left-0 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
                     <div
                         class="bg-gray-900 text-white text-xs font-medium px-3 py-2 rounded-lg whitespace-nowrap shadow-xl">
-                        Wrapped {{ now()->year }} 🎉
+                        Wrapped <?php echo e(now()->year); ?> 🎉
                         <div class="absolute top-full left-4 w-2 h-2 bg-gray-900 transform rotate-45 -mt-1"></div>
                     </div>
                 </div>
             </div>
         </a>
-    @endauth
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-    @auth
-        @livewire('chat-widget')
-    @endauth
-    {{-- Global Flash Message & Error Handler --}}
-    @if(session('error') || session('success') || $errors->any())
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->check()): ?>
+        <?php
+$__split = function ($name, $params = []) {
+    return [$name, $params];
+};
+[$__name, $__params] = $__split('chat-widget');
+
+$key = null;
+
+$key ??= \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::generateKey('lw-527234286-0', null);
+
+$__html = app('livewire')->mount($__name, $__params, $key);
+
+echo $__html;
+
+unset($__html);
+unset($__name);
+unset($__params);
+unset($__split);
+if (isset($__slots)) unset($__slots);
+?>
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+    
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(session('error') || session('success') || $errors->any()): ?>
         <div class="fixed top-5 right-5 z-[99999] w-full max-w-md animate-fade-in-left pointer-events-auto"
             id="global-toast-layout">
-            @if(session('error') || $errors->any())
+            <?php if(session('error') || $errors->any()): ?>
                 <div
                     class="bg-red-600 border-l-4 border-white text-white p-4 rounded shadow-2xl flex items-start gap-3 relative">
                     <div class="flex-shrink-0"><i class="fas fa-exclamation-circle text-2xl"></i></div>
                     <div class="flex-1">
                         <h3 class="font-bold text-lg">Perhatian!</h3>
                         <p class="text-sm opacity-95">
-                            @if(session('error'))
-                                {!! session('error') !!}
-                            @else
-                                Terdapat {{ $errors->count() }} kesalahan pada isian formulir. Mohon periksa kembali.
-                            @endif
+                            <?php if(session('error')): ?>
+                                <?php echo session('error'); ?>
+
+                            <?php else: ?>
+                                Terdapat <?php echo e($errors->count()); ?> kesalahan pada isian formulir. Mohon periksa kembali.
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </p>
                     </div>
                     <button onclick="document.getElementById('global-toast-layout').remove()"
@@ -2680,69 +2689,71 @@
                     <!-- Progress bar -->
                     <div class="absolute bottom-0 left-0 h-1 bg-white/30 animate-shrink w-full"></div>
                 </div>
-            @elseif(session('success'))
+            <?php elseif(session('success')): ?>
                 <div
                     class="bg-green-600 border-l-4 border-white text-white p-4 rounded shadow-2xl flex items-start gap-3 relative">
                     <div class="flex-shrink-0"><i class="fas fa-check-circle text-2xl"></i></div>
                     <div class="flex-1">
                         <h3 class="font-bold text-lg">Berhasil!</h3>
-                        <p class="text-sm opacity-95">{!! session('success') !!}</p>
+                        <p class="text-sm opacity-95"><?php echo session('success'); ?></p>
                     </div>
                     <button onclick="document.getElementById('global-toast-layout').remove()"
                         class="ml-4 opacity-80 hover:opacity-100 transition-opacity">
                         <i class="fas fa-times text-xl"></i>
                     </button>
                 </div>
-            @endif
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
 
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                console.log('Global Toast Initialized');
-                const toast = document.getElementById('global-toast-layout');
-                if (toast) {
-                    console.log('Toast element found, ensuring visibility');
-                    toast.style.display = 'block';
-                    // Auto dismiss after 10 seconds
+              document.addEventListener('DOMContentLoaded', function () {
+                    console.log('Global Toast Initialized');
+                    const toast = document.getElementById('global-toast-layout');
+                    if (toast) {
+                        console.log('Toast element found, ensuring visibility');
+                        toast.style.display = 'block';
+                        // Auto dismiss after 10 seconds
+                        setTimeout(() => {
+                            if (toast) {
+                                toast.style.transition = 'opacity 0.5s ease-out';
+                                toast.style.opacity = '0';
+                                setTimeout(() => toast.remove(), 500);
+                            }
+                        }, 10000);
+                    }
+
+                    // Backup Alert
                     setTimeout(() => {
-                        if (toast) {
-                            toast.style.transition = 'opacity 0.5s ease-out';
-                            toast.style.opacity = '0';
-                            setTimeout(() => toast.remove(), 500);
-                        }
-                    }, 10000);
+                        <?php if(session('error')): ?>
+                            alert(<?php echo json_encode(session('error'), 15, 512) ?>);
+                        <?php elseif($errors->any()): ?>
+                            alert('Terdapat kesalahan input. Silakan periksa formulir.');
+                        <?php endif; ?>
+                                            }, 1000);
+                });
+            </script>
+            <style>
+                @keyframes shrink {
+                    from {
+                        width: 100%;
+                    }
+
+                    to {
+                        width: 0%;
+                    }
                 }
 
-                // Backup Alert
-                setTimeout(() => {
-                    @if(session('error'))
-                        alert(@json(session('error')));
-                    @elseif($errors->any())
-                        alert('Terdapat kesalahan input. Silakan periksa formulir.');
-                    @endif
-                                                    }, 1000);
-            });
-        </script>
-        <style>
-            @keyframes shrink {
-                from {
-                    width: 100%;
+                .animate-shrink {
+                    animation: shrink 10s linear forwards;
                 }
+            </style>
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                to {
-                    width: 0%;
-                }
-            }
+    <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::scripts(); ?>
 
-            .animate-shrink {
-                animation: shrink 10s linear forwards;
-            }
-        </style>
-    @endif
+    <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::scriptConfig(); ?>
 
-    @livewireScripts
-    @livewireScriptConfig
-    @stack('scripts')
+    <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 
-</html>
+</html><?php /**PATH D:\website\EMS-IME\public_html\resources\views/layouts/app.blade.php ENDPATH**/ ?>

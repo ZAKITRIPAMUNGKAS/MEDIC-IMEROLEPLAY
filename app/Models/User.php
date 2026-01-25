@@ -91,6 +91,16 @@ class User extends Authenticatable
         return $this->hasMany(PayrollNotification::class);
     }
 
+    public function salaryReimbursements()
+    {
+        return $this->hasMany(SalaryReimbursement::class, 'manager_id');
+    }
+
+    public function processedReimbursements()
+    {
+        return $this->hasMany(SalaryReimbursement::class, 'reimbursed_by');
+    }
+
     public function isStaff()
     {
         return !is_null($this->role_id);

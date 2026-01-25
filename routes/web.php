@@ -239,6 +239,16 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/salary-settings/{salarySetting}/toggle-status', [\App\Http\Controllers\Admin\SalarySettingController::class, 'toggleStatus'])
         ->middleware('permission:manage_payroll')->name('salary-settings.toggle-status');
 
+    // Salary Reimbursement Tracking (Admin only)
+    Route::get('/reimbursements', [\App\Http\Controllers\Admin\SalaryReimbursementController::class, 'index'])
+        ->middleware('admin')->name('reimbursements.index');
+    Route::post('/reimbursements/calculate', [\App\Http\Controllers\Admin\SalaryReimbursementController::class, 'calculatePeriod'])
+        ->middleware('admin')->name('reimbursements.calculate');
+    Route::get('/reimbursements/{reimbursement}', [\App\Http\Controllers\Admin\SalaryReimbursementController::class, 'show'])
+        ->middleware('admin')->name('reimbursements.show');
+    Route::post('/reimbursements/{reimbursement}/reimburse', [\App\Http\Controllers\Admin\SalaryReimbursementController::class, 'markAsReimbursed'])
+        ->middleware('admin')->name('reimbursements.reimburse');
+
     // Structural/Organizational Management (Admin only - no specific permission check yet)
     Route::resource('structural', \App\Http\Controllers\Admin\StructuralManagementController::class)
         ->middleware('admin');
