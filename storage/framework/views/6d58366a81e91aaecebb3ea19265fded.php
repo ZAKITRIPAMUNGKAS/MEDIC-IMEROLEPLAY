@@ -1452,6 +1452,14 @@
                                                 <i class="fas fa-cog mr-2"></i>
                                                 Atur Gaji
                                             </a>
+                                            <?php if(auth()->user()->isAdmin()): ?>
+                                                <div class="border-t border-gray-200 my-1"></div>
+                                                <a href="<?php echo e(route('admin.reimbursements.index')); ?>"
+                                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                    <i class="fas fa-file-invoice-dollar mr-2"></i>
+                                                    Reimbursement Tracking
+                                                </a>
+                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                         <?php else: ?>
                                             <a href="<?php echo e(route('staff.payroll.index')); ?>"
                                                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
@@ -1537,6 +1545,11 @@
                         <a href="<?php echo e(route('admin.salary-settings.index')); ?>"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-cog w-6 mr-2"></i>Atur Gaji</a>
+                        <?php if(auth()->user()->isAdmin()): ?>
+                            <a href="<?php echo e(route('admin.reimbursements.index')); ?>"
+                                class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
+                                    class="fas fa-file-invoice-dollar w-6 mr-2"></i>Reimbursement</a>
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     <?php else: ?>
                         <a href="<?php echo e(route('staff.payroll.index')); ?>"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
@@ -2706,47 +2719,47 @@ if (isset($__slots)) unset($__slots);
         </div>
 
         <script>
-              document.addEventListener('DOMContentLoaded', function () {
-                    console.log('Global Toast Initialized');
-                    const toast = document.getElementById('global-toast-layout');
-                    if (toast) {
-                        console.log('Toast element found, ensuring visibility');
-                        toast.style.display = 'block';
-                        // Auto dismiss after 10 seconds
-                        setTimeout(() => {
-                            if (toast) {
-                                toast.style.transition = 'opacity 0.5s ease-out';
-                                toast.style.opacity = '0';
-                                setTimeout(() => toast.remove(), 500);
-                            }
-                        }, 10000);
-                    }
-
-                    // Backup Alert
+            document.addEventListener('DOMContentLoaded', function () {
+                console.log('Global Toast Initialized');
+                const toast = document.getElementById('global-toast-layout');
+                if (toast) {
+                    console.log('Toast element found, ensuring visibility');
+                    toast.style.display = 'block';
+                    // Auto dismiss after 10 seconds
                     setTimeout(() => {
-                        <?php if(session('error')): ?>
-                            alert(<?php echo json_encode(session('error'), 15, 512) ?>);
-                        <?php elseif($errors->any()): ?>
-                            alert('Terdapat kesalahan input. Silakan periksa formulir.');
-                        <?php endif; ?>
-                                            }, 1000);
-                });
-            </script>
-            <style>
-                @keyframes shrink {
-                    from {
-                        width: 100%;
-                    }
-
-                    to {
-                        width: 0%;
-                    }
+                        if (toast) {
+                            toast.style.transition = 'opacity 0.5s ease-out';
+                            toast.style.opacity = '0';
+                            setTimeout(() => toast.remove(), 500);
+                        }
+                    }, 10000);
                 }
 
-                .animate-shrink {
-                    animation: shrink 10s linear forwards;
+                // Backup Alert
+                setTimeout(() => {
+                    <?php if(session('error')): ?>
+                        alert(<?php echo json_encode(session('error'), 15, 512) ?>);
+                    <?php elseif($errors->any()): ?>
+                        alert('Terdapat kesalahan input. Silakan periksa formulir.');
+                    <?php endif; ?>
+                                                    }, 1000);
+            });
+        </script>
+        <style>
+            @keyframes shrink {
+                from {
+                    width: 100%;
                 }
-            </style>
+
+                to {
+                    width: 0%;
+                }
+            }
+
+            .animate-shrink {
+                animation: shrink 10s linear forwards;
+            }
+        </style>
     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
     <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::scripts(); ?>

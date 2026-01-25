@@ -23,17 +23,29 @@ class SalaryReimbursementController extends Controller
         }
 
         // Get filter parameters
-        $periodStart = $request->input('period_start');
-        $periodEnd = $request->input('period_end');
+        $week = $request->input('week');
         $managerId = $request->input('manager_id');
-        $status = $request->input('status'); // 'pending', 'reimbursed', 'all'
+        $status = $request->input('status');
 
-        // Build query
+        // Convert week to date range if provided
+        $periodStart = null;
+        $periodEnd = null;
+        if ($week) {
+            // Week format: YYYY-Www (e.g., 2026-W04)
+            list($year, $weekNum) = explode('-W', $week);
+            $dto = new \DateTime();
+            $dto->setISODate($year, $weekNum);
+            $periodStart = $dto->format('Y-m-d'); // Monday
+            $dto->modify('+6 days');
+            $periodEnd = $dto->format('Y-m-d'); // Sunday
+        }
+
+        // Build query - show ALL data by default
         $query = SalaryReimbursement::with(['manager', 'reimbursedBy'])
             ->orderBy('period_start', 'desc')
             ->orderBy('is_reimbursed', 'asc'); // Show pending first
 
-        // Apply filters
+        // Apply filters ONLY if provided
         if ($periodStart && $periodEnd) {
             $query->whereBetween('period_start', [$periodStart, $periodEnd]);
         }
