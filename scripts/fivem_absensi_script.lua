@@ -1,7 +1,7 @@
 -- FiveM Script untuk Absensi Otomatis
 -- Script ini mengirim data absensi ke Laravel API
 
-local API_URL = "http://tepedev.my.id/api/absensi" -- Ganti dengan URL website Laravel Anda
+local API_URL = "https://medicalcenterime.my.id/api/absensi" -- Ganti dengan URL website Laravel Anda
 local API_KEY = "45b712ffc6bae5375bdc2be08d487a91422d430d75cfea3390a37ae52817aa11" -- WAJIB: untuk autentikasi API
 
 -- WARNING: API key ini seharusnya disimpan di server config, bukan di script client
