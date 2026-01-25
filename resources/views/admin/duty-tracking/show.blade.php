@@ -115,22 +115,22 @@
                             <tr class="hover:bg-black hover:bg-opacity-20 transition-all">
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm font-medium text-white">
-                                        {{ \Carbon\Carbon::parse($attendance->check_in)->format('d M Y') }}
+                                        {{ \Carbon\Carbon::parse($attendance->clock_in)->format('d M Y') }}
                                     </div>
                                     <div class="text-xs text-sky-300">
-                                        {{ \Carbon\Carbon::parse($attendance->check_in)->format('l') }}
+                                        {{ \Carbon\Carbon::parse($attendance->clock_in)->format('l') }}
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-emerald-300">
                                         <i class="fas fa-sign-in-alt mr-1"></i>
-                                        {{ \Carbon\Carbon::parse($attendance->check_in)->format('H:i:s') }}
+                                        {{ \Carbon\Carbon::parse($attendance->clock_in)->format('H:i:s') }}
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm text-red-300">
                                         <i class="fas fa-sign-out-alt mr-1"></i>
-                                        {{ \Carbon\Carbon::parse($attendance->check_out)->format('H:i:s') }}
+                                        {{ \Carbon\Carbon::parse($attendance->clock_out)->format('H:i:s') }}
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">

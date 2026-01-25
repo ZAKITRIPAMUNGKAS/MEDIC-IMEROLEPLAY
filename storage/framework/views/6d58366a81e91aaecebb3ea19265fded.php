@@ -1422,6 +1422,14 @@
                                                         Laporan Absensi
                                                     </a>
                                                 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
+                                                <?php if(auth()->user()->isAdmin()): ?>
+                                                    <a href="<?php echo e(route('admin.duty-tracking.index')); ?>"
+                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                        <i class="fas fa-trophy mr-3 w-5"></i>
+                                                        Duty Tracking
+                                                    </a>
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                             </div>
                                         </div>
                                     </div>
@@ -1532,6 +1540,9 @@
                         <a href="<?php echo e(route('admin.roles.permissions')); ?>"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-shield-alt w-6 mr-2"></i>Role Permissions</a>
+                        <a href="<?php echo e(route('admin.duty-tracking.index')); ?>"
+                            class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
+                                class="fas fa-trophy w-6 mr-2"></i>Duty Tracking</a>
                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     <?php if(auth()->user()->hasPermission('view_reports')): ?>
                         <a href="<?php echo e(route('admin.attendance-reports.index')); ?>"
@@ -2742,7 +2753,7 @@ if (isset($__slots)) unset($__slots);
                     <?php elseif($errors->any()): ?>
                         alert('Terdapat kesalahan input. Silakan periksa formulir.');
                     <?php endif; ?>
-                                                    }, 1000);
+                                                            }, 1000);
             });
         </script>
         <style>

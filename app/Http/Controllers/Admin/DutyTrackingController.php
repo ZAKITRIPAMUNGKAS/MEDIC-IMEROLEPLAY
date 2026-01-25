@@ -30,8 +30,8 @@ class DutyTrackingController extends Controller
         }
 
         // Get available months from attendance data
-        $availableMonths = Attendance::selectRaw('DATE_FORMAT(check_in, "%Y-%m") as month')
-            ->whereNotNull('check_out')
+        $availableMonths = Attendance::selectRaw('DATE_FORMAT(clock_in, "%Y-%m") as month')
+            ->whereNotNull('clock_out')
             ->groupBy('month')
             ->orderByDesc('month')
             ->pluck('month')
@@ -43,8 +43,8 @@ class DutyTrackingController extends Controller
             ->selectRaw('COUNT(attendances.id) as session_count')
             ->selectRaw('AVG(attendances.duration_seconds) as avg_duty_seconds')
             ->join('attendances', 'users.id', '=', 'attendances.user_id')
-            ->whereIn(DB::raw('DATE_FORMAT(attendances.check_in, "%Y-%m")'), $selectedMonths)
-            ->whereNotNull('attendances.check_out')
+            ->whereIn(DB::raw('DATE_FORMAT(attendances.clock_in, "%Y-%m")'), $selectedMonths)
+            ->whereNotNull('attendances.clock_out')
             ->groupBy(
                 'users.id',
                 'users.name',
@@ -69,14 +69,14 @@ class DutyTrackingController extends Controller
         // Calculate overall statistics
         $stats = [
             'total_staff' => $rankings->total(),
-            'total_duty_seconds' => Attendance::whereIn(DB::raw('DATE_FORMAT(check_in, "%Y-%m")'), $selectedMonths)
-                ->whereNotNull('check_out')
+            'total_duty_seconds' => Attendance::whereIn(DB::raw('DATE_FORMAT(clock_in, "%Y-%m")'), $selectedMonths)
+                ->whereNotNull('clock_out')
                 ->sum('duration_seconds'),
-            'total_sessions' => Attendance::whereIn(DB::raw('DATE_FORMAT(check_in, "%Y-%m")'), $selectedMonths)
-                ->whereNotNull('check_out')
+            'total_sessions' => Attendance::whereIn(DB::raw('DATE_FORMAT(clock_in, "%Y-%m")'), $selectedMonths)
+                ->whereNotNull('clock_out')
                 ->count(),
-            'avg_duty_seconds' => Attendance::whereIn(DB::raw('DATE_FORMAT(check_in, "%Y-%m")'), $selectedMonths)
-                ->whereNotNull('check_out')
+            'avg_duty_seconds' => Attendance::whereIn(DB::raw('DATE_FORMAT(clock_in, "%Y-%m")'), $selectedMonths)
+                ->whereNotNull('clock_out')
                 ->avg('duration_seconds'),
         ];
 
@@ -102,29 +102,29 @@ class DutyTrackingController extends Controller
 
         // Get duty history
         $query = Attendance::where('user_id', $user->id)
-            ->whereIn(DB::raw('DATE_FORMAT(check_in, "%Y-%m")'), $selectedMonths)
-            ->whereNotNull('check_out')
-            ->orderBy('check_in', 'desc');
+            ->whereIn(DB::raw('DATE_FORMAT(clock_in, "%Y-%m")'), $selectedMonths)
+            ->whereNotNull('clock_out')
+            ->orderBy('clock_in', 'desc');
 
         $attendances = $query->paginate(50);
 
         // Calculate stats for this user
         $stats = [
             'total_duty_seconds' => Attendance::where('user_id', $user->id)
-                ->whereIn(DB::raw('DATE_FORMAT(check_in, "%Y-%m")'), $selectedMonths)
-                ->whereNotNull('check_out')
+                ->whereIn(DB::raw('DATE_FORMAT(clock_in, "%Y-%m")'), $selectedMonths)
+                ->whereNotNull('clock_out')
                 ->sum('duration_seconds'),
             'session_count' => $attendances->total(),
             'avg_duty_seconds' => Attendance::where('user_id', $user->id)
-                ->whereIn(DB::raw('DATE_FORMAT(check_in, "%Y-%m")'), $selectedMonths)
-                ->whereNotNull('check_out')
+                ->whereIn(DB::raw('DATE_FORMAT(clock_in, "%Y-%m")'), $selectedMonths)
+                ->whereNotNull('clock_out')
                 ->avg('duration_seconds'),
         ];
 
         // Get available months for this user
         $availableMonths = Attendance::where('user_id', $user->id)
-            ->selectRaw('DATE_FORMAT(check_in, "%Y-%m") as month')
-            ->whereNotNull('check_out')
+            ->selectRaw('DATE_FORMAT(clock_in, "%Y-%m") as month')
+            ->whereNotNull('clock_out')
             ->groupBy('month')
             ->orderByDesc('month')
             ->pluck('month')
