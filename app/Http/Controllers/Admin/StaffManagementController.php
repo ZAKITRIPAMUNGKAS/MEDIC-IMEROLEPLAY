@@ -50,7 +50,8 @@ class StaffManagementController extends Controller
             'active' => (clone $query)->where('is_active', 1)->count(),
             'inactive' => (clone $query)->where('is_active', 0)->count(),
             'admin' => (clone $query)->whereHas('role', function ($q) {
-                $q->where('name', 'admin'); })->count(),
+                $q->where('name', 'admin');
+            })->count(),
         ];
 
         $staff = $query->orderBy('name')->paginate(20)->withQueryString();
@@ -236,6 +237,7 @@ class StaffManagementController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'hospital' => 'required|in:alta,roxwood',
+            'citizen_id' => 'nullable|string|max:50|unique:users,citizen_id,' . $user->id,
             'password' => 'nullable|string|min:6|confirmed',
             'role_id' => 'required|exists:staff_roles,id',
             'is_active' => 'nullable|boolean',
@@ -247,6 +249,7 @@ class StaffManagementController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'hospital' => $validated['hospital'],
+            'citizen_id' => $validated['citizen_id'],
             'role_id' => $validated['role_id'],
             'is_active' => $request->boolean('is_active', true),
         ];

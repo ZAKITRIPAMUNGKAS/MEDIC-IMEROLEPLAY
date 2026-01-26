@@ -21,7 +21,8 @@ class Attendance extends Model
         'session_duration', // Duration in seconds (new field)
         'scheduled_duty_minutes', // Scheduled duty duration in minutes
         'scheduled_end_time', // Scheduled end time (clock_in + scheduled_duty_minutes)
-        'auto_checked_out' // Flag for auto checkout
+        'auto_checked_out', // Flag for auto checkout
+        'source' // manual, fivem
     ];
 
     protected $casts = [

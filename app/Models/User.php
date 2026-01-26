@@ -23,6 +23,7 @@ class User extends Authenticatable
         'password',
         'role_id',
         'staff_id',
+        'citizen_id',
         'hospital',
         'is_active',
         'profile_image',

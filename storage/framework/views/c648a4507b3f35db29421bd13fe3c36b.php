@@ -1,8 +1,8 @@
-@extends('layouts.app')
 
-@section('title', 'Profil Staf - Portal Medis')
 
-@section('content')
+<?php $__env->startSection('title', 'Profil Staf - Portal Medis'); ?>
+
+<?php $__env->startSection('content'); ?>
     <div class="min-h-screen bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700 relative overflow-hidden">
         <div class="absolute inset-0 bg-black/20"></div>
         <div class="absolute inset-0"
@@ -26,35 +26,36 @@
             <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl"
                 style="background-color: rgba(7, 89, 133, 0.9);">
                 <div class="p-6 sm:p-8">
-                    @if ($errors->any())
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($errors->any()): ?>
                         <div class="mb-4 bg-red-500/40 border-2 border-red-400/70 text-red-100 px-4 py-3 rounded-xl shadow-lg">
                             <ul class="list-disc list-inside text-sm">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <li><?php echo e($error); ?></li>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </ul>
                         </div>
-                    @endif
-                    @if (session('success'))
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(session('success')): ?>
                         <div
                             class="mb-4 bg-green-500/40 border-2 border-green-400/70 text-green-100 px-4 py-3 rounded-xl shadow-lg">
-                            {{ session('success') }}
-                        </div>
-                    @endif
+                            <?php echo e(session('success')); ?>
 
-                    <form method="POST" action="{{ route('staff.profile.update') }}" enctype="multipart/form-data"
+                        </div>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
+                    <form method="POST" action="<?php echo e(route('staff.profile.update')); ?>" enctype="multipart/form-data"
                         class="space-y-4">
-                        @csrf
+                        <?php echo csrf_field(); ?>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-semibold text-sky-200 mb-2">Nama</label>
-                                <input type="text" name="name" value="{{ old('name', auth()->user()->name) }}"
+                                <input type="text" name="name" value="<?php echo e(old('name', auth()->user()->name)); ?>"
                                     class="w-full px-4 py-3 rounded-xl bg-white/30 text-white border-2 border-white/50 focus:outline-none focus:ring-2 focus:ring-sky-500 shadow-xl"
                                     required />
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-sky-200 mb-2">Email</label>
-                                <input type="email" value="{{ auth()->user()->email }}"
+                                <input type="email" value="<?php echo e(auth()->user()->email); ?>"
                                     class="w-full px-4 py-3 rounded-xl bg-white/25 text-white border-2 border-white/40 opacity-80 shadow-lg"
                                     disabled />
                             </div>
@@ -62,7 +63,7 @@
                                 <label class="block text-sm font-semibold text-sky-200 mb-2">Citizen ID (FiveM) <span
                                         class="text-red-400">*</span></label>
                                 <input type="text" name="citizen_id"
-                                    value="{{ old('citizen_id', auth()->user()->citizen_id) }}"
+                                    value="<?php echo e(old('citizen_id', auth()->user()->citizen_id)); ?>"
                                     class="w-full px-4 py-3 rounded-xl bg-white/30 text-white border-2 border-white/50 focus:outline-none focus:ring-2 focus:ring-sky-500 shadow-xl"
                                     placeholder="Contoh: JDN12345" required />
                                 <p class="text-sky-200 text-xs mt-2">
@@ -75,8 +76,8 @@
                                 <select name="hospital"
                                     class="w-full px-4 py-3 rounded-xl bg-white/30 text-white border-2 border-white/50 focus:outline-none focus:ring-2 focus:ring-sky-500 shadow-xl"
                                     required>
-                                    <option value="alta" {{ (auth()->user()->hospital ?? 'alta') == 'alta' ? 'selected' : '' }}>Alta Hospital (EMS)</option>
-                                    <option value="roxwood" {{ (auth()->user()->hospital ?? '') == 'roxwood' ? 'selected' : '' }}>Roxwood Hospital</option>
+                                    <option value="alta" <?php echo e((auth()->user()->hospital ?? 'alta') == 'alta' ? 'selected' : ''); ?>>Alta Hospital (EMS)</option>
+                                    <option value="roxwood" <?php echo e((auth()->user()->hospital ?? '') == 'roxwood' ? 'selected' : ''); ?>>Roxwood Hospital</option>
                                 </select>
                                 <p class="text-sky-200 text-xs mt-2">
                                     <i class="fas fa-hospital mr-1"></i>
@@ -88,13 +89,14 @@
                         <!-- Profile Image Section -->
                         <div class="space-y-4">
                             <div class="flex items-center space-x-4">
-                                <img src="{{ auth()->user()->profile_image_url }}" alt="{{ auth()->user()->name }}"
-                                    onerror="this.onerror=null;this.src='{{ asset('profile.jpg') }}';"
+                                <img src="<?php echo e(auth()->user()->profile_image_url); ?>" alt="<?php echo e(auth()->user()->name); ?>"
+                                    onerror="this.onerror=null;this.src='<?php echo e(asset('profile.jpg')); ?>';"
                                     class="w-20 h-20 rounded-full border-4 border-sky-400 object-cover">
                                 <div>
-                                    <p class="text-white text-lg font-semibold">{{ auth()->user()->name }}</p>
+                                    <p class="text-white text-lg font-semibold"><?php echo e(auth()->user()->name); ?></p>
                                     <p class="text-sky-200 text-sm">
-                                        {{ auth()->user()->role->display_name ?? auth()->user()->role->name ?? 'Staff' }}
+                                        <?php echo e(auth()->user()->role->display_name ?? auth()->user()->role->name ?? 'Staff'); ?>
+
                                     </p>
                                 </div>
                             </div>
@@ -109,9 +111,16 @@
                                     Kosongkan jika tidak ingin mengubah foto. Format yang didukung: JPG, PNG, GIF (maksimal
                                     2MB)
                                 </p>
-                                @error('profile_image')
-                                    <p class="text-red-300 text-sm mt-1">{{ $message }}</p>
-                                @enderror
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['profile_image'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <p class="text-red-300 text-sm mt-1"><?php echo e($message); ?></p>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
                         </div>
 
@@ -162,19 +171,20 @@
                         </div>
                     </div>
 
-                    @if (session('info'))
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(session('info')): ?>
                         <div
                             class="mb-4 bg-blue-500/40 border-2 border-blue-400/70 text-blue-100 px-4 py-3 rounded-xl shadow-lg">
-                            {{ session('info') }}
-                        </div>
-                    @endif
+                            <?php echo e(session('info')); ?>
 
-                    <form method="POST" action="{{ route('staff.profile.update-email') }}" class="space-y-4">
-                        @csrf
+                        </div>
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
+                    <form method="POST" action="<?php echo e(route('staff.profile.update-email')); ?>" class="space-y-4">
+                        <?php echo csrf_field(); ?>
 
                         <div>
                             <label class="block text-sm font-semibold text-sky-200 mb-2">Email Saat Ini</label>
-                            <input type="email" value="{{ auth()->user()->email }}"
+                            <input type="email" value="<?php echo e(auth()->user()->email); ?>"
                                 class="w-full px-4 py-3 rounded-xl bg-white/25 text-white border-2 border-white/40 opacity-80 shadow-lg"
                                 disabled />
                         </div>
@@ -190,9 +200,16 @@
                                 <i class="fas fa-shield-alt mr-1"></i>
                                 Diperlukan untuk keamanan
                             </p>
-                            @error('current_password')
-                                <p class="text-red-300 text-sm mt-1">{{ $message }}</p>
-                            @enderror
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['current_password'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                <p class="text-red-300 text-sm mt-1"><?php echo e($message); ?></p>
+                            <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -200,12 +217,19 @@
                                 <label class="block text-sm font-semibold text-sky-200 mb-2">
                                     Email Baru <span class="text-red-400">*</span>
                                 </label>
-                                <input type="email" name="new_email" value="{{ old('new_email') }}"
+                                <input type="email" name="new_email" value="<?php echo e(old('new_email')); ?>"
                                     class="w-full px-4 py-3 rounded-xl bg-white/30 text-white border-2 border-white/50 focus:outline-none focus:ring-2 focus:ring-sky-500 shadow-xl"
                                     placeholder="email@example.com" required />
-                                @error('new_email')
-                                    <p class="text-red-300 text-sm mt-1">{{ $message }}</p>
-                                @enderror
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['new_email'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <p class="text-red-300 text-sm mt-1"><?php echo e($message); ?></p>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-sky-200 mb-2">
@@ -214,9 +238,16 @@
                                 <input type="email" name="new_email_confirmation"
                                     class="w-full px-4 py-3 rounded-xl bg-white/30 text-white border-2 border-white/50 focus:outline-none focus:ring-2 focus:ring-sky-500 shadow-xl"
                                     placeholder="Ketik ulang email baru" required />
-                                @error('new_email_confirmation')
-                                    <p class="text-red-300 text-sm mt-1">{{ $message }}</p>
-                                @enderror
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['new_email_confirmation'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                                    <p class="text-red-300 text-sm mt-1"><?php echo e($message); ?></p>
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
                         </div>
 
@@ -232,4 +263,5 @@
             </div>
         </div>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\website\EMS-IME\public_html\resources\views/staff/profile.blade.php ENDPATH**/ ?>

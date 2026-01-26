@@ -496,6 +496,40 @@
                     sini.</p>
             </div>
 
+            <!-- Citizen ID Missing Alert -->
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!auth()->user()->citizen_id): ?>
+                <div class="relative overflow-hidden bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl shadow-2xl animate-fade-in-up mb-8 border border-purple-400/50"
+                    style="animation-delay: 0.05s;">
+                    <div class="absolute top-0 right-0 -mt-4 -mr-4 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                    <div class="relative p-6 sm:p-8">
+                        <div class="flex flex-col lg:flex-row items-center justify-between gap-6">
+                            <div class="flex items-center space-x-4 flex-1">
+                                <div
+                                    class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg border border-white/30 flex-shrink-0 animate-pulse">
+                                    <i class="fas fa-id-card text-2xl text-white"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-xl sm:text-2xl font-bold text-white mb-2">
+                                        Citizen ID Belum Diatur
+                                    </h4>
+                                    <p class="text-white/90 text-sm sm:text-base">
+                                        Data Citizen ID (FiveM) diperlukan untuk integrasi absensi otomatis.
+                                        Anda tidak dapat melakukan clock-in manual sebelum data ini dilengkapi.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="w-full lg:w-auto">
+                                <a href="<?php echo e(route('staff.profile')); ?>"
+                                    class="w-full lg:w-auto inline-flex items-center justify-center bg-white text-purple-600 px-8 py-4 rounded-xl font-bold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                    <i class="fas fa-arrow-right mr-2"></i>
+                                    Lengkapi Data
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
             <!-- Warning for Active Session from Previous Day -->
             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($anyActiveSession) && $anyActiveSession && !isset($activeSession)): ?>
                 <div class="relative overflow-hidden bg-gradient-to-br from-red-500 to-red-600 rounded-2xl shadow-2xl animate-fade-in-up mb-8 border border-red-400/50"
@@ -729,6 +763,66 @@
                             </div>
                         </div>
                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                </div>
+
+                <!-- On Duty (FiveM) Live Status -->
+                <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl elegant-card elegant-stagger"
+                    style="background-color: rgba(7, 89, 133, 0.9);">
+                    <div class="px-6 sm:px-8 py-6 border-b-2 border-sky-400/50 flex items-center justify-between">
+                        <h3 class="text-xl sm:text-2xl font-bold text-white flex items-center">
+                            <div class="relative mr-3">
+                                <i class="fas fa-satellite-dish text-sky-400"></i>
+                                <span class="absolute -top-1 -right-1 flex h-3 w-3">
+                                    <span
+                                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                                </span>
+                            </div>
+                            Live Status (FiveM)
+                        </h3>
+                        <span
+                            class="px-3 py-1 bg-sky-500/30 text-sky-200 text-sm font-medium rounded-full border-2 border-sky-400/50 shadow-md">
+                            <?php echo e(isset($onDutyPlayers) ? $onDutyPlayers->count() : 0); ?> On Duty
+                        </span>
+                    </div>
+                    <div class="p-6 sm:p-8">
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($onDutyPlayers) && $onDutyPlayers->count() > 0): ?>
+                            <div class="space-y-3 max-h-60 overflow-y-auto custom-scrollbar pr-2">
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $onDutyPlayers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $player): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <div
+                                        class="bg-sky-700/40 rounded-xl p-4 flex items-center justify-between transition-all duration-300 border-2 border-sky-400/50 shadow-lg hover:border-sky-300/80">
+                                        <div class="flex items-center space-x-4">
+                                            <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-sky-600 shadow-md">
+                                                <i class="fas fa-user-nurse text-white"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-bold text-white"><?php echo e($player->player_name); ?></p>
+                                                <p class="text-xs text-sky-300">
+                                                    Clock In: <?php echo e($player->clock_in->format('H:i')); ?>
+
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="font-bold text-lg text-green-300">
+                                                <?php echo e($player->clock_in->diffForHumans(null, true)); ?>
+
+                                            </span>
+                                            <p class="text-xs text-green-400/80">Online</p>
+                                        </div>
+                                    </div>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                            </div>
+                        <?php else: ?>
+                            <div class="text-center py-8">
+                                <div
+                                    class="w-16 h-16 bg-sky-800/50 rounded-full flex items-center justify-center mx-auto mb-3 border border-sky-600/30">
+                                    <i class="fas fa-user-slash text-2xl text-sky-400/50"></i>
+                                </div>
+                                <p class="text-sky-300/70 font-medium">Tidak ada petugas on duty di kota</p>
+                            </div>
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    </div>
                 </div>
 
                 <!-- Today's Sessions Card -->
@@ -1519,17 +1613,17 @@
             toast.style.setProperty('--duration', `${duration}ms`);
             console.log('🎨 NEW TOAST DESIGN v2 - White Card Design');
             toast.innerHTML = `
-                                                                <div class="toast-icon">
-                                                                    <i class="fas ${icons[type]} text-sm"></i>
-                                                                </div>
-                                                                <div class="toast-content">
-                                                                    <div class="toast-title">${title}</div>
-                                                                    <div class="toast-message">${message}</div>
-                                                                </div>
-                                                                <button class="toast-close" onclick="closeToast(this.parentElement)">
-                                                                    <i class="fas fa-times text-xs"></i>
-                                                                </button>
-                                                            `;
+                                                                        <div class="toast-icon">
+                                                                            <i class="fas ${icons[type]} text-sm"></i>
+                                                                        </div>
+                                                                        <div class="toast-content">
+                                                                            <div class="toast-title">${title}</div>
+                                                                            <div class="toast-message">${message}</div>
+                                                                        </div>
+                                                                        <button class="toast-close" onclick="closeToast(this.parentElement)">
+                                                                            <i class="fas fa-times text-xs"></i>
+                                                                        </button>
+                                                                    `;
 
             container.appendChild(toast);
             setTimeout(() => closeToast(toast), duration);
@@ -1549,7 +1643,7 @@
             <?php if(session('info')): ?>
                 showToast('info', 'Informasi', '<?php echo e(session('info')); ?>');
             <?php endif; ?>
-                                                    });
+                                                            });
 
         function closeToast(toast) {
             if (!toast || toast.classList.contains('hiding')) return;

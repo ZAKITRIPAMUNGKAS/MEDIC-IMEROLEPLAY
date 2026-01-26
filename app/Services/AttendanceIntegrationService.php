@@ -237,7 +237,8 @@ class AttendanceIntegrationService
             'is_active' => !$absensi->clock_out,
             'session_duration' => $absensi->clock_out ? $this->calculateDuration($absensi->clock_in, $absensi->clock_out) : null,
             'notes' => 'Generated from automatic attendance (FiveM)',
-            'total_hours' => $absensi->clock_out ? $this->calculateDuration($absensi->clock_in, $absensi->clock_out) : null
+            'total_hours' => $absensi->clock_out ? $this->calculateDuration($absensi->clock_in, $absensi->clock_out) : null,
+            'source' => 'fivem'
         ]);
     }
 

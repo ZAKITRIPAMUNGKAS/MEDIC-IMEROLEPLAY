@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\MedicalForm;
+use App\Models\Absensi;
 use App\Models\Attendance;
 use App\Models\User;
 use App\Helpers\AttendanceHeatmapHelper;
@@ -149,6 +150,9 @@ class DashboardController extends Controller
         $weeklyStats = AttendanceHelper::getUserWeeklyStats($user->id);
         $totalEmsHours = AttendanceHelper::getUserTotalHours($user->id);
 
+        // Get On Duty players from FiveM
+        $onDutyPlayers = Absensi::active()->orderBy('clock_in', 'desc')->get();
+
         // If current user has no attendance data, show demo data or find a user with data
         if ($heatmapData['work_days'] == 0) {
             $userWithData = User::whereHas('attendances')->first();
@@ -170,7 +174,8 @@ class DashboardController extends Controller
             'heatmapData',
             'heatmapStats',
             'weeklyStats',
-            'totalEmsHours'
+            'totalEmsHours',
+            'onDutyPlayers'
         ));
     }
 
