@@ -782,8 +782,11 @@
                         @if(isset($onDutyPlayers) && $onDutyPlayers->count() > 0)
                             <div class="space-y-3 max-h-60 overflow-y-auto custom-scrollbar pr-2">
                                 @foreach($onDutyPlayers as $player)
+                                    @php
+                                        $isCurrentUser = $player->player_id === auth()->user()->citizen_id;
+                                    @endphp
                                     <div
-                                        class="bg-sky-700/40 rounded-xl p-4 flex items-center justify-between transition-all duration-300 border-2 border-sky-400/50 shadow-lg hover:border-sky-300/80">
+                                        class="{{ $isCurrentUser ? 'bg-green-500/20 border-green-400/50 shadow-green-500/10' : 'bg-sky-700/40 border-sky-400/50' }} rounded-xl p-4 flex items-center justify-between transition-all duration-300 border-2 shadow-lg hover:border-sky-300/80">
                                         <div class="flex items-center space-x-4">
                                             <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-sky-600 shadow-md">
                                                 <i class="fas fa-user-nurse text-white"></i>
@@ -1585,17 +1588,17 @@
             toast.style.setProperty('--duration', `${duration}ms`);
             console.log('🎨 NEW TOAST DESIGN v2 - White Card Design');
             toast.innerHTML = `
-                                                                        <div class="toast-icon">
-                                                                            <i class="fas ${icons[type]} text-sm"></i>
-                                                                        </div>
-                                                                        <div class="toast-content">
-                                                                            <div class="toast-title">${title}</div>
-                                                                            <div class="toast-message">${message}</div>
-                                                                        </div>
-                                                                        <button class="toast-close" onclick="closeToast(this.parentElement)">
-                                                                            <i class="fas fa-times text-xs"></i>
-                                                                        </button>
-                                                                    `;
+                                                                            <div class="toast-icon">
+                                                                                <i class="fas ${icons[type]} text-sm"></i>
+                                                                            </div>
+                                                                            <div class="toast-content">
+                                                                                <div class="toast-title">${title}</div>
+                                                                                <div class="toast-message">${message}</div>
+                                                                            </div>
+                                                                            <button class="toast-close" onclick="closeToast(this.parentElement)">
+                                                                                <i class="fas fa-times text-xs"></i>
+                                                                            </button>
+                                                                        `;
 
             container.appendChild(toast);
             setTimeout(() => closeToast(toast), duration);
@@ -1615,7 +1618,7 @@
             @if(session('info'))
                 showToast('info', 'Informasi', '{{ session('info') }}');
             @endif
-                                                            });
+                                                                });
 
         function closeToast(toast) {
             if (!toast || toast.classList.contains('hiding')) return;

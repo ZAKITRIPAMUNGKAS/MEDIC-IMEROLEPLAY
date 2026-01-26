@@ -240,6 +240,12 @@ class AttendanceIntegrationService
             'total_hours' => $absensi->clock_out ? $this->calculateDuration($absensi->clock_in, $absensi->clock_out) : null,
             'source' => 'fivem'
         ]);
+
+        // Update user status to 'working' to match manual clock-in behavior
+        // This ensures dashboard indicators (like status dots) update correctly
+        $user->update(['status' => 'working']);
+
+        return $attendance;
     }
 
     /**
