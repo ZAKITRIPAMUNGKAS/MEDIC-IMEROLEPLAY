@@ -44,7 +44,7 @@ class AbsensiController extends Controller
                 'errors' => $validator->errors()->toArray(),
                 'ip' => $request->ip()
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Validasi gagal',
@@ -61,13 +61,13 @@ class AbsensiController extends Controller
                 'clock_out' => $request->clock_out,
                 'time_on_duty' => $request->time_on_duty
             ];
-            
+
             // Additional validation: Check duration if both clock_in and clock_out exist
             if ($data['clock_out']) {
                 $clockIn = Carbon::parse($data['clock_in']);
                 $clockOut = Carbon::parse($data['clock_out']);
                 $durationMinutes = $clockIn->diffInMinutes($clockOut);
-                
+
                 // Validate: minimum duration 1 minute
                 if ($durationMinutes < 1) {
                     return response()->json([
@@ -76,7 +76,7 @@ class AbsensiController extends Controller
                         'error_code' => 'DURATION_TOO_SHORT'
                     ], 400);
                 }
-                
+
                 // Validate: maximum duration 24 hours
                 if ($durationMinutes > 1440) {
                     \Log::warning('Absensi duration exceeds 24 hours', [
@@ -87,19 +87,21 @@ class AbsensiController extends Controller
                     ]);
                 }
             }
-            
+
             // Cek apakah player sudah clock in tapi belum clock out
             if (!$data['clock_out'] && Absensi::isPlayerActive($data['player_id'])) {
+                // INFO: Return 200 OK untuk idempotency (menghindari error log di client jika double request)
                 return response()->json([
-                    'success' => false,
-                    'message' => 'Player sudah melakukan clock in. Silakan clock out terlebih dahulu.',
-                    'error_code' => 'DUPLICATE_CLOCK_IN'
-                ], 400);
+                    'success' => true,
+                    'message' => 'Player sudah terdata clock in (Session Active).',
+                    'data' => Absensi::byPlayer($data['player_id'])->active()->first(),
+                    'is_duplicate' => true
+                ], 200);
             }
-            
+
             // Use database transaction
             \DB::beginTransaction();
-            
+
             try {
                 // Gunakan service integrasi untuk menangani konflik dengan sistem manual
                 $integrationService = new AttendanceIntegrationService();
@@ -110,16 +112,16 @@ class AbsensiController extends Controller
                     $data['clock_out'] ?? null,
                     $data['time_on_duty'] ?? null
                 );
-                
+
                 if ($result['success']) {
                     \DB::commit();
-                    
+
                     \Log::info('Absensi API successful', [
                         'player_id' => $data['player_id'],
                         'has_clock_out' => !empty($data['clock_out']),
                         'priority' => $result['priority'] ?? 'automatic'
                     ]);
-                    
+
                     return response()->json([
                         'success' => true,
                         'message' => $result['message'],
@@ -129,7 +131,7 @@ class AbsensiController extends Controller
                     ], 201);
                 } else {
                     \DB::rollBack();
-                    
+
                     return response()->json([
                         'success' => false,
                         'message' => $result['message']
@@ -139,21 +141,21 @@ class AbsensiController extends Controller
                 \DB::rollBack();
                 throw $e;
             }
-            
+
         } catch (\Exception $e) {
             \Log::error('Absensi API error', [
                 'player_id' => $data['player_id'] ?? null,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan server: ' . $e->getMessage()
             ], 500);
         }
     }
-    
+
     /**
      * API endpoint untuk mendapatkan data absensi
      * GET /api/absensi
@@ -162,30 +164,30 @@ class AbsensiController extends Controller
     {
         try {
             $query = Absensi::query();
-            
+
             // Filter berdasarkan player_id jika ada
             if ($request->has('player_id')) {
                 $query->byPlayer($request->player_id);
             }
-            
+
             // Filter berdasarkan tanggal jika ada
             if ($request->has('date_from')) {
                 $query->whereDate('clock_in', '>=', $request->date_from);
             }
-            
+
             if ($request->has('date_to')) {
                 $query->whereDate('clock_in', '<=', $request->date_to);
             }
-            
+
             // Pagination
             $perPage = $request->get('per_page', 15);
             $absensi = $query->orderBy('created_at', 'desc')->paginate($perPage);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $absensi
             ], 200);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -193,7 +195,7 @@ class AbsensiController extends Controller
             ], 500);
         }
     }
-    
+
     /**
      * API endpoint untuk mendapatkan status absensi player
      * GET /api/absensi/status/{player_id}
@@ -203,7 +205,7 @@ class AbsensiController extends Controller
         try {
             $isActive = Absensi::isPlayerActive($playerId);
             $lastAbsensi = Absensi::byPlayer($playerId)->orderBy('created_at', 'desc')->first();
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -212,7 +214,7 @@ class AbsensiController extends Controller
                     'last_absensi' => $lastAbsensi
                 ]
             ], 200);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -220,7 +222,7 @@ class AbsensiController extends Controller
             ], 500);
         }
     }
-    
+
     /**
      * API endpoint untuk monitoring real-time (siapa yang on duty)
      * GET /api/absensi/on-duty
@@ -232,7 +234,7 @@ class AbsensiController extends Controller
                 ->with(['player_id', 'player_name', 'clock_in'])
                 ->orderBy('clock_in', 'desc')
                 ->get();
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -247,7 +249,7 @@ class AbsensiController extends Controller
                     })
                 ]
             ], 200);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -255,7 +257,7 @@ class AbsensiController extends Controller
             ], 500);
         }
     }
-    
+
     /**
      * API endpoint untuk rekap jam kerja player
      * GET /api/absensi/report/{player_id}
@@ -266,9 +268,9 @@ class AbsensiController extends Controller
             $period = $request->get('period', 'week'); // week, month, year
             $dateFrom = $request->get('date_from');
             $dateTo = $request->get('date_to');
-            
+
             $query = Absensi::byPlayer($playerId)->whereNotNull('clock_out');
-            
+
             if ($dateFrom && $dateTo) {
                 $query->whereBetween('clock_in', [$dateFrom, $dateTo]);
             } else {
@@ -284,31 +286,31 @@ class AbsensiController extends Controller
                         break;
                 }
             }
-            
+
             $absensi = $query->orderBy('clock_in', 'desc')->get();
-            
+
             // Hitung total jam kerja
             $totalHours = 0;
             $totalMinutes = 0;
             $totalSeconds = 0;
-            
+
             foreach ($absensi as $record) {
                 if ($record->time_on_duty) {
                     $timeParts = explode(':', $record->time_on_duty);
-                    $totalHours += (int)$timeParts[0];
-                    $totalMinutes += (int)$timeParts[1];
-                    $totalSeconds += (int)$timeParts[2];
+                    $totalHours += (int) $timeParts[0];
+                    $totalMinutes += (int) $timeParts[1];
+                    $totalSeconds += (int) $timeParts[2];
                 }
             }
-            
+
             // Normalize time
             $totalMinutes += floor($totalSeconds / 60);
             $totalSeconds = $totalSeconds % 60;
             $totalHours += floor($totalMinutes / 60);
             $totalMinutes = $totalMinutes % 60;
-            
+
             $totalWorkTime = sprintf('%02d:%02d:%02d', $totalHours, $totalMinutes, $totalSeconds);
-            
+
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -329,7 +331,7 @@ class AbsensiController extends Controller
                     })
                 ]
             ], 200);
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
