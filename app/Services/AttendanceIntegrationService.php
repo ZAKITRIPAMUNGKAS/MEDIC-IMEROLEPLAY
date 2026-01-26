@@ -75,13 +75,22 @@ class AttendanceIntegrationService
      */
     private function findUserByPlayerId($playerId, $playerName)
     {
-        // Coba cari berdasarkan staff_id yang sama dengan player_id
+        // 1. Coba cari berdasarkan citizen_id (FiveM ID) - Prioritas utama
+        $user = User::where('citizen_id', $playerId)->first();
+
+        if ($user) {
+            return $user;
+        }
+
+        // 2. Coba cari berdasarkan staff_id (Legacy / Badge Number)
         $user = User::where('staff_id', $playerId)->first();
 
-        if (!$user) {
-            // Coba cari berdasarkan nama yang mirip
-            $user = User::where('name', 'LIKE', '%' . $playerName . '%')->first();
+        if ($user) {
+            return $user;
         }
+
+        // 3. Coba cari berdasarkan nama yang mirip (Last resort)
+        $user = User::where('name', 'LIKE', '%' . $playerName . '%')->first();
 
         return $user;
     }
