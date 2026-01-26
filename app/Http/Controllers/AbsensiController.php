@@ -68,14 +68,12 @@ class AbsensiController extends Controller
                 $clockOut = Carbon::parse($data['clock_out']);
                 $durationMinutes = $clockIn->diffInMinutes($clockOut);
 
-                // Validate: minimum duration 1 minute
+                // WARNING: Validation minimum 1 minute removed to allow testing (durasi detik)
+                /* 
                 if ($durationMinutes < 1) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Durasi terlalu pendek (minimum 1 menit)',
-                        'error_code' => 'DURATION_TOO_SHORT'
-                    ], 400);
-                }
+                   // Logic removed
+                } 
+                */
 
                 // Validate: maximum duration 24 hours
                 if ($durationMinutes > 1440) {
