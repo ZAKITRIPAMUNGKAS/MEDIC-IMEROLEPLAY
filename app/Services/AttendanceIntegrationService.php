@@ -193,8 +193,24 @@ class AttendanceIntegrationService
      */
     private function saveAutomaticAttendance($playerId, $playerName, $clockIn, $clockOut, $timeOnDuty)
     {
-        // Gunakan updateOrCreate untuk mencegah duplikasi
-        // Jika ada request yang sama dikirim 2x, hanya akan update record yang sudah ada
+        // 1. Jika ini adalah Clock Out, tutup SEMUA sesi aktif sebelumnya untuk player ini
+        // Ini untuk membersihkan "zombie session" jika terjadi error sebelumnya
+        if ($clockOut) {
+            $activeSessions = Absensi::where('player_id', $playerId)
+                ->whereNull('clock_out')
+                ->get();
+
+            foreach ($activeSessions as $session) {
+                $session->update([
+                    'clock_out' => $clockOut,
+                    'time_on_duty' => $timeOnDuty ?? $session->getFormattedDuration(),
+                    'source' => 'automatic_cleanup'
+                ]);
+            }
+        }
+
+        // 2. Gunakan updateOrCreate untuk menyimpan data saat ini
+        // Jika kriteria cocok (player_id & clock_in sama), update record tersebut
         return Absensi::updateOrCreate(
             [
                 'player_id' => $playerId,
@@ -204,7 +220,7 @@ class AttendanceIntegrationService
                 'player_name' => $playerName,
                 'clock_out' => $clockOut,
                 'time_on_duty' => $timeOnDuty,
-                'source' => 'automatic' // Tambahkan field source untuk tracking
+                'source' => 'automatic'
             ]
         );
     }
