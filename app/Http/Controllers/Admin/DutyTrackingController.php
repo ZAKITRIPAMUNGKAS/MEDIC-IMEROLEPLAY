@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Attendance;
+use App\Models\MedicalForm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -80,7 +81,23 @@ class DutyTrackingController extends Controller
                 ->avg('session_duration'),
         ];
 
-        return view('admin.duty-tracking.index', compact('rankings', 'stats', 'selectedMonths', 'availableMonths'));
+        // Calculate Service Letter Statistics (Top Approvers Overall)
+        $topApprovers = MedicalForm::select('processed_by', DB::raw('count(*) as total'))
+            ->with([
+                'processedBy' => function ($query) {
+                    $query->select('id', 'name', 'profile_image', 'role_id', 'staff_id')
+                        ->with('role:id,name');
+                }
+            ])
+            ->where('status', 'approved')
+            ->whereNotNull('processed_by')
+            ->whereIn(DB::raw('DATE_FORMAT(processed_at, "%Y-%m")'), $selectedMonths)
+            ->groupBy('processed_by')
+            ->orderByDesc('total')
+            ->take(4)
+            ->get();
+
+        return view('admin.duty-tracking.index', compact('rankings', 'stats', 'selectedMonths', 'availableMonths', 'topApprovers'));
     }
 
     /**

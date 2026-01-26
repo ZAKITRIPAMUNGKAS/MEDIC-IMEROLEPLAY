@@ -110,6 +110,61 @@
             </div>
         </div>
 
+        {{-- Top Approvers Overall --}}
+        @if(count($topApprovers) > 0)
+            <div class="mb-8">
+                <h3 class="text-xl font-bold text-white mb-4">
+                    <i class="fas fa-award mr-2"></i>Top Approval Pelayanan Surat
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    @foreach($topApprovers as $index => $stat)
+                        <div class="relative bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-5 border border-white border-opacity-20 flex flex-col items-center text-center overflow-hidden group hover:bg-opacity-20 transition-all duration-300">
+                            {{-- Rank Badge --}}
+                            <div class="absolute top-0 right-0 p-0">
+                                @if($index == 0)
+                                    <div class="bg-gradient-to-bl from-yellow-400 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg shadow-lg">
+                                        <i class="fas fa-crown mr-1"></i>#1
+                                    </div>
+                                @elseif($index == 1)
+                                    <div class="bg-gradient-to-bl from-gray-300 to-gray-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg shadow-lg">
+                                        #2
+                                    </div>
+                                @elseif($index == 2)
+                                    <div class="bg-gradient-to-bl from-orange-400 to-orange-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg shadow-lg">
+                                        #3
+                                    </div>
+                                @else
+                                    <div class="bg-white bg-opacity-20 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
+                                        #{{ $index + 1 }}
+                                    </div>
+                                @endif
+                            </div>
+
+                            <div class="mt-2 h-20 w-20 rounded-full bg-gradient-to-br from-sky-400 to-purple-500 p-0.5 mb-3 shadow-lg transform group-hover:scale-105 transition-transform duration-300">
+                                <div class="h-full w-full rounded-full bg-slate-900 flex items-center justify-center overflow-hidden">
+                                    @if($stat->processedBy && $stat->processedBy->profile_image)
+                                        <img src="{{ $stat->processedBy->profile_image_url }}" alt="{{ $stat->processedBy->name }}" class="h-full w-full object-cover">
+                                    @else
+                                        <i class="fas fa-user text-3xl text-sky-400"></i>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <h4 class="text-white font-bold text-lg truncate w-full px-2" title="{{ $stat->processedBy->name ?? 'Unknown' }}">
+                                {{ $stat->processedBy->name ?? 'Unknown' }}
+                            </h4>
+                            <p class="text-sky-200 text-xs mb-3">{{ $stat->processedBy->role->name ?? 'Rank ' . ($index + 1) }}</p>
+
+                            <div class="bg-white bg-opacity-10 rounded-lg px-6 py-2 w-full mx-4 border border-white border-opacity-10 group-hover:border-opacity-30 transition-all">
+                                <div class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-500">{{ number_format($stat->total) }}</div>
+                                <div class="text-[10px] text-gray-300 uppercase tracking-wider">Total Surat</div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
         {{-- Rankings Table --}}
         <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-lg overflow-hidden border border-white border-opacity-20">
             <div class="px-6 py-4 bg-white bg-opacity-5 border-b border-white border-opacity-10">
