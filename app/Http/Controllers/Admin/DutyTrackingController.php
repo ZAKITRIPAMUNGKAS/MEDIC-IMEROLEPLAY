@@ -52,6 +52,7 @@ class DutyTrackingController extends Controller
                 'users.email',
                 'users.role_id',
                 'users.staff_id',
+                'users.citizen_id',
                 'users.hospital',
                 'users.is_active',
                 'users.profile_image',
