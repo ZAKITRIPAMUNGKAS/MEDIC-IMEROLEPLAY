@@ -76,7 +76,7 @@
                                 @elseif(session('success'))
                                     // alert(@json(session('success'))); // Optional for success
                                 @endif
-                                                            }, 500);
+                                                                            }, 500);
                         });
                     </script>
                 @endif
@@ -231,7 +231,7 @@
                                 <div>
                                     <label for="photo_skb_op"
                                         class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                        Upload Foto SKB <span class="text-red-400">*</span>
+                                        Upload LEGAL DECLARATION <span class="text-red-400">*</span>
                                     </label>
                                     <input type="file" id="photo_skb_op" name="form_data[photo_skb]"
                                         class="form-file @error('form_data.photo_skb') border-red-500 @enderror"
