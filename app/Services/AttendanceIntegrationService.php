@@ -75,24 +75,30 @@ class AttendanceIntegrationService
      */
     private function findUserByPlayerId($playerId, $playerName)
     {
+        $normalizedPlayerId = trim(strtolower($playerId));
+
         // 1. Coba cari berdasarkan citizen_id (FiveM ID) - Prioritas utama
-        $user = User::where('citizen_id', $playerId)->first();
+        // Gunakan whereRaw untuk case-insensitive yang konsisten antar database drivers
+        $user = User::whereRaw('LOWER(citizen_id) = ?', [$normalizedPlayerId])->first();
 
         if ($user) {
             return $user;
         }
 
         // 2. Coba cari berdasarkan staff_id (Legacy / Badge Number)
-        $user = User::where('staff_id', $playerId)->first();
+        $user = User::whereRaw('LOWER(staff_id) = ?', [$normalizedPlayerId])->first();
 
         if ($user) {
             return $user;
         }
 
         // 3. Coba cari berdasarkan nama yang mirip (Last resort)
-        $user = User::where('name', 'LIKE', '%' . $playerName . '%')->first();
+        // Hanya jika nama cukup panjang untuk menghindari false positive pendek
+        if (strlen($playerName) > 3) {
+            $user = User::where('name', 'LIKE', '%' . $playerName . '%')->first();
+        }
 
-        return $user;
+        return $user ?? null;
     }
 
     /**
@@ -147,24 +153,100 @@ class AttendanceIntegrationService
     {
         switch ($conflict['type']) {
             case 'active_session':
-                // Prioritas: Manual > Otomatis
-                // Update sesi manual dengan data dari otomatis
+                // REVISI: Jika FiveM login ('clockIn') saat ada sesi manual aktif:
+                // TUTUP sesi manual pada saat FiveM clockIn.
+                // Biarkan sesi FiveM berjalan sebagai sesi baru (Automatic).
+                // Ini memisahkan jam manual dan jam FiveM agar tidak tumpang tindih berlebihan.
+
                 $activeSession = $conflict['conflicting_record'];
 
-                if ($clockOut) {
-                    $activeSession->clock_out = Carbon::parse($clockOut);
-                    $activeSession->session_duration = $this->calculateDuration($clockIn, $clockOut);
-                    $activeSession->closeSession();
+                // Validasi: Pastikan activeSession valid
+                if (!$activeSession || !$activeSession->clock_in) {
+                    Log::warning('Invalid active session in conflict handler', [
+                        'player_id' => $playerId,
+                        'active_session' => $activeSession
+                    ]);
+
+                    // Fallback: Simpan sebagai sesi baru
+                    $absensi = $this->saveAutomaticAttendance($playerId, $playerName, $clockIn, $clockOut, $timeOnDuty);
+                    $this->createManualAttendanceRecord($user, $absensi);
+
+                    return [
+                        'success' => true,
+                        'message' => 'Sesi manual tidak valid, absensi FiveM dimulai baru.',
+                        'priority' => 'automatic',
+                        'data' => $absensi
+                    ];
                 }
 
-                // Simpan data otomatis sebagai backup
-                $this->saveAutomaticAttendance($playerId, $playerName, $clockIn, $clockOut, $timeOnDuty);
+                // Set jam keluar manual = jam masuk FiveM
+                $manualClockOutTime = Carbon::parse($clockIn);
+                $manualClockInTime = Carbon::parse($activeSession->clock_in);
+
+                // Pastikan tidak error logika (clock out < clock in)
+                // Jika FiveM login SEBELUM manual clock in, ini edge case aneh - skip close
+                if ($manualClockOutTime->lte($manualClockInTime)) {
+                    Log::warning('FiveM clock_in is before or equal to manual clock_in, skipping close', [
+                        'player_id' => $playerId,
+                        'manual_clock_in' => $manualClockInTime->toDateTimeString(),
+                        'fivem_clock_in' => $manualClockOutTime->toDateTimeString()
+                    ]);
+
+                    // Simpan FiveM sebagai sesi terpisah tanpa menutup manual
+                    $absensi = $this->saveAutomaticAttendance($playerId, $playerName, $clockIn, $clockOut, $timeOnDuty);
+                    $this->createManualAttendanceRecord($user, $absensi);
+
+                    return [
+                        'success' => true,
+                        'message' => 'Absensi FiveM dimulai (sesi manual tetap aktif karena timing conflict).',
+                        'priority' => 'automatic',
+                        'conflict_note' => 'Manual session remains active due to timing anomaly'
+                    ];
+                }
+
+                // Tutup sesi manual
+                $activeSession->clock_out = $manualClockOutTime;
+                $activeSession->session_duration = $this->calculateDuration($activeSession->clock_in, $activeSession->clock_out);
+                $activeSession->is_active = false;
+
+                // Handle null notes safely
+                $existingNotes = $activeSession->notes ?? '';
+                $activeSession->notes = trim($existingNotes . " (Auto-closed by FiveM Login)");
+
+                $activeSession->save();
+
+                // Update user status agar tidak stuck
+                try {
+                    $user->update(['status' => 'offline']); // Reset dulu, nanti FiveM statenya mungkin 'working'
+                } catch (\Exception $e) {
+                    Log::warning('Failed to update user status', [
+                        'user_id' => $user->id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+
+                // Setelah sesi manual ditutup, Simpan data FiveM sebagai sesi BARU (Automatic)
+                $absensi = $this->saveAutomaticAttendance($playerId, $playerName, $clockIn, $clockOut, $timeOnDuty);
+
+                // Kita juga membuat record MANAUAL baru yang mirror ke FiveM?
+                // Logic createManualAttendanceRecord akan dipanggil di `integrateAttendanceData` setelah ini return?
+                // TIDAK. `integrateAttendanceData` return hasil dari fungsi ini jika konflik.
+                // Jadi kita harus handle pembuatan record FiveM-Mirror dngn createManualAttendanceRecord DISINI jika perlu.
+
+                // Tapi tunggu, `createManualAttendanceRecord` di `integrateAttendanceData` dipanggil SETELAH `saveAutomaticAttendance`
+                // DAN `handleAttendanceConflict` return array.
+                // Di `integrateAttendanceData`:
+                // if ($conflict['has_conflict']) { return $this->handleAttendanceConflict(...); }
+                // Jadi `integrateAttendanceData` BERHENTI setelah ini.
+
+                // Maka kita harus create manual mirror disini juga agar konsisten.
+                $this->createManualAttendanceRecord($user, $absensi);
 
                 return [
                     'success' => true,
-                    'message' => 'Data absensi manual diupdate dengan data otomatis',
-                    'priority' => 'manual',
-                    'updated_record' => $activeSession
+                    'message' => 'Sesi manual ditutup otomatis. Absensi FiveM dimulai baru.',
+                    'priority' => 'automatic', // Switch ke automatic
+                    'updated_record' => $absensi
                 ];
 
             case 'overlapping_session':

@@ -469,10 +469,17 @@ class PayrollController extends Controller
         DB::beginTransaction();
         try {
             foreach ($users as $user) {
-                // Check if payroll already exists for this period
+                // Check if payroll already exists for this period (overlapping check)
+                // Use overlapping logic: (StartA <= EndB) and (EndA >= StartB)
                 $existingPayroll = Payroll::where('user_id', $user->id)
-                    ->where('period_start', $periodStart->format('Y-m-d'))
-                    ->where('period_end', $periodEnd->format('Y-m-d'))
+                    ->where(function ($query) use ($periodStart, $periodEnd) {
+                        $query->whereBetween('period_start', [$periodStart->format('Y-m-d'), $periodEnd->format('Y-m-d')])
+                            ->orWhereBetween('period_end', [$periodStart->format('Y-m-d'), $periodEnd->format('Y-m-d')])
+                            ->orWhere(function ($q) use ($periodStart, $periodEnd) {
+                                $q->where('period_start', '<=', $periodStart->format('Y-m-d'))
+                                    ->where('period_end', '>=', $periodEnd->format('Y-m-d'));
+                            });
+                    })
                     ->first();
 
                 // Get attendance data for the period
