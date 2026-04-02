@@ -1411,7 +1411,7 @@
                                                     </a>
                                                 @endif
 
-                                                @if(auth()->user()->hasPermission('manage_attendance_advanced') || auth()->user()->hasPermission('view_reports'))
+                                                @if(auth()->user()->isAdmin())
                                                     <a href="{{ route('admin.meeting-requests.index') }}"
                                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                         <i class="fas fa-clipboard-check mr-3 w-5"></i>
@@ -1544,6 +1544,9 @@
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-shield-alt w-6 mr-2"></i>Role Permissions</a>
                         @if(auth()->user()->isAdmin())
+                            <a href="{{ route('admin.meeting-requests.index') }}"
+                                class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
+                                    class="fas fa-clipboard-check w-6 mr-2"></i>Meeting Requests</a>
                             <a href="{{ route('admin.duty-tracking.index') }}"
                                 class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                     class="fas fa-trophy w-6 mr-2"></i>Duty Tracking</a>

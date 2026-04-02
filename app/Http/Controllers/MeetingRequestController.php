@@ -11,6 +11,14 @@ use Carbon\Carbon;
 
 class MeetingRequestController extends Controller
 {
+    /**
+     * Create a new controller instance.
+     */
+    public function __construct()
+    {
+        $this->middleware('admin');
+    }
+
     // ===========================
     // Staff-facing methods
     // ===========================

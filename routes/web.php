@@ -181,10 +181,6 @@ Route::middleware(['auth', 'staff'])->group(function () {
     Route::post('/wrapped/dismiss', [\App\Http\Controllers\WrappedController::class, 'dismiss'])->name('wrapped.dismiss');
     Route::post('/wrapped/record', [\App\Http\Controllers\WrappedController::class, 'recordView'])->name('wrapped.record');
 
-    // Meeting Request routes (staff)
-    Route::get('/staff/meeting-requests', [\App\Http\Controllers\MeetingRequestController::class, 'index'])->name('staff.meeting-requests.index');
-    Route::get('/staff/meeting-requests/create', [\App\Http\Controllers\MeetingRequestController::class, 'create'])->name('staff.meeting-requests.create');
-    Route::post('/staff/meeting-requests', [\App\Http\Controllers\MeetingRequestController::class, 'store'])->name('staff.meeting-requests.store');
 });
 
 // Admin routes
@@ -223,13 +219,18 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/attendance-reports/{id}', [\App\Http\Controllers\Admin\AttendanceReportController::class, 'deleteAttendance'])
         ->middleware('permission:manage_attendance_advanced')->name('attendance-reports.delete');
 
-    // Meeting Request routes (admin)
+    // Meeting Request routes (admin only)
     Route::get('/meeting-requests', [\App\Http\Controllers\MeetingRequestController::class, 'adminIndex'])
-        ->middleware('permission:manage_attendance_advanced|view_reports')->name('meeting-requests.index');
+        ->middleware('admin')->name('meeting-requests.index');
     Route::post('/meeting-requests/{id}/approve', [\App\Http\Controllers\MeetingRequestController::class, 'approve'])
-        ->middleware('permission:manage_attendance_advanced')->name('meeting-requests.approve');
+        ->middleware('admin')->name('meeting-requests.approve');
     Route::post('/meeting-requests/{id}/reject', [\App\Http\Controllers\MeetingRequestController::class, 'reject'])
-        ->middleware('permission:manage_attendance_advanced')->name('meeting-requests.reject');
+        ->middleware('admin')->name('meeting-requests.reject');
+
+    // Keep staff routes for admins to use if needed, but protect them
+    Route::get('/staff/meeting-requests', [\App\Http\Controllers\MeetingRequestController::class, 'index'])->middleware('admin')->name('staff.meeting-requests.index');
+    Route::get('/staff/meeting-requests/create', [\App\Http\Controllers\MeetingRequestController::class, 'create'])->middleware('admin')->name('staff.meeting-requests.create');
+    Route::post('/staff/meeting-requests', [\App\Http\Controllers\MeetingRequestController::class, 'store'])->middleware('admin')->name('staff.meeting-requests.store');
 
     // Payroll management
     Route::get('/payroll', [\App\Http\Controllers\Admin\PayrollController::class, 'index'])

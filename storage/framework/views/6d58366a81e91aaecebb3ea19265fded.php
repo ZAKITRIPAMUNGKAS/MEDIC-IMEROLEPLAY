@@ -1346,11 +1346,6 @@
                                     <span>Profil</span>
                                 </a>
 
-                                <a href="<?php echo e(route('staff.meeting-requests.index')); ?>"
-                                    class="bg-white bg-opacity-10 text-white px-3 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center whitespace-nowrap">
-                                    <i class="fas fa-calendar-check mr-2"></i>
-                                    <span>Meeting</span>
-                                </a>
 
                                 
                                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('view_attendance_reports') || auth()->user()->hasPermission('access_live_chat') || auth()->user()->hasPermission('access_feedback')): ?>
@@ -1418,7 +1413,7 @@
                                                     </a>
                                                 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                                                <?php if(auth()->user()->hasPermission('manage_attendance_advanced') || auth()->user()->hasPermission('view_reports')): ?>
+                                                <?php if(auth()->user()->isAdmin()): ?>
                                                     <a href="<?php echo e(route('admin.meeting-requests.index')); ?>"
                                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                         <i class="fas fa-clipboard-check mr-3 w-5"></i>
@@ -1527,9 +1522,6 @@
                     <a href="<?php echo e(route('staff.profile')); ?>"
                         class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                             class="fas fa-user-cog w-6 mr-2"></i>Profil</a>
-                    <a href="<?php echo e(route('staff.meeting-requests.index')); ?>"
-                        class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
-                            class="fas fa-calendar-check w-6 mr-2"></i>Meeting</a>
                     <?php if(auth()->user()->hasPermission('access_live_chat')): ?>
                         <a href="<?php echo e(route('admin.chat.index')); ?>"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
@@ -1554,6 +1546,9 @@
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-shield-alt w-6 mr-2"></i>Role Permissions</a>
                         <?php if(auth()->user()->isAdmin()): ?>
+                            <a href="<?php echo e(route('admin.meeting-requests.index')); ?>"
+                                class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
+                                    class="fas fa-clipboard-check w-6 mr-2"></i>Meeting Requests</a>
                             <a href="<?php echo e(route('admin.duty-tracking.index')); ?>"
                                 class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                     class="fas fa-trophy w-6 mr-2"></i>Duty Tracking</a>
