@@ -165,6 +165,7 @@ Route::middleware(['auth', 'staff'])->group(function () {
     Route::get('/staff/forms/{id}', [DashboardController::class, 'formDetail'])->name('staff.forms.show');
     Route::post('/staff/forms/{id}/approve', [DashboardController::class, 'approveForm'])->name('staff.forms.approve');
     Route::post('/staff/forms/{id}/reject', [DashboardController::class, 'rejectForm'])->name('staff.forms.reject');
+    Route::post('/staff/forms/{id}/cancel', [DashboardController::class, 'cancelForm'])->name('staff.forms.cancel');
     Route::post('/staff/forms/{id}/testimoni/approve', [DashboardController::class, 'approveTestimoni'])->name('staff.forms.testimoni.approve');
 
     // Staff payroll routes
@@ -177,6 +178,11 @@ Route::middleware(['auth', 'staff'])->group(function () {
     Route::get('/wrapped/{year}', [\App\Http\Controllers\WrappedController::class, 'show'])->name('wrapped.show');
     Route::post('/wrapped/dismiss', [\App\Http\Controllers\WrappedController::class, 'dismiss'])->name('wrapped.dismiss');
     Route::post('/wrapped/record', [\App\Http\Controllers\WrappedController::class, 'recordView'])->name('wrapped.record');
+
+    // Meeting Request routes (staff)
+    Route::get('/staff/meeting-requests', [\App\Http\Controllers\MeetingRequestController::class, 'index'])->name('staff.meeting-requests.index');
+    Route::get('/staff/meeting-requests/create', [\App\Http\Controllers\MeetingRequestController::class, 'create'])->name('staff.meeting-requests.create');
+    Route::post('/staff/meeting-requests', [\App\Http\Controllers\MeetingRequestController::class, 'store'])->name('staff.meeting-requests.store');
 });
 
 // Admin routes
@@ -197,9 +203,9 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
     // Route::resource('staff-roles', \App\Http\Controllers\Admin\StaffRoleController::class)->middleware('permission:manage_settings');
     // Attendance reports
     Route::get('/attendance-reports', [\App\Http\Controllers\Admin\AttendanceReportController::class, 'index'])
-        ->middleware('permission:view_reports')->name('attendance-reports.index');
+        ->middleware('permission:view_reports|view_attendance_reports')->name('attendance-reports.index');
     Route::get('/attendance-reports/stats', [\App\Http\Controllers\Admin\AttendanceReportController::class, 'getStats'])
-        ->middleware('permission:view_reports')->name('attendance-reports.stats');
+        ->middleware('permission:view_reports|view_attendance_reports')->name('attendance-reports.stats');
     Route::post('/attendance-reports/force-checkout', [\App\Http\Controllers\Admin\AttendanceReportController::class, 'forceCheckOut'])
         ->middleware('permission:manage_attendance_advanced')->name('attendance-reports.force-checkout');
     Route::post('/attendance-reports/manual', [\App\Http\Controllers\Admin\AttendanceReportController::class, 'storeManualAttendance'])
@@ -208,6 +214,14 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
         ->middleware('permission:manage_attendance_advanced')->name('attendance-reports.update');
     Route::delete('/attendance-reports/{id}', [\App\Http\Controllers\Admin\AttendanceReportController::class, 'deleteAttendance'])
         ->middleware('permission:manage_attendance_advanced')->name('attendance-reports.delete');
+
+    // Meeting Request routes (admin)
+    Route::get('/meeting-requests', [\App\Http\Controllers\MeetingRequestController::class, 'adminIndex'])
+        ->middleware('permission:manage_attendance_advanced|view_reports')->name('meeting-requests.index');
+    Route::post('/meeting-requests/{id}/approve', [\App\Http\Controllers\MeetingRequestController::class, 'approve'])
+        ->middleware('permission:manage_attendance_advanced')->name('meeting-requests.approve');
+    Route::post('/meeting-requests/{id}/reject', [\App\Http\Controllers\MeetingRequestController::class, 'reject'])
+        ->middleware('permission:manage_attendance_advanced')->name('meeting-requests.reject');
 
     // Payroll management
     Route::get('/payroll', [\App\Http\Controllers\Admin\PayrollController::class, 'index'])
@@ -252,8 +266,39 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
     // Duty Tracking & Ranking (Admin only)
     Route::get('/duty-tracking', [\App\Http\Controllers\Admin\DutyTrackingController::class, 'index'])
         ->middleware('admin')->name('duty-tracking.index');
+    Route::get('/duty-tracking/export-weekly', [\App\Http\Controllers\Admin\DutyTrackingController::class, 'exportWeekly'])
+        ->middleware('admin')->name('duty-tracking.export-weekly');
     Route::get('/duty-tracking/{user}', [\App\Http\Controllers\Admin\DutyTrackingController::class, 'show'])
         ->middleware('admin')->name('duty-tracking.show');
+
+    // Manual trigger: Force run auto-checkout for all expired duty sessions (Admin only)
+    Route::post('/duty-tracking/trigger-auto-checkout', function () {
+        if (!auth()->user()->isAdmin()) {
+            abort(403);
+        }
+        try {
+            \Artisan::call('attendance:check-expired-sessions');
+            $output = \Artisan::output();
+            \Log::info('[ADMIN] Manual auto-checkout trigger executed', [
+                'admin_id' => auth()->id(),
+                'output'   => $output,
+            ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Auto-checkout berhasil dijalankan.',
+                'output'  => nl2br(e(trim($output))),
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('[ADMIN] Manual auto-checkout trigger failed', [
+                'admin_id' => auth()->id(),
+                'error'    => $e->getMessage(),
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menjalankan auto-checkout: ' . $e->getMessage(),
+            ], 500);
+        }
+    })->middleware('admin')->name('duty-tracking.trigger-auto-checkout');
 
     // Structural/Organizational Management (Admin only - no specific permission check yet)
     Route::resource('structural', \App\Http\Controllers\Admin\StructuralManagementController::class)

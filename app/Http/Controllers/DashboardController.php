@@ -68,8 +68,8 @@ class DashboardController extends Controller
             $statsQuery->whereRaw('1 = 0');
 
         } elseif ($userRole === 'co_ass') {
-            // Co-Ass: Only 3 form types, NO appointments
-            $allowedForms = ['surat_kesehatan', 'tes_psikologi', 'surat_psikolog'];
+            // Co-Ass: 4 form types (including oplas), NO appointments
+            $allowedForms = ['surat_kesehatan', 'tes_psikologi', 'surat_psikolog', 'operasi_plastik'];
 
             $recentFormsQuery->whereIn('form_type', $allowedForms);
 
@@ -349,10 +349,10 @@ class DashboardController extends Controller
             }
         }
 
-        // Surat keterangan oplas (operasi plastik): minimal dokter umum (level 3) ke atas
+        // Surat keterangan oplas (operasi plastik): minimal Co-ass (level 2) ke atas
         if ($formType === 'operasi_plastik') {
-            if ($userLevel < 3) {
-                return back()->with('error', 'Anda tidak memiliki izin untuk menyetujui formulir ini. Minimal level Dokter Umum (level 3) diperlukan untuk surat keterangan operasi plastik.');
+            if ($userLevel < 2) {
+                return back()->with('error', 'Anda tidak memiliki izin untuk menyetujui formulir ini. Minimal level Co-ass (level 2) diperlukan untuk surat keterangan operasi plastik.');
             }
         }
 
@@ -390,6 +390,20 @@ class DashboardController extends Controller
         ]);
 
         return back()->with('success', 'Formulir berhasil ditolak.');
+    }
+
+    public function cancelForm($id)
+    {
+        $form = tap(MedicalForm::findOrFail($id), function ($form) {
+            abort_if($form->status !== 'pending', 403, 'Hanya formulir berstatus pending yang dapat dibatalkan.');
+        });
+
+        $form->update([
+            'status' => 'cancelled',
+            'cancelled_at' => now(),
+        ]);
+
+        return back()->with('success', 'Formulir berhasil dibatalkan.');
     }
 
     public function approveTestimoni(Request $request, $id)
@@ -432,7 +446,11 @@ class DashboardController extends Controller
 
     public function clockIn(Request $request)
     {
-        // Validate input
+        // Manual clock-in has been replaced by the Meeting Request system.
+        // Staff must submit a meeting request that gets approved by admin.
+        // FiveM automatic duty still works via AttendanceIntegrationService.
+        return redirect()->route('staff.meeting-requests.create')
+            ->with('info', 'Fitur clock-in manual telah diganti dengan sistem Pengajuan Meeting. Silakan ajukan meeting request untuk dicatat jam kerja Anda. Duty FiveM tetap berjalan otomatis.');
         $request->validate([
             'session_type' => 'nullable|string|in:work,break,meeting,overtime',
             'notes' => 'nullable|string|max:1000',
@@ -590,8 +608,8 @@ class DashboardController extends Controller
                 throw new \Exception('Failed to close session');
             }
 
-            // Reset user status to 'working' (default) when clocking out
-            $user->update(['status' => 'working']);
+            // Reset user status to 'offline' when clocking out
+            $user->update(['status' => 'offline']);
 
             DB::commit();
 

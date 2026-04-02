@@ -29,68 +29,12 @@ class PublicController extends Controller
         // Ambil beberapa testimoni untuk carousel (maksimal 10 testimoni)
         // Prioritas: testimoni yang sudah di-approve, jika tidak ada ambil yang terbaru untuk testing
         // Use specific testimonials requested by user for the design refresh
-        $testimonials = collect([
-            (object) [
-                'character_name' => 'Elmerz Ramirez',
-                'testimoni' => 'gg abiezzzzzzzzzzzzzzzzz',
-                'rating' => 5,
-                'created_at' => now()->subDays(2)
-            ],
-            (object) [
-                'character_name' => 'Thomas Andrew',
-                'testimoni' => 'Keren sekali',
-                'rating' => 5,
-                'created_at' => now()->subDays(3)
-            ],
-            (object) [
-                'character_name' => 'Thomas Andrew',
-                'testimoni' => 'Keren Sekali',
-                'rating' => 5,
-                'created_at' => now()->subDays(3)
-            ],
-            (object) [
-                'character_name' => 'Lil Hab',
-                'testimoni' => 'terbaik pokoknya',
-                'rating' => 5,
-                'created_at' => now()->subDays(3)
-            ],
-            (object) [
-                'character_name' => 'Delvin Shironomi',
-                'testimoni' => 'Nice discount pak Tan',
-                'rating' => 5,
-                'created_at' => now()->subDays(3)
-            ],
-            (object) [
-                'character_name' => 'Rangga Berto',
-                'testimoni' => 'BUAHAHAHAHHAYUKKK',
-                'rating' => 5,
-                'created_at' => now()->subDays(3)
-            ],
-            (object) [
-                'character_name' => 'MY BAE',
-                'testimoni' => 'good n comunicativ',
-                'rating' => 5,
-                'created_at' => now()->subDays(3)
-            ],
-            (object) [
-                'character_name' => 'Snapz Snapz',
-                'testimoni' => 'mantap dah pokok nyaa',
-                'rating' => 5,
-                'created_at' => now()->subDays(5)
-            ],
-            (object) [
-                'character_name' => 'Om Black',
-                'testimoni' => 'sangat ramah dan mau membantu warga baru',
-                'rating' => 5,
-                'created_at' => now()->subDays(5)
-            ],
-            (object) [
-                'character_name' => 'Om Black',
-                'testimoni' => 'selalu membimbing',
-                'rating' => 5,
-                'created_at' => now()->subDays(5)
-            ],
-        ]);
+        $testimonials = MedicalForm::whereNotNull('testimoni')
+            ->whereNotNull('rating')
+            ->where('rating', '>=', 4) // Only show good ratings (optional but standard practice)
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get();
 
         // Untuk backward compatibility, ambil testimoni pertama
         $testimoni = $testimonials->first();
@@ -150,15 +94,28 @@ class PublicController extends Controller
             'roxwood' => $roxwoodOnDutyCount,
         ];
 
-        // Hitung staff berdasarkan status: meeting vs working
+        // Hitung staff berdasarkan session_type dari active attendance session
+        // PENTING: Jangan gunakan user.status karena field tersebut tidak reliabel
+        // (tidak selalu di-reset saat clock out). Gunakan session_type dari attendance aktif.
+        
         // Ambil semua EMS staff yang on duty
         $emsOnDutyUsers = $emsUsers->filter(function ($user) {
             return $user->isClockedIn();
         });
 
-        // Hitung berdasarkan status
-        $emsMeetingCount = $emsOnDutyUsers->where('status', 'meeting')->count();
-        $emsWorkingCount = $emsOnDutyUsers->where('status', 'working')->count();
+        // Hitung berdasarkan session_type dari active attendance
+        $emsMeetingCount = 0;
+        $emsWorkingCount = 0;
+        foreach ($emsOnDutyUsers as $user) {
+            $activeSession = \App\Models\Attendance::getAnyActiveSession($user->id);
+            if ($activeSession) {
+                if ($activeSession->session_type === 'meeting') {
+                    $emsMeetingCount++;
+                } else {
+                    $emsWorkingCount++;
+                }
+            }
+        }
 
         // Hitung untuk Roxwood juga
         $roxwoodMeetingCount = 0;
@@ -167,8 +124,16 @@ class PublicController extends Controller
             $roxwoodOnDutyUsers = $roxwoodUsers->filter(function ($user) {
                 return $user->isClockedIn();
             });
-            $roxwoodMeetingCount = $roxwoodOnDutyUsers->where('status', 'meeting')->count();
-            $roxwoodWorkingCount = $roxwoodOnDutyUsers->where('status', 'working')->count();
+            foreach ($roxwoodOnDutyUsers as $user) {
+                $activeSession = \App\Models\Attendance::getAnyActiveSession($user->id);
+                if ($activeSession) {
+                    if ($activeSession->session_type === 'meeting') {
+                        $roxwoodMeetingCount++;
+                    } else {
+                        $roxwoodWorkingCount++;
+                    }
+                }
+            }
         }
 
         $staffStatusStats = [
@@ -211,12 +176,8 @@ class PublicController extends Controller
         }
 
         // Filter dokter berdasarkan form type dan level minimal yang dibutuhkan
-        // Surat kesehatan, tes psikologi, surat psikolog: minimal Co-ass (level 2) ke atas
-        // Operasi plastik: minimal Dokter Umum (level 3) ke atas
-        $minLevel = 3; // Default untuk operasi plastik dan form lainnya
-        if (in_array($type, ['surat_kesehatan', 'tes_psikologi', 'surat_psikolog'])) {
-            $minLevel = 2; // Minimal Co-ass untuk surat kesehatan dan surat psikolog
-        }
+        // Semua surat medis (kesehatan, psikologi, oplas): minimal Co-ass (level 2) ke atas
+        $minLevel = 2; // Default Co-ass ke atas untuk semua form medis
 
         // Ambil data user yang memiliki jabatan sesuai level minimal
         // Level 2 = co_ass, Level 3 = dokter_umum, Level 4 = dokter_spesialis, Level 5+ = manajer/executive/CEO
@@ -458,6 +419,29 @@ class PublicController extends Controller
             ->whereDate('created_at', today())
             ->whereIn('status', ['pending', 'approved'])
             ->first();
+
+        // Validasi #9: Cooldown Operasi Plastik (28 hari sejak approved)
+        if ($request->form_type === 'operasi_plastik' && $request->filled('citizen_id')) {
+            $lastOplas = MedicalForm::where('citizen_id', $request->citizen_id)
+                ->where('form_type', 'operasi_plastik')
+                ->where('status', 'approved')
+                ->whereNotNull('processed_at')
+                ->orderBy('processed_at', 'desc')
+                ->first();
+
+            if ($lastOplas && $lastOplas->processed_at->copy()->addDays(28)->isFuture()) {
+                $daysRemaining = (int) now()->diffInDays($lastOplas->processed_at->copy()->addDays(28), false);
+                // Biarkan jika <= 0 handling error oleh Carbon, tp normally if isFuture() then diffInDays > 0 or 0.
+                $daysRemaining = max(1, $daysRemaining); // minimal 1 hari
+
+                $errorMessage = "Citizen ID " . $request->citizen_id . " masih dalam masa cooldown Operasi Plastik (Limit Roleplay 1 Bulan = 28 Hari OOC). Anda baru bisa melakukan permintaan lagi dalam " . $daysRemaining . " hari.";
+
+                return back()
+                    ->withErrors(['citizen_id' => $errorMessage])
+                    ->withInput()
+                    ->with('error', $errorMessage);
+            }
+        }
 
         if ($existingForm) {
             $formTypeLabels = [
@@ -1626,6 +1610,18 @@ class PublicController extends Controller
             $latestTicket = \App\Models\Feedback::max('id') ?? 0;
             $ticketNumber = str_pad($latestTicket + 1, 4, '0', STR_PAD_LEFT);
             $data['name'] = "Ticket #" . $ticketNumber;
+        }
+
+        // Check for duplicate feedback (same subject and message from same name within last 5 minutes)
+        $duplicate = \App\Models\Feedback::where('name', $data['name'])
+            ->where('subject', $data['subject'])
+            ->where('message', $data['message'])
+            ->where('created_at', '>=', now()->subMinutes(5))
+            ->first();
+
+        if ($duplicate) {
+            // Silently redirect to success as if it was submitted
+            return redirect()->route('feedback.success');
         }
 
         // Create feedback

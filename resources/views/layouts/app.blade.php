@@ -1333,38 +1333,28 @@
                             <!-- Primary Menu Items -->
                             <div class="flex items-center space-x-2">
                                 <a href="{{ route('staff.dashboard') }}"
-                                    class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
+                                    class="bg-white bg-opacity-10 text-white px-3 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center whitespace-nowrap">
                                     <i class="fas fa-tachometer-alt mr-2"></i>
                                     <span>Dashboard</span>
                                 </a>
 
                                 <a href="{{ route('staff.profile') }}"
-                                    class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
+                                    class="bg-white bg-opacity-10 text-white px-3 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center whitespace-nowrap">
                                     <i class="fas fa-user-cog mr-2"></i>
                                     <span>Profil</span>
                                 </a>
 
-                                @if(auth()->user()->hasPermission('access_live_chat'))
-                                    <a href="{{ route('admin.chat.index') }}"
-                                        class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
-                                        <i class="fas fa-comments mr-2"></i>
-                                        <span>Live Chat</span>
-                                    </a>
-                                @endif
-
-                                @if(auth()->user()->hasPermission('access_feedback'))
-                                    <a href="{{ route('admin.feedback.index') }}"
-                                        class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
-                                        <i class="fas fa-paper-plane mr-2"></i>
-                                        <span>Feedback</span>
-                                    </a>
-                                @endif
+                                <a href="{{ route('staff.meeting-requests.index') }}"
+                                    class="bg-white bg-opacity-10 text-white px-3 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center whitespace-nowrap">
+                                    <i class="fas fa-calendar-check mr-2"></i>
+                                    <span>Meeting</span>
+                                </a>
 
                                 {{-- Admin Dropdown Menu --}}
-                                @if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('access_live_chat') || auth()->user()->hasPermission('access_feedback'))
+                                @if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('view_attendance_reports') || auth()->user()->hasPermission('access_live_chat') || auth()->user()->hasPermission('access_feedback'))
                                     <div class="relative group">
                                         <button
-                                            class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
+                                            class="bg-white bg-opacity-10 text-white px-3 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center whitespace-nowrap">
                                             <i class="fas fa-user-shield mr-2"></i>
                                             <span>Admin</span>
                                             <i class="fas fa-chevron-down ml-2 text-xs"></i>
@@ -1412,12 +1402,24 @@
                                                     </a>
                                                 @endif
 
-                                                @if(auth()->user()->hasPermission('view_reports'))
+                                                @if(auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('view_attendance_reports'))
                                                     <div class="border-t border-gray-200 my-1"></div>
                                                     <a href="{{ route('admin.attendance-reports.index') }}"
                                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                         <i class="fas fa-chart-bar mr-3 w-5"></i>
                                                         Laporan Absensi
+                                                    </a>
+                                                @endif
+
+                                                @if(auth()->user()->hasPermission('manage_attendance_advanced') || auth()->user()->hasPermission('view_reports'))
+                                                    <a href="{{ route('admin.meeting-requests.index') }}"
+                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                        <i class="fas fa-clipboard-check mr-3 w-5"></i>
+                                                        Meeting Requests
+                                                        @php $pendingMeetingCount = \App\Models\MeetingRequest::pending()->count(); @endphp
+                                                        @if($pendingMeetingCount > 0)
+                                                            <span class="ml-auto bg-yellow-500 text-white text-xs px-2 py-0.5 rounded-full">{{ $pendingMeetingCount }}</span>
+                                                        @endif
                                                     </a>
                                                 @endif
 
@@ -1435,9 +1437,9 @@
                             </div>
 
                             <!-- Payroll Menu Dropdown -->
-                            <div class="relative group">
+                            <div class="relative group mt-0">
                                 <button
-                                    class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
+                                    class="bg-white bg-opacity-10 text-white px-3 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center whitespace-nowrap">
                                     <i class="fas fa-dollar-sign mr-2"></i>
                                     <span>Gaji</span>
                                     <i class="fas fa-chevron-down ml-2 text-xs"></i>
@@ -1478,10 +1480,10 @@
                             </div>
 
                             <!-- Logout Button -->
-                            <form method="POST" action="{{ route('staff.logout') }}" class="inline">
+                            <form method="POST" action="{{ route('staff.logout') }}" class="inline ml-1 sm:ml-2">
                                 @csrf
                                 <button type="submit"
-                                    class="bg-red-500 bg-opacity-20 text-white px-4 py-2 rounded-lg hover:bg-opacity-30 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-red-400 border-opacity-30 flex items-center">
+                                    class="bg-rose-500/20 text-white px-3 py-2 rounded-lg hover:bg-rose-500/30 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-rose-500/30 flex items-center whitespace-nowrap">
                                     <i class="fas fa-sign-out-alt mr-2"></i>
                                     <span>Logout</span>
                                 </button>
@@ -1518,6 +1520,9 @@
                     <a href="{{ route('staff.profile') }}"
                         class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                             class="fas fa-user-cog w-6 mr-2"></i>Profil</a>
+                    <a href="{{ route('staff.meeting-requests.index') }}"
+                        class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
+                            class="fas fa-calendar-check w-6 mr-2"></i>Meeting</a>
                     @if(auth()->user()->hasPermission('access_live_chat'))
                         <a href="{{ route('admin.chat.index') }}"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
@@ -1542,7 +1547,7 @@
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-trophy w-6 mr-2"></i>Duty Tracking</a>
                     @endif
-                    @if(auth()->user()->hasPermission('view_reports'))
+                    @if(auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('view_attendance_reports'))
                         <a href="{{ route('admin.attendance-reports.index') }}"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-chart-bar w-6 mr-2"></i>Laporan</a>

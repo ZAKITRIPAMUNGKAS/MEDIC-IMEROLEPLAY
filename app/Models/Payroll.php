@@ -201,10 +201,11 @@ class Payroll extends Model
     /**
      * Mark payroll as cancelled.
      */
-    public function markAsCancelled(): bool
+    public function markAsCancelled($reason = null): bool
     {
         return $this->update([
             'status' => 'cancelled',
+            'cancel_reason' => $reason
         ]);
     }
 

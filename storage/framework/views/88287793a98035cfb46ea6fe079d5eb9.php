@@ -6,16 +6,43 @@
 <div class="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-7xl mx-auto">
         
-        <div class="mb-8">
-            <h1 class="text-4xl font-bold text-white mb-2">
-                <i class="fas fa-trophy mr-3"></i>Duty Tracking & Ranking
-            </h1>
-            <p class="text-sky-200">Leaderboard dan tracking duty staff berdasarkan total waktu</p>
+        <div class="flex justify-between items-end mb-8">
+            <div>
+                <h1 class="text-4xl font-bold text-white mb-2">
+                    <i class="fas fa-trophy mr-3"></i>Duty Tracking & Ranking
+                </h1>
+                <p class="text-sky-200">Leaderboard dan tracking duty staff berdasarkan total waktu</p>
+            </div>
+            
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($mode === 'weekly'): ?>
+            <a href="<?php echo e(route('admin.duty-tracking.export-weekly', ['weeks' => $selectedWeeks, 'hospital' => $hospital ?? 'all'])); ?>" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition-all shadow-lg flex items-center">
+                <i class="fas fa-file-excel mr-2"></i> Export Excel/CSV
+            </a>
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
 
         
         <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-6 mb-6 border border-white border-opacity-20">
-            <form method="GET" action="<?php echo e(route('admin.duty-tracking.index')); ?>" id="monthForm">
+            <div class="flex space-x-4 mb-6 border-b border-white border-opacity-20 pb-2">
+                <a href="<?php echo e(route('admin.duty-tracking.index', ['mode' => 'monthly'])); ?>" class="px-4 py-2 font-medium <?php echo e($mode === 'monthly' ? 'text-white border-b-2 border-sky-400' : 'text-sky-200 hover:text-white'); ?>">Laporan Bulanan</a>
+                <a href="<?php echo e(route('admin.duty-tracking.index', ['mode' => 'weekly'])); ?>" class="px-4 py-2 font-medium <?php echo e($mode === 'weekly' ? 'text-white border-b-2 border-sky-400' : 'text-sky-200 hover:text-white'); ?>">Laporan Mingguan</a>
+            </div>
+
+            <form method="GET" action="<?php echo e(route('admin.duty-tracking.index')); ?>" id="filterForm">
+                <input type="hidden" name="mode" value="<?php echo e($mode); ?>">
+
+                <div class="mb-5">
+                    <label class="block text-sky-200 text-sm font-medium mb-2">
+                        <i class="fas fa-hospital mr-2"></i>Filter Rumah Sakit
+                    </label>
+                    <select name="hospital" onchange="this.form.submit()" class="w-full md:w-1/4 bg-white bg-opacity-10 text-white border border-white border-opacity-20 rounded-lg px-3 py-2 cursor-pointer focus:ring-sky-500 focus:border-sky-500 text-sm">
+                        <option value="all" <?php echo e(($hospital ?? 'all') === 'all' ? 'selected' : ''); ?>>Semua Rumah Sakit (Gabungan)</option>
+                        <option value="roxwood" <?php echo e(($hospital ?? 'all') === 'roxwood' ? 'selected' : ''); ?>>🏥 Roxwood Hospital</option>
+                        <option value="alta" <?php echo e(($hospital ?? 'all') === 'alta' ? 'selected' : ''); ?>>🏥 Alta Hospital</option>
+                    </select>
+                </div>
+                
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($mode === 'monthly'): ?>
                 <div class="mb-4">
                     <label class="block text-sky-200 text-sm font-medium mb-3">
                         <i class="fas fa-calendar-alt mr-2"></i>Pilih Bulan (bisa multiple):
@@ -32,11 +59,35 @@
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
                 </div>
+                <?php else: ?>
+                <div class="mb-4">
+                    <label class="block text-sky-200 text-sm font-medium mb-3">
+                        <i class="fas fa-calendar-week mr-2"></i>Pilih Minggu (bisa multiple):
+                    </label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $availableWeeks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $week): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <?php
+                                $weekStart = \Carbon\Carbon::parse($week);
+                                $weekEnd = $weekStart->copy()->endOfWeek();
+                                $label = $weekStart->format('d/m/Y') . ' - ' . $weekEnd->format('d/m/Y');
+                            ?>
+                            <label class="flex items-center bg-white bg-opacity-5 hover:bg-opacity-10 p-3 rounded-lg cursor-pointer transition-all border border-white border-opacity-10">
+                                <input type="checkbox" name="weeks[]" value="<?php echo e($week); ?>" 
+                                    <?php echo e(in_array($week, $selectedWeeks) ? 'checked' : ''); ?>
+
+                                    class="mr-2 rounded text-sky-500 focus:ring-sky-400">
+                                <span class="text-white text-sm"><?php echo e($label); ?></span>
+                            </label>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    </div>
+                </div>
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
                 <div class="flex gap-2">
                     <button type="submit" class="bg-sky-500 hover:bg-sky-600 text-white px-6 py-2 rounded-lg font-medium transition-all">
                         <i class="fas fa-filter mr-2"></i>Tampilkan
                     </button>
-                    <a href="<?php echo e(route('admin.duty-tracking.index')); ?>" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-medium transition-all">
+                    <a href="<?php echo e(route('admin.duty-tracking.index', ['mode' => $mode])); ?>" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-medium transition-all">
                         <i class="fas fa-redo mr-2"></i>Reset
                     </a>
                     <button type="button" onclick="selectAll()" class="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-lg font-medium transition-all">
@@ -47,13 +98,25 @@
         </div>
 
         
-        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($selectedMonths)): ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($mode === 'monthly' && !empty($selectedMonths)): ?>
             <div class="mb-6">
-                <div class="flex flex-wrap gap-2">
-                    <span class="text-sky-200">Periode:</span>
+                <div class="flex flex-wrap gap-2 items-center">
+                    <span class="text-sky-200">Periode Bulanan:</span>
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $selectedMonths; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $month): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <span class="px-3 py-1 bg-sky-500 bg-opacity-20 text-sky-300 rounded-full text-sm">
+                        <span class="px-3 py-1 bg-sky-500 bg-opacity-20 text-sky-300 rounded-full text-sm font-medium border border-sky-500 border-opacity-30">
                             <?php echo e(\Carbon\Carbon::parse($month . '-01')->format('F Y')); ?>
+
+                        </span>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                </div>
+            </div>
+        <?php elseif($mode === 'weekly' && !empty($selectedWeeks)): ?>
+            <div class="mb-6">
+                <div class="flex flex-wrap gap-2 items-center">
+                    <span class="text-sky-200">Periode Mingguan:</span>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $selectedWeeks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $week): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <span class="px-3 py-1 bg-sky-500 bg-opacity-20 text-sky-300 rounded-full text-sm font-medium border border-sky-500 border-opacity-30">
+                            <?php echo e(\Carbon\Carbon::parse($week)->format('d/m/Y')); ?> - <?php echo e(\Carbon\Carbon::parse($week)->endOfWeek()->format('d/m/Y')); ?>
 
                         </span>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
@@ -235,7 +298,7 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <a href="<?php echo e(route('admin.duty-tracking.show', ['user' => $user->id, 'months' => $selectedMonths])); ?>" 
-                                        class="text-sky-300 hover:text-sky-200">
+                                        class="text-sky-300 hover:text-sky-200" title="Detail Bulanan (Abaikan filter UI jika Weekly)">
                                         <i class="fas fa-eye mr-1"></i>Detail
                                     </a>
                                 </td>
@@ -255,7 +318,7 @@
             
             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($rankings->hasPages()): ?>
                 <div class="px-6 py-4 border-t border-white border-opacity-10">
-                    <?php echo e($rankings->appends(['months' => $selectedMonths])->links()); ?>
+                    <?php echo e($rankings->appends(['mode' => $mode, 'months' => $selectedMonths, 'weeks' => $selectedWeeks])->links()); ?>
 
                 </div>
             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
@@ -265,7 +328,7 @@
 
 <script>
 function selectAll() {
-    const checkboxes = document.querySelectorAll('input[name="months[]"]');
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
     const allChecked = Array.from(checkboxes).every(cb => cb.checked);
     checkboxes.forEach(cb => cb.checked = !allChecked);
 }

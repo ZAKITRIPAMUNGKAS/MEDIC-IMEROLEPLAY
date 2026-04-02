@@ -214,6 +214,19 @@
                     }
                     return false;
                 }
+
+                // Disable button and show loading state
+                const submitBtn = feedbackForm.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
+
+                    // Re-enable after 30 seconds just in case network error prevents redirect
+                    setTimeout(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Sekarang';
+                    }, 30000);
+                }
             });
         });
 

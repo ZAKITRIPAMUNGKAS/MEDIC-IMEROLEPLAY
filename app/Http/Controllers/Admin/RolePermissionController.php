@@ -51,6 +51,7 @@ class RolePermissionController extends Controller
             'view_reports' => 'View Reports',
             'manage_attendance' => 'Manage Attendance',
             'manage_attendance_advanced' => 'Manage Attendance Advanced (Force Checkout & Manual)',
+            'view_attendance_reports' => 'View Attendance Reports (Read-Only)',
             'manage_settings' => 'Manage Settings',
             'manage_payroll' => 'Manage Payroll',
             'reply_livechat' => 'Reply to Live Chat'

@@ -628,13 +628,19 @@ class PayrollController extends Controller
     /**
      * Cancel payroll
      */
-    public function cancel(Payroll $payroll)
+    public function cancel(Request $request, Payroll $payroll)
     {
         if ($payroll->isPaid()) {
             return redirect()->back()->with('error', 'Gaji yang sudah dibayar tidak dapat dibatalkan.');
         }
 
-        $payroll->markAsCancelled();
+        $request->validate([
+            'cancel_reason' => 'required|string|max:1000',
+        ], [
+            'cancel_reason.required' => 'Alasan pembatalan wajib diisi.'
+        ]);
+
+        $payroll->markAsCancelled($request->cancel_reason);
 
         return redirect()->back()->with('success', 'Gaji berhasil dibatalkan.');
     }

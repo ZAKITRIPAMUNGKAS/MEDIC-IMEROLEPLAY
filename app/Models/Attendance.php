@@ -1094,6 +1094,20 @@ class Attendance extends Model
 
         $this->save();
 
+        // Reset user status to 'offline' after auto checkout
+        try {
+            $user = \App\Models\User::find($this->user_id);
+            if ($user) {
+                $user->update(['status' => 'offline']);
+            }
+        } catch (\Exception $e) {
+            \Log::warning('Failed to reset user status after auto checkout', [
+                'attendance_id' => $this->id,
+                'user_id' => $this->user_id,
+                'error' => $e->getMessage()
+            ]);
+        }
+
         // Log dengan informasi lengkap untuk debugging
         $actualDurationFromTimes = $clockInTime->diffInSeconds($clockOutTime);
 

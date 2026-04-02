@@ -394,6 +394,22 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                 </label>
                             </div>
 
+                            <!-- View Attendance Reports (Read-Only) -->
+                            <div class="bg-white/5 rounded-lg p-4 border border-white/10">
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="checkbox" name="custom_permissions[]" value="view_attendance_reports"
+                                        class="w-5 h-5 text-emerald-500 bg-white/10 border-white/20 rounded focus:ring-2 focus:ring-emerald-400"
+                                        <?php if(in_array('view_attendance_reports', old('custom_permissions', $user->custom_permissions ?? []))): echo 'checked'; endif; ?>>
+                                    <div class="ml-3">
+                                        <span class="text-white font-medium flex items-center">
+                                            <i class="fas fa-chart-bar text-emerald-400 mr-2"></i>
+                                            Viewer Laporan Absensi
+                                        </span>
+                                        <p class="text-gray-400 text-xs mt-1">Akses read-only ke laporan absensi (tanpa edit/hapus)</p>
+                                    </div>
+                                </label>
+                            </div>
+
                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->user()->isAdmin()): ?>
                                 <!-- Manage Users Permission (Admin Only) -->
                                 <div class="bg-white/5 rounded-lg p-4 border border-white/10">

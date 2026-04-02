@@ -15,6 +15,11 @@
                     <div class="mb-4 sm:mb-0">
                         <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">Laporan Absensi</h1>
                         <p class="text-sky-200 text-base sm:text-lg">Lihat dan download rekapan absensi staf</p>
+                        @if(!auth()->user()->hasPermission('manage_attendance_advanced'))
+                            <span class="inline-flex items-center px-3 py-1 mt-2 bg-yellow-500/20 text-yellow-300 rounded-full text-xs font-medium border border-yellow-500/30">
+                                <i class="fas fa-eye mr-1"></i> Mode View-Only
+                            </span>
+                        @endif
                     </div>
                     <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                         <div class="text-right">
@@ -85,6 +90,27 @@
                         </a>
                     </div>
                 </form>
+            </div>
+
+            <!-- Auto-Refresh Bar -->
+            <div class="backdrop-blur-xl border-2 border-sky-400/40 rounded-xl shadow-lg p-3 mb-6 flex flex-col sm:flex-row items-center justify-between gap-3"
+                style="background-color: rgba(7, 89, 133, 0.7);" id="autoRefreshBar">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-sky-500/20 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-sync-alt text-sky-400 text-sm" id="refreshIcon"></i>
+                    </div>
+                    <div>
+                        <p class="text-white text-sm font-medium">Auto-Refresh Aktif</p>
+                        <p class="text-sky-300 text-xs" id="refreshCountdown">Update berikutnya dalam 60:00</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-gray-400 text-xs hidden sm:inline" id="lastRefreshed">Terakhir: {{ now()->setTimezone('Asia/Jakarta')->format('H:i:s') }} WIB</span>
+                    <button onclick="manualRefresh()" 
+                        class="inline-flex items-center px-4 py-2 bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 hover:text-white rounded-lg text-sm font-medium border border-sky-500/30 hover:border-sky-400/50 transition-all duration-200">
+                        <i class="fas fa-redo mr-2"></i>Refresh Sekarang
+                    </button>
+                </div>
             </div>
 
             <!-- Summary Statistics -->
@@ -1409,16 +1435,67 @@
         showTab(activeTab);
     });
 
-    // Auto-refresh stats every 30 seconds
+    // ===== Auto-Refresh System (1 hour interval) =====
+    const REFRESH_INTERVAL = 60 * 60; // 1 hour in seconds
+    let refreshCountdownSeconds = REFRESH_INTERVAL;
+
+    function updateRefreshCountdown() {
+        refreshCountdownSeconds--;
+        
+        if (refreshCountdownSeconds <= 0) {
+            // Full page reload 
+            document.getElementById('refreshIcon').classList.add('fa-spin');
+            document.getElementById('refreshCountdown').textContent = 'Sedang memuat ulang...';
+            location.reload();
+            return;
+        }
+
+        const minutes = Math.floor(refreshCountdownSeconds / 60);
+        const seconds = refreshCountdownSeconds % 60;
+        const countdownText = `Update berikutnya dalam ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        document.getElementById('refreshCountdown').textContent = countdownText;
+    }
+
+    // Start countdown timer
+    setInterval(updateRefreshCountdown, 1000);
+
+    function manualRefresh() {
+        const icon = document.getElementById('refreshIcon');
+        icon.classList.add('fa-spin');
+        document.getElementById('refreshCountdown').textContent = 'Sedang memuat ulang...';
+        location.reload();
+    }
+
+    // Also update live elapsed timers every second
     setInterval(function() {
-        fetch('{{ route("admin.attendance-reports.stats") }}?period=month')
-            .then(response => response.json())
-            .then(data => {
-                // Update stats if needed
-                console.log('Stats updated:', data);
-            })
-            .catch(error => console.log('Error updating stats:', error));
-    }, 30000);
+        // Update elapsed time counters for active sessions
+        document.querySelectorAll('[id^="elapsed-time-"]').forEach(el => {
+            const clockIn = new Date(el.dataset.clockIn);
+            const now = new Date();
+            const diffSeconds = Math.floor((now - clockIn) / 1000);
+            const hours = Math.floor(diffSeconds / 3600);
+            const minutes = Math.floor((diffSeconds % 3600) / 60);
+            const secs = diffSeconds % 60;
+            el.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        });
+
+        // Update remaining time counters
+        document.querySelectorAll('[id^="remaining-time-"]').forEach(el => {
+            const endTime = new Date(el.dataset.endTime);
+            const now = new Date();
+            const diffSeconds = Math.max(0, Math.floor((endTime - now) / 1000));
+            const hours = Math.floor(diffSeconds / 3600);
+            const minutes = Math.floor((diffSeconds % 3600) / 60);
+            const secs = diffSeconds % 60;
+            el.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            
+            if (diffSeconds <= 0) {
+                el.textContent = '00:00:00';
+                el.classList.remove('text-yellow-300');
+                el.classList.add('text-red-300');
+            }
+        });
+    }, 1000);
 
 
     // Add smooth scrolling for better UX
@@ -1541,5 +1618,37 @@
         }
     });
 
+    // Auto-Refresh Logic
+    let autoRefreshTimer;
+    let timeLeft = 3600; // 60 minutes in seconds
+
+    function updateRefreshCountdown() {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        const countdownEl = document.getElementById('refreshCountdown');
+        if (countdownEl) {
+            countdownEl.textContent = `Update berikutnya dalam ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        if (timeLeft <= 0) {
+            manualRefresh();
+        } else {
+            timeLeft--;
+        }
+    }
+
+    function manualRefresh() {
+        const icon = document.getElementById('refreshIcon');
+        if (icon) icon.classList.add('fa-spin');
+        
+        // Preserve current URL params but reload
+        window.location.reload();
+    }
+
+    // Start auto-refresh countdown
+    if (document.getElementById('autoRefreshBar')) {
+        updateRefreshCountdown(); // Initialize immediately
+        autoRefreshTimer = setInterval(updateRefreshCountdown, 1000);
+    }
     </script>
 @endpush

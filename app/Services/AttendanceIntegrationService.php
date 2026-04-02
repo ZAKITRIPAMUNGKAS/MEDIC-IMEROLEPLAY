@@ -217,7 +217,7 @@ class AttendanceIntegrationService
 
                 // Update user status agar tidak stuck
                 try {
-                    $user->update(['status' => 'offline']); // Reset dulu, nanti FiveM statenya mungkin 'working'
+                    $user->update(['status' => 'offline']); // Reset ke offline, nanti FiveM akan set 'working' via createManualAttendanceRecord
                 } catch (\Exception $e) {
                     Log::warning('Failed to update user status', [
                         'user_id' => $user->id,
@@ -334,7 +334,7 @@ class AttendanceIntegrationService
         // Jika belum ada, buat baru
         $sessionNumber = Attendance::getNextSessionNumber($user->id, $workDate);
 
-        return Attendance::create([
+        $attendance = Attendance::create([
             'user_id' => $user->id,
             'clock_in' => $absensi->clock_in,
             'clock_out' => $absensi->clock_out,
@@ -350,7 +350,12 @@ class AttendanceIntegrationService
 
         // Update user status to 'working' to match manual clock-in behavior
         // This ensures dashboard indicators (like status dots) update correctly
-        $user->update(['status' => 'working']);
+        // If clock_out is set, user is offline (session already ended)
+        if ($absensi->clock_out) {
+            $user->update(['status' => 'offline']);
+        } else {
+            $user->update(['status' => 'working']);
+        }
 
         return $attendance;
     }

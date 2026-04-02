@@ -367,7 +367,52 @@
                     </div>
                 </div>
 
-                <!-- REGULASI OPERASI (INVOICE) -->
+                <!-- REGULASI KONSULTASI (CASH) -->
+                <div
+                    class="bg-white rounded-3xl shadow-lg border border-indigo-200 overflow-hidden hover:shadow-xl transition-all duration-300">
+                    <div class="bg-gradient-to-r from-indigo-500 to-blue-500 text-white p-6">
+                        <h3 class="text-2xl font-bold flex items-center">
+                            <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mr-4">
+                                <i class="fas fa-user-md text-xl"></i>
+                            </div>
+                            REGULASI KONSULTASI (CASH)
+                        </h3>
+                        <p class="text-indigo-100 mt-2">Layanan konsultasi kesehatan (Wajib Cash)</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div
+                                class="bg-gradient-to-br from-indigo-50 to-blue-50 p-6 rounded-xl border border-indigo-200">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fas fa-user-nurse text-indigo-600 text-2xl"></i>
+                                        <h4 class="font-bold text-gray-800">KONSULTASI DOKTER UMUM</h4>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-2xl font-bold text-indigo-600">$2,500</span>
+                                        <span class="text-lg text-indigo-500">- $10,000</span>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-600">Pemeriksaan dan konsultasi umum</p>
+                            </div>
+                            <div class="bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-xl border border-blue-200">
+                                <div class="flex items-center justify-between mb-4">
+                                    <div class="flex items-center space-x-3">
+                                        <i class="fas fa-user-graduate text-blue-600 text-2xl"></i>
+                                        <h4 class="font-bold text-gray-800">KONSULTASI SPESIALIS</h4>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-2xl font-bold text-blue-600">$5,000</span>
+                                        <span class="text-lg text-blue-500">- $10,000</span>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-600">Konsultasi dengan dokter spesialis</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- REGULASI OPERASI (CASH) -->
                 <div
                     class="bg-white rounded-3xl shadow-lg border border-orange-200 overflow-hidden hover:shadow-xl transition-all duration-300">
                     <div class="bg-gradient-to-r from-orange-500 to-red-500 text-white p-6">
@@ -375,9 +420,9 @@
                             <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mr-4">
                                 <i class="fas fa-cut text-xl"></i>
                             </div>
-                            REGULASI OPERASI (INVOICE)
+                            REGULASI OPERASI (CASH)
                         </h3>
-                        <p class="text-orange-100 mt-2">Layanan operasi dengan sistem tagihan</p>
+                        <p class="text-orange-100 mt-2">Layanan operasi (Wajib Cash)</p>
                     </div>
                     <div class="p-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -388,8 +433,8 @@
                                         <h4 class="font-bold text-gray-800">OPERASI BESAR</h4>
                                     </div>
                                     <div class="text-right">
-                                        <span class="text-3xl font-bold text-orange-600">$6,300</span>
-                                        <span class="text-lg text-orange-500">- $12,500</span>
+                                        <span class="text-2xl font-bold text-orange-600">$15,000</span>
+                                        <span class="text-lg text-orange-500">- $20,000</span>
                                     </div>
                                 </div>
                                 <p class="text-sm text-gray-600 mb-3">Prosedur operasi kompleks dan rumit</p>
@@ -404,8 +449,8 @@
                                         <h4 class="font-bold text-gray-800">OPERASI KECIL</h4>
                                     </div>
                                     <div class="text-right">
-                                        <span class="text-3xl font-bold text-red-600">$3,200</span>
-                                        <span class="text-lg text-red-500">- $6,300</span>
+                                        <span class="text-2xl font-bold text-red-600">$5,000</span>
+                                        <span class="text-lg text-red-500">- $10,000</span>
                                     </div>
                                 </div>
                                 <p class="text-sm text-gray-600 mb-3">Prosedur operasi sederhana dan ringan</p>
@@ -638,7 +683,7 @@
                             </div>
                             OPERASI PLASTIK
                         </h3>
-                        <p class="text-fuchsia-100 mt-2">Layanan bedah estetika</p>
+                        <p class="text-fuchsia-100 mt-2">Layanan bedah estetika (Cash + Billing)</p>
                     </div>
                     <div class="p-6">
                         <div class="space-y-4">
@@ -650,7 +695,7 @@
                                         <h4 class="font-bold text-gray-800">KONSULTASI BEDAH PLASTIK</h4>
                                     </div>
                                     <div class="text-right">
-                                        <span class="text-3xl font-bold text-fuchsia-600">$6,500</span>
+                                        <span class="text-3xl font-bold text-fuchsia-600">Gratis</span>
                                     </div>
                                 </div>
                                 <p class="text-sm text-gray-600">Konsultasi awal dengan dokter spesialis</p>
@@ -661,11 +706,20 @@
                                         <i class="fas fa-scalpel text-pink-600 text-2xl"></i>
                                         <h4 class="font-bold text-gray-800">BIAYA OPERASI</h4>
                                     </div>
-                                    <div class="text-right">
-                                        <span class="text-3xl font-bold text-pink-600">$6,500</span>
+                                    <div class="text-right flex flex-col items-end">
+                                        <div class="flex items-center">
+                                            <span
+                                                class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded mr-2">CASH</span>
+                                            <span class="text-3xl font-bold text-pink-600">$10,000</span>
+                                        </div>
+                                        <div class="flex items-center mt-1">
+                                            <span
+                                                class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded mr-2">BILLING</span>
+                                            <span class="text-xl font-bold text-pink-500">$3,000</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <p class="text-sm text-gray-600">Prosedur operasi plastik</p>
+                                <p class="text-sm text-gray-600">Total Biaya: $13,000 (Cash + Invoice)</p>
                             </div>
                         </div>
                     </div>
@@ -926,7 +980,8 @@
                                         </div>
                                     </div>
                                     <div class="grid grid-cols-2 gap-2">
-                                        <div class="bg-gradient-to-br from-green-500/20 to-emerald-500/20 backdrop-blur-sm rounded-lg p-3 border border-green-400/30">
+                                        <div
+                                            class="bg-gradient-to-br from-green-500/20 to-emerald-500/20 backdrop-blur-sm rounded-lg p-3 border border-green-400/30">
                                             <div class="flex items-center gap-1.5 mb-1">
                                                 <i class="fas fa-briefcase-medical text-green-300 text-xs"></i>
                                                 <p class="text-[10px] font-bold text-green-200 uppercase">Kerja</p>
@@ -937,7 +992,8 @@
                                             </p>
                                             <p class="text-[10px] text-green-200/80 mt-0.5">Staff</p>
                                         </div>
-                                        <div class="bg-gradient-to-br from-purple-500/20 to-pink-500/20 backdrop-blur-sm rounded-lg p-3 border border-purple-400/30">
+                                        <div
+                                            class="bg-gradient-to-br from-purple-500/20 to-pink-500/20 backdrop-blur-sm rounded-lg p-3 border border-purple-400/30">
                                             <div class="flex items-center gap-1.5 mb-1">
                                                 <i class="fas fa-users text-purple-300 text-xs"></i>
                                                 <p class="text-[10px] font-bold text-purple-200 uppercase">Meeting</p>

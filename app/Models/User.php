@@ -269,9 +269,9 @@ class User extends Authenticatable
             return $userLevel >= 2;
         }
 
-        // Surat keterangan oplas (operasi plastik): minimal dokter umum (level 3) ke atas
+        // Surat keterangan oplas (operasi plastik): minimal Co-ass (level 2) ke atas
         if ($formType === 'operasi_plastik') {
-            return $userLevel >= 3;
+            return $userLevel >= 2;
         }
 
         // Untuk form lain, semua user dengan role bisa approve (default behavior)

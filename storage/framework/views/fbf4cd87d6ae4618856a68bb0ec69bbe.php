@@ -1,8 +1,8 @@
-@extends('layouts.app')
 
-@section('title', 'Detail Formulir - Portal Medis')
 
-@section('content')
+<?php $__env->startSection('title', 'Detail Formulir - Portal Medis'); ?>
+
+<?php $__env->startSection('content'); ?>
     <div class="relative min-h-screen py-8 px-4 sm:px-6 lg:px-8">
         <div class="absolute inset-0 bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700"></div>
         <div class="absolute inset-0 bg-black bg-opacity-20"></div>
@@ -16,66 +16,68 @@
                         <p class="text-sky-200 text-lg">Informasi lengkap dan pengelolaan formulir</p>
                     </div>
                     <div class="flex flex-col sm:flex-row gap-3">
-                        <a href="{{ route('staff.forms') }}"
+                        <a href="<?php echo e(route('staff.forms')); ?>"
                             class="inline-flex items-center px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white/20">
                             <i class="fas fa-arrow-left mr-2"></i>Kembali ke Daftar
                         </a>
-                        @if($form->status === 'pending')
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($form->status === 'pending'): ?>
                             <div class="flex gap-2">
-                                <form method="POST" action="{{ route('staff.forms.reject', $form->id) }}"
+                                <form method="POST" action="<?php echo e(route('staff.forms.reject', $form->id)); ?>"
                                     onsubmit="return confirm('Yakin ingin menolak formulir ini?');">
-                                    @csrf
+                                    <?php echo csrf_field(); ?>
                                     <button
                                         class="inline-flex items-center px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all duration-300 text-sm font-medium shadow-lg">
                                         <i class="fas fa-times mr-2"></i>Tolak
                                     </button>
                                 </form>
-                                @if($user->canApproveForm($form->form_type))
-                                    @php
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($user->canApproveForm($form->form_type)): ?>
+                                    <?php
                                         $isAppointment = in_array($form->form_type, ['penyakit_dalam', 'spesialis_anak', 'spesialis_bedah', 'spesialis_mata', 'spesialis_saraf', 'spesialis_urologi', 'spesialis_tht', 'spesialis_ortopedi']);
-                                    @endphp
-                                    <form method="POST" action="{{ route('staff.forms.approve', $form->id) }}"
-                                        onsubmit="return confirm('{{ $isAppointment ? 'Yakin ingin menandai janji temu sudah ditemui?' : 'Yakin ingin menyetujui formulir ini?' }}');">
-                                        @csrf
+                                    ?>
+                                    <form method="POST" action="<?php echo e(route('staff.forms.approve', $form->id)); ?>"
+                                        onsubmit="return confirm('<?php echo e($isAppointment ? 'Yakin ingin menandai janji temu sudah ditemui?' : 'Yakin ingin menyetujui formulir ini?'); ?>');">
+                                        <?php echo csrf_field(); ?>
                                         <button
                                             class="inline-flex items-center px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg transition-all duration-300 text-sm font-medium shadow-lg">
-                                            <i class="fas fa-check mr-2"></i>{{ $isAppointment ? 'Sudah Ditemui' : 'Setujui' }}
+                                            <i class="fas fa-check mr-2"></i><?php echo e($isAppointment ? 'Sudah Ditemui' : 'Setujui'); ?>
+
                                         </button>
                                     </form>
-                                @else
+                                <?php else: ?>
                                     <button disabled
                                         class="inline-flex items-center px-4 py-2 bg-gray-500/50 text-gray-300 rounded-lg transition-all duration-300 text-sm font-medium shadow-lg cursor-not-allowed opacity-60"
                                         title="Level role Anda tidak mencukupi untuk menyetujui formulir ini">
                                         <i
-                                            class="fas fa-lock mr-2"></i>{{ in_array($form->form_type, ['penyakit_dalam', 'spesialis_anak', 'spesialis_bedah', 'spesialis_mata', 'spesialis_saraf', 'spesialis_urologi', 'spesialis_tht', 'spesialis_ortopedi']) ? 'Sudah Ditemui' : 'Setujui' }}
+                                            class="fas fa-lock mr-2"></i><?php echo e(in_array($form->form_type, ['penyakit_dalam', 'spesialis_anak', 'spesialis_bedah', 'spesialis_mata', 'spesialis_saraf', 'spesialis_urologi', 'spesialis_tht', 'spesialis_ortopedi']) ? 'Sudah Ditemui' : 'Setujui'); ?>
+
                                     </button>
-                                @endif
+                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
-                        @endif
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
                 </div>
 
                 <!-- Status Badge -->
                 <div class="flex items-center justify-center mb-6">
-                    @if($form->status === 'pending')
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($form->status === 'pending'): ?>
                         <div
                             class="inline-flex items-center px-6 py-3 bg-yellow-500/20 text-yellow-300 rounded-full border border-yellow-500/30">
                             <i class="fas fa-clock mr-2"></i>
                             <span class="font-semibold">Menunggu Persetujuan</span>
                         </div>
-                    @elseif($form->status === 'approved')
+                    <?php elseif($form->status === 'approved'): ?>
                         <div
                             class="inline-flex items-center px-6 py-3 bg-green-500/20 text-green-300 rounded-full border border-green-500/30">
                             <i class="fas fa-check-circle mr-2"></i>
                             <span class="font-semibold">Disetujui</span>
                         </div>
-                    @else
+                    <?php else: ?>
                         <div
                             class="inline-flex items-center px-6 py-3 bg-red-500/20 text-red-300 rounded-full border border-red-500/30">
                             <i class="fas fa-times-circle mr-2"></i>
                             <span class="font-semibold">Ditolak</span>
                         </div>
-                    @endif
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </div>
             </div>
 
@@ -128,7 +130,7 @@
                                         <label
                                             class="block text-gray-400 text-xs font-medium uppercase tracking-wider mb-2">Nama
                                             Karakter</label>
-                                        <p class="text-white text-lg font-bold pr-10">{{ $form->character_name }}</p>
+                                        <p class="text-white text-lg font-bold pr-10"><?php echo e($form->character_name); ?></p>
                                     </div>
 
                                     <!-- Citizen ID -->
@@ -141,7 +143,7 @@
                                         <label
                                             class="block text-gray-400 text-xs font-medium uppercase tracking-wider mb-2">Citizen
                                             ID</label>
-                                        <p class="text-white text-lg font-bold pr-10">{{ $form->citizen_id ?: '-' }}</p>
+                                        <p class="text-white text-lg font-bold pr-10"><?php echo e($form->citizen_id ?: '-'); ?></p>
                                     </div>
 
                                     <!-- Tanggal Pengajuan -->
@@ -155,7 +157,7 @@
                                             class="block text-gray-400 text-xs font-medium uppercase tracking-wider mb-2">Tanggal
                                             Pengajuan</label>
                                         <p class="text-white text-lg font-bold pr-10">
-                                            {{ $form->created_at->format('d F Y, H:i') }}</p>
+                                            <?php echo e($form->created_at->format('d F Y, H:i')); ?></p>
                                     </div>
 
                                     <!-- Jenis Layanan -->
@@ -170,7 +172,8 @@
                                             Layanan</label>
                                         <div
                                             class="inline-flex items-center px-3 py-1.5 bg-sky-500/20 text-sky-300 rounded-lg text-sm font-semibold border border-sky-500/30 mt-1">
-                                            {{ Str::of($form->form_type)->replace('_', ' ')->title() }}
+                                            <?php echo e(Str::of($form->form_type)->replace('_', ' ')->title()); ?>
+
                                         </div>
                                     </div>
 
@@ -185,22 +188,22 @@
                                             class="block text-gray-400 text-xs font-medium uppercase tracking-wider mb-2">Status
                                             Terakhir</label>
                                         <div class="mt-1">
-                                            @if($form->status === 'pending')
+                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($form->status === 'pending'): ?>
                                                 <span
                                                     class="inline-flex items-center px-3 py-1.5 bg-yellow-500/20 text-yellow-300 rounded-lg text-sm font-bold border border-yellow-500/30 shadow-sm">
                                                     <i class="fas fa-clock mr-2"></i>Pending
                                                 </span>
-                                            @elseif($form->status === 'approved')
+                                            <?php elseif($form->status === 'approved'): ?>
                                                 <span
                                                     class="inline-flex items-center px-3 py-1.5 bg-green-500/20 text-green-300 rounded-lg text-sm font-bold border border-green-500/30 shadow-sm">
                                                     <i class="fas fa-check-circle mr-2"></i>Approved
                                                 </span>
-                                            @else
+                                            <?php else: ?>
                                                 <span
                                                     class="inline-flex items-center px-3 py-1.5 bg-red-500/20 text-red-300 rounded-lg text-sm font-bold border border-red-500/30 shadow-sm">
                                                     <i class="fas fa-times-circle mr-2"></i>Rejected
                                                 </span>
-                                            @endif
+                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                         </div>
                                     </div>
 
@@ -216,13 +219,13 @@
                                             Formulir</label>
                                         <p
                                             class="text-white text-lg font-mono font-bold bg-black/40 px-3 py-1.5 rounded-lg border border-white/10 inline-block mt-1">
-                                            {{ $form->id }}</p>
+                                            <?php echo e($form->id); ?></p>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Data Formulir Lengkap -->
-                            @if($form->form_data && is_array($form->form_data) && count($form->form_data) > 0)
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($form->form_data && is_array($form->form_data) && count($form->form_data) > 0): ?>
                                 <div class="mt-8 pt-8 border-t border-white/10">
                                     <div class="flex items-center mb-5">
                                         <div
@@ -268,12 +271,12 @@
                                                         </td>
                                                         <td class="px-6 py-4">
                                                             <div class="flex items-center justify-between group/val">
-                                                                <span class="text-white font-semibold">{{ $form->character_name ?: '-' }}</span>
-                                                                @if($form->character_name)
-                                                                <button onclick="copyToClipboard('{{ addslashes($form->character_name) }}', this)" class="ml-3 p-2 bg-sky-500/20 hover:bg-sky-500/40 text-sky-300 hover:text-sky-200 rounded-lg transition-all duration-200 opacity-70 hover:opacity-100" title="Salin nilai">
+                                                                <span class="text-white font-semibold"><?php echo e($form->character_name ?: '-'); ?></span>
+                                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($form->character_name): ?>
+                                                                <button onclick="copyToClipboard('<?php echo e(addslashes($form->character_name)); ?>', this)" class="ml-3 p-2 bg-sky-500/20 hover:bg-sky-500/40 text-sky-300 hover:text-sky-200 rounded-lg transition-all duration-200 opacity-70 hover:opacity-100" title="Salin nilai">
                                                                     <i class="fas fa-copy text-sm"></i>
                                                                 </button>
-                                                                @endif
+                                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -288,19 +291,19 @@
                                                         </td>
                                                         <td class="px-6 py-4">
                                                             <div class="flex items-center justify-between group/val">
-                                                                <span class="text-white font-semibold">{{ $form->citizen_id ?: '-' }}</span>
-                                                                @if($form->citizen_id)
-                                                                <button onclick="copyToClipboard('{{ addslashes($form->citizen_id) }}', this)" class="ml-3 p-2 bg-sky-500/20 hover:bg-sky-500/40 text-sky-300 hover:text-sky-200 rounded-lg transition-all duration-200 opacity-70 hover:opacity-100" title="Salin nilai">
+                                                                <span class="text-white font-semibold"><?php echo e($form->citizen_id ?: '-'); ?></span>
+                                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($form->citizen_id): ?>
+                                                                <button onclick="copyToClipboard('<?php echo e(addslashes($form->citizen_id)); ?>', this)" class="ml-3 p-2 bg-sky-500/20 hover:bg-sky-500/40 text-sky-300 hover:text-sky-200 rounded-lg transition-all duration-200 opacity-70 hover:opacity-100" title="Salin nilai">
                                                                     <i class="fas fa-copy text-sm"></i>
                                                                 </button>
-                                                                @endif
+                                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                             </div>
                                                         </td>
                                                     </tr>
 
-                                                    @foreach($form->form_data as $key => $value)
-                                                        @if($value !== null && $value !== '' && !in_array($key, ['photo_ktp_url', 'photo_skb_url']))
-                                                            @php
+                                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $form->form_data; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $value): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($value !== null && $value !== '' && !in_array($key, ['photo_ktp_url', 'photo_skb_url'])): ?>
+                                                            <?php
                                                                 // Format label yang lebih readable
                                                                 $label = ucwords(str_replace(['_', '-'], ' ', $key));
                                                                 // Mapping label khusus untuk beberapa field
@@ -329,7 +332,7 @@
                                                                         $displayValue = $value;
                                                                     }
                                                                 }
-                                                            @endphp
+                                                            ?>
                                                             <tr class="hover:bg-white/10 transition-all duration-200 group">
                                                                 <td class="px-6 py-4">
                                                                     <div class="flex items-center space-x-3">
@@ -337,51 +340,52 @@
                                                                             class="w-2 h-2 bg-gradient-to-br from-cyan-400 to-sky-400 rounded-full group-hover:scale-125 transition-transform">
                                                                         </div>
                                                                         <span
-                                                                            class="text-gray-300 font-medium text-sm">{{ $displayLabel }}</span>
+                                                                            class="text-gray-300 font-medium text-sm"><?php echo e($displayLabel); ?></span>
                                                                     </div>
                                                                 </td>
                                                                 <td class="px-6 py-4">
                                                                     <div class="flex items-center justify-between group/val">
-                                                                        <span class="text-white font-semibold">{{ $displayValue ?: '-' }}</span>
-                                                                        @if($displayValue)
+                                                                        <span class="text-white font-semibold"><?php echo e($displayValue ?: '-'); ?></span>
+                                                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($displayValue): ?>
                                                                         <button
-                                                                            onclick="copyToClipboard('{{ addslashes($displayValue) }}', this)"
+                                                                            onclick="copyToClipboard('<?php echo e(addslashes($displayValue)); ?>', this)"
                                                                             class="ml-3 p-2 bg-sky-500/20 hover:bg-sky-500/40 text-sky-300 hover:text-sky-200 rounded-lg transition-all duration-200 opacity-70 hover:opacity-100"
                                                                             title="Salin nilai">
                                                                             <i class="fas fa-copy text-sm"></i>
                                                                         </button>
-                                                                        @endif
+                                                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                                     </div>
                                                                 </td>
                                                             </tr>
-                                                        @endif
-                                                    @endforeach
+                                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                 </tbody>
                                             </table>
                                         </div>
                                     </div>
                                 </div>
-                            @endif
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
                     </div>
 
                     <!-- Deskripsi -->
                     <div class="backdrop-blur-xl border-2 border-sky-400/60 rounded-2xl shadow-2xl p-6 md:p-8 mb-6"
                         style="background-color: rgba(7, 89, 133, 0.9);">
-                        @php
+                        <?php
                             $isAppointmentForm = in_array($form->form_type, ['penyakit_dalam', 'spesialis_anak', 'spesialis_bedah', 'spesialis_mata', 'spesialis_saraf', 'spesialis_urologi', 'spesialis_tht', 'spesialis_ortopedi']);
-                        @endphp
+                        ?>
                         <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
-                            <i class="fas {{ $isAppointmentForm ? 'fa-stethoscope' : 'fa-file-alt' }} mr-3 text-cyan-400"></i>
-                            {{ $isAppointmentForm ? 'Keluhan Medis / Deskripsi' : 'Deskripsi Permintaan' }}
+                            <i class="fas <?php echo e($isAppointmentForm ? 'fa-stethoscope' : 'fa-file-alt'); ?> mr-3 text-cyan-400"></i>
+                            <?php echo e($isAppointmentForm ? 'Keluhan Medis / Deskripsi' : 'Deskripsi Permintaan'); ?>
+
                         </h2>
                         <div class="bg-white/5 rounded-xl p-6 border border-white/10">
-                            <p class="text-gray-200 text-lg leading-relaxed">{{ $form->description }}</p>
+                            <p class="text-gray-200 text-lg leading-relaxed"><?php echo e($form->description); ?></p>
                         </div>
                     </div>
 
                     <!-- Hasil Tes Psikologi Lengkap -->
-                    @if(in_array($form->form_type, ['tes_psikologi', 'surat_psikolog']) && is_array($form->form_data) && isset($form->form_data['suggestions']) && !empty($form->form_data['suggestions']))
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(in_array($form->form_type, ['tes_psikologi', 'surat_psikolog']) && is_array($form->form_data) && isset($form->form_data['suggestions']) && !empty($form->form_data['suggestions'])): ?>
                         <div class="backdrop-blur-xl border-2 border-indigo-400/60 rounded-2xl shadow-2xl p-6 md:p-8 mb-6"
                             style="background-color: rgba(79, 70, 229, 0.15);">
                             <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
@@ -398,14 +402,14 @@
                                     <div>
                                         <div class="flex justify-between mb-1">
                                             <span class="text-sm font-medium text-indigo-200">Tingkat Stres (PSS-10)</span>
-                                            <span class="text-sm font-bold text-white">{{ $form->form_data['pss_score'] ?? 0 }}/40</span>
+                                            <span class="text-sm font-bold text-white"><?php echo e($form->form_data['pss_score'] ?? 0); ?>/40</span>
                                         </div>
                                         <div class="w-full bg-indigo-900/40 rounded-full h-2.5">
-                                            @php 
+                                            <?php 
                                                 $pss_percent = (($form->form_data['pss_score'] ?? 0) / 40) * 100;
                                                 $pss_color = $pss_percent > 65 ? 'bg-red-500' : ($pss_percent > 35 ? 'bg-yellow-500' : 'bg-green-500');
-                                            @endphp
-                                            <div class="{{ $pss_color }} h-2.5 rounded-full transition-all duration-1000" style="width: {{ $pss_percent }}%"></div>
+                                            ?>
+                                            <div class="<?php echo e($pss_color); ?> h-2.5 rounded-full transition-all duration-1000" style="width: <?php echo e($pss_percent); ?>%"></div>
                                         </div>
                                         <p class="text-xs text-indigo-300 mt-1">Semakin rendah semakin baik</p>
                                     </div>
@@ -414,24 +418,24 @@
                                     <div>
                                         <div class="flex justify-between mb-1">
                                             <span class="text-sm font-medium text-indigo-200">Harga Diri (RSES)</span>
-                                            <span class="text-sm font-bold text-white">{{ $form->form_data['rses_score'] ?? 0 }}/40</span>
+                                            <span class="text-sm font-bold text-white"><?php echo e($form->form_data['rses_score'] ?? 0); ?>/40</span>
                                         </div>
                                         <div class="w-full bg-indigo-900/40 rounded-full h-2.5">
-                                            @php 
+                                            <?php 
                                                 $rses_percent = (($form->form_data['rses_score'] ?? 0) / 40) * 100;
                                                 $rses_color = $rses_percent < 40 ? 'bg-red-500' : ($rses_percent < 60 ? 'bg-yellow-500' : 'bg-green-500');
-                                            @endphp
-                                            <div class="{{ $rses_color }} h-2.5 rounded-full transition-all duration-1000" style="width: {{ $rses_percent }}%"></div>
+                                            ?>
+                                            <div class="<?php echo e($rses_color); ?> h-2.5 rounded-full transition-all duration-1000" style="width: <?php echo e($rses_percent); ?>%"></div>
                                         </div>
                                         <p class="text-xs text-indigo-300 mt-1">Semakin tinggi semakin positif</p>
                                     </div>
 
                                     <!-- BFI Personality Traits -->
-                                    @if(isset($form->form_data['bfi_scores']))
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($form->form_data['bfi_scores'])): ?>
                                     <div>
                                         <h4 class="font-bold text-sm text-indigo-200 mb-2">Dominansi Kepribadian (BFI)</h4>
                                         <div class="flex flex-wrap gap-2">
-                                            @php
+                                            <?php
                                                 $trait_names_id = [
                                                     'extraversion' => 'Ekstroversi',
                                                     'agreeableness' => 'Keramahan',
@@ -439,26 +443,26 @@
                                                     'neuroticism' => 'Neurotisme',
                                                     'openness' => 'Keterbukaan'
                                                 ];
-                                            @endphp
-                                            @foreach($form->form_data['bfi_scores'] as $trait => $score)
-                                                @if($score >= 3.5)
+                                            ?>
+                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $form->form_data['bfi_scores']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $trait => $score): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($score >= 3.5): ?>
                                                 <span class="px-3 py-1.5 bg-indigo-500/30 text-indigo-200 text-xs rounded-lg font-semibold border border-indigo-400/30">
-                                                    {{ $trait_names_id[$trait] ?? ucfirst($trait) }} ({{ number_format($score, 1) }})
+                                                    <?php echo e($trait_names_id[$trait] ?? ucfirst($trait)); ?> (<?php echo e(number_format($score, 1)); ?>)
                                                 </span>
-                                                @endif
-                                            @endforeach
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                         </div>
                                         <!-- Show all traits with scores -->
                                         <div class="mt-3 space-y-1">
-                                            @foreach($form->form_data['bfi_scores'] as $trait => $score)
+                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $form->form_data['bfi_scores']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $trait => $score): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div class="flex justify-between text-xs">
-                                                <span class="text-gray-300">{{ $trait_names_id[$trait] ?? ucfirst($trait) }}</span>
-                                                <span class="text-white font-mono">{{ number_format($score, 2) }}/5.0</span>
+                                                <span class="text-gray-300"><?php echo e($trait_names_id[$trait] ?? ucfirst($trait)); ?></span>
+                                                <span class="text-white font-mono"><?php echo e(number_format($score, 2)); ?>/5.0</span>
                                             </div>
-                                            @endforeach
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                         </div>
                                     </div>
-                                    @endif
+                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
 
                                 <!-- Recommendations Section -->
@@ -467,12 +471,12 @@
                                         <i class="fas fa-lightbulb text-yellow-400 mr-2"></i> Rekomendasi
                                     </h4>
                                     <ul class="space-y-3">
-                                        @foreach($form->form_data['suggestions'] as $suggestion)
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $form->form_data['suggestions']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $suggestion): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                         <li class="flex items-start text-white text-sm leading-relaxed">
                                             <i class="fas fa-check-circle text-green-400 mt-1 mr-3 flex-shrink-0"></i>
-                                            <span>{{ $suggestion }}</span>
+                                            <span><?php echo e($suggestion); ?></span>
                                         </li>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </ul>
                                 </div>
                             </div>
@@ -483,10 +487,10 @@
                                 </p>
                             </div>
                         </div>
-                    @endif
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                     <!-- Foto Dokumen (untuk operasi plastik) -->
-                    @if($form->form_type === 'operasi_plastik')
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($form->form_type === 'operasi_plastik'): ?>
                         <div class="backdrop-blur-xl border-2 border-sky-400/60 rounded-2xl shadow-2xl p-6 md:p-8 mb-6"
                             style="background-color: rgba(7, 89, 133, 0.9);">
                             <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
@@ -501,25 +505,25 @@
                                         Foto KTP
                                     </h3>
                                     <div class="relative">
-                                        @if(isset($form->form_data['photo_ktp_url']) && !empty($form->form_data['photo_ktp_url']))
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($form->form_data['photo_ktp_url']) && !empty($form->form_data['photo_ktp_url'])): ?>
                                             <div class="relative">
-                                                <img src="{{ $form->form_data['photo_ktp_url'] }}" alt="Foto KTP"
+                                                <img src="<?php echo e($form->form_data['photo_ktp_url']); ?>" alt="Foto KTP"
                                                     class="w-full h-auto rounded-lg border border-white/20 shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer"
-                                                    onclick="openImageModal('{{ $form->form_data['photo_ktp_url'] }}', 'Foto KTP')"
+                                                    onclick="openImageModal('<?php echo e($form->form_data['photo_ktp_url']); ?>', 'Foto KTP')"
                                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                                                 <div class="hidden text-center py-8 bg-white/5 rounded-lg border border-white/10">
                                                     <i class="fas fa-exclamation-triangle text-yellow-400 text-4xl mb-3"></i>
                                                     <p class="text-yellow-400 font-medium">Foto KTP tidak dapat dimuat</p>
                                                     <p class="text-gray-400 text-sm mt-2">URL:
-                                                        {{ $form->form_data['photo_ktp_url'] }}</p>
+                                                        <?php echo e($form->form_data['photo_ktp_url']); ?></p>
                                                 </div>
                                             </div>
-                                        @else
+                                        <?php else: ?>
                                             <div class="text-center py-8 bg-white/5 rounded-lg border border-white/10">
                                                 <i class="fas fa-image text-gray-400 text-4xl mb-3"></i>
                                                 <p class="text-gray-400">Foto KTP tidak diupload</p>
                                             </div>
-                                        @endif
+                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
                                 </div>
 
@@ -530,33 +534,33 @@
                                         Foto SKB
                                     </h3>
                                     <div class="relative">
-                                        @if(isset($form->form_data['photo_skb_url']) && !empty($form->form_data['photo_skb_url']))
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($form->form_data['photo_skb_url']) && !empty($form->form_data['photo_skb_url'])): ?>
                                             <div class="relative">
-                                                <img src="{{ $form->form_data['photo_skb_url'] }}" alt="Foto SKB"
+                                                <img src="<?php echo e($form->form_data['photo_skb_url']); ?>" alt="Foto SKB"
                                                     class="w-full h-auto rounded-lg border border-white/20 shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer"
-                                                    onclick="openImageModal('{{ $form->form_data['photo_skb_url'] }}', 'Foto SKB')"
+                                                    onclick="openImageModal('<?php echo e($form->form_data['photo_skb_url']); ?>', 'Foto SKB')"
                                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                                                 <div class="hidden text-center py-8 bg-white/5 rounded-lg border border-white/10">
                                                     <i class="fas fa-exclamation-triangle text-yellow-400 text-4xl mb-3"></i>
                                                     <p class="text-yellow-400 font-medium">Foto SKB tidak dapat dimuat</p>
                                                     <p class="text-gray-400 text-sm mt-2">URL:
-                                                        {{ $form->form_data['photo_skb_url'] }}</p>
+                                                        <?php echo e($form->form_data['photo_skb_url']); ?></p>
                                                 </div>
                                             </div>
-                                        @else
+                                        <?php else: ?>
                                             <div class="text-center py-8 bg-white/5 rounded-lg border border-white/10">
                                                 <i class="fas fa-image text-gray-400 text-4xl mb-3"></i>
                                                 <p class="text-gray-400">Foto SKB tidak diupload</p>
                                             </div>
-                                        @endif
+                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    @endif
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                     <!-- Testimoni Section -->
-                    @if($form->testimoni)
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($form->testimoni): ?>
                         <div class="backdrop-blur-xl border-2 border-sky-400/60 rounded-2xl shadow-2xl p-6 md:p-8"
                             style="background-color: rgba(7, 89, 133, 0.9);">
                             <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
@@ -569,47 +573,47 @@
                                     <div class="flex items-center justify-between mb-3">
                                         <span class="text-white font-semibold">Rating:</span>
                                         <div class="flex text-yellow-400">
-                                            @for($i = 1; $i <= 5; $i++)
+                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php for($i = 1; $i <= 5; $i++): ?>
                                                 <i
-                                                    class="fas fa-star {{ $i <= $form->rating ? 'text-yellow-400' : 'text-gray-500' }}"></i>
-                                            @endfor
-                                            <span class="ml-2 text-white font-bold">({{ $form->rating }}/5)</span>
+                                                    class="fas fa-star <?php echo e($i <= $form->rating ? 'text-yellow-400' : 'text-gray-500'); ?>"></i>
+                                            <?php endfor; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                            <span class="ml-2 text-white font-bold">(<?php echo e($form->rating); ?>/5)</span>
                                         </div>
                                     </div>
                                     <div class="bg-black/30 rounded-lg p-4 border border-white/10">
-                                        <p class="text-gray-200 italic leading-relaxed">"{{ $form->testimoni }}"</p>
+                                        <p class="text-gray-200 italic leading-relaxed">"<?php echo e($form->testimoni); ?>"</p>
                                     </div>
                                 </div>
                                 <div class="mt-4 pt-4 border-t border-white/10">
                                     <div class="flex items-center justify-between">
                                         <span class="text-gray-300 text-sm">Status Testimoni:</span>
-                                        @if($form->testimoni_approved)
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($form->testimoni_approved): ?>
                                             <span
                                                 class="px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-sm font-medium border border-green-500/30">
                                                 <i class="fas fa-check-circle mr-1"></i>Disetujui
                                             </span>
-                                        @else
+                                        <?php else: ?>
                                             <span
                                                 class="px-3 py-1 bg-yellow-500/20 text-yellow-300 rounded-full text-sm font-medium border border-yellow-500/30">
                                                 <i class="fas fa-clock mr-1"></i>Menunggu Persetujuan
                                             </span>
-                                        @endif
+                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
-                                    @if(!$form->testimoni_approved)
-                                        <form method="POST" action="{{ route('staff.forms.testimoni.approve', $form->id) }}"
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!$form->testimoni_approved): ?>
+                                        <form method="POST" action="<?php echo e(route('staff.forms.testimoni.approve', $form->id)); ?>"
                                             class="mt-4"
                                             onsubmit="return confirm('Yakin ingin menyetujui testimoni ini untuk ditampilkan di halaman beranda?');">
-                                            @csrf
+                                            <?php echo csrf_field(); ?>
                                             <button type="submit"
                                                 class="w-full flex items-center justify-center px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white rounded-lg transition-all duration-300 font-medium shadow-lg">
                                                 <i class="fas fa-check-circle mr-2"></i>Setujui Testimoni
                                             </button>
                                         </form>
-                                    @endif
+                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
                             </div>
                         </div>
-                    @endif
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </div>
 
                 <!-- Sidebar -->
@@ -622,41 +626,43 @@
                             Aksi Cepat
                         </h3>
                         <div class="space-y-3">
-                            @if($form->status === 'pending')
-                                @php
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($form->status === 'pending'): ?>
+                                <?php
                                     $isAppointment = in_array($form->form_type, ['penyakit_dalam', 'spesialis_anak', 'spesialis_bedah', 'spesialis_mata', 'spesialis_saraf', 'spesialis_urologi', 'spesialis_tht', 'spesialis_ortopedi']);
                                     $canApprove = $user->canApproveForm($form->form_type);
-                                @endphp
+                                ?>
 
-                                @if($canApprove)
-                                    <form method="POST" action="{{ route('staff.forms.approve', $form->id) }}"
-                                        onsubmit="return confirm('{{ $isAppointment ? 'Yakin ingin menandai janji temu sudah ditemui?' : 'Yakin ingin menyetujui formulir ini?' }}');">
-                                        @csrf
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($canApprove): ?>
+                                    <form method="POST" action="<?php echo e(route('staff.forms.approve', $form->id)); ?>"
+                                        onsubmit="return confirm('<?php echo e($isAppointment ? 'Yakin ingin menandai janji temu sudah ditemui?' : 'Yakin ingin menyetujui formulir ini?'); ?>');">
+                                        <?php echo csrf_field(); ?>
                                         <button
-                                            class="w-full flex items-center justify-center px-4 py-3 {{ $isAppointment ? 'bg-green-500 hover:bg-green-600' : 'bg-sky-500 hover:bg-sky-600' }} text-white rounded-lg transition-all duration-300 font-medium shadow-lg">
+                                            class="w-full flex items-center justify-center px-4 py-3 <?php echo e($isAppointment ? 'bg-green-500 hover:bg-green-600' : 'bg-sky-500 hover:bg-sky-600'); ?> text-white rounded-lg transition-all duration-300 font-medium shadow-lg">
                                             <i
-                                                class="fas fa-check mr-2"></i>{{ $isAppointment ? 'Sudah Ditemui' : 'Setujui Formulir' }}
+                                                class="fas fa-check mr-2"></i><?php echo e($isAppointment ? 'Sudah Ditemui' : 'Setujui Formulir'); ?>
+
                                         </button>
                                     </form>
-                                @else
+                                <?php else: ?>
                                     <button disabled
                                         class="w-full flex items-center justify-center px-4 py-3 bg-gray-500/50 text-gray-300 rounded-lg transition-all duration-300 font-medium shadow-lg cursor-not-allowed opacity-60"
                                         title="Level role Anda tidak mencukupi untuk menyetujui formulir ini">
-                                        <i class="fas fa-lock mr-2"></i>{{ $isAppointment ? 'Sudah Ditemui' : 'Setujui Formulir' }}
-                                    </button>
-                                @endif
+                                        <i class="fas fa-lock mr-2"></i><?php echo e($isAppointment ? 'Sudah Ditemui' : 'Setujui Formulir'); ?>
 
-                                <form method="POST" action="{{ route('staff.forms.reject', $form->id) }}"
+                                    </button>
+                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
+                                <form method="POST" action="<?php echo e(route('staff.forms.reject', $form->id)); ?>"
                                     onsubmit="return confirm('Yakin ingin menolak formulir ini?');">
-                                    @csrf
+                                    <?php echo csrf_field(); ?>
                                     <button
                                         class="w-full flex items-center justify-center px-4 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all duration-300 font-medium shadow-lg">
                                         <i class="fas fa-times mr-2"></i>Tolak Formulir
                                     </button>
                                 </form>
-                            @endif
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                            <a href="{{ route('staff.forms') }}"
+                            <a href="<?php echo e(route('staff.forms')); ?>"
                                 class="w-full flex items-center justify-center px-4 py-3 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-all duration-300 font-medium border border-white/20">
                                 <i class="fas fa-list mr-2"></i>Kembali ke Daftar
                             </a>
@@ -673,16 +679,17 @@
                         <div class="space-y-4">
                             <div class="flex justify-between items-center py-2 border-b border-white/10">
                                 <span class="text-gray-300 text-sm">Dibuat</span>
-                                <span class="text-white text-sm font-medium">{{ $form->created_at->diffForHumans() }}</span>
+                                <span class="text-white text-sm font-medium"><?php echo e($form->created_at->diffForHumans()); ?></span>
                             </div>
                             <div class="flex justify-between items-center py-2 border-b border-white/10">
                                 <span class="text-gray-300 text-sm">Diperbarui</span>
-                                <span class="text-white text-sm font-medium">{{ $form->updated_at->diffForHumans() }}</span>
+                                <span class="text-white text-sm font-medium"><?php echo e($form->updated_at->diffForHumans()); ?></span>
                             </div>
                             <div class="flex justify-between items-center py-2">
                                 <span class="text-gray-300 text-sm">Durasi</span>
                                 <span
-                                    class="text-white text-sm font-medium">{{ $form->created_at->diffInHours($form->updated_at) }}
+                                    class="text-white text-sm font-medium"><?php echo e($form->created_at->diffInHours($form->updated_at)); ?>
+
                                     jam</span>
                             </div>
                         </div>
@@ -700,24 +707,25 @@
                                 <div>
                                     <p class="text-white text-sm font-medium">Formulir Dikirim</p>
                                     <p class="text-gray-400 text-xs">
-                                        {{ $form->created_at->setTimezone('Asia/Jakarta')->format('d M Y, H:i') }} WIB</p>
+                                        <?php echo e($form->created_at->setTimezone('Asia/Jakarta')->format('d M Y, H:i')); ?> WIB</p>
                                 </div>
                             </div>
 
-                            @if($form->status !== 'pending')
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($form->status !== 'pending'): ?>
                                 <div class="flex items-center">
                                     <div
-                                        class="w-3 h-3 bg-{{ $form->status === 'approved' ? 'green' : 'red' }}-500 rounded-full mr-3">
+                                        class="w-3 h-3 bg-<?php echo e($form->status === 'approved' ? 'green' : 'red'); ?>-500 rounded-full mr-3">
                                     </div>
                                     <div>
                                         <p class="text-white text-sm font-medium">
-                                            {{ $form->status === 'approved' ? 'Disetujui' : 'Ditolak' }}
+                                            <?php echo e($form->status === 'approved' ? 'Disetujui' : 'Ditolak'); ?>
+
                                         </p>
                                         <p class="text-gray-400 text-xs">
-                                            {{ $form->updated_at->setTimezone('Asia/Jakarta')->format('d M Y, H:i') }} WIB</p>
+                                            <?php echo e($form->updated_at->setTimezone('Asia/Jakarta')->format('d M Y, H:i')); ?> WIB</p>
                                     </div>
                                 </div>
-                            @else
+                            <?php else: ?>
                                 <div class="flex items-center">
                                     <div class="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
                                     <div>
@@ -725,7 +733,7 @@
                                         <p class="text-gray-400 text-xs">Status saat ini</p>
                                     </div>
                                 </div>
-                            @endif
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -791,4 +799,5 @@
             });
         }
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\website\EMS-IME\public_html\resources\views/staff/form-detail.blade.php ENDPATH**/ ?>

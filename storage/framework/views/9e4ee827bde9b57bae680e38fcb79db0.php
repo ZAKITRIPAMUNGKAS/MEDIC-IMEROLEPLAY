@@ -1,8 +1,6 @@
-@extends('layouts.app')
+<?php $__env->startSection('title', 'Form ' . ($formTypes[$type] ?? 'Layanan Medis') . ' - Portal Medis MPK-BA'); ?>
 
-@section('title', 'Form ' . ($formTypes[$type] ?? 'Layanan Medis') . ' - Portal Medis MPK-BA')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
     <div class="relative min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900"></div>
         <div class="absolute inset-0 bg-black bg-opacity-30"></div>
@@ -11,27 +9,29 @@
             <div class="glass-effect rounded-2xl elegant-shadow-lg p-4 sm:p-6 md:p-8 lg:p-12">
                 <div class="text-center mb-6 sm:mb-8 md:mb-10">
                     <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">
-                        {{ $formTypes[$type] ?? 'Formulir Layanan' }}
+                        <?php echo e($formTypes[$type] ?? 'Formulir Layanan'); ?>
+
                     </h1>
                     <p class="text-blue-100 text-sm sm:text-base font-medium">Silakan lengkapi informasi di bawah ini dengan
                         cermat.</p>
                 </div>
 
-                {{-- Global Flash Message & Error Handler --}}
-                @if(session('error') || session('success') || $errors->any())
+                
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(session('error') || session('success') || $errors->any()): ?>
                     <div class="fixed top-5 right-5 z-[9999] w-full max-w-md animate-fade-in-left" id="global-toast">
-                        @if(session('error') || $errors->any())
+                        <?php if(session('error') || $errors->any()): ?>
                             <div
                                 class="bg-red-600 border-l-4 border-white text-white p-4 rounded shadow-2xl flex items-start gap-3">
                                 <div class="flex-shrink-0"><i class="fas fa-exclamation-circle text-2xl"></i></div>
                                 <div>
                                     <h3 class="font-bold text-lg">Perhatian!</h3>
                                     <p class="text-sm opacity-90">
-                                        @if(session('error'))
-                                            {{ session('error') }}
-                                        @else
-                                            Terdapat {{ $errors->count() }} kesalahan pada isian formulir. Mohon periksa kembali.
-                                        @endif
+                                        <?php if(session('error')): ?>
+                                            <?php echo e(session('error')); ?>
+
+                                        <?php else: ?>
+                                            Terdapat <?php echo e($errors->count()); ?> kesalahan pada isian formulir. Mohon periksa kembali.
+                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </p>
                                 </div>
                                 <button onclick="document.getElementById('global-toast').remove()"
@@ -39,20 +39,20 @@
                                     <i class="fas fa-times"></i>
                                 </button>
                             </div>
-                        @elseif(session('success'))
+                        <?php elseif(session('success')): ?>
                             <div
                                 class="bg-green-600 border-l-4 border-white text-white p-4 rounded shadow-2xl flex items-start gap-3">
                                 <div class="flex-shrink-0"><i class="fas fa-check-circle text-2xl"></i></div>
                                 <div>
                                     <h3 class="font-bold text-lg">Berhasil!</h3>
-                                    <p class="text-sm opacity-90">{{ session('success') }}</p>
+                                    <p class="text-sm opacity-90"><?php echo e(session('success')); ?></p>
                                 </div>
                                 <button onclick="document.getElementById('global-toast').remove()"
                                     class="ml-auto opacity-70 hover:opacity-100">
                                     <i class="fas fa-times"></i>
                                 </button>
                             </div>
-                        @endif
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
 
                     <script>
@@ -69,25 +69,25 @@
 
                             // Backup: Browser Native Alert
                             setTimeout(function () {
-                                @if(session('error'))
-                                    alert(@json(session('error')));
-                                @elseif($errors->any())
+                                <?php if(session('error')): ?>
+                                    alert(<?php echo json_encode(session('error'), 15, 512) ?>);
+                                <?php elseif($errors->any()): ?>
                                     alert("Gagal mengirim formulir.\nTerdapat kesalahan pada data yang diinput.\nSilakan periksa pesan error berwarna merah di formulir.");
-                                @elseif(session('success'))
-                                    // alert(@json(session('success'))); // Optional for success
-                                @endif
+                                <?php elseif(session('success')): ?>
+                                    // alert(<?php echo json_encode(session('success'), 15, 512) ?>); // Optional for success
+                                <?php endif; ?>
                                                                             }, 500);
                         });
                     </script>
-                @endif
-                {{-- End Global Flash Message --}}
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                
 
-                <form method="POST" action="{{ route('public.form.submit') }}" id="medicalForm"
+                <form method="POST" action="<?php echo e(route('public.form.submit')); ?>" id="medicalForm"
                     enctype="multipart/form-data">
-                    @csrf
-                    <input type="hidden" name="form_type" value="{{ $type }}">
+                    <?php echo csrf_field(); ?>
+                    <input type="hidden" name="form_type" value="<?php echo e($type); ?>">
 
-                    @if($type !== 'tes_psikologi')
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($type !== 'tes_psikologi'): ?>
                         <div class="border-b border-white/10 pb-6 mb-8">
                             <h3 class="text-xl font-semibold text-white mb-6">Informasi Data Diri</h3>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
@@ -96,14 +96,28 @@
                                         Rumah Sakit <span class="text-red-400">*</span>
                                     </label>
                                     <select id="hospital" name="hospital"
-                                        class="form-select @error('hospital') border-red-500 @enderror" required>
+                                        class="form-select <?php $__errorArgs = ['hospital'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
                                         <option value="">-- Pilih Rumah Sakit --</option>
-                                        <option value="alta" @if(old('hospital') == 'alta') selected @endif
+                                        <option value="alta" <?php if(old('hospital') == 'alta'): ?> selected <?php endif; ?>
                                             class="bg-slate-900 text-white font-bold">Alta Hospital</option>
-                                        <option value="roxwood" @if(old('hospital') == 'roxwood') selected @endif
+                                        <option value="roxwood" <?php if(old('hospital') == 'roxwood'): ?> selected <?php endif; ?>
                                             class="bg-slate-900 text-white font-bold">Roxwood Hospital</option>
                                     </select>
-                                    @error('hospital') <p class="form-error">{{ $message }}</p> @enderror
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['hospital'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
                                 <div>
                                     <label for="character_name"
@@ -111,57 +125,127 @@
                                         Nama Lengkap <span class="text-red-400">*</span>
                                     </label>
                                     <input type="text" id="character_name" name="character_name"
-                                        value="{{ old('character_name') }}"
-                                        class="form-input @error('character_name') border-red-500 @enderror"
+                                        value="<?php echo e(old('character_name')); ?>"
+                                        class="form-input <?php $__errorArgs = ['character_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                         placeholder="Masukkan Nama Lengkap" required>
-                                    @error('character_name') <p class="form-error">{{ $message }}</p> @enderror
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['character_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
                                 <div>
                                     <label for="birth_date" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
                                         Tanggal Lahir <span class="text-red-400">*</span>
                                     </label>
                                     <input type="date" id="birth_date" name="form_data[birth_date]"
-                                        value="{{ old('form_data.birth_date') }}"
-                                        class="form-input @error('form_data.birth_date') border-red-500 @enderror" required>
-                                    @error('form_data.birth_date') <p class="form-error">{{ $message }}</p> @enderror
+                                        value="<?php echo e(old('form_data.birth_date')); ?>"
+                                        class="form-input <?php $__errorArgs = ['form_data.birth_date'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.birth_date'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
                                 <div>
                                     <label for="gender" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
                                         Gender <span class="text-red-400">*</span>
                                     </label>
                                     <select id="gender" name="form_data[gender]"
-                                        class="form-select @error('form_data.gender') border-red-500 @enderror" required>
+                                        class="form-select <?php $__errorArgs = ['form_data.gender'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
                                         <option value="" class="bg-slate-900 text-white font-bold">Pilih Gender</option>
-                                        <option value="Laki-laki" @if(old('form_data.gender') == 'Laki-laki') selected @endif
+                                        <option value="Laki-laki" <?php if(old('form_data.gender') == 'Laki-laki'): ?> selected <?php endif; ?>
                                             class="bg-slate-900 text-white font-bold">Laki-laki</option>
-                                        <option value="Perempuan" @if(old('form_data.gender') == 'Perempuan') selected @endif
+                                        <option value="Perempuan" <?php if(old('form_data.gender') == 'Perempuan'): ?> selected <?php endif; ?>
                                             class="bg-slate-900 text-white font-bold">Perempuan</option>
                                     </select>
-                                    @error('form_data.gender') <p class="form-error">{{ $message }}</p> @enderror
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.gender'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
                                 <div>
                                     <label for="age" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
                                         Umur <span class="text-red-400">*</span>
                                     </label>
-                                    <input type="number" id="age" name="form_data[age]" value="{{ old('form_data.age') }}"
-                                        class="form-input @error('form_data.age') border-red-500 @enderror"
+                                    <input type="number" id="age" name="form_data[age]" value="<?php echo e(old('form_data.age')); ?>"
+                                        class="form-input <?php $__errorArgs = ['form_data.age'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                         placeholder="Contoh: 25" required>
-                                    @error('form_data.age') <p class="form-error">{{ $message }}</p> @enderror
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.age'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
                                 <div class="sm:col-span-2">
                                     <label for="occupation" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
                                         Pekerjaan <span class="text-red-400">*</span>
                                     </label>
                                     <input type="text" id="occupation" name="form_data[occupation]"
-                                        value="{{ old('form_data.occupation') }}"
-                                        class="form-input @error('form_data.occupation') border-red-500 @enderror"
+                                        value="<?php echo e(old('form_data.occupation')); ?>"
+                                        class="form-input <?php $__errorArgs = ['form_data.occupation'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                         placeholder="Contoh: Pengusaha" required>
-                                    @error('form_data.occupation') <p class="form-error">{{ $message }}</p> @enderror
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.occupation'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
                                 <div>
                                     <label for="citizen_id"
                                         class="block text-sm font-medium text-white mb-2 font-bold text-lg">Citizen ID</label>
-                                    <input type="text" id="citizen_id" name="citizen_id" value="{{ old('citizen_id') }}"
+                                    <input type="text" id="citizen_id" name="citizen_id" value="<?php echo e(old('citizen_id')); ?>"
                                         class="form-input" placeholder="Contoh: 123456">
                                 </div>
                                 <div>
@@ -170,26 +254,40 @@
                                         No HP (IC) <span class="text-red-400">*</span>
                                     </label>
                                     <input type="text" id="phone_number" name="form_data[phone_number]"
-                                        value="{{ old('form_data.phone_number') }}"
-                                        class="form-input @error('form_data.phone_number') border-red-500 @enderror"
+                                        value="<?php echo e(old('form_data.phone_number')); ?>"
+                                        class="form-input <?php $__errorArgs = ['form_data.phone_number'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                         placeholder="Contoh: 08123456789" required>
-                                    @error('form_data.phone_number') <p class="form-error">{{ $message }}</p> @enderror
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.phone_number'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
                             </div>
                         </div>
-                    @endif
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                     <div class="mb-8">
                         <h3 class="text-xl font-bold text-white mb-6">
-                            @if($type === 'pendaftaran_karakter')
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($type === 'pendaftaran_karakter'): ?>
                                 Kronologi CK & Penyebab Kematian
-                            @else
+                            <?php else: ?>
                                 Detail Kebutuhan
-                            @endif
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </h3>
                         <div class="space-y-6">
 
-                            @if($type === 'surat_kesehatan')
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($type === 'surat_kesehatan'): ?>
                                 <div>
                                     <label for="purpose_sk"
                                         class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan</label>
@@ -204,7 +302,7 @@
                                 </div>
 
 
-                            @elseif($type === 'operasi_plastik')
+                            <?php elseif($type === 'operasi_plastik'): ?>
                                 <div>
                                     <label for="purpose_op"
                                         class="block text-sm font-medium text-white mb-2 font-bold text-lg">Jenis Operasi
@@ -223,9 +321,23 @@
                                         Upload Foto KTP <span class="text-red-400">*</span>
                                     </label>
                                     <input type="file" id="photo_ktp_op" name="form_data[photo_ktp]"
-                                        class="form-file @error('form_data.photo_ktp') border-red-500 @enderror"
+                                        class="form-file <?php $__errorArgs = ['form_data.photo_ktp'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                         accept="image/*" required>
-                                    @error('form_data.photo_ktp') <p class="form-error">{{ $message }}</p> @enderror
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.photo_ktp'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     <p class="text-blue-200 text-sm mt-1">Format: JPG, PNG, GIF. Maksimal 4MB</p>
                                 </div>
                                 <div>
@@ -234,19 +346,33 @@
                                         Upload LEGAL DECLARATION <span class="text-red-400">*</span>
                                     </label>
                                     <input type="file" id="photo_skb_op" name="form_data[photo_skb]"
-                                        class="form-file @error('form_data.photo_skb') border-red-500 @enderror"
+                                        class="form-file <?php $__errorArgs = ['form_data.photo_skb'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                         accept="image/*" required>
-                                    @error('form_data.photo_skb') <p class="form-error">{{ $message }}</p> @enderror
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.photo_skb'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     <p class="text-blue-200 text-sm mt-1">Format: JPG, PNG, GIF. Maksimal 4MB</p>
                                 </div>
 
-                            @elseif($type === 'tes_psikologi')
+                            <?php elseif($type === 'tes_psikologi'): ?>
                                 <div class="mb-6">
                                     <h3 class="text-xl font-semibold text-white mb-4">Tes Psikologi Multi-Aspek</h3>
                                     <p class="text-blue-200 text-sm mb-6">Silakan jawab pertanyaan berikut dengan jujur. Hasil
                                         tes akan membantu psikolog dalam memberikan evaluasi yang tepat.</p>
 
-                                    {{-- Dropdown for Linking with Previous Surat Psikolog - REQUIRED --}}
+                                    
                                     <div
                                         class="mb-8 p-6 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border-2 border-indigo-400/30 rounded-xl">
                                         <div class="flex items-start gap-3 mb-4">
@@ -268,23 +394,38 @@
                                             Pilih Surat Psikolog <span class="text-red-400">*</span>
                                         </label>
                                         <select id="linked_psych_form" name="linked_psych_form_id"
-                                            class="form-select @error('linked_psych_form_id') border-red-500 @enderror"
+                                            class="form-select <?php $__errorArgs = ['linked_psych_form_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                             required>
                                             <option value="">-- Pilih Surat Psikolog --</option>
-                                            @foreach($availablePsychForms as $psychForm)
-                                                <option value="{{ $psychForm->id }}"
-                                                    data-character="{{ $psychForm->character_name }}"
-                                                    data-hospital="{{ $psychForm->hospital }}"
-                                                    data-doctor="{{ $psychForm->form_data['doctor_name'] ?? 'N/A' }}"
-                                                    @if(old('linked_psych_form_id') == $psychForm->id) selected @endif
+                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $availablePsychForms; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $psychForm): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <option value="<?php echo e($psychForm->id); ?>"
+                                                    data-character="<?php echo e($psychForm->character_name); ?>"
+                                                    data-hospital="<?php echo e($psychForm->hospital); ?>"
+                                                    data-doctor="<?php echo e($psychForm->form_data['doctor_name'] ?? 'N/A'); ?>"
+                                                    <?php if(old('linked_psych_form_id') == $psychForm->id): ?> selected <?php endif; ?>
                                                     class="bg-slate-900 text-white">
-                                                    [#{{ $psychForm->id }}] {{ $psychForm->character_name }} -
-                                                    {{ $psychForm->created_at->format('d M Y, H:i') }}
-                                                    ({{ ucfirst($psychForm->hospital) }})
+                                                    [#<?php echo e($psychForm->id); ?>] <?php echo e($psychForm->character_name); ?> -
+                                                    <?php echo e($psychForm->created_at->format('d M Y, H:i')); ?>
+
+                                                    (<?php echo e(ucfirst($psychForm->hospital)); ?>)
                                                 </option>
-                                            @endforeach
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                         </select>
-                                        @error('linked_psych_form_id') <p class="form-error">{{ $message }}</p> @enderror
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['linked_psych_form_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                                         <div class="mt-3 flex items-center gap-2 text-xs text-green-300">
                                             <i class="fas fa-info-circle"></i>
@@ -292,19 +433,19 @@
                                                     otomatis</strong> setelah tes selesai!</span>
                                         </div>
 
-                                        @if($availablePsychForms->isEmpty())
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($availablePsychForms->isEmpty()): ?>
                                             <div class="mt-4 p-4 bg-yellow-500/10 border border-yellow-400/30 rounded-lg">
                                                 <div class="flex items-start gap-2">
                                                     <i class="fas fa-exclamation-triangle text-yellow-300 mt-0.5"></i>
                                                     <div class="text-sm text-yellow-200">
                                                         <strong>Belum ada Surat Psikolog yang pending.</strong><br>
-                                                        Silakan <a href="{{ route('public.form', ['type' => 'surat_psikolog']) }}"
+                                                        Silakan <a href="<?php echo e(route('public.form', ['type' => 'surat_psikolog'])); ?>"
                                                             class="underline hover:text-yellow-100">buat Surat Psikolog terlebih
                                                             dahulu</a> sebelum mengisi tes psikologi.
                                                     </div>
                                                 </div>
                                             </div>
-                                        @endif
+                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
 
                                     <!-- Big Five Personality Test (BFI-10) -->
@@ -314,7 +455,7 @@
                                         <p class="text-blue-200 text-sm mb-4">Pilih jawaban yang paling sesuai dengan diri Anda:
                                         </p>
 
-                                        @php
+                                        <?php
                                             $bigfive_questions = [
                                                 "Saya adalah seseorang yang cenderung ekstrovert, suka bergaul.",
                                                 "Saya adalah seseorang yang cenderung bersikap kritis, suka berdebat.",
@@ -334,29 +475,29 @@
                                                 4 => "Setuju",
                                                 5 => "Sangat Setuju"
                                             ];
-                                        @endphp
+                                        ?>
 
-                                        @foreach($bigfive_questions as $i => $question)
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $bigfive_questions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $question): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div
                                                 class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
-                                                <p class="text-white mb-4 font-medium text-lg">{{ $i + 1 }}. {{ $question }}</p>
+                                                <p class="text-white mb-4 font-medium text-lg"><?php echo e($i + 1); ?>. <?php echo e($question); ?></p>
                                                 <div class="flex flex-wrap items-center gap-3">
-                                                    @foreach($bigfive_scale as $val => $label)
+                                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $bigfive_scale; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                         <label class="flex items-center cursor-pointer group">
-                                                            <input type="radio" name="form_data[bigfive{{ $i + 1 }}]" value="{{ $val }}"
-                                                                @if(old('form_data.bigfive' . ($i + 1)) == $val) checked @endif
+                                                            <input type="radio" name="form_data[bigfive<?php echo e($i + 1); ?>]" value="<?php echo e($val); ?>"
+                                                                <?php if(old('form_data.bigfive' . ($i + 1)) == $val): ?> checked <?php endif; ?>
                                                                 class="sr-only peer" required>
                                                             <div
                                                                 class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex-1 min-w-[100px] h-24">
-                                                                <span class="text-2xl font-bold text-white">{{ $val }}</span>
+                                                                <span class="text-2xl font-bold text-white"><?php echo e($val); ?></span>
                                                                 <span
-                                                                    class="text-[10px] text-gray-300 text-center leading-tight px-1">{{ $label }}</span>
+                                                                    class="text-[10px] text-gray-300 text-center leading-tight px-1"><?php echo e($label); ?></span>
                                                             </div>
                                                         </label>
-                                                    @endforeach
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                 </div>
                                             </div>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
 
                                     <!-- Stress Test (PSS-10) -->
@@ -365,7 +506,7 @@
                                         <p class="text-blue-200 text-sm mb-4">Seberapa sering Anda mengalami hal-hal berikut
                                             dalam sebulan terakhir:</p>
 
-                                        @php
+                                        <?php
                                             $stress_questions = [
                                                 "Seberapa sering Anda merasa terganggu oleh sesuatu yang tidak terduga?",
                                                 "Seberapa sering Anda merasa tidak mampu mengendalikan hal-hal penting dalam hidup Anda?",
@@ -385,26 +526,26 @@
                                                 3 => "Sering",
                                                 4 => "Sangat Sering"
                                             ];
-                                        @endphp
+                                        ?>
 
-                                        @foreach($stress_questions as $i => $question)
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $stress_questions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $question): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div
                                                 class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
-                                                <p class="text-white mb-4 font-medium text-lg">{{ $i + 1 }}. {{ $question }}</p>
+                                                <p class="text-white mb-4 font-medium text-lg"><?php echo e($i + 1); ?>. <?php echo e($question); ?></p>
                                                 <div class="flex flex-wrap items-center gap-3">
-                                                    @foreach($stress_scale as $val => $label)<label
+                                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $stress_scale; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><label
                                                         class="flex items-center cursor-pointer group"><input type="radio"
-                                                            name="form_data[stress{{ $i + 1 }}]" value="{{ $val }}"
-                                                            @if(old('form_data.stress' . ($i + 1)) == $val) checked @endif
+                                                            name="form_data[stress<?php echo e($i + 1); ?>]" value="<?php echo e($val); ?>"
+                                                            <?php if(old('form_data.stress' . ($i + 1)) == $val): ?> checked <?php endif; ?>
                                                             class="sr-only peer" required>
                                                         <div
                                                             class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24">
-                                                            <span class="text-2xl font-bold text-white">{{ $val }}</span><span
-                                                                class="text-xs text-gray-300 text-center leading-tight px-1">{{ $label }}</span>
+                                                            <span class="text-2xl font-bold text-white"><?php echo e($val); ?></span><span
+                                                                class="text-xs text-gray-300 text-center leading-tight px-1"><?php echo e($label); ?></span>
                                                         </div>
-                                                    </label>@endforeach</div>
+                                                    </label><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?></div>
                                             </div>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
 
                                     <!-- Self-Esteem Test (RSES) -->
@@ -414,7 +555,7 @@
                                             Anda:
                                         </p>
 
-                                        @php
+                                        <?php
                                             $esteem_questions = [
                                                 "Saya merasa bahwa saya adalah orang yang berharga, setara dengan orang lain.",
                                                 "Saya merasa saya memiliki sejumlah kualitas yang baik.",
@@ -433,34 +574,34 @@
                                                 3 => "Setuju",
                                                 4 => "Sangat Setuju"
                                             ];
-                                        @endphp
+                                        ?>
 
-                                        @foreach($esteem_questions as $i => $question)
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $esteem_questions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $question): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div
                                                 class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
-                                                <p class="text-white mb-4 font-medium text-lg">{{ $i + 1 }}. {{ $question }}</p>
+                                                <p class="text-white mb-4 font-medium text-lg"><?php echo e($i + 1); ?>. <?php echo e($question); ?></p>
                                                 <div class="flex flex-wrap items-center gap-3">
-                                                    @foreach($esteem_scale as $val => $label)<label
+                                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $esteem_scale; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><label
                                                         class="flex items-center cursor-pointer group"><input type="radio"
-                                                            name="form_data[esteem{{ $i + 1 }}]" value="{{ $val }}"
-                                                            @if(old('form_data.esteem' . ($i + 1)) == $val) checked @endif
+                                                            name="form_data[esteem<?php echo e($i + 1); ?>]" value="<?php echo e($val); ?>"
+                                                            <?php if(old('form_data.esteem' . ($i + 1)) == $val): ?> checked <?php endif; ?>
                                                             class="sr-only peer" required>
                                                         <div
                                                             class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24">
-                                                            <span class="text-2xl font-bold text-white">{{ $val }}</span><span
-                                                                class="text-xs text-gray-300 text-center leading-tight px-1">{{ $label }}</span>
+                                                            <span class="text-2xl font-bold text-white"><?php echo e($val); ?></span><span
+                                                                class="text-xs text-gray-300 text-center leading-tight px-1"><?php echo e($label); ?></span>
                                                         </div>
-                                                    </label>@endforeach</div>
+                                                    </label><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?></div>
                                             </div>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
 
                                     <!-- Hidden field for psychologist name (auto-filled from Surat Psikolog) -->
                                     <input type="hidden" id="doctor_name_tp" name="form_data[doctor_name]"
-                                        value="{{ old('form_data.doctor_name') }}" required>
+                                        value="<?php echo e(old('form_data.doctor_name')); ?>" required>
                                 </div>
 
-                            @elseif($type === 'surat_psikolog')
+                            <?php elseif($type === 'surat_psikolog'): ?>
                                 <div class="mb-6">
                                     <h3 class="text-xl font-semibold text-white mb-4">Formulir Psikologi</h3>
                                     <p class="text-blue-200 text-sm mb-6">Lengkapi formulir dan jawab pertanyaan berikut dengan
@@ -482,7 +623,7 @@
                                 </div>
 
 
-                                {{-- Psychology Tests Section --}}
+                                
                                 <div class="mt-8 border-t border-white/10 pt-8">
                                     <h4 class="text-xl font-semibold text-white mb-4">Tes Psikologi Multi-Aspek</h4>
                                     <p class="text-blue-200 text-sm mb-6">Silakan jawab semua pertanyaan berikut untuk
@@ -495,7 +636,7 @@
                                         <p class="text-blue-200 text-sm mb-4">Pilih jawaban yang paling sesuai dengan diri Anda:
                                         </p>
 
-                                        @php
+                                        <?php
                                             $bigfive_questions = [
                                                 "Saya adalah seseorang yang cenderung ekstrovert, suka bergaul.",
                                                 "Saya adalah seseorang yang cenderung bersikap kritis, suka berdebat.",
@@ -515,29 +656,29 @@
                                                 4 => "Setuju",
                                                 5 => "Sangat Setuju"
                                             ];
-                                        @endphp
+                                        ?>
 
-                                        @foreach($bigfive_questions as $i => $question)
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $bigfive_questions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $question): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div
                                                 class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
-                                                <p class="text-white mb-4 font-medium text-lg">{{ $i + 1 }}. {{ $question }}</p>
+                                                <p class="text-white mb-4 font-medium text-lg"><?php echo e($i + 1); ?>. <?php echo e($question); ?></p>
                                                 <div class="flex flex-wrap items-center gap-3">
-                                                    @foreach($bigfive_scale as $val => $label)
+                                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $bigfive_scale; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                         <label class="flex items-center cursor-pointer group">
-                                                            <input type="radio" name="form_data[bigfive{{ $i + 1 }}]" value="{{ $val }}"
-                                                                @if(old('form_data.bigfive' . ($i + 1)) == $val) checked @endif
+                                                            <input type="radio" name="form_data[bigfive<?php echo e($i + 1); ?>]" value="<?php echo e($val); ?>"
+                                                                <?php if(old('form_data.bigfive' . ($i + 1)) == $val): ?> checked <?php endif; ?>
                                                                 class="sr-only peer" required>
                                                             <div
                                                                 class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex-1 min-w-[100px] h-24">
-                                                                <span class="text-2xl font-bold text-white">{{ $val }}</span>
+                                                                <span class="text-2xl font-bold text-white"><?php echo e($val); ?></span>
                                                                 <span
-                                                                    class="text-[10px] text-gray-300 text-center leading-tight px-1">{{ $label }}</span>
+                                                                    class="text-[10px] text-gray-300 text-center leading-tight px-1"><?php echo e($label); ?></span>
                                                             </div>
                                                         </label>
-                                                    @endforeach
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                 </div>
                                             </div>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
 
                                     <!-- Stress Test (PSS-10) -->
@@ -546,7 +687,7 @@
                                         <p class="text-blue-200 text-sm mb-4">Seberapa sering Anda mengalami hal-hal berikut
                                             dalam sebulan terakhir:</p>
 
-                                        @php
+                                        <?php
                                             $stress_questions = [
                                                 "Seberapa sering Anda merasa terganggu oleh sesuatu yang tidak terduga?",
                                                 "Seberapa sering Anda merasa tidak mampu mengendalikan hal-hal penting dalam hidup Anda?",
@@ -566,26 +707,26 @@
                                                 3 => "Sering",
                                                 4 => "Sangat Sering"
                                             ];
-                                        @endphp
+                                        ?>
 
-                                        @foreach($stress_questions as $i => $question)
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $stress_questions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $question): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div
                                                 class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
-                                                <p class="text-white mb-4 font-medium text-lg">{{ $i + 1 }}. {{ $question }}</p>
+                                                <p class="text-white mb-4 font-medium text-lg"><?php echo e($i + 1); ?>. <?php echo e($question); ?></p>
                                                 <div class="flex flex-wrap items-center gap-3">
-                                                    @foreach($stress_scale as $val => $label)<label
+                                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $stress_scale; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><label
                                                         class="flex items-center cursor-pointer group"><input type="radio"
-                                                            name="form_data[stress{{ $i + 1 }}]" value="{{ $val }}"
-                                                            @if(old('form_data.stress' . ($i + 1)) == $val) checked @endif
+                                                            name="form_data[stress<?php echo e($i + 1); ?>]" value="<?php echo e($val); ?>"
+                                                            <?php if(old('form_data.stress' . ($i + 1)) == $val): ?> checked <?php endif; ?>
                                                             class="sr-only peer" required>
                                                         <div
                                                             class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24">
-                                                            <span class="text-2xl font-bold text-white">{{ $val }}</span><span
-                                                                class="text-xs text-gray-300 text-center leading-tight px-1">{{ $label }}</span>
+                                                            <span class="text-2xl font-bold text-white"><?php echo e($val); ?></span><span
+                                                                class="text-xs text-gray-300 text-center leading-tight px-1"><?php echo e($label); ?></span>
                                                         </div>
-                                                    </label>@endforeach</div>
+                                                    </label><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?></div>
                                             </div>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
 
                                     <!-- Self-Esteem Test (RSES) -->
@@ -594,7 +735,7 @@
                                         <p class="text-blue-200 text-sm mb-4">Pilih jawaban yang paling sesuai dengan perasaan
                                             Anda:</p>
 
-                                        @php
+                                        <?php
                                             $esteem_questions = [
                                                 "Saya merasa bahwa saya adalah orang yang berharga, setara dengan orang lain.",
                                                 "Saya merasa saya memiliki sejumlah kualitas yang baik.",
@@ -613,30 +754,30 @@
                                                 3 => "Setuju",
                                                 4 => "Sangat Setuju"
                                             ];
-                                        @endphp
+                                        ?>
 
-                                        @foreach($esteem_questions as $i => $question)
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $esteem_questions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $question): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div
                                                 class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
-                                                <p class="text-white mb-4 font-medium text-lg">{{ $i + 1 }}. {{ $question }}</p>
+                                                <p class="text-white mb-4 font-medium text-lg"><?php echo e($i + 1); ?>. <?php echo e($question); ?></p>
                                                 <div class="flex flex-wrap items-center gap-3">
-                                                    @foreach($esteem_scale as $val => $label)<label
+                                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $esteem_scale; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><label
                                                         class="flex items-center cursor-pointer group"><input type="radio"
-                                                            name="form_data[esteem{{ $i + 1 }}]" value="{{ $val }}"
-                                                            @if(old('form_data.esteem' . ($i + 1)) == $val) checked @endif
+                                                            name="form_data[esteem<?php echo e($i + 1); ?>]" value="<?php echo e($val); ?>"
+                                                            <?php if(old('form_data.esteem' . ($i + 1)) == $val): ?> checked <?php endif; ?>
                                                             class="sr-only peer" required>
                                                         <div
                                                             class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24">
-                                                            <span class="text-2xl font-bold text-white">{{ $val }}</span><span
-                                                                class="text-xs text-gray-300 text-center leading-tight px-1">{{ $label }}</span>
+                                                            <span class="text-2xl font-bold text-white"><?php echo e($val); ?></span><span
+                                                                class="text-xs text-gray-300 text-center leading-tight px-1"><?php echo e($label); ?></span>
                                                         </div>
-                                                    </label>@endforeach</div>
+                                                    </label><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?></div>
                                             </div>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
                                 </div>
 
-                            @elseif($type === 'konsultasi_medis')
+                            <?php elseif($type === 'konsultasi_medis'): ?>
                                 <div>
                                     <label for="purpose_km"
                                         class="block text-sm font-medium text-white mb-2 font-bold text-lg">Jenis
@@ -655,7 +796,7 @@
                                 </div>
 
 
-                            @elseif($type === 'laporan_kecelakaan')
+                            <?php elseif($type === 'laporan_kecelakaan'): ?>
                                 <div>
                                     <label for="purpose_lk"
                                         class="block text-sm font-medium text-white mb-2 font-bold text-lg">Jenis
@@ -677,7 +818,7 @@
                                 </div>
 
 
-                            @elseif($type === 'permintaan_ambulans')
+                            <?php elseif($type === 'permintaan_ambulans'): ?>
                                 <div>
                                     <label for="purpose_pa"
                                         class="block text-sm font-medium text-white mb-2 font-bold text-lg">Jenis
@@ -695,7 +836,7 @@
                                 </div>
 
 
-                            @elseif($type === 'penyakit_dalam')
+                            <?php elseif($type === 'penyakit_dalam'): ?>
                                 <div>
                                     <label for="purpose_pd"
                                         class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
@@ -718,21 +859,36 @@
                                         Nama Dokter <span class="text-red-400">*</span>
                                     </label>
                                     <select id="doctor_name_pd" name="form_data[doctor_name]"
-                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        class="form-select <?php $__errorArgs = ['form_data.doctor_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
                                         <option value="">-- Pilih Dokter --</option>
-                                        @foreach($doctors as $doctor)
-                                            <option value="{{ $doctor->name }}"
-                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $doctors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $doctor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($doctor->name); ?>"
+                                                data-hospital="<?php echo e($doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta')); ?>"
+                                                <?php if(old('form_data.doctor_name') == $doctor->name): ?> selected <?php endif; ?>
                                                 class="bg-slate-900 text-white font-bold">
-                                                {{ $doctor->name }}
+                                                <?php echo e($doctor->name); ?>
+
                                             </option>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </select>
-                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.doctor_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
 
-                            @elseif($type === 'spesialis_anak')
+                            <?php elseif($type === 'spesialis_anak'): ?>
                                 <div>
                                     <label for="purpose_sa"
                                         class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
@@ -753,21 +909,36 @@
                                         Nama Dokter <span class="text-red-400">*</span>
                                     </label>
                                     <select id="doctor_name_sa" name="form_data[doctor_name]"
-                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        class="form-select <?php $__errorArgs = ['form_data.doctor_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
                                         <option value="">-- Pilih Dokter --</option>
-                                        @foreach($doctors as $doctor)
-                                            <option value="{{ $doctor->name }}"
-                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $doctors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $doctor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($doctor->name); ?>"
+                                                data-hospital="<?php echo e($doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta')); ?>"
+                                                <?php if(old('form_data.doctor_name') == $doctor->name): ?> selected <?php endif; ?>
                                                 class="bg-slate-900 text-white font-bold">
-                                                {{ $doctor->name }}
+                                                <?php echo e($doctor->name); ?>
+
                                             </option>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </select>
-                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.doctor_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
 
-                            @elseif($type === 'spesialis_bedah')
+                            <?php elseif($type === 'spesialis_bedah'): ?>
                                 <div>
                                     <label for="purpose_sb"
                                         class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
@@ -790,21 +961,36 @@
                                         Nama Dokter <span class="text-red-400">*</span>
                                     </label>
                                     <select id="doctor_name_sb" name="form_data[doctor_name]"
-                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        class="form-select <?php $__errorArgs = ['form_data.doctor_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
                                         <option value="">-- Pilih Dokter --</option>
-                                        @foreach($doctors as $doctor)
-                                            <option value="{{ $doctor->name }}"
-                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $doctors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $doctor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($doctor->name); ?>"
+                                                data-hospital="<?php echo e($doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta')); ?>"
+                                                <?php if(old('form_data.doctor_name') == $doctor->name): ?> selected <?php endif; ?>
                                                 class="bg-slate-900 text-white font-bold">
-                                                {{ $doctor->name }}
+                                                <?php echo e($doctor->name); ?>
+
                                             </option>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </select>
-                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.doctor_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
 
-                            @elseif($type === 'spesialis_mata')
+                            <?php elseif($type === 'spesialis_mata'): ?>
                                 <div>
                                     <label for="purpose_sm"
                                         class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
@@ -827,21 +1013,36 @@
                                         Nama Dokter <span class="text-red-400">*</span>
                                     </label>
                                     <select id="doctor_name_sm" name="form_data[doctor_name]"
-                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        class="form-select <?php $__errorArgs = ['form_data.doctor_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
                                         <option value="">-- Pilih Dokter --</option>
-                                        @foreach($doctors as $doctor)
-                                            <option value="{{ $doctor->name }}"
-                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $doctors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $doctor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($doctor->name); ?>"
+                                                data-hospital="<?php echo e($doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta')); ?>"
+                                                <?php if(old('form_data.doctor_name') == $doctor->name): ?> selected <?php endif; ?>
                                                 class="bg-slate-900 text-white font-bold">
-                                                {{ $doctor->name }}
+                                                <?php echo e($doctor->name); ?>
+
                                             </option>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </select>
-                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.doctor_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
 
-                            @elseif($type === 'spesialis_urologi')
+                            <?php elseif($type === 'spesialis_urologi'): ?>
                                 <div>
                                     <label for="purpose_km"
                                         class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
@@ -864,21 +1065,36 @@
                                         Nama Dokter <span class="text-red-400">*</span>
                                     </label>
                                     <select id="doctor_name_km" name="form_data[doctor_name]"
-                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        class="form-select <?php $__errorArgs = ['form_data.doctor_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
                                         <option value="">-- Pilih Dokter --</option>
-                                        @foreach($doctors as $doctor)
-                                            <option value="{{ $doctor->name }}"
-                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $doctors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $doctor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($doctor->name); ?>"
+                                                data-hospital="<?php echo e($doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta')); ?>"
+                                                <?php if(old('form_data.doctor_name') == $doctor->name): ?> selected <?php endif; ?>
                                                 class="bg-slate-900 text-white font-bold">
-                                                {{ $doctor->name }}
+                                                <?php echo e($doctor->name); ?>
+
                                             </option>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </select>
-                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.doctor_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
 
-                            @elseif($type === 'spesialis_tht')
+                            <?php elseif($type === 'spesialis_tht'): ?>
                                 <div>
                                     <label for="purpose_lk"
                                         class="block text-sm font-medium text-white mb-2 font-bold text-lg">Jenis
@@ -904,21 +1120,36 @@
                                         Nama Dokter <span class="text-red-400">*</span>
                                     </label>
                                     <select id="doctor_name_lk" name="form_data[doctor_name]"
-                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        class="form-select <?php $__errorArgs = ['form_data.doctor_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
                                         <option value="">-- Pilih Dokter --</option>
-                                        @foreach($doctors as $doctor)
-                                            <option value="{{ $doctor->name }}"
-                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $doctors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $doctor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($doctor->name); ?>"
+                                                data-hospital="<?php echo e($doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta')); ?>"
+                                                <?php if(old('form_data.doctor_name') == $doctor->name): ?> selected <?php endif; ?>
                                                 class="bg-slate-900 text-white font-bold">
-                                                {{ $doctor->name }}
+                                                <?php echo e($doctor->name); ?>
+
                                             </option>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </select>
-                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.doctor_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
 
-                            @elseif($type === 'spesialis_ortopedi')
+                            <?php elseif($type === 'spesialis_ortopedi'): ?>
                                 <div>
                                     <label for="purpose_pa"
                                         class="block text-sm font-medium text-white mb-2 font-bold text-lg">Jenis
@@ -942,21 +1173,36 @@
                                         Nama Dokter <span class="text-red-400">*</span>
                                     </label>
                                     <select id="doctor_name_pa" name="form_data[doctor_name]"
-                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        class="form-select <?php $__errorArgs = ['form_data.doctor_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
                                         <option value="">-- Pilih Dokter --</option>
-                                        @foreach($doctors as $doctor)
-                                            <option value="{{ $doctor->name }}"
-                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $doctors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $doctor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($doctor->name); ?>"
+                                                data-hospital="<?php echo e($doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta')); ?>"
+                                                <?php if(old('form_data.doctor_name') == $doctor->name): ?> selected <?php endif; ?>
                                                 class="bg-slate-900 text-white font-bold">
-                                                {{ $doctor->name }}
+                                                <?php echo e($doctor->name); ?>
+
                                             </option>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </select>
-                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.doctor_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
 
-                            @elseif($type === 'spesialis_saraf')
+                            <?php elseif($type === 'spesialis_saraf'): ?>
                                 <div>
                                     <label for="purpose_ss"
                                         class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
@@ -979,20 +1225,35 @@
                                         Nama Dokter <span class="text-red-400">*</span>
                                     </label>
                                     <select id="doctor_name_ss" name="form_data[doctor_name]"
-                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        class="form-select <?php $__errorArgs = ['form_data.doctor_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
                                         <option value="">-- Pilih Dokter --</option>
-                                        @foreach($doctors as $doctor)
-                                            <option value="{{ $doctor->name }}"
-                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $doctors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $doctor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($doctor->name); ?>"
+                                                data-hospital="<?php echo e($doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta')); ?>"
+                                                <?php if(old('form_data.doctor_name') == $doctor->name): ?> selected <?php endif; ?>
                                                 class="bg-slate-900 text-white font-bold">
-                                                {{ $doctor->name }}
+                                                <?php echo e($doctor->name); ?>
+
                                             </option>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </select>
-                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.doctor_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
-                            @elseif($type === 'spesialis_urologi')
+                            <?php elseif($type === 'spesialis_urologi'): ?>
                                 <div>
                                     <label for="purpose_su"
                                         class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
@@ -1015,21 +1276,36 @@
                                         Nama Dokter <span class="text-red-400">*</span>
                                     </label>
                                     <select id="doctor_name_su" name="form_data[doctor_name]"
-                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        class="form-select <?php $__errorArgs = ['form_data.doctor_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
                                         <option value="">-- Pilih Dokter --</option>
-                                        @foreach($doctors as $doctor)
-                                            <option value="{{ $doctor->name }}"
-                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $doctors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $doctor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($doctor->name); ?>"
+                                                data-hospital="<?php echo e($doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta')); ?>"
+                                                <?php if(old('form_data.doctor_name') == $doctor->name): ?> selected <?php endif; ?>
                                                 class="bg-slate-900 text-white font-bold">
-                                                {{ $doctor->name }}
+                                                <?php echo e($doctor->name); ?>
+
                                             </option>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </select>
-                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.doctor_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
 
-                            @elseif($type === 'spesialis_tht')
+                            <?php elseif($type === 'spesialis_tht'): ?>
                                 <div>
                                     <label for="purpose_st"
                                         class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
@@ -1054,21 +1330,36 @@
                                         Nama Dokter <span class="text-red-400">*</span>
                                     </label>
                                     <select id="doctor_name_st" name="form_data[doctor_name]"
-                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        class="form-select <?php $__errorArgs = ['form_data.doctor_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
                                         <option value="">-- Pilih Dokter --</option>
-                                        @foreach($doctors as $doctor)
-                                            <option value="{{ $doctor->name }}"
-                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $doctors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $doctor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($doctor->name); ?>"
+                                                data-hospital="<?php echo e($doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta')); ?>"
+                                                <?php if(old('form_data.doctor_name') == $doctor->name): ?> selected <?php endif; ?>
                                                 class="bg-slate-900 text-white font-bold">
-                                                {{ $doctor->name }}
+                                                <?php echo e($doctor->name); ?>
+
                                             </option>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </select>
-                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.doctor_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
 
-                            @elseif($type === 'spesialis_ortopedi')
+                            <?php elseif($type === 'spesialis_ortopedi'): ?>
                                 <div>
                                     <label for="purpose_so"
                                         class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan
@@ -1093,47 +1384,76 @@
                                         Nama Dokter <span class="text-red-400">*</span>
                                     </label>
                                     <select id="doctor_name_so" name="form_data[doctor_name]"
-                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        class="form-select <?php $__errorArgs = ['form_data.doctor_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
                                         <option value="">-- Pilih Dokter --</option>
-                                        @foreach($doctors as $doctor)
-                                            <option value="{{ $doctor->name }}"
-                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $doctors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $doctor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                            <option value="<?php echo e($doctor->name); ?>"
+                                                data-hospital="<?php echo e($doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta')); ?>"
+                                                <?php if(old('form_data.doctor_name') == $doctor->name): ?> selected <?php endif; ?>
                                                 class="bg-slate-900 text-white font-bold">
-                                                {{ $doctor->name }}
+                                                <?php echo e($doctor->name); ?>
+
                                             </option>
-                                        @endforeach
+                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </select>
-                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.doctor_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
 
-                            @elseif($type === 'janji_temu')
+                            <?php elseif($type === 'janji_temu'): ?>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                                     <div class="min-w-0">
                                         <label for="poli_jt"
                                             class="block text-xs font-medium text-white mb-1.5 font-bold">
                                             Pilihan Poli <span class="text-red-400">*</span>
                                         </label>
-                                        <select id="poli_jt" name="form_data[poli]" class="form-select w-full @error('form_data.poli') border-red-500 @enderror" required>
+                                        <select id="poli_jt" name="form_data[poli]" class="form-select w-full <?php $__errorArgs = ['form_data.poli'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>" required>
                                             <option value="">-- Pilih Poli --</option>
-                                            <option value="Spesialis Anestesiologi" @if(old('form_data.poli') == 'Spesialis Anestesiologi') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Anestesiologi</option>
-                                            <option value="Spesialis Bedah" @if(old('form_data.poli') == 'Spesialis Bedah') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Bedah</option>
-                                            <option value="Spesialis Bedah Mulut" @if(old('form_data.poli') == 'Spesialis Bedah Mulut') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Bedah Mulut</option>
-                                            <option value="Spesialis Bedah Plastik, Rekonstruksi, dan Estetik" @if(old('form_data.poli') == 'Spesialis Bedah Plastik, Rekonstruksi, dan Estetik') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Bedah Plastik, Rekonstruksi, dan Estetik</option>
-                                            <option value="Spesialis Forensik dan Medikolegal" @if(old('form_data.poli') == 'Spesialis Forensik dan Medikolegal') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Forensik dan Medikolegal</option>
-                                            <option value="Spesialis Kesehatan Jiwa" @if(old('form_data.poli') == 'Spesialis Kesehatan Jiwa') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Kesehatan Jiwa</option>
-                                            <option value="Spesialis Kedokteran Gigi Anak" @if(old('form_data.poli') == 'Spesialis Kedokteran Gigi Anak') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Kedokteran Gigi Anak</option>
-                                            <option value="Spesialis Radiologi" @if(old('form_data.poli') == 'Spesialis Radiologi') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Radiologi</option>
-                                            <option value="Spesialis Mata" @if(old('form_data.poli') == 'Spesialis Mata') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Mata</option>
-                                            <option value="Spesialis Neurologi" @if(old('form_data.poli') == 'Spesialis Neurologi') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Neurologi</option>
-                                            <option value="Spesialis Ortopedi dan Traumatologi" @if(old('form_data.poli') == 'Spesialis Ortopedi dan Traumatologi') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Ortopedi dan Traumatologi</option>
-                                            <option value="Spesialis Konservasi Gigi" @if(old('form_data.poli') == 'Spesialis Konservasi Gigi') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Konservasi Gigi</option>
-                                            <option value="Spesialis Telinga, Hidung, dan Tenggorok" @if(old('form_data.poli') == 'Spesialis Telinga, Hidung, dan Tenggorok') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Telinga, Hidung, dan Tenggorok</option>
-                                            <option value="Spesialis Prostodontia" @if(old('form_data.poli') == 'Spesialis Prostodontia') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Prostodontia</option>
-                                            <option value="Spesialis Gizi Klinis" @if(old('form_data.poli') == 'Spesialis Gizi Klinis') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Gizi Klinis</option>
-                                            <option value="Spesialis Obstetri dan Ginekologi" @if(old('form_data.poli') == 'Spesialis Obstetri dan Ginekologi') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Obstetri dan Ginekologi</option>
+                                            <option value="Spesialis Anestesiologi" <?php if(old('form_data.poli') == 'Spesialis Anestesiologi'): ?> selected <?php endif; ?> class="bg-slate-900 text-white font-bold">🩺 Spesialis Anestesiologi</option>
+                                            <option value="Spesialis Bedah" <?php if(old('form_data.poli') == 'Spesialis Bedah'): ?> selected <?php endif; ?> class="bg-slate-900 text-white font-bold">🩺 Spesialis Bedah</option>
+                                            <option value="Spesialis Bedah Mulut" <?php if(old('form_data.poli') == 'Spesialis Bedah Mulut'): ?> selected <?php endif; ?> class="bg-slate-900 text-white font-bold">🩺 Spesialis Bedah Mulut</option>
+                                            <option value="Spesialis Bedah Plastik, Rekonstruksi, dan Estetik" <?php if(old('form_data.poli') == 'Spesialis Bedah Plastik, Rekonstruksi, dan Estetik'): ?> selected <?php endif; ?> class="bg-slate-900 text-white font-bold">🩺 Spesialis Bedah Plastik, Rekonstruksi, dan Estetik</option>
+                                            <option value="Spesialis Forensik dan Medikolegal" <?php if(old('form_data.poli') == 'Spesialis Forensik dan Medikolegal'): ?> selected <?php endif; ?> class="bg-slate-900 text-white font-bold">🩺 Spesialis Forensik dan Medikolegal</option>
+                                            <option value="Spesialis Kesehatan Jiwa" <?php if(old('form_data.poli') == 'Spesialis Kesehatan Jiwa'): ?> selected <?php endif; ?> class="bg-slate-900 text-white font-bold">🩺 Spesialis Kesehatan Jiwa</option>
+                                            <option value="Spesialis Kedokteran Gigi Anak" <?php if(old('form_data.poli') == 'Spesialis Kedokteran Gigi Anak'): ?> selected <?php endif; ?> class="bg-slate-900 text-white font-bold">🩺 Spesialis Kedokteran Gigi Anak</option>
+                                            <option value="Spesialis Radiologi" <?php if(old('form_data.poli') == 'Spesialis Radiologi'): ?> selected <?php endif; ?> class="bg-slate-900 text-white font-bold">🩺 Spesialis Radiologi</option>
+                                            <option value="Spesialis Mata" <?php if(old('form_data.poli') == 'Spesialis Mata'): ?> selected <?php endif; ?> class="bg-slate-900 text-white font-bold">🩺 Spesialis Mata</option>
+                                            <option value="Spesialis Neurologi" <?php if(old('form_data.poli') == 'Spesialis Neurologi'): ?> selected <?php endif; ?> class="bg-slate-900 text-white font-bold">🩺 Spesialis Neurologi</option>
+                                            <option value="Spesialis Ortopedi dan Traumatologi" <?php if(old('form_data.poli') == 'Spesialis Ortopedi dan Traumatologi'): ?> selected <?php endif; ?> class="bg-slate-900 text-white font-bold">🩺 Spesialis Ortopedi dan Traumatologi</option>
+                                            <option value="Spesialis Konservasi Gigi" <?php if(old('form_data.poli') == 'Spesialis Konservasi Gigi'): ?> selected <?php endif; ?> class="bg-slate-900 text-white font-bold">🩺 Spesialis Konservasi Gigi</option>
+                                            <option value="Spesialis Telinga, Hidung, dan Tenggorok" <?php if(old('form_data.poli') == 'Spesialis Telinga, Hidung, dan Tenggorok'): ?> selected <?php endif; ?> class="bg-slate-900 text-white font-bold">🩺 Spesialis Telinga, Hidung, dan Tenggorok</option>
+                                            <option value="Spesialis Prostodontia" <?php if(old('form_data.poli') == 'Spesialis Prostodontia'): ?> selected <?php endif; ?> class="bg-slate-900 text-white font-bold">🩺 Spesialis Prostodontia</option>
+                                            <option value="Spesialis Gizi Klinis" <?php if(old('form_data.poli') == 'Spesialis Gizi Klinis'): ?> selected <?php endif; ?> class="bg-slate-900 text-white font-bold">🩺 Spesialis Gizi Klinis</option>
+                                            <option value="Spesialis Obstetri dan Ginekologi" <?php if(old('form_data.poli') == 'Spesialis Obstetri dan Ginekologi'): ?> selected <?php endif; ?> class="bg-slate-900 text-white font-bold">🩺 Spesialis Obstetri dan Ginekologi</option>
                                         </select>
-                                        @error('form_data.poli') <p class="form-error text-xs mt-1">{{ $message }}</p> @enderror
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.poli'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error text-xs mt-1"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
                                     <div class="min-w-0">
                                         <label for="purpose_jt"
@@ -1157,20 +1477,35 @@
                                             Nama Dokter <span class="text-red-400">*</span>
                                         </label>
                                         <select id="doctor_name_jt" name="form_data[doctor_name]"
-                                            class="form-select w-full @error('form_data.doctor_name') border-red-500 @enderror"
+                                            class="form-select w-full <?php $__errorArgs = ['form_data.doctor_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                             required>
                                             <option value="">-- Pilih Dokter --</option>
-                                            @foreach($doctors as $doctor)
-                                                <option value="{{ $doctor->name }}"
-                                                    data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                    @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $doctors; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $doctor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                <option value="<?php echo e($doctor->name); ?>"
+                                                    data-hospital="<?php echo e($doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta')); ?>"
+                                                    <?php if(old('form_data.doctor_name') == $doctor->name): ?> selected <?php endif; ?>
                                                     class="bg-slate-900 text-white font-bold">
-                                                    {{ $doctor->name }}
+                                                    <?php echo e($doctor->name); ?>
+
                                                 </option>
-                                            @endforeach
+                                            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                         </select>
-                                        @error('form_data.doctor_name') <p class="form-error text-xs mt-1">{{ $message }}</p>
-                                        @enderror
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.doctor_name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error text-xs mt-1"><?php echo e($message); ?></p>
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
                                     <div class="min-w-0">
                                         <label for="appointment_date"
@@ -1178,12 +1513,27 @@
                                             Tanggal <span class="text-red-400">*</span>
                                         </label>
                                         <input type="date" id="appointment_date" name="form_data[appointment_date]"
-                                            value="{{ old('form_data.appointment_date') }}"
-                                            class="form-input w-full @error('form_data.appointment_date') border-red-500 @enderror"
+                                            value="<?php echo e(old('form_data.appointment_date')); ?>"
+                                            class="form-input w-full <?php $__errorArgs = ['form_data.appointment_date'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                             required>
-                                        @error('form_data.appointment_date') <p class="form-error text-xs mt-1">{{ $message }}
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.appointment_date'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error text-xs mt-1"><?php echo e($message); ?>
+
                                             </p>
-                                        @enderror
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
                                     <div class="min-w-0">
                                         <label for="appointment_time"
@@ -1191,12 +1541,27 @@
                                             Waktu <span class="text-red-400">*</span>
                                         </label>
                                         <input type="time" id="appointment_time" name="form_data[appointment_time]"
-                                            value="{{ old('form_data.appointment_time') }}"
-                                            class="form-input w-full @error('form_data.appointment_time') border-red-500 @enderror"
+                                            value="<?php echo e(old('form_data.appointment_time')); ?>"
+                                            class="form-input w-full <?php $__errorArgs = ['form_data.appointment_time'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                             required>
-                                        @error('form_data.appointment_time') <p class="form-error text-xs mt-1">{{ $message }}
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.appointment_time'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error text-xs mt-1"><?php echo e($message); ?>
+
                                             </p>
-                                        @enderror
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
                                 </div>
 
@@ -1206,28 +1571,56 @@
                                         Keluhan Medis / Deskripsi Lengkap <span class="text-red-400">*</span>
                                     </label>
                                     <textarea id="description_jt" name="description" rows="4"
-                                        class="form-input w-full @error('description') border-red-500 @enderror"
+                                        class="form-input w-full <?php $__errorArgs = ['description'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                         placeholder="Jelaskan penyakit atau keluhan medis Anda secara detail..."
-                                        required>{{ old('description') }}</textarea>
-                                    @error('description') <p class="form-error text-xs mt-1">{{ $message }}</p> @enderror
+                                        required><?php echo e(old('description')); ?></textarea>
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['description'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error text-xs mt-1"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
 
-                            @elseif($type === 'pendaftaran_karakter')
+                            <?php elseif($type === 'pendaftaran_karakter'): ?>
                                 <div>
                                     <label for="jenis_pemakaman"
                                         class="block text-sm font-medium text-white mb-2 font-bold text-lg">
                                         Jenis Pemakaman <span class="text-red-400">*</span>
                                     </label>
                                     <select id="jenis_pemakaman" name="form_data[jenis_pemakaman]"
-                                        class="form-select @error('form_data.jenis_pemakaman') border-red-500 @enderror"
+                                        class="form-select <?php $__errorArgs = ['form_data.jenis_pemakaman'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                         required onchange="toggleFormFields(this.value)">
                                         <option value="">-- Pilih Jenis Pemakaman --</option>
-                                        <option value="Penguburan" @if(old('form_data.jenis_pemakaman') == 'Penguburan') selected
-                                        @endif class="bg-slate-900 text-white font-bold">Penguburan</option>
-                                        <option value="Kremasi" @if(old('form_data.jenis_pemakaman') == 'Kremasi') selected @endif
+                                        <option value="Penguburan" <?php if(old('form_data.jenis_pemakaman') == 'Penguburan'): ?> selected
+                                        <?php endif; ?> class="bg-slate-900 text-white font-bold">Penguburan</option>
+                                        <option value="Kremasi" <?php if(old('form_data.jenis_pemakaman') == 'Kremasi'): ?> selected <?php endif; ?>
                                             class="bg-slate-900 text-white font-bold">Kremasi</option>
                                     </select>
-                                    @error('form_data.jenis_pemakaman') <p class="form-error">{{ $message }}</p> @enderror
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.jenis_pemakaman'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
 
                                 <!-- Form Fields untuk Penguburan -->
@@ -1238,10 +1631,24 @@
                                             Tanggal Wafat <span class="text-red-400">*</span>
                                         </label>
                                         <input type="date" id="tanggal_wafat_penguburan" name="form_data[tanggal_wafat]"
-                                            value="{{ old('form_data.tanggal_wafat') }}"
-                                            class="form-input @error('form_data.tanggal_wafat') border-red-500 @enderror"
+                                            value="<?php echo e(old('form_data.tanggal_wafat')); ?>"
+                                            class="form-input <?php $__errorArgs = ['form_data.tanggal_wafat'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                             data-required="true">
-                                        @error('form_data.tanggal_wafat') <p class="form-error">{{ $message }}</p> @enderror
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.tanggal_wafat'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
                                     <div>
                                         <label for="tempat_pemakaman"
@@ -1249,10 +1656,24 @@
                                             Tempat Pemakaman <span class="text-red-400">*</span>
                                         </label>
                                         <input type="text" id="tempat_pemakaman" name="form_data[tempat_pemakaman]"
-                                            value="{{ old('form_data.tempat_pemakaman') }}"
-                                            class="form-input @error('form_data.tempat_pemakaman') border-red-500 @enderror"
+                                            value="<?php echo e(old('form_data.tempat_pemakaman')); ?>"
+                                            class="form-input <?php $__errorArgs = ['form_data.tempat_pemakaman'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                             placeholder="Masukkan lokasi pemakaman" data-required="true">
-                                        @error('form_data.tempat_pemakaman') <p class="form-error">{{ $message }}</p> @enderror
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.tempat_pemakaman'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
                                     <div>
                                         <label for="tanggal_pemakaman"
@@ -1260,10 +1681,24 @@
                                             Tanggal Pemakaman <span class="text-red-400">*</span>
                                         </label>
                                         <input type="date" id="tanggal_pemakaman" name="form_data[tanggal_pemakaman]"
-                                            value="{{ old('form_data.tanggal_pemakaman') }}"
-                                            class="form-input @error('form_data.tanggal_pemakaman') border-red-500 @enderror"
+                                            value="<?php echo e(old('form_data.tanggal_pemakaman')); ?>"
+                                            class="form-input <?php $__errorArgs = ['form_data.tanggal_pemakaman'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                             data-required="true">
-                                        @error('form_data.tanggal_pemakaman') <p class="form-error">{{ $message }}</p> @enderror
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.tanggal_pemakaman'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
                                     <div>
                                         <label for="kronologi_ck_penguburan"
@@ -1271,10 +1706,24 @@
                                             Kronologi CK & Penyebab Kematian <span class="text-red-400">*</span>
                                         </label>
                                         <textarea id="kronologi_ck_penguburan" name="form_data[kronologi_ck]" rows="5"
-                                            class="form-input @error('form_data.kronologi_ck') border-red-500 @enderror"
+                                            class="form-input <?php $__errorArgs = ['form_data.kronologi_ck'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                             placeholder="Jelaskan secara detail kronologi character kill dan penyebab kematian..."
-                                            data-required="true">{{ old('form_data.kronologi_ck') }}</textarea>
-                                        @error('form_data.kronologi_ck') <p class="form-error">{{ $message }}</p> @enderror
+                                            data-required="true"><?php echo e(old('form_data.kronologi_ck')); ?></textarea>
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.kronologi_ck'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
                                 </div>
 
@@ -1286,10 +1735,24 @@
                                             Tanggal Wafat <span class="text-red-400">*</span>
                                         </label>
                                         <input type="date" id="tanggal_wafat_kremasi" name="form_data[tanggal_wafat]"
-                                            value="{{ old('form_data.tanggal_wafat') }}"
-                                            class="form-input @error('form_data.tanggal_wafat') border-red-500 @enderror"
+                                            value="<?php echo e(old('form_data.tanggal_wafat')); ?>"
+                                            class="form-input <?php $__errorArgs = ['form_data.tanggal_wafat'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                             data-required="true">
-                                        @error('form_data.tanggal_wafat') <p class="form-error">{{ $message }}</p> @enderror
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.tanggal_wafat'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
                                     <div>
                                         <label for="tanggal_kremasi"
@@ -1297,10 +1760,24 @@
                                             Tanggal Kremasi <span class="text-red-400">*</span>
                                         </label>
                                         <input type="date" id="tanggal_kremasi" name="form_data[tanggal_kremasi]"
-                                            value="{{ old('form_data.tanggal_kremasi') }}"
-                                            class="form-input @error('form_data.tanggal_kremasi') border-red-500 @enderror"
+                                            value="<?php echo e(old('form_data.tanggal_kremasi')); ?>"
+                                            class="form-input <?php $__errorArgs = ['form_data.tanggal_kremasi'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                             data-required="true">
-                                        @error('form_data.tanggal_kremasi') <p class="form-error">{{ $message }}</p> @enderror
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.tanggal_kremasi'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
                                     <div>
                                         <label for="tempat_penyimpanan_abu"
@@ -1308,11 +1785,25 @@
                                             Tempat Penyimpanan Abu <span class="text-red-400">*</span>
                                         </label>
                                         <input type="text" id="tempat_penyimpanan_abu" name="form_data[tempat_penyimpanan_abu]"
-                                            value="{{ old('form_data.tempat_penyimpanan_abu') }}"
-                                            class="form-input @error('form_data.tempat_penyimpanan_abu') border-red-500 @enderror"
+                                            value="<?php echo e(old('form_data.tempat_penyimpanan_abu')); ?>"
+                                            class="form-input <?php $__errorArgs = ['form_data.tempat_penyimpanan_abu'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                             placeholder="Masukkan lokasi penyimpanan abu" data-required="true">
-                                        @error('form_data.tempat_penyimpanan_abu') <p class="form-error">{{ $message }}</p>
-                                        @enderror
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.tempat_penyimpanan_abu'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p>
+                                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
                                     <div>
                                         <label for="kronologi_ck_kremasi"
@@ -1320,26 +1811,54 @@
                                             Kronologi CK & Penyebab Kematian <span class="text-red-400">*</span>
                                         </label>
                                         <textarea id="kronologi_ck_kremasi" name="form_data[kronologi_ck]" rows="5"
-                                            class="form-input @error('form_data.kronologi_ck') border-red-500 @enderror"
+                                            class="form-input <?php $__errorArgs = ['form_data.kronologi_ck'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                             placeholder="Jelaskan secara detail kronologi character kill dan penyebab kematian..."
-                                            data-required="true">{{ old('form_data.kronologi_ck') }}</textarea>
-                                        @error('form_data.kronologi_ck') <p class="form-error">{{ $message }}</p> @enderror
+                                            data-required="true"><?php echo e(old('form_data.kronologi_ck')); ?></textarea>
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['form_data.kronologi_ck'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
                                 </div>
 
-                            @else
+                            <?php else: ?>
                                 <div>
                                     <label for="description"
                                         class="block text-sm font-medium text-white mb-2 font-bold text-lg">
                                         Deskripsi Lengkap <span class="text-red-400">*</span>
                                     </label>
                                     <textarea id="description" name="description" rows="5"
-                                        class="form-input @error('description') border-red-500 @enderror"
+                                        class="form-input <?php $__errorArgs = ['description'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> border-red-500 <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?>"
                                         placeholder="Jelaskan secara detail permintaan atau keluhan Anda..."
-                                        required>{{ old('description') }}</textarea>
-                                    @error('description') <p class="form-error">{{ $message }}</p> @enderror
+                                        required><?php echo e(old('description')); ?></textarea>
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['description'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error"><?php echo e($message); ?></p> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
-                            @endif
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
                     </div>
 
@@ -1350,12 +1869,19 @@
                                 bertanggung
                                 jawab atas keakuratan data tersebut.</span>
                         </label>
-                        @error('confirm_data') <p class="form-error text-center mt-2">Harap centang persetujuan.</p>
-                        @enderror
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['confirm_data'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <p class="form-error text-center mt-2">Harap centang persetujuan.</p>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
 
                     <div class="flex flex-col sm:flex-row gap-4 justify-end">
-                        <a href="{{ route('public.index') }}" class="btn-secondary">
+                        <a href="<?php echo e(route('public.index')); ?>" class="btn-secondary">
                             Batal
                         </a>
                         <button type="submit" class="w-full sm:w-auto btn-primary text-sm sm:text-base">
@@ -1401,9 +1927,9 @@
             </div>
         </div>
     </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
     <script>
         (function () {
             const form = document.getElementById('medicalForm');
@@ -1579,10 +2105,10 @@
         });
     </script>
 
-    {{-- jQuery (required for Select2) --}}
+    
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    {{-- Select2 for searchable dropdowns --}}
+    
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
@@ -1714,9 +2240,9 @@
             }
         });
     </script>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@push('styles')
+<?php $__env->startPush('styles'); ?>
     <style>
         .form-input,
         .form-select,
@@ -1909,4 +2435,5 @@
             }
         });
     </script>
-@endpush
+<?php $__env->stopPush(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH D:\website\EMS-IME\public_html\resources\views/public/form.blade.php ENDPATH**/ ?>

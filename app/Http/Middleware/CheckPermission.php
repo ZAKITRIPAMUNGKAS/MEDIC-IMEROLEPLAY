@@ -23,9 +23,14 @@ class CheckPermission
 
         $user = Auth::user();
 
-        // Check if user has permission (includes both role permissions and custom permissions)
-        if ($user->hasPermission($permission)) {
-            return $next($request);
+        // Support pipe-separated permissions (OR logic)
+        // e.g., 'view_reports|view_attendance_reports' means user needs ANY of these
+        $permissions = explode('|', $permission);
+
+        foreach ($permissions as $perm) {
+            if ($user->hasPermission(trim($perm))) {
+                return $next($request);
+            }
         }
 
         // If not authorized, redirect back with error message
