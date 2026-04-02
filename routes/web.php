@@ -119,6 +119,8 @@ Route::get('/form/success/{id}', [PublicController::class, 'formSuccess'])->name
 Route::post('/form/testimoni/{id}', [PublicController::class, 'submitTestimoni'])->name('public.form.testimoni');
 // Struktural EMS route (includes both EMS and Roxwood Hospital tables)
 Route::get('/struktural-ems', [PublicController::class, 'strukturalEmsDb'])->name('public.struktural-ems');
+// Doctor Practice Schedule route
+Route::get('/jadwal-praktek', [PublicController::class, 'doctorSchedule'])->name('public.doctor-schedule');
 // Shortcut named routes for popular forms
 Route::get('/cek-kesehatan', function () {
     return redirect()->route('public.form', ['type' => 'surat_kesehatan']);
@@ -199,6 +201,12 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
         ->middleware('permission:manage_users')->name('staff.toggle-active');
     Route::post('/staff/{user}/reset-password', [\App\Http\Controllers\Admin\StaffManagementController::class, 'resetPassword'])
         ->middleware('permission:manage_users')->name('staff.reset-password');
+
+    // Doctor Schedule management
+    Route::resource('doctor-schedules', \App\Http\Controllers\Admin\DoctorScheduleController::class)
+        ->middleware('permission:manage_users');
+    Route::post('/doctor-schedules/{doctor_schedule}/toggle-active', [\App\Http\Controllers\Admin\DoctorScheduleController::class, 'toggleActive'])
+        ->middleware('permission:manage_users')->name('doctor-schedules.toggle-active');
     // Route::resource('medical-forms', \App\Http\Controllers\Admin\MedicalFormController::class)->middleware('permission:manage_forms');
     // Route::resource('staff-roles', \App\Http\Controllers\Admin\StaffRoleController::class)->middleware('permission:manage_settings');
     // Attendance reports

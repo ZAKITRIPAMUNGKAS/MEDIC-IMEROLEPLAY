@@ -5,12 +5,25 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\MedicalForm;
 use App\Models\User;
+use App\Models\DoctorSchedule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 
 class PublicController extends Controller
 {
+    public function doctorSchedule()
+    {
+        $poliList = \App\Http\Controllers\Admin\DoctorScheduleController::POLI_LIST;
+        
+        $schedules = DoctorSchedule::where('is_active', true)
+            ->orderBy('doctor_name')
+            ->get()
+            ->groupBy('poli');
+
+        return view('public.doctor-schedule', compact('schedules', 'poliList'));
+    }
+
     public function index()
     {
         // Hitung statistik untuk section "Keunggulan Kami"

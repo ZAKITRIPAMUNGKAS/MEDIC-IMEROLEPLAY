@@ -172,7 +172,11 @@
                                             <div>
                                                 <p class="text-white font-semibold text-lg">{{ $form->character_name }}</p>
                                                 <p class="text-gray-300 text-sm">
-                                                    {{ Str::of($form->form_type)->replace('_',' ')->title() }}
+                                                    @if($form->form_type === 'janji_temu' && is_array($form->form_data) && !empty($form->form_data['poli']))
+                                                        Poli {{ ucwords(str_replace(['_', '-'], ' ', $form->form_data['poli'])) }}
+                                                    @else
+                                                        {{ Str::of($form->form_type)->replace('_',' ')->title() }}
+                                                    @endif
                                                     @if($form->form_type === 'tes_psikologi')
                                                         @php
                                                             $data = is_array($form->form_data ?? null) ? $form->form_data : [];

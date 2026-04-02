@@ -120,21 +120,21 @@
                                             <span class="text-[9px] md:text-[10px] text-sky-200/70 mb-1 px-1 font-medium">
                                                 {{ $msg->is_staff_reply ? ($msg->user->name ?? 'Staff') : $activeSession->anonymous_name }}
                                             </span>
-                                            <div class="px-3 md:px-4 lg:px-5 py-2.5 md:py-3 lg:py-3.5 rounded-xl md:rounded-2xl shadow-md transition-all duration-300 text-xs md:text-sm leading-6 md:leading-7 whitespace-pre-wrap border
+                                            <div class="px-3 md:px-4 py-1.5 md:py-2 rounded-xl md:rounded-2xl shadow-md transition-all duration-300 text-xs md:text-sm leading-relaxed border w-fit max-w-full
                                                                                                                                                                         {{ $msg->is_staff_reply
                             ? 'bg-gradient-to-br from-sky-500 to-cyan-600 text-white rounded-tr-none border-sky-400/50 shadow-sky-500/20'
                             : 'bg-white/10 backdrop-blur-sm text-white rounded-tl-none border-white/20' }}">
                                                 {{-- Display Attachment if exists --}}
                                                 @if($msg->attachment_path)
                                                     @if($msg->attachment_type === 'image')
-                                                        <div class="mb-2">
+                                                        <div class="mb-2 pt-1">
                                                             <a href="{{ Storage::url($msg->attachment_path) }}" target="_blank">
                                                                 <img src="{{ Storage::url($msg->attachment_path) }}" alt="Attachment"
                                                                     class="rounded-lg max-w-full max-h-48 cursor-pointer hover:opacity-90 transition-opacity">
                                                             </a>
                                                         </div>
                                                     @else
-                                                        <div class="mb-2 flex items-center gap-2 p-2 bg-black/20 rounded-lg">
+                                                        <div class="mb-2 pt-1 flex items-center gap-2 p-2 bg-black/20 rounded-lg">
                                                             <i class="fas fa-file-pdf text-lg text-white"></i>
                                                             <a href="{{ Storage::url($msg->attachment_path) }}" target="_blank"
                                                                 class="flex-1 text-xs font-medium text-white hover:underline truncate">
@@ -145,7 +145,7 @@
                                                     @endif
                                                 @endif
 
-                                                {{ $msg->message }}
+                                                <p class="whitespace-pre-wrap">{{ trim($msg->message) }}</p>
                                             </div>
                                             <span
                                                 class="text-[10px] text-sky-300/50 mt-1 px-1 opacity-0 group-hover:opacity-100 transition-opacity">

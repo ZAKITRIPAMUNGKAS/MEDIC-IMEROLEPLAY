@@ -1907,6 +1907,45 @@
             if (hospitalSelect.value) {
                 filterDoctors();
             }
+
+            // --- Pre-fill Logic from URL Parameters ---
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // 1. Pre-fill Hospital
+            const hospitalParam = urlParams.get('hospital');
+            if (hospitalParam) {
+                hospitalSelect.value = hospitalParam;
+                filterDoctors(); // Re-filter doctors immediately
+            }
+            
+            // 2. Pre-fill Poli (for Janji Temu)
+            const poliParam = urlParams.get('poli');
+            if (poliParam) {
+                const poliSelect = document.getElementById('poli_jt');
+                if (poliSelect) {
+                    const cleanPoli = poliParam.replace(/🩺\s*/, '').trim();
+                    for (let option of poliSelect.options) {
+                        const cleanOption = option.value.replace(/🩺\s*/, '').trim();
+                        if (cleanOption === cleanPoli || option.value === poliParam) {
+                            poliSelect.value = option.value;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // 3. Pre-fill Doctor
+            const doctorParam = urlParams.get('doctor');
+            if (doctorParam) {
+                doctorSelects.forEach(select => {
+                    for (let option of select.options) {
+                        if (option.value === doctorParam) {
+                            select.value = option.value;
+                            break;
+                        }
+                    }
+                });
+            }
         });
     </script>
 @endpush
