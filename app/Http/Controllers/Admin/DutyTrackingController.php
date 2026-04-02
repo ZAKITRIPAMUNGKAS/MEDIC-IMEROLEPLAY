@@ -22,7 +22,7 @@ class DutyTrackingController extends Controller
             abort(403, 'Akses ditolak. Hanya admin yang dapat mengakses halaman ini.');
         }
 
-        $mode = $request->input('mode', 'monthly');
+        $mode = $request->input('mode', 'live'); // Default to 'live' logic
 
         // Get selected months from request (array)
         $selectedMonths = $request->input('months', []);
@@ -54,45 +54,50 @@ class DutyTrackingController extends Controller
 
         $hospital = $request->input('hospital', 'all');
 
-        // Build query for rankings
-        $rankingsQuery = User::select('users.*')
-            ->selectRaw('SUM(attendances.session_duration) as total_duty_seconds')
-            ->selectRaw('COUNT(attendances.id) as session_count')
-            ->selectRaw('AVG(attendances.session_duration) as avg_duty_seconds')
-            ->join('attendances', 'users.id', '=', 'attendances.user_id')
-            ->whereNotNull('attendances.clock_out');
+        // --- RANKING QUERY (Historical Data Only) ---
+        if ($mode !== 'live') {
+            $rankingsQuery = User::select('users.*')
+                ->selectRaw('SUM(attendances.session_duration) as total_duty_seconds')
+                ->selectRaw('COUNT(attendances.id) as session_count')
+                ->selectRaw('AVG(attendances.session_duration) as avg_duty_seconds')
+                ->join('attendances', 'users.id', '=', 'attendances.user_id')
+                ->whereNotNull('attendances.clock_out');
 
-        if ($hospital !== 'all') {
-            $rankingsQuery->where('users.hospital', $hospital);
-        }
+            if ($hospital !== 'all') {
+                $rankingsQuery->where('users.hospital', $hospital);
+            }
 
-        if ($mode === 'weekly') {
-            $rankingsQuery->whereIn(DB::raw('DATE(DATE_SUB(attendances.clock_in, INTERVAL WEEKDAY(attendances.clock_in) DAY))'), $selectedWeeks);
+            if ($mode === 'weekly') {
+                $rankingsQuery->whereIn(DB::raw('DATE(DATE_SUB(attendances.clock_in, INTERVAL WEEKDAY(attendances.clock_in) DAY))'), $selectedWeeks);
+            } else {
+                $rankingsQuery->whereIn(DB::raw('DATE_FORMAT(attendances.clock_in, "%Y-%m")'), $selectedMonths);
+            }
+
+            $rankings = $rankingsQuery->groupBy(
+                    'users.id', 'users.name', 'users.email', 'users.role_id', 'users.staff_id',
+                    'users.citizen_id', 'users.hospital', 'users.is_active', 'users.profile_image',
+                    'users.custom_permissions', 'users.custom_salary', 'users.status',
+                    'users.created_at', 'users.updated_at', 'users.password', 'users.remember_token',
+                    'users.email_verified_at'
+                )
+                ->orderByDesc('total_duty_seconds')
+                ->paginate(50);
         } else {
-            $rankingsQuery->whereIn(DB::raw('DATE_FORMAT(attendances.clock_in, "%Y-%m")'), $selectedMonths);
-        }
+            // --- LIVE DATA QUERY ---
+            $liveQuery = Attendance::with(['user' => function($q) {
+                    $q->select('id', 'name', 'role_id', 'hospital', 'profile_image');
+                }, 'user.role:id,name'])
+                ->where('is_active', true)
+                ->orderBy('clock_in', 'desc');
 
-        $rankings = $rankingsQuery->groupBy(
-                'users.id',
-                'users.name',
-                'users.email',
-                'users.role_id',
-                'users.staff_id',
-                'users.citizen_id',
-                'users.hospital',
-                'users.is_active',
-                'users.profile_image',
-                'users.custom_permissions',
-                'users.custom_salary',
-                'users.status',
-                'users.created_at',
-                'users.updated_at',
-                'users.password',
-                'users.remember_token',
-                'users.email_verified_at'
-            )
-            ->orderByDesc('total_duty_seconds')
-            ->paginate(50);
+            if ($hospital !== 'all') {
+                $liveQuery->whereHas('user', function($q) use ($hospital) {
+                    $q->where('hospital', $hospital);
+                });
+            }
+
+            $rankings = $liveQuery->paginate(50); // Using rankings variable to simplify view
+        }
 
         // Calculate overall statistics
         $statsQuery = Attendance::whereNotNull('clock_out');

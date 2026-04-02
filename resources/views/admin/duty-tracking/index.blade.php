@@ -24,6 +24,7 @@
         {{-- Filter Section --}}
         <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-6 mb-6 border border-white border-opacity-20">
             <div class="flex space-x-4 mb-6 border-b border-white border-opacity-20 pb-2">
+                <a href="{{ route('admin.duty-tracking.index', ['mode' => 'live']) }}" class="px-4 py-2 font-medium {{ $mode === 'live' ? 'text-white border-b-2 border-sky-400' : 'text-sky-200 hover:text-white' }}">Laporan Live</a>
                 <a href="{{ route('admin.duty-tracking.index', ['mode' => 'monthly']) }}" class="px-4 py-2 font-medium {{ $mode === 'monthly' ? 'text-white border-b-2 border-sky-400' : 'text-sky-200 hover:text-white' }}">Laporan Bulanan</a>
                 <a href="{{ route('admin.duty-tracking.index', ['mode' => 'weekly']) }}" class="px-4 py-2 font-medium {{ $mode === 'weekly' ? 'text-white border-b-2 border-sky-400' : 'text-sky-200 hover:text-white' }}">Laporan Mingguan</a>
             </div>
@@ -42,7 +43,15 @@
                     </select>
                 </div>
                 
-                @if($mode === 'monthly')
+                @if($mode === 'live')
+                    <div class="mb-4">
+                        <div class="bg-sky-500 bg-opacity-10 border border-sky-500 border-opacity-30 rounded-lg p-4">
+                            <p class="text-sky-200 text-sm">
+                                <i class="fas fa-info-circle mr-2"></i>Menampilkan seluruh staff yang sedang melakukan **Clock In** saat ini secara real-time.
+                            </p>
+                        </div>
+                    </div>
+                @elseif($mode === 'monthly')
                 <div class="mb-4">
                     <label class="block text-sky-200 text-sm font-medium mb-3">
                         <i class="fas fa-calendar-alt mr-2"></i>Pilih Bulan (bisa multiple):
@@ -235,67 +244,123 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-white divide-opacity-10">
+                <table class="min-w-full divide-y divide-white divide-opacity-10" id="dutyTable">
                     <thead class="bg-white bg-opacity-5">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-sky-200 uppercase tracking-wider">Rank</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-sky-200 uppercase tracking-wider">Staff</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-sky-200 uppercase tracking-wider">Total Duty</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-sky-200 uppercase tracking-wider">Sessions</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-sky-200 uppercase tracking-wider">Avg/Session</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-sky-200 uppercase tracking-wider">Actions</th>
+                            @if($mode === 'live')
+                                <th class="px-6 py-3 text-left text-xs font-medium text-sky-200 uppercase tracking-wider">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-sky-200 uppercase tracking-wider">Staff</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-sky-200 uppercase tracking-wider">Hospital</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-sky-200 uppercase tracking-wider">Clock In</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-sky-200 uppercase tracking-wider">Live Duration</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-sky-200 uppercase tracking-wider">Type</th>
+                            @else
+                                <th class="px-6 py-3 text-left text-xs font-medium text-sky-200 uppercase tracking-wider">Rank</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-sky-200 uppercase tracking-wider">Staff</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-sky-200 uppercase tracking-wider">Total Duty</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-sky-200 uppercase tracking-wider">Sessions</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-sky-200 uppercase tracking-wider">Avg/Session</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-sky-200 uppercase tracking-wider">Actions</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-white divide-opacity-10">
-                        @forelse($rankings as $index => $user)
-                            <tr class="hover:bg-black hover:bg-opacity-20 transition-all">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        @if($rankings->currentPage() == 1 && $index == 0)
-                                            <span class="text-3xl">🥇</span>
-                                        @elseif($rankings->currentPage() == 1 && $index == 1)
-                                            <span class="text-3xl">🥈</span>
-                                        @elseif($rankings->currentPage() == 1 && $index == 2)
-                                            <span class="text-3xl">🥉</span>
-                                        @else
-                                            <span class="text-xl font-bold text-gray-400">#{{ $rankings->firstItem() + $index }}</span>
-                                        @endif
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="flex-shrink-0 h-10 w-10">
-                                            <div class="h-10 w-10 rounded-full bg-sky-500 bg-opacity-20 flex items-center justify-center">
-                                                <i class="fas fa-user text-sky-300"></i>
+                        @forelse($rankings as $index => $item)
+                            @if($mode === 'live')
+                                <tr class="hover:bg-black hover:bg-opacity-20 transition-all">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="flex h-3 w-3 relative">
+                                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                            <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10">
+                                                <div class="h-10 w-10 rounded-full bg-sky-500 bg-opacity-20 flex items-center justify-center overflow-hidden">
+                                                    @if($item->user && $item->user->profile_image)
+                                                        <img src="{{ $item->user->profile_image_url }}" class="h-full w-full object-cover">
+                                                    @else
+                                                        <i class="fas fa-user text-sky-300"></i>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-white">{{ $item->user->name ?? 'Unknown' }}</div>
+                                                <div class="text-xs text-sky-300">{{ $item->user->role->name ?? 'N/A' }}</div>
                                             </div>
                                         </div>
-                                        <div class="ml-4">
-                                            <div class="text-sm font-medium text-white">{{ $user->name }}</div>
-                                            <div class="text-xs text-sky-300">{{ $user->role->name ?? 'N/A' }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 bg-white bg-opacity-10 text-white text-xs rounded uppercase font-bold border border-white border-opacity-10">
+                                            {{ $item->user->hospital ?? 'N/A' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-white">{{ $item->clock_in->format('H:i') }}</div>
+                                        <div class="text-[10px] text-sky-300">{{ $item->clock_in->format('d M Y') }}</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-lg font-bold text-green-400 live-timer" data-start="{{ $item->clock_in->toISOString() }}">
+                                            {{ \App\Helpers\TimeHelper::formatDuration($item->clock_in->diffInSeconds(now())) }}
                                         </div>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-lg font-bold text-emerald-300">
-                                        {{ number_format($user->total_duty_seconds / 3600, 1) }} jam
-                                    </div>
-                                    <div class="text-xs text-sky-300">
-                                        {{ gmdate('H:i:s', $user->total_duty_seconds) }}
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="text-sm text-white">{{ number_format($user->session_count) }} sesi</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="text-sm text-yellow-300">{{ number_format($user->avg_duty_seconds / 3600, 1) }} jam</span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <a href="{{ route('admin.duty-tracking.show', ['user' => $user->id, 'months' => $selectedMonths]) }}" 
-                                        class="text-sky-300 hover:text-sky-200" title="Detail Bulanan (Abaikan filter UI jika Weekly)">
-                                        <i class="fas fa-eye mr-1"></i>Detail
-                                    </a>
-                                </td>
-                            </tr>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 py-1 {{ $item->session_type === 'meeting' ? 'bg-purple-500' : 'bg-blue-500' }} bg-opacity-20 text-white text-[10px] rounded uppercase font-bold border border-white border-opacity-10">
+                                            {{ $item->session_type }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            @else
+                                <tr class="hover:bg-black hover:bg-opacity-20 transition-all">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            @if($rankings->currentPage() == 1 && $index == 0)
+                                                <span class="text-3xl">🥇</span>
+                                            @elseif($rankings->currentPage() == 1 && $index == 1)
+                                                <span class="text-3xl">🥈</span>
+                                            @elseif($rankings->currentPage() == 1 && $index == 2)
+                                                <span class="text-3xl">🥉</span>
+                                            @else
+                                                <span class="text-xl font-bold text-gray-400">#{{ $rankings->firstItem() + $index }}</span>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10">
+                                                <div class="h-10 w-10 rounded-full bg-sky-500 bg-opacity-20 flex items-center justify-center">
+                                                    <i class="fas fa-user text-sky-300"></i>
+                                                </div>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-white">{{ $item->name }}</div>
+                                                <div class="text-xs text-sky-300">{{ $item->role->name ?? 'N/A' }}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-lg font-bold text-emerald-300">
+                                            {{ number_format($item->total_duty_seconds / 3600, 1) }} jam
+                                        </div>
+                                        <div class="text-xs text-sky-300">
+                                            {{ gmdate('H:i:s', (int)$item->total_duty_seconds) }}
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-white">{{ number_format($item->session_count) }} sesi</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="text-sm text-yellow-300">{{ number_format($item->avg_duty_seconds / 3600, 1) }} jam</span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <a href="{{ route('admin.duty-tracking.show', ['user' => $item->id, 'months' => $selectedMonths]) }}" 
+                                            class="text-sky-300 hover:text-sky-200" title="Detail Bulanan">
+                                            <i class="fas fa-eye mr-1"></i>Detail
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endif
                         @empty
                             <tr>
                                 <td colspan="6" class="px-6 py-12 text-center text-gray-400">
@@ -324,5 +389,25 @@ function selectAll() {
     const allChecked = Array.from(checkboxes).every(cb => cb.checked);
     checkboxes.forEach(cb => cb.checked = !allChecked);
 }
+
+// Live Timer Script
+function updateLiveTimers() {
+    const timers = document.querySelectorAll('.live-timer');
+    timers.forEach(timer => {
+        const startTime = new Date(timer.getAttribute('data-start'));
+        const now = new Date();
+        const diffInSeconds = Math.floor((now - startTime) / 1000);
+        
+        if (diffInSeconds >= 0) {
+            const h = Math.floor(diffInSeconds / 3600).toString().padStart(2, '0');
+            const m = Math.floor((diffInSeconds % 3600) / 60).toString().padStart(2, '0');
+            const s = (diffInSeconds % 60).toString().padStart(2, '0');
+            timer.innerText = `${h}:${m}:${s}`;
+        }
+    });
+}
+
+setInterval(updateLiveTimers, 1000);
+updateLiveTimers();
 </script>
 @endsection

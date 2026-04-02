@@ -599,46 +599,27 @@
                 <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl animate-fade-in-up mb-8"
                     style="animation-delay: 0.05s; background-color: rgba(7, 89, 133, 0.9);">
                     <div class="p-6 sm:p-8">
-                        <?php
-                            $isFiveMActive = false;
-                            $fiveMClockInTime = null;
-                            if (isset($onDutyPlayers)) {
-                                foreach ($onDutyPlayers as $player) {
-                                    if ($player->player_id === auth()->user()->citizen_id) {
-                                        $isFiveMActive = true;
-                                        $fiveMClockInTime = $player->clock_in;
-                                        break;
-                                    }
-                                }
-                            }
-                        ?>
 
-                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if((isset($activeSession) && $activeSession) || $isFiveMActive): ?>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($activeSession) && $activeSession): ?>
                             <!-- Active Session -->
                             <div
-                                class="bg-gradient-to-br <?php echo e($isFiveMActive && !isset($activeSession) ? 'from-green-500/50 to-emerald-500/50 border-green-400/60' : 'from-yellow-500/50 to-orange-500/50 border-yellow-400/60'); ?> rounded-2xl p-4 sm:p-6 border-2 shadow-xl">
+                                class="bg-gradient-to-br from-yellow-500/50 to-orange-500/50 border-yellow-400/60 rounded-2xl p-4 sm:p-6 border-2 shadow-xl">
                                 <div class="flex flex-col lg:flex-row items-center justify-between gap-4">
                                     <div class="flex items-center space-x-3 sm:space-x-4">
                                         <div
-                                            class="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br <?php echo e($isFiveMActive && !isset($activeSession) ? 'from-green-500 to-emerald-500' : 'from-yellow-500 to-orange-500'); ?> rounded-2xl flex items-center justify-center shadow-xl animate-pulse flex-shrink-0">
+                                            class="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center shadow-xl animate-pulse flex-shrink-0">
                                             <i class="fas fa-briefcase text-2xl text-white"></i>
                                         </div>
                                         <div>
                                             <h4 class="text-xl sm:text-2xl font-bold text-white mb-1 sm:mb-2">
-                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($activeSession) && $activeSession): ?>
-                                                    Sesi <?php echo e($activeSession->session_number); ?> Sedang Aktif
-                                                <?php else: ?>
-                                                    Sesi Aktif (FiveM)
-                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                                Sesi <?php echo e($activeSession->session_number); ?> Sedang Aktif
                                             </h4>
-                                            <p
-                                                class="<?php echo e($isFiveMActive && !isset($activeSession) ? 'text-green-100' : 'text-yellow-200'); ?>">
-                                                Dimulai
-                                                <?php echo e(isset($activeSession) && $activeSession ? $activeSession->clock_in->diffForHumans() : ($fiveMClockInTime ? $fiveMClockInTime->diffForHumans() : 'Baru saja')); ?>
+                                            <p class="text-yellow-200">
+                                                Dimulai <?php echo e($activeSession->clock_in->diffForHumans()); ?>
 
                                             </p>
 
-                                            <?php if(isset($activeSession) && $activeSession && $activeSession->scheduled_duty_minutes): ?>
+                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($activeSession->scheduled_duty_minutes): ?>
                                                 <p class="text-yellow-300 text-sm">
                                                     Waktu Tersisa:
                                                     <span id="remaining-time"
@@ -655,7 +636,7 @@
                                                 </p>
                                             <?php else: ?>
                                                 <p class="text-yellow-300 text-sm">Durasi: <span id="active-session-duration"
-                                                        data-clock-in="<?php echo e(isset($activeSession) && $activeSession ? $activeSession->clock_in->toISOString() : ''); ?>"><?php echo e(isset($activeSession) && $activeSession ? \App\Helpers\TimeHelper::formatDuration($activeSession->calculateTotalHours()) : '0:00:00'); ?></span>
+                                                        data-clock-in="<?php echo e($activeSession->clock_in->toISOString()); ?>"><?php echo e(\App\Helpers\TimeHelper::formatDuration($activeSession->calculateTotalHours())); ?></span>
                                                 </p>
                                             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                         </div>
@@ -784,68 +765,6 @@
                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </div>
 
-                <!-- On Duty (FiveM) Live Status -->
-                <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl elegant-card elegant-stagger"
-                    style="background-color: rgba(7, 89, 133, 0.9);">
-                    <div class="px-6 sm:px-8 py-6 border-b-2 border-sky-400/50 flex items-center justify-between">
-                        <h3 class="text-xl sm:text-2xl font-bold text-white flex items-center">
-                            <div class="relative mr-3">
-                                <i class="fas fa-satellite-dish text-sky-400"></i>
-                                <span class="absolute -top-1 -right-1 flex h-3 w-3">
-                                    <span
-                                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                    <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-                                </span>
-                            </div>
-                            Live Status (FiveM)
-                        </h3>
-                        <span
-                            class="px-3 py-1 bg-sky-500/30 text-sky-200 text-sm font-medium rounded-full border-2 border-sky-400/50 shadow-md">
-                            <?php echo e(isset($onDutyPlayers) ? $onDutyPlayers->count() : 0); ?> On Duty
-                        </span>
-                    </div>
-                    <div class="p-6 sm:p-8">
-                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($onDutyPlayers) && $onDutyPlayers->count() > 0): ?>
-                            <div class="space-y-3 max-h-60 overflow-y-auto custom-scrollbar pr-2">
-                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $onDutyPlayers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $player): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    <?php
-                                        $isCurrentUser = $player->player_id === auth()->user()->citizen_id;
-                                    ?>
-                                    <div
-                                        class="<?php echo e($isCurrentUser ? 'bg-green-500/20 border-green-400/50 shadow-green-500/10' : 'bg-sky-700/40 border-sky-400/50'); ?> rounded-xl p-4 flex items-center justify-between transition-all duration-300 border-2 shadow-lg hover:border-sky-300/80">
-                                        <div class="flex items-center space-x-4">
-                                            <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-sky-600 shadow-md">
-                                                <i class="fas fa-user-nurse text-white"></i>
-                                            </div>
-                                            <div>
-                                                <p class="font-bold text-white"><?php echo e($player->player_name); ?></p>
-                                                <p class="text-xs text-sky-300">
-                                                    Clock In: <?php echo e($player->clock_in->format('H:i')); ?>
-
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div class="text-right">
-                                            <span class="font-bold text-lg text-green-300">
-                                                <?php echo e($player->clock_in->diffForHumans(null, true)); ?>
-
-                                            </span>
-                                            <p class="text-xs text-green-400/80">Online</p>
-                                        </div>
-                                    </div>
-                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                            </div>
-                        <?php else: ?>
-                            <div class="text-center py-8">
-                                <div
-                                    class="w-16 h-16 bg-sky-800/50 rounded-full flex items-center justify-center mx-auto mb-3 border border-sky-600/30">
-                                    <i class="fas fa-user-slash text-2xl text-sky-400/50"></i>
-                                </div>
-                                <p class="text-sky-300/70 font-medium">Tidak ada petugas on duty di kota</p>
-                            </div>
-                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                    </div>
-                </div>
 
                 <!-- Today's Sessions Card -->
                 <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl elegant-card elegant-stagger"
