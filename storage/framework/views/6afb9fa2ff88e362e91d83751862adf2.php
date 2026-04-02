@@ -1290,6 +1290,8 @@
                                                     'spesialis_urologi' => 'Poli Spesialis Urologi',
                                                     'spesialis_tht' => 'Poli Spesialis THT',
                                                     'spesialis_ortopedi' => 'Poli Spesialis Ortopedi',
+                                                    'umum' => 'Poli Umum',
+                                                    'gigi' => 'Poli Gigi',
                                                 ];
                                             ?>
                                             <tr class="hover:bg-sky-700/40 transition-all duration-300">
@@ -1302,8 +1304,13 @@
                                                 </td>
                                                 <td
                                                     class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm text-green-300 font-medium">
-                                                    <?php echo e($formTypeNames[$appointment->form_type] ?? ucfirst(str_replace('_', ' ', $appointment->form_type))); ?>
+                                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($appointment->form_type === 'janji_temu' && !empty($formData['poli'])): ?>
+                                                        <?php echo e($formTypeNames[$formData['poli']] ?? 'Poli ' . ucwords(str_replace(['_', '-'], ' ', $formData['poli']))); ?>
 
+                                                    <?php else: ?>
+                                                        <?php echo e($formTypeNames[$appointment->form_type] ?? ucfirst(str_replace('_', ' ', $appointment->form_type))); ?>
+
+                                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                 </td>
                                                 <td
                                                     class="px-4 sm:px-8 py-5 sm:py-6 whitespace-nowrap text-sm text-sky-300 font-medium">

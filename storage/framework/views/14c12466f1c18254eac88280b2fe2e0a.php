@@ -834,31 +834,36 @@
                         profesional, dan cepat untuk segala kebutuhan kesehatan Anda.
                     </p>
 
-                    <!-- CTA Buttons with Premium Design -->
-                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-6">
-                        <!-- Primary Button -->
+                    <!-- CTA Buttons with Premium 2x2 Grid Layout -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 max-w-2xl mx-auto lg:mx-0 pt-6">
+                        <!-- Primary Button (Layanan) -->
                         <a href="#services"
-                            class="group relative inline-flex items-center justify-center gap-3 bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-600 text-white font-bold text-base sm:text-lg px-8 sm:px-10 py-4 sm:py-5 rounded-xl shadow-2xl hover:shadow-cyan-500/50 hover:from-sky-500 hover:via-cyan-500 hover:to-blue-500 transition-all duration-300 transform hover:scale-[1.02] overflow-hidden">
+                            class="group relative inline-flex items-center justify-center gap-3 bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-600 text-white font-bold text-base px-6 py-4 rounded-xl shadow-2xl hover:shadow-cyan-500/50 hover:from-sky-500 hover:via-cyan-500 hover:to-blue-500 transition-all duration-300 transform hover:scale-[1.02] overflow-hidden">
                             <div
                                 class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/25 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700">
                             </div>
                             <i class="fas fa-stethoscope relative z-10 text-lg"></i>
                             <span class="relative z-10">Lihat Layanan</span>
-                            <i
-                                class="fas fa-arrow-right relative z-10 group-hover:translate-x-1 transition-transform duration-300"></i>
                         </a>
 
-                        <!-- Secondary Button with Glassmorphism -->
+                        <!-- Jadwal Praktek Button -->
+                        <a href="<?php echo e(route('public.doctor-schedule')); ?>"
+                            class="relative z-10 group inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-xl border-2 border-white/25 text-white font-semibold text-base px-6 py-4 rounded-xl shadow-xl hover:bg-white/20 hover:border-white/40 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]">
+                            <i class="fas fa-calendar-check text-lg text-cyan-400"></i>
+                            <span>Jadwal Praktek</span>
+                        </a>
+
+                        <!-- Regulasi Button -->
                         <button onclick="showRegulationModal()" type="button"
-                            class="relative z-10 group inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-xl border-2 border-white/25 text-white font-semibold text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-5 rounded-xl shadow-xl hover:bg-white/20 hover:border-white/40 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] cursor-pointer">
-                            <i class="fas fa-file-alt text-lg"></i>
+                            class="relative z-10 group inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-xl border-2 border-white/25 text-white font-semibold text-base px-6 py-4 rounded-xl shadow-xl hover:bg-white/20 hover:border-white/40 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] cursor-pointer">
+                            <i class="fas fa-file-alt text-lg text-amber-400"></i>
                             <span>Lihat Regulasi</span>
                         </button>
 
-                        <!-- Struktural EMS Button with Glassmorphism -->
+                        <!-- Struktural EMS Button -->
                         <a href="<?php echo e(route('public.struktural-ems')); ?>"
-                            class="relative z-10 group inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-xl border-2 border-white/25 text-white font-semibold text-base sm:text-lg px-6 sm:px-8 py-4 sm:py-5 rounded-xl shadow-xl hover:bg-white/20 hover:border-white/40 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]">
-                            <i class="fas fa-sitemap text-lg"></i>
+                            class="relative z-10 group inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-xl border-2 border-white/25 text-white font-semibold text-base px-6 py-4 rounded-xl shadow-xl hover:bg-white/20 hover:border-white/40 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]">
+                            <i class="fas fa-sitemap text-lg text-blue-400"></i>
                             <span>Struktural EMS</span>
                         </a>
                     </div>

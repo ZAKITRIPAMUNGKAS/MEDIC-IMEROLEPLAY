@@ -150,8 +150,6 @@ class DashboardController extends Controller
         $weeklyStats = AttendanceHelper::getUserWeeklyStats($user->id);
         $totalEmsHours = AttendanceHelper::getUserTotalHours($user->id);
 
-        // Get On Duty players from FiveM
-        $onDutyPlayers = Absensi::active()->orderBy('clock_in', 'desc')->get();
 
         // If current user has no attendance data, show demo data or find a user with data
         if ($heatmapData['work_days'] == 0) {
@@ -174,8 +172,7 @@ class DashboardController extends Controller
             'heatmapData',
             'heatmapStats',
             'weeklyStats',
-            'totalEmsHours',
-            'onDutyPlayers'
+            'totalEmsHours'
         ));
     }
 

@@ -1372,6 +1372,11 @@
                                                         <i class="fas fa-users-cog mr-3 w-5"></i>
                                                         Manajemen Staf
                                                     </a>
+                                                    <a href="<?php echo e(route('admin.doctor-schedules.index')); ?>"
+                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                        <i class="fas fa-calendar-alt mr-3 w-5"></i>
+                                                        Jadwal Dokter
+                                                    </a>
                                                 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                                                 <?php if(auth()->user()->hasPermission('access_live_chat')): ?>
@@ -1539,6 +1544,9 @@
                         <a href="<?php echo e(route('admin.staff.index')); ?>"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-users-cog w-6 mr-2"></i>Staf</a>
+                        <a href="<?php echo e(route('admin.doctor-schedules.index')); ?>"
+                            class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
+                                class="fas fa-calendar-alt w-6 mr-2"></i>Jadwal Dokter</a>
                         <a href="<?php echo e(route('admin.organizational-structure.index')); ?>"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-sitemap w-6 mr-2"></i>Struktural EMS</a>

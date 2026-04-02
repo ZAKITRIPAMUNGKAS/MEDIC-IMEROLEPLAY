@@ -1,19 +1,24 @@
 <?php $__env->startSection('title', 'Form ' . ($formTypes[$type] ?? 'Layanan Medis') . ' - Portal Medis MPK-BA'); ?>
 
 <?php $__env->startSection('content'); ?>
-    <div class="relative min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900"></div>
-        <div class="absolute inset-0 bg-black bg-opacity-30"></div>
+    <div class="relative min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-[#F8D3E5]/40 via-white to-[#7EB6E6]/20">
+        <!-- Background Decorative Orbs -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute top-1/4 -left-20 w-96 h-96 bg-[#EA89B8]/10 rounded-full blur-3xl animate-pulse"></div>
+            <div class="absolute bottom-1/4 -right-20 w-96 h-96 bg-[#7EB6E6]/10 rounded-full blur-3xl" style="animation-delay: 2s;"></div>
+        </div>
 
         <div class="relative max-w-4xl w-full mx-auto">
-            <div class="glass-effect rounded-2xl elegant-shadow-lg p-4 sm:p-6 md:p-8 lg:p-12">
-                <div class="text-center mb-6 sm:mb-8 md:mb-10">
-                    <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">
+            <div class="glass-effect rounded-3xl elegant-shadow-lg p-6 sm:p-8 md:p-10 lg:p-14 border border-white/40">
+                <div class="text-center mb-10 md:mb-12">
+                    <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#EA89B8] to-[#EA89B8] rounded-2xl shadow-lg mb-6 transform hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-file-medical text-white text-3xl"></i>
+                    </div>
+                    <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-slate-800 mb-4 tracking-tight">
                         <?php echo e($formTypes[$type] ?? 'Formulir Layanan'); ?>
 
                     </h1>
-                    <p class="text-blue-100 text-sm sm:text-base font-medium">Silakan lengkapi informasi di bawah ini dengan
-                        cermat.</p>
+                    <p class="text-slate-600 text-lg font-medium">Silakan lengkapi informasi di bawah ini dengan cermat.</p>
                 </div>
 
                 
@@ -88,12 +93,12 @@
                     <input type="hidden" name="form_type" value="<?php echo e($type); ?>">
 
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($type !== 'tes_psikologi'): ?>
-                        <div class="border-b border-white/10 pb-6 mb-8">
-                            <h3 class="text-xl font-semibold text-white mb-6">Informasi Data Diri</h3>
+                        <div class="border-b border-slate-200 pb-8 mb-8">
+                            <h3 class="text-2xl font-black text-slate-800 mb-8 border-l-4 border-[#EA89B8] pl-4">Informasi Data Diri</h3>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                                 <div>
-                                    <label for="hospital" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                        Rumah Sakit <span class="text-red-400">*</span>
+                                    <label for="hospital" class="form-label">
+                                        Rumah Sakit <span class="text-red-500">*</span>
                                     </label>
                                     <select id="hospital" name="hospital"
                                         class="form-select <?php $__errorArgs = ['hospital'];
@@ -121,8 +126,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                 </div>
                                 <div>
                                     <label for="character_name"
-                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                        Nama Lengkap <span class="text-red-400">*</span>
+                                        class="form-label">
+                                        Nama Lengkap <span class="text-red-500">*</span>
                                     </label>
                                     <input type="text" id="character_name" name="character_name"
                                         value="<?php echo e(old('character_name')); ?>"
@@ -145,8 +150,8 @@ endif;
 unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
                                 <div>
-                                    <label for="birth_date" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                        Tanggal Lahir <span class="text-red-400">*</span>
+                                    <label for="birth_date" class="form-label">
+                                        Tanggal Lahir <span class="text-red-500">*</span>
                                     </label>
                                     <input type="date" id="birth_date" name="form_data[birth_date]"
                                         value="<?php echo e(old('form_data.birth_date')); ?>"
@@ -168,8 +173,8 @@ endif;
 unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
                                 <div>
-                                    <label for="gender" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                        Gender <span class="text-red-400">*</span>
+                                    <label for="gender" class="form-label">
+                                        Gender <span class="text-red-500">*</span>
                                     </label>
                                     <select id="gender" name="form_data[gender]"
                                         class="form-select <?php $__errorArgs = ['form_data.gender'];
@@ -196,8 +201,8 @@ endif;
 unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
                                 <div>
-                                    <label for="age" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                        Umur <span class="text-red-400">*</span>
+                                    <label for="age" class="form-label">
+                                        Umur <span class="text-red-500">*</span>
                                     </label>
                                     <input type="number" id="age" name="form_data[age]" value="<?php echo e(old('form_data.age')); ?>"
                                         class="form-input <?php $__errorArgs = ['form_data.age'];
@@ -219,8 +224,8 @@ endif;
 unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
                                 <div class="sm:col-span-2">
-                                    <label for="occupation" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                        Pekerjaan <span class="text-red-400">*</span>
+                                    <label for="occupation" class="form-label">
+                                        Pekerjaan <span class="text-red-500">*</span>
                                     </label>
                                     <input type="text" id="occupation" name="form_data[occupation]"
                                         value="<?php echo e(old('form_data.occupation')); ?>"
@@ -244,14 +249,14 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                 </div>
                                 <div>
                                     <label for="citizen_id"
-                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">Citizen ID</label>
+                                        class="form-label">Citizen ID</label>
                                     <input type="text" id="citizen_id" name="citizen_id" value="<?php echo e(old('citizen_id')); ?>"
                                         class="form-input" placeholder="Contoh: 123456">
                                 </div>
                                 <div>
                                     <label for="phone_number"
-                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                        No HP (IC) <span class="text-red-400">*</span>
+                                        class="form-label">
+                                        No HP (IC) <span class="text-red-500">*</span>
                                     </label>
                                     <input type="text" id="phone_number" name="form_data[phone_number]"
                                         value="<?php echo e(old('form_data.phone_number')); ?>"
@@ -277,8 +282,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                         </div>
                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                    <div class="mb-8">
-                        <h3 class="text-xl font-bold text-white mb-6">
+                    <div class="mb-10">
+                        <h3 class="text-2xl font-black text-slate-800 mb-8 border-l-4 border-[#7EB6E6] pl-4">
                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($type === 'pendaftaran_karakter'): ?>
                                 Kronologi CK & Penyebab Kematian
                             <?php else: ?>
@@ -290,7 +295,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($type === 'surat_kesehatan'): ?>
                                 <div>
                                     <label for="purpose_sk"
-                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan</label>
+                                        class="form-label">Keperluan</label>
                                     <select id="purpose_sk" name="form_data[purpose]" class="form-select">
                                         <option value="Pemeriksaan Rutin" class="bg-slate-900 text-white font-bold">Pemeriksaan
                                             Rutin</option>
@@ -305,7 +310,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             <?php elseif($type === 'operasi_plastik'): ?>
                                 <div>
                                     <label for="purpose_op"
-                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">Jenis Operasi
+                                        class="form-label">Jenis Operasi
                                         Plastik</label>
                                     <select id="purpose_op" name="form_data[purpose]" class="form-select">
                                         <option value="Rekontruksi Wajah" class="bg-slate-900 text-white font-bold">Rekontruksi
@@ -317,8 +322,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 
                                 <div>
                                     <label for="photo_ktp_op"
-                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                        Upload Foto KTP <span class="text-red-400">*</span>
+                                        class="form-label">
+                                        Upload Foto KTP <span class="text-red-500">*</span>
                                     </label>
                                     <input type="file" id="photo_ktp_op" name="form_data[photo_ktp]"
                                         class="form-file <?php $__errorArgs = ['form_data.photo_ktp'];
@@ -342,8 +347,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                 </div>
                                 <div>
                                     <label for="photo_skb_op"
-                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                        Upload LEGAL DECLARATION <span class="text-red-400">*</span>
+                                        class="form-label">
+                                        Upload LEGAL DECLARATION <span class="text-red-500">*</span>
                                     </label>
                                     <input type="file" id="photo_skb_op" name="form_data[photo_skb]"
                                         class="form-file <?php $__errorArgs = ['form_data.photo_skb'];
@@ -368,8 +373,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 
                             <?php elseif($type === 'tes_psikologi'): ?>
                                 <div class="mb-6">
-                                    <h3 class="text-xl font-semibold text-white mb-4">Tes Psikologi Multi-Aspek</h3>
-                                    <p class="text-blue-200 text-sm mb-6">Silakan jawab pertanyaan berikut dengan jujur. Hasil
+                                    <h3 class="text-xl font-bold text-slate-800 mb-4">Tes Psikologi Multi-Aspek</h3>
+                                    <p class="text-slate-600 text-sm mb-6">Silakan jawab pertanyaan berikut dengan jujur. Hasil
                                         tes akan membantu psikolog dalam memberikan evaluasi yang tepat.</p>
 
                                     
@@ -381,17 +386,17 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                                 <i class="fas fa-link text-indigo-300 text-lg"></i>
                                             </div>
                                             <div>
-                                                <h4 class="text-lg font-bold text-white mb-1">Hubungkan dengan Surat Psikolog
+                                                <h4 class="text-lg font-bold text-slate-800 mb-1">Hubungkan dengan Surat Psikolog
                                                 </h4>
-                                                <p class="text-indigo-200 text-sm">Pilih <strong>Surat Psikolog</strong> yang
+                                                <p class="text-slate-600 text-sm">Pilih <strong>Surat Psikolog</strong> yang
                                                     sudah Anda buat sebelumnya. Surat tersebut akan otomatis disetujui setelah
                                                     Anda menyelesaikan tes ini!</p>
                                             </div>
                                         </div>
 
                                         <label for="linked_psych_form"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Pilih Surat Psikolog <span class="text-red-400">*</span>
+                                            class="form-label">
+                                            Pilih Surat Psikolog <span class="text-red-500">*</span>
                                         </label>
                                         <select id="linked_psych_form" name="linked_psych_form_id"
                                             class="form-select <?php $__errorArgs = ['linked_psych_form_id'];
@@ -436,11 +441,11 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($availablePsychForms->isEmpty()): ?>
                                             <div class="mt-4 p-4 bg-yellow-500/10 border border-yellow-400/30 rounded-lg">
                                                 <div class="flex items-start gap-2">
-                                                    <i class="fas fa-exclamation-triangle text-yellow-300 mt-0.5"></i>
-                                                    <div class="text-sm text-yellow-200">
+                                                    <i class="fas fa-exclamation-triangle text-yellow-700 mt-0.5"></i>
+                                                    <div class="text-sm text-yellow-800">
                                                         <strong>Belum ada Surat Psikolog yang pending.</strong><br>
                                                         Silakan <a href="<?php echo e(route('public.form', ['type' => 'surat_psikolog'])); ?>"
-                                                            class="underline hover:text-yellow-100">buat Surat Psikolog terlebih
+                                                            class="underline hover:text-yellow-900">buat Surat Psikolog terlebih
                                                             dahulu</a> sebelum mengisi tes psikologi.
                                                     </div>
                                                 </div>
@@ -480,7 +485,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $bigfive_questions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $question): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div
                                                 class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
-                                                <p class="text-white mb-4 font-medium text-lg"><?php echo e($i + 1); ?>. <?php echo e($question); ?></p>
+                                                <p class="text-slate-800 mb-4 font-bold text-lg"><?php echo e($i + 1); ?>. <?php echo e($question); ?></p>
                                                 <div class="flex flex-wrap items-center gap-3">
                                                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $bigfive_scale; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                         <label class="flex items-center cursor-pointer group">
@@ -531,7 +536,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $stress_questions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $question): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div
                                                 class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
-                                                <p class="text-white mb-4 font-medium text-lg"><?php echo e($i + 1); ?>. <?php echo e($question); ?></p>
+                                                <p class="text-slate-800 mb-4 font-bold text-lg"><?php echo e($i + 1); ?>. <?php echo e($question); ?></p>
                                                 <div class="flex flex-wrap items-center gap-3">
                                                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $stress_scale; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><label
                                                         class="flex items-center cursor-pointer group"><input type="radio"
@@ -550,8 +555,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 
                                     <!-- Self-Esteem Test (RSES) -->
                                     <div class="mb-8">
-                                        <h4 class="text-lg font-semibold text-white mb-4">Bagian 3: Tes Harga Diri (RSES)</h4>
-                                        <p class="text-blue-200 text-sm mb-4">Pilih jawaban yang paling sesuai dengan perasaan
+                                        <h4 class="text-lg font-bold text-slate-800 mb-4">Bagian 3: Tes Harga Diri (RSES)</h4>
+                                        <p class="text-slate-600 text-sm mb-4">Pilih jawaban yang paling sesuai dengan perasaan
                                             Anda:
                                         </p>
 
@@ -579,7 +584,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $esteem_questions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $question): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div
                                                 class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
-                                                <p class="text-white mb-4 font-medium text-lg"><?php echo e($i + 1); ?>. <?php echo e($question); ?></p>
+                                                <p class="text-slate-800 mb-4 font-bold text-lg"><?php echo e($i + 1); ?>. <?php echo e($question); ?></p>
                                                 <div class="flex flex-wrap items-center gap-3">
                                                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $esteem_scale; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><label
                                                         class="flex items-center cursor-pointer group"><input type="radio"
@@ -601,14 +606,14 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                         value="<?php echo e(old('form_data.doctor_name')); ?>" required>
                                 </div>
 
-                            <?php elseif($type === 'surat_psikolog'): ?>
+                                <?php elseif($type === 'surat_psikolog'): ?>
                                 <div class="mb-6">
-                                    <h3 class="text-xl font-semibold text-white mb-4">Formulir Psikologi</h3>
-                                    <p class="text-blue-200 text-sm mb-6">Lengkapi formulir dan jawab pertanyaan berikut dengan
+                                    <h3 class="text-xl font-bold text-slate-800 mb-4">Formulir Psikologi</h3>
+                                    <p class="text-slate-600 text-sm mb-6">Lengkapi formulir dan jawab pertanyaan berikut dengan
                                         jujur. Hasil tes akan membantu psikolog dalam memberikan evaluasi yang tepat.</p>
 
                                     <label for="purpose_sp"
-                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan</label>
+                                        class="block text-sm font-bold text-slate-800 mb-2 text-lg">Keperluan</label>
                                     <select id="purpose_sp" name="form_data[purpose]" class="form-select">
                                         <option value="Konsult asi Psikolog" class="bg-slate-900 text-white font-bold">
                                             Konsultasi
@@ -624,9 +629,9 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 
 
                                 
-                                <div class="mt-8 border-t border-white/10 pt-8">
-                                    <h4 class="text-xl font-semibold text-white mb-4">Tes Psikologi Multi-Aspek</h4>
-                                    <p class="text-blue-200 text-sm mb-6">Silakan jawab semua pertanyaan berikut untuk
+                                <div class="mt-8 border-t border-slate-200 pt-8">
+                                    <h4 class="text-xl font-bold text-slate-800 mb-4">Tes Psikologi Multi-Aspek</h4>
+                                    <p class="text-slate-600 text-sm mb-6">Silakan jawab semua pertanyaan berikut untuk
                                         melengkapi formulir Anda.</p>
 
                                     <!-- Big Five Personality Test (BFI-10) -->
@@ -661,7 +666,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $bigfive_questions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $question): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div
                                                 class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
-                                                <p class="text-white mb-4 font-medium text-lg"><?php echo e($i + 1); ?>. <?php echo e($question); ?></p>
+                                                <p class="text-slate-800 mb-4 font-bold text-lg"><?php echo e($i + 1); ?>. <?php echo e($question); ?></p>
                                                 <div class="flex flex-wrap items-center gap-3">
                                                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $bigfive_scale; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                         <label class="flex items-center cursor-pointer group">
@@ -669,10 +674,10 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                                                 <?php if(old('form_data.bigfive' . ($i + 1)) == $val): ?> checked <?php endif; ?>
                                                                 class="sr-only peer" required>
                                                             <div
-                                                                class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 flex-1 min-w-[100px] h-24">
-                                                                <span class="text-2xl font-bold text-white"><?php echo e($val); ?></span>
+                                                                class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-slate-200 bg-white/50 peer-checked:border-[#EA89B8] peer-checked:bg-[#EA89B8]/10 peer-checked:shadow-md hover:border-[#EA89B8]/40 hover:bg-white/80 transition-all duration-200 flex-1 min-w-[100px] h-24">
+                                                                <span class="text-2xl font-black text-slate-800"><?php echo e($val); ?></span>
                                                                 <span
-                                                                    class="text-[10px] text-gray-300 text-center leading-tight px-1"><?php echo e($label); ?></span>
+                                                                    class="text-[10px] text-slate-600 font-bold text-center leading-tight px-1"><?php echo e($label); ?></span>
                                                             </div>
                                                         </label>
                                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
@@ -712,7 +717,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $stress_questions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $question): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div
                                                 class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
-                                                <p class="text-white mb-4 font-medium text-lg"><?php echo e($i + 1); ?>. <?php echo e($question); ?></p>
+                                                <p class="text-slate-800 mb-4 font-bold text-lg"><?php echo e($i + 1); ?>. <?php echo e($question); ?></p>
                                                 <div class="flex flex-wrap items-center gap-3">
                                                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $stress_scale; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><label
                                                         class="flex items-center cursor-pointer group"><input type="radio"
@@ -720,9 +725,9 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                                             <?php if(old('form_data.stress' . ($i + 1)) == $val): ?> checked <?php endif; ?>
                                                             class="sr-only peer" required>
                                                         <div
-                                                            class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-white/30 bg-white/5 peer-checked:border-sky-400 peer-checked:bg-sky-500/30 peer-checked:shadow-lg peer-checked:shadow-sky-500/30 hover:border-sky-400/50 hover:bg-white/10 hover:scale-[1.02] active:scale-95 transition-all duration-200 w-20 h-24">
-                                                            <span class="text-2xl font-bold text-white"><?php echo e($val); ?></span><span
-                                                                class="text-xs text-gray-300 text-center leading-tight px-1"><?php echo e($label); ?></span>
+                                                            class="flex flex-col items-center justify-center gap-1 px-3 py-3 rounded-xl border-2 border-slate-200 bg-white/50 peer-checked:border-[#EA89B8] peer-checked:bg-[#EA89B8]/10 peer-checked:shadow-md hover:border-[#EA89B8]/40 hover:bg-white/80 transition-all duration-200 w-20 h-24">
+                                                            <span class="text-2xl font-black text-slate-800"><?php echo e($val); ?></span><span
+                                                                class="text-xs text-slate-600 font-bold text-center leading-tight px-1"><?php echo e($label); ?></span>
                                                         </div>
                                                     </label><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?></div>
                                             </div>
@@ -731,8 +736,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 
                                     <!-- Self-Esteem Test (RSES) -->
                                     <div class="mb-8">
-                                        <h4 class="text-lg font-semibold text-white mb-4">Bagian 3: Tes Harga Diri (RSES)</h4>
-                                        <p class="text-blue-200 text-sm mb-4">Pilih jawaban yang paling sesuai dengan perasaan
+                                        <h4 class="text-lg font-bold text-slate-800 mb-4">Bagian 3: Tes Harga Diri (RSES)</h4>
+                                        <p class="text-slate-600 text-sm mb-4">Pilih jawaban yang paling sesuai dengan perasaan
                                             Anda:</p>
 
                                         <?php
@@ -759,7 +764,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $esteem_questions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $question): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                             <div
                                                 class="mb-6 p-6 bg-white/5 rounded-xl border border-white/10 hover:border-sky-500/30 transition-all duration-300">
-                                                <p class="text-white mb-4 font-medium text-lg"><?php echo e($i + 1); ?>. <?php echo e($question); ?></p>
+                                                <p class="text-slate-800 mb-4 font-bold text-lg"><?php echo e($i + 1); ?>. <?php echo e($question); ?></p>
                                                 <div class="flex flex-wrap items-center gap-3">
                                                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $esteem_scale; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $val => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><label
                                                         class="flex items-center cursor-pointer group"><input type="radio"
@@ -855,8 +860,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                 </div>
                                 <div>
                                     <label for="doctor_name_pd"
-                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                        Nama Dokter <span class="text-red-400">*</span>
+                                        class="form-label">
+                                        Nama Dokter <span class="text-red-500">*</span>
                                     </label>
                                     <select id="doctor_name_pd" name="form_data[doctor_name]"
                                         class="form-select <?php $__errorArgs = ['form_data.doctor_name'];
@@ -1567,8 +1572,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 
                                 <div class="mt-5">
                                     <label for="description_jt"
-                                        class="block text-sm font-medium text-white mb-2 font-bold" style="font-size: 1rem;">
-                                        Keluhan Medis / Deskripsi Lengkap <span class="text-red-400">*</span>
+                                        class="block text-sm font-bold text-slate-800 mb-2" style="font-size: 1rem;">
+                                        Keluhan Medis / Deskripsi Lengkap <span class="text-red-500">*</span>
                                     </label>
                                     <textarea id="description_jt" name="description" rows="4"
                                         class="form-input w-full <?php $__errorArgs = ['description'];
@@ -1594,8 +1599,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             <?php elseif($type === 'pendaftaran_karakter'): ?>
                                 <div>
                                     <label for="jenis_pemakaman"
-                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                        Jenis Pemakaman <span class="text-red-400">*</span>
+                                        class="block text-sm font-bold text-slate-800 mb-2 text-lg">
+                                        Jenis Pemakaman <span class="text-red-500">*</span>
                                     </label>
                                     <select id="jenis_pemakaman" name="form_data[jenis_pemakaman]"
                                         class="form-select <?php $__errorArgs = ['form_data.jenis_pemakaman'];
@@ -1627,8 +1632,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                 <div id="form_penguburan" style="display: none;">
                                     <div>
                                         <label for="tanggal_wafat_penguburan"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Tanggal Wafat <span class="text-red-400">*</span>
+                                            class="block text-sm font-bold text-slate-800 mb-2 text-lg">
+                                            Tanggal Wafat <span class="text-red-500">*</span>
                                         </label>
                                         <input type="date" id="tanggal_wafat_penguburan" name="form_data[tanggal_wafat]"
                                             value="<?php echo e(old('form_data.tanggal_wafat')); ?>"
@@ -1652,8 +1657,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                     </div>
                                     <div>
                                         <label for="tempat_pemakaman"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Tempat Pemakaman <span class="text-red-400">*</span>
+                                            class="block text-sm font-bold text-slate-800 mb-2 text-lg">
+                                            Tempat Pemakaman <span class="text-red-500">*</span>
                                         </label>
                                         <input type="text" id="tempat_pemakaman" name="form_data[tempat_pemakaman]"
                                             value="<?php echo e(old('form_data.tempat_pemakaman')); ?>"
@@ -1677,8 +1682,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                     </div>
                                     <div>
                                         <label for="tanggal_pemakaman"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Tanggal Pemakaman <span class="text-red-400">*</span>
+                                            class="block text-sm font-bold text-slate-800 mb-2 text-lg">
+                                            Tanggal Pemakaman <span class="text-red-500">*</span>
                                         </label>
                                         <input type="date" id="tanggal_pemakaman" name="form_data[tanggal_pemakaman]"
                                             value="<?php echo e(old('form_data.tanggal_pemakaman')); ?>"
@@ -1702,8 +1707,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                     </div>
                                     <div>
                                         <label for="kronologi_ck_penguburan"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Kronologi CK & Penyebab Kematian <span class="text-red-400">*</span>
+                                            class="block text-sm font-bold text-slate-800 mb-2 text-lg">
+                                            Kronologi CK & Penyebab Kematian <span class="text-red-500">*</span>
                                         </label>
                                         <textarea id="kronologi_ck_penguburan" name="form_data[kronologi_ck]" rows="5"
                                             class="form-input <?php $__errorArgs = ['form_data.kronologi_ck'];
@@ -1731,8 +1736,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                 <div id="form_kremasi" style="display: none;">
                                     <div>
                                         <label for="tanggal_wafat_kremasi"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Tanggal Wafat <span class="text-red-400">*</span>
+                                            class="block text-sm font-bold text-slate-800 mb-2 text-lg">
+                                            Tanggal Wafat <span class="text-red-500">*</span>
                                         </label>
                                         <input type="date" id="tanggal_wafat_kremasi" name="form_data[tanggal_wafat]"
                                             value="<?php echo e(old('form_data.tanggal_wafat')); ?>"
@@ -1755,10 +1760,10 @@ endif;
 unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
                                     <div>
-                                        <label for="tanggal_kremasi"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Tanggal Kremasi <span class="text-red-400">*</span>
-                                        </label>
+                                    <label for="tanggal_kremasi"
+                                        class="form-label">
+                                        Tanggal Kremasi <span class="text-red-500">*</span>
+                                    </label>
                                         <input type="date" id="tanggal_kremasi" name="form_data[tanggal_kremasi]"
                                             value="<?php echo e(old('form_data.tanggal_kremasi')); ?>"
                                             class="form-input <?php $__errorArgs = ['form_data.tanggal_kremasi'];
@@ -1780,10 +1785,10 @@ endif;
 unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
                                     <div>
-                                        <label for="tempat_penyimpanan_abu"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Tempat Penyimpanan Abu <span class="text-red-400">*</span>
-                                        </label>
+                                    <label for="tempat_penyimpanan_abu"
+                                        class="form-label">
+                                        Tempat Penyimpanan Abu <span class="text-red-500">*</span>
+                                    </label>
                                         <input type="text" id="tempat_penyimpanan_abu" name="form_data[tempat_penyimpanan_abu]"
                                             value="<?php echo e(old('form_data.tempat_penyimpanan_abu')); ?>"
                                             class="form-input <?php $__errorArgs = ['form_data.tempat_penyimpanan_abu'];
@@ -1806,10 +1811,10 @@ endif;
 unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </div>
                                     <div>
-                                        <label for="kronologi_ck_kremasi"
-                                            class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                            Kronologi CK & Penyebab Kematian <span class="text-red-400">*</span>
-                                        </label>
+                                    <label for="kronologi_ck_kremasi"
+                                        class="form-label">
+                                        Kronologi CK & Penyebab Kematian <span class="text-red-500">*</span>
+                                    </label>
                                         <textarea id="kronologi_ck_kremasi" name="form_data[kronologi_ck]" rows="5"
                                             class="form-input <?php $__errorArgs = ['form_data.kronologi_ck'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -1835,8 +1840,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             <?php else: ?>
                                 <div>
                                     <label for="description"
-                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
-                                        Deskripsi Lengkap <span class="text-red-400">*</span>
+                                        class="form-label">
+                                        Deskripsi Lengkap <span class="text-red-500">*</span>
                                     </label>
                                     <textarea id="description" name="description" rows="5"
                                         class="form-input <?php $__errorArgs = ['description'];
@@ -1865,9 +1870,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                     <div class="mb-6">
                         <label class="inline-flex items-start">
                             <input type="checkbox" name="confirm_data" value="1" class="mt-1 mr-3" required>
-                            <span class="text-white text-sm">Saya yakin seluruh data yang saya isi sudah benar dan saya
-                                bertanggung
-                                jawab atas keakuratan data tersebut.</span>
+                             <span class="text-slate-700 text-sm font-medium">Saya yakin seluruh data yang saya isi sudah benar dan saya bertanggung jawab atas keakuratan data tersebut.</span>
                         </label>
                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['confirm_data'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
@@ -1902,14 +1905,14 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                     document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
                                         const box = r.nextElementSibling;
                                         if (box) {
-                                            box.classList.remove('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
+                                            box.classList.remove('!border-[#EA89B8]', '!bg-[#EA89B8]', '!text-white');
                                         }
                                     });
 
                                     // Add selected state to this one
                                     const box = this.nextElementSibling;
                                     if (box && this.checked) {
-                                        box.classList.add('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
+                                        box.classList.add('!border-[#EA89B8]', '!bg-[#EA89B8]', '!text-white');
                                     }
                                 });
 
@@ -1917,7 +1920,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                 if (radio.checked) {
                                     const box = radio.nextElementSibling;
                                     if (box) {
-                                        box.classList.add('!border-sky-400', '!bg-sky-500/30', '!shadow-lg', '!shadow-sky-500/30');
+                                        box.classList.add('!border-[#EA89B8]', '!bg-[#EA89B8]', '!text-white');
                                     }
                                 }
                             });
@@ -2248,133 +2251,115 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
         .form-select,
         .form-file {
             width: 100%;
-            background-color: rgba(255, 255, 255, 0.10) !important;
-            color: #ffffff !important;
-            border: 2px solid rgba(255, 255, 255, 0.18) !important;
-            border-radius: 0.75rem;
-            /* 12px */
-            padding: 0.75rem 1rem;
-            /* 12px 16px */
-            transition: all 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.8) !important;
+            color: #1e293b !important;
+            border: 2px solid #e2e8f0 !important;
+            border-radius: 1rem;
+            padding: 0.875rem 1.25rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-weight: 600 !important;
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 6px 18px rgba(2, 6, 23, 0.35);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             font-size: 16px;
-            backdrop-filter: blur(2px);
         }
 
-        .form-input::placeholder,
-        .form-select::placeholder,
-        .form-file::placeholder {
-            color: #c7d2fe !important;
-            /* indigo-200 */
-            font-weight: 600 !important;
-            font-size: 16px;
-            opacity: .9;
+        .form-input::placeholder {
+            color: #94a3b8 !important;
+            font-weight: 500 !important;
+            opacity: 1;
         }
 
         .form-input:focus,
-        .form-select:focus,
-        .form-file:focus {
+        .form-select:focus {
             outline: none !important;
-            border-color: #38bdf8 !important;
-            /* sky-400 */
-            box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.35) !important;
-            background-color: rgba(255, 255, 255, 0.16) !important;
-            color: #ffffff !important;
-            font-weight: 700 !important;
+            border-color: #EA89B8 !important;
+            box-shadow: 0 0 0 4px rgba(234, 137, 184, 0.15) !important;
+            background-color: #ffffff !important;
+            transform: translateY(-1px);
         }
 
         .form-select {
             -webkit-appearance: none;
             -moz-appearance: none;
             appearance: none;
-            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23a0aec0%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M10%2012l-6-6h12l-6%206z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E');
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%2364748b%22%3E%3Cpath%20fill-rule%3D%22evenodd%22%20d%3D%22M10%2012l-6-6h12l-6%206z%22%20clip-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E');
             background-repeat: no-repeat;
-            background-position: right 0.75rem center;
+            background-position: right 1rem center;
             background-size: 1.25em 1.25em;
             padding-right: 2.5rem;
-            color: #000000 !important;
-            /* text hitam pada select */
-            background-color: rgba(255, 255, 255, 0.12) !important;
         }
 
-        /* Paksa warna teks option menjadi hitam meski option punya kelas text-white */
         .form-select option {
-            color: #000000 !important;
+            color: #1e293b !important;
             background-color: #ffffff !important;
+            padding: 12px;
         }
 
-        .form-select option:checked {
-            background-color: #e0f2fe !important;
-            /* sky-100 */
-            color: #000000 !important;
-        }
-
-        .form-input {
-            color: #ffffff !important;
-            background-color: rgba(255, 255, 255, 0.12) !important;
-        }
-
-        /* File input: modern browsers */
-        .form-file {
-            padding: 0.75rem 1rem;
-        }
-
-        .form-file::-webkit-file-upload-button,
-        .form-file::file-selector-button {
-            background-color: rgba(255, 255, 255, 0.10);
-            border: 0;
-            margin-right: 1rem;
-            padding: 0.75rem 1rem;
-            color: #ffffff;
-            border-radius: 0.5rem;
-            cursor: pointer;
+        .form-label {
+            display: block;
+            font-size: 0.9375rem;
+            font-weight: 700;
+            color: #334155;
+            margin-bottom: 0.625rem;
+            letter-spacing: -0.01em;
         }
 
         .form-error {
-            margin-top: 0.25rem;
-            font-size: 0.875rem;
-            /* text-sm */
-            color: #f87171;
-            /* red-400 */
+            margin-top: 0.5rem;
+            font-size: 0.8125rem;
+            color: #ef4444;
+            font-weight: 600;
         }
 
-        .btn-primary {
-            text-align: center;
-            background-image: linear-gradient(to right, #2563eb, #4f46e5);
-            /* from-blue-600 to-indigo-600 */
-            color: #ffffff;
-            padding: 0.75rem 2rem;
-            /* py-3 px-8 */
-            border-radius: 0.5rem;
-            font-size: 1rem;
-            /* text-base */
-            font-weight: 500;
-            /* medium */
+        /* Radio Group Styling */
+        .radio-option-card {
+            flex: 1;
+            min-width: 100px;
+            height: 90px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            padding: 1rem;
+            border-radius: 1.25rem;
+            border: 2px solid #e2e8f0;
+            background: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .radio-option-card:hover {
+            border-color: #EA89B8;
+            background: #fdf2f8;
+            transform: translateY(-2px);
+        }
+
+        input[type="radio"]:checked + .radio-option-card {
+            border-color: #EA89B8;
+            background: #EA89B8;
+            box-shadow: 0 10px 15px -3px rgba(234, 137, 184, 0.4);
+        }
+
+        input[type="radio"]:checked + .radio-option-card span {
+            color: #ffffff !important;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 1.125rem;
+            background: linear-gradient(135deg, #EA89B8, #EA89B8);
+            color: white;
+            border-radius: 1.25rem;
+            font-size: 1.125rem;
+            font-weight: 800;
+            letter-spacing: 0.025em;
+            box-shadow: 0 20px 25px -5px rgba(234, 137, 184, 0.25);
             transition: all 0.3s ease;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
 
-        .btn-primary:hover {
-            background-image: linear-gradient(to right, #1d4ed8, #4338ca);
-            /* hover darker */
-        }
-
-        .btn-secondary {
-            text-align: center;
-            background-color: rgba(255, 255, 255, 0.10);
-            color: #ffffff;
-            padding: 0.75rem 2rem;
-            border-radius: 0.5rem;
-            font-size: 1rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.20);
-        }
-
-        .btn-secondary:hover {
-            background-color: rgba(255, 255, 255, 0.20);
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 25px 30px -5px rgba(234, 137, 184, 0.35);
         }
     </style>
 
@@ -2432,6 +2417,45 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
             // Filter on page load if hospital is already selected
             if (hospitalSelect.value) {
                 filterDoctors();
+            }
+
+            // --- Pre-fill Logic from URL Parameters ---
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // 1. Pre-fill Hospital
+            const hospitalParam = urlParams.get('hospital');
+            if (hospitalParam) {
+                hospitalSelect.value = hospitalParam;
+                filterDoctors(); // Re-filter doctors immediately
+            }
+            
+            // 2. Pre-fill Poli (for Janji Temu)
+            const poliParam = urlParams.get('poli');
+            if (poliParam) {
+                const poliSelect = document.getElementById('poli_jt');
+                if (poliSelect) {
+                    const cleanPoli = poliParam.replace(/🩺\s*/, '').trim();
+                    for (let option of poliSelect.options) {
+                        const cleanOption = option.value.replace(/🩺\s*/, '').trim();
+                        if (cleanOption === cleanPoli || option.value === poliParam) {
+                            poliSelect.value = option.value;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // 3. Pre-fill Doctor
+            const doctorParam = urlParams.get('doctor');
+            if (doctorParam) {
+                doctorSelects.forEach(select => {
+                    for (let option of select.options) {
+                        if (option.value === doctorParam) {
+                            select.value = option.value;
+                            break;
+                        }
+                    }
+                });
             }
         });
     </script>
