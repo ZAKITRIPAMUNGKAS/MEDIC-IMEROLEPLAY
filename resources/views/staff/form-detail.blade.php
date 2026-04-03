@@ -51,6 +51,17 @@
                                     </button>
                                 @endif
                             </div>
+                        @elseif($form->status !== 'pending' && $form->processed_at && $form->processed_at->diffInMinutes(now()) <= 60)
+                            <div class="flex gap-2">
+                                <form method="POST" action="{{ route('staff.forms.undo', $form->id) }}"
+                                    onsubmit="return confirm('Yakin ingin membatalkan aksi dan mengembalikan ke status Pending?');">
+                                    @csrf
+                                    <button
+                                        class="inline-flex items-center px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-all duration-300 text-sm font-medium shadow-lg">
+                                        <i class="fas fa-undo mr-2"></i>Batalkan Aksi
+                                    </button>
+                                </form>
+                            </div>
                         @endif
                     </div>
                 </div>
@@ -652,6 +663,15 @@
                                     <button
                                         class="w-full flex items-center justify-center px-4 py-3 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all duration-300 font-medium shadow-lg">
                                         <i class="fas fa-times mr-2"></i>Tolak Formulir
+                                    </button>
+                                </form>
+                            @elseif($form->processed_at && $form->processed_at->diffInMinutes(now()) <= 60)
+                                <form method="POST" action="{{ route('staff.forms.undo', $form->id) }}"
+                                    onsubmit="return confirm('Yakin ingin membatalkan aksi dan mengembalikan ke status Pending?');">
+                                    @csrf
+                                    <button
+                                        class="w-full flex items-center justify-center px-4 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-all duration-300 font-medium shadow-lg">
+                                        <i class="fas fa-undo mr-2"></i>Batalkan Aksi
                                     </button>
                                 </form>
                             @endif

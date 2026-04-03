@@ -17,9 +17,12 @@ class SalaryReimbursementController extends Controller
      */
     public function index(Request $request)
     {
-        // Check if user is admin
-        if (!auth()->user()->isAdmin()) {
-            abort(403, 'Akses ditolak. Hanya admin yang dapat mengakses halaman ini.');
+        // Log request for debugging
+        \Illuminate\Support\Facades\Log::info('Reimbursement index filter', ['params' => $request->all()]);
+
+        // Check if user has permission
+        if (!auth()->user()->hasPermission('manage_reimbursements')) {
+            abort(403, 'Akses ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.');
         }
 
         // Get filter parameters
@@ -30,29 +33,43 @@ class SalaryReimbursementController extends Controller
         // Convert week to date range if provided
         $periodStart = null;
         $periodEnd = null;
-        if ($week) {
-            // Week format: YYYY-Www (e.g., 2026-W04)
-            list($year, $weekNum) = explode('-W', $week);
-            $dto = new \DateTime();
-            $dto->setISODate($year, $weekNum);
-            $periodStart = $dto->format('Y-m-d'); // Monday
-            $dto->modify('+6 days');
-            $periodEnd = $dto->format('Y-m-d'); // Sunday
+        if ($week && !empty($week)) {
+            try {
+                // Week format: YYYY-Www (e.g., 2026-W04)
+                list($year, $weekNum) = explode('-W', $week);
+                $dto = new \DateTime();
+                $dto->setISODate($year, $weekNum);
+                $periodStart = $dto->format('Y-m-d'); // Monday
+                $dto->modify('+6 days');
+                $periodEnd = $dto->format('Y-m-d'); // Sunday
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Reimbursement week filter error', ['error' => $e->getMessage()]);
+            }
         }
 
-        // Build query - show ALL data by default
-        $query = SalaryReimbursement::with(['manager', 'reimbursedBy'])
+        // 1. Build Base Query for common filters (Week & Manager)
+        $baseQuery = SalaryReimbursement::query();
+
+        if ($periodStart && $periodEnd) {
+            $baseQuery->whereBetween('period_start', [$periodStart, $periodEnd]);
+        }
+
+        if ($managerId && !empty($managerId)) {
+            $baseQuery->where('manager_id', $managerId);
+        }
+
+        // 2. Calculate summary using the filtered base query (BEFORE applying status filter)
+        $summary = [
+            'total_pending' => (clone $baseQuery)->pending()->sum('total_amount'),
+            'total_reimbursed' => (clone $baseQuery)->reimbursed()->sum('total_amount'),
+            'pending_count' => (clone $baseQuery)->pending()->count(),
+            'reimbursed_count' => (clone $baseQuery)->reimbursed()->count(),
+        ];
+
+        // 3. Build Final Query for the table (including Manager & status)
+        $query = $baseQuery->with(['manager', 'reimbursedBy'])
             ->orderBy('period_start', 'desc')
             ->orderBy('is_reimbursed', 'asc'); // Show pending first
-
-        // Apply filters ONLY if provided
-        if ($periodStart && $periodEnd) {
-            $query->whereBetween('period_start', [$periodStart, $periodEnd]);
-        }
-
-        if ($managerId) {
-            $query->where('manager_id', $managerId);
-        }
 
         if ($status === 'pending') {
             $query->pending();
@@ -60,20 +77,13 @@ class SalaryReimbursementController extends Controller
             $query->reimbursed();
         }
 
-        $reimbursements = $query->paginate(20);
+        // Paginate and preserve query string
+        $reimbursements = $query->paginate(20)->withQueryString();
 
-        // Get list of managers who have paid salaries
+        // Get list of managers who have paid salaries (for the filter dropdown)
         $managers = User::whereHas('paidPayrolls')
             ->orderBy('name')
             ->get();
-
-        // Calculate summary
-        $summary = [
-            'total_pending' => SalaryReimbursement::pending()->sum('total_amount'),
-            'total_reimbursed' => SalaryReimbursement::reimbursed()->sum('total_amount'),
-            'pending_count' => SalaryReimbursement::pending()->count(),
-            'reimbursed_count' => SalaryReimbursement::reimbursed()->count(),
-        ];
 
         return view('admin.reimbursements.index', compact('reimbursements', 'managers', 'summary'));
     }
@@ -83,8 +93,8 @@ class SalaryReimbursementController extends Controller
      */
     public function calculatePeriod(Request $request)
     {
-        // Check if user is admin
-        if (!auth()->user()->isAdmin()) {
+        // Check if user has permission
+        if (!auth()->user()->hasPermission('manage_reimbursements')) {
             return response()->json([
                 'success' => false,
                 'message' => 'Akses ditolak.'
@@ -174,9 +184,9 @@ class SalaryReimbursementController extends Controller
      */
     public function show(SalaryReimbursement $reimbursement)
     {
-        // Check if user is admin
-        if (!auth()->user()->isAdmin()) {
-            abort(403, 'Akses ditolak. Hanya admin yang dapat mengakses halaman ini.');
+        // Check if user has permission
+        if (!auth()->user()->hasPermission('manage_reimbursements')) {
+            abort(403, 'Akses ditolak. Anda tidak memiliki izin untuk mengakses halaman ini.');
         }
 
         // Load relationships
@@ -201,8 +211,8 @@ class SalaryReimbursementController extends Controller
      */
     public function markAsReimbursed(Request $request, SalaryReimbursement $reimbursement)
     {
-        // Check if user is admin
-        if (!auth()->user()->isAdmin()) {
+        // Check if user has permission
+        if (!auth()->user()->hasPermission('manage_reimbursements')) {
             return response()->json([
                 'success' => false,
                 'message' => 'Akses ditolak.'

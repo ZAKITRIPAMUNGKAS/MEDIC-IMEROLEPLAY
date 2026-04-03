@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
+use App\Services\FiveMService;
 
 class CheckExpiredDutySessions extends Command
 {
@@ -32,11 +33,17 @@ class CheckExpiredDutySessions extends Command
      */
     public function handle()
     {
-        $this->info('Checking for expired duty sessions...');
+        $now = Carbon::now('Asia/Jakarta');
+        $this->info("Checking for expired duty sessions at {$now->toDateTimeString()}...");
+        
+        // Heartbeat log untuk mempermudah pengecekan apakah cron running
+        // Ditulis ke log file (laravel.log) pada menit ke-0, 15, 30, 45 untuk debugging
+        if (in_array($now->minute, [0, 15, 30, 45]) && $now->second < 5) {
+            Log::info('[CRON-HEARTBEAT] Attendance check executing...', ['time' => $now->toDateTimeString()]);
+        }
 
         try {
             // Cari semua session aktif yang scheduled_end_time <= now()
-            $now = Carbon::now('Asia/Jakarta');
             
             $expiredSessions = Attendance::where('is_active', true)
                 ->whereNotNull('scheduled_duty_minutes')
@@ -138,15 +145,28 @@ class CheckExpiredDutySessions extends Command
             }
 
             // === ZOMBIE SESSION CLEANUP ===
-            // Close FiveM sessions that have been active for more than 24 hours without clock-out
+            // Close FiveM sessions that have been active for more than 12 hours without clock-out
             // These are likely stuck due to server crash, player disconnect, or script error
-            $zombieThreshold = $now->copy()->subHours(24);
+            $zombieThreshold = $now->copy()->subHours(12);
             
             $zombieSessions = Attendance::where('is_active', true)
                 ->where('source', 'fivem')
                 ->whereNull('scheduled_end_time') // FiveM sessions don't have scheduled end time
                 ->where('clock_in', '<', $zombieThreshold)
                 ->get();
+
+            // === STALE FIVE M SESSIONS MONITORING (8-12h) ===
+            // Find sessions active for 8-12 hours and send a warning to Discord
+            $staleThreshold = $now->copy()->subHours(8);
+            $staleSessions = Attendance::where('is_active', true)
+                ->where('source', 'fivem')
+                ->whereNull('scheduled_end_time')
+                ->whereBetween('clock_in', [$zombieThreshold, $staleThreshold])
+                ->get();
+
+            if ($staleSessions->isNotEmpty()) {
+                $this->sendStaleSessionsAlert($staleSessions, $now);
+            }
 
             $zombieCount = 0;
             if ($zombieSessions->isNotEmpty()) {
@@ -239,6 +259,10 @@ class CheckExpiredDutySessions extends Command
                 }
             }
 
+            // === PROACTIVE FIVE M RE-CHECK ===
+            // Check online players from FiveM server and auto-close sessions for missing players
+            $this->proactiveVerifySessions($now);
+
             $this->info("Processing complete. Scheduled: {$successCount} ok, {$failCount} failed. Zombies: {$zombieCount} attendance, {$absensiZombieCount} absensi closed.");
 
             if ($failCount > 0) {
@@ -323,6 +347,217 @@ class CheckExpiredDutySessions extends Command
             Log::warning('[AUTO-CHECKOUT] Failed to send overdue Discord alert', [
                 'error' => $e->getMessage()
             ]);
+        }
+    }
+
+    /**
+     * Kirim alert ke Discord jika ada sesi FiveM yang sudah aktif terlalu lama (8-12 jam)
+     *
+     * @param \Illuminate\Support\Collection $staleSessions
+     * @param \Carbon\Carbon $now
+     */
+    private function sendStaleSessionsAlert($staleSessions, Carbon $now): void
+    {
+        try {
+            $webhookUrl = config('services.discord.webhook_absensi', env('DISCORD_WEBHOOK_ABSENSI'));
+            if (!$webhookUrl) return;
+
+            $count = $staleSessions->count();
+            $userIds = $staleSessions->pluck('user_id')->unique()->implode(', ');
+
+            $message = [
+                'embeds' => [
+                    [
+                        'title'       => '⚠️ STALE FIVE-M SESSIONS WARNING',
+                        'description' => "**{$count} sesi FiveM** telah aktif lebih dari **8 jam** tanpa clock-out!\n"
+                            . "Sesi akan otomatis ditutup (Force Logout) jika mencapai **12 jam**.\n"
+                            . "User IDs: `{$userIds}`",
+                        'color'       => 0xFFAA00,
+                        'timestamp'   => $now->toIso8601String(),
+                        'footer'      => ['text' => 'EMS-IME Stale Session Monitor'],
+                        'fields'      => [
+                            [
+                                'name'   => '🕐 Waktu Cek',
+                                'value'  => $now->format('H:i') . ' WIB',
+                                'inline' => true,
+                            ],
+                            [
+                                'name'   => '💡 Info',
+                                'value'  => 'Ini biasanya terjadi karena crash atau lupa clock-out di FiveM.',
+                                'inline' => true,
+                            ],
+                        ],
+                    ]
+                ]
+            ];
+
+            Http::timeout(5)->post($webhookUrl, $message);
+        } catch (\Exception $e) {
+            Log::warning('[STALE-ALERT] Failed to send Discord alert: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Proactively verify if active players are still online in FiveM
+     *
+     * @param \Carbon\Carbon $now
+     */
+    private function proactiveVerifySessions(Carbon $now): void
+    {
+        $fivem = new FiveMService();
+        $playersData = $fivem->getOnlinePlayersData();
+
+        // Jika gagal fetch atau IP belum di-set, skip recheck
+        if (empty($playersData)) {
+            return;
+        }
+
+        // Cari semua sesi active FiveM yang sudah berjalan > 10 menit
+        // (Grace period untuk menghindari false positive saat login baru / lag)
+        $graceThreshold = $now->copy()->subMinutes(10);
+        
+        $activeSessions = Attendance::where('is_active', true)
+            ->where('source', 'fivem')
+            ->whereNull('scheduled_end_time')
+            ->where('clock_in', '<', $graceThreshold)
+            ->get();
+
+        if ($activeSessions->isEmpty()) {
+            return;
+        }
+
+        $closedCount = 0;
+        foreach ($activeSessions as $attendance) {
+            $user = User::find($attendance->user_id);
+            if (!$user) continue;
+
+            $isOnline = false;
+
+            // 1. Coba berdasarkan Identifier (License/Steam) - Ini prioritas kalau ada
+            if ($user->citizen_id) {
+                $isOnline = $fivem->isPlayerOnlineByIdentifier($user->citizen_id, $playersData);
+            } elseif ($user->staff_id) {
+                $isOnline = $fivem->isPlayerOnlineByIdentifier($user->staff_id, $playersData);
+            }
+            
+            // 2. Fallback: Coba berdasarkan Nama (karena server sering hidden identifiers)
+            if (!$isOnline && $user->name) {
+                $isOnline = $fivem->isPlayerOnlineByName($user->name, $playersData);
+                
+                if ($isOnline) {
+                    Log::debug('[FiveM-Verify] Player found via Name fallback', [
+                        'user_id' => $user->id,
+                        'name' => $user->name
+                    ]);
+                }
+            }
+            
+            if (!$isOnline) {
+                // Player tidak ditemukan di FiveM (baik Identifier maupun Nama), tutup sesi!
+                try {
+                    DB::beginTransaction();
+
+                    $clockOutTime = $now->copy();
+                    $duration = $attendance->clock_in->diffInSeconds($clockOutTime);
+
+                    $attendance->update([
+                        'clock_out' => $clockOutTime,
+                        'is_active' => false,
+                        'session_duration' => $duration,
+                        'total_hours' => max(1, floor($duration / 60)),
+                        'notes' => trim(($attendance->notes ?? '') . "\n[Auto-closed: Player not found in-game (Proactive Recheck - Name/ID)]"),
+                    ]);
+
+                    // Reset user status jika tidak ada sesi aktif lain
+                    $hasOtherActive = Attendance::where('user_id', $user->id)
+                        ->where('is_active', true)
+                        ->where('id', '!=', $attendance->id)
+                        ->exists();
+                        
+                    if (!$hasOtherActive) {
+                        $user->update(['status' => 'offline']);
+                    }
+
+                    // Also close absensi record if exists
+                    $absensi = \App\Models\Absensi::where('clock_in', $attendance->clock_in)
+                        ->where('player_id', $user->citizen_id ?? $user->staff_id)
+                        ->whereNull('clock_out')
+                        ->first();
+                        
+                    if ($absensi) {
+                        $absensi->update([
+                            'clock_out' => $clockOutTime,
+                            'time_on_duty' => gmdate('H:i:s', $duration),
+                            'source' => 'proactive_cleanup'
+                        ]);
+                    }
+
+                    DB::commit();
+                    $closedCount++;
+
+                    Log::info('Proactive attendance close: Player missing from FiveM server (Name/ID match failed)', [
+                        'user_id' => $user->id,
+                        'name' => $user->name,
+                        'player_id' => $user->citizen_id ?? $user->staff_id,
+                        'attendance_id' => $attendance->id
+                    ]);
+
+                    // Kirim notifikasi Discord
+                    $this->sendProactiveCloseAlert($user, $attendance, $now);
+
+                } catch (\Exception $e) {
+                    DB::rollBack();
+                    Log::error('Failed proactive session close: ' . $e->getMessage());
+                }
+            }
+        }
+
+        if ($closedCount > 0) {
+            $this->warn("Proactively closed {$closedCount} session(s) (players not found in-game).");
+        }
+    }
+
+    /**
+     * Kirim alert ke Discord jika ada sesi yang ditutup otomatis via Proactive Recheck
+     */
+    private function sendProactiveCloseAlert($user, $attendance, Carbon $now): void
+    {
+        try {
+            $webhookUrl = config('services.discord.webhook_absensi', env('DISCORD_WEBHOOK_ABSENSI'));
+            if (!$webhookUrl) return;
+
+            $message = [
+                'embeds' => [
+                    [
+                        'title'       => '🛑 AUTO-LOGOUT (GAME DISCONNECT)',
+                        'description' => "**{$user->name}** otomatis di-clockout karena tidak terdeteksi online di FiveM server.",
+                        'color'       => 0xFF0000,
+                        'timestamp'   => $now->toIso8601String(),
+                        'footer'      => ['text' => 'EMS-IME Proactive Recheck'],
+                        'fields'      => [
+                            [
+                                'name'   => '👤 Nama Staff',
+                                'value'  => $user->name,
+                                'inline' => true,
+                            ],
+                            [
+                                'name'   => '🆔 Player ID',
+                                'value'  => $user->citizen_id ?? $user->staff_id ?? '-',
+                                'inline' => true,
+                            ],
+                            [
+                                'name'   => '🕒 Waktu Out',
+                                'value'  => $now->format('H:i') . ' WIB',
+                                'inline' => true,
+                            ],
+                        ],
+                    ]
+                ]
+            ];
+
+            Http::timeout(5)->post($webhookUrl, $message);
+        } catch (\Exception $e) {
+            Log::warning('[PROACTIVE-ALERT] Failed to send Discord alert: ' . $e->getMessage());
         }
     }
 }

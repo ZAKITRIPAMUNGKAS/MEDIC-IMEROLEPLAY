@@ -2,6 +2,38 @@
 
 <?php $__env->startSection('title', 'Manajemen Gaji - Portal Medis MPK-BA'); ?>
 
+<?php $__env->startPush('styles'); ?>
+<style>
+    :root {
+        /* Local Override to blue theme */
+        --ml-bg-start: #0f172a; /* Slate 900 */
+        --ml-bg-mid: #1e293b;  /* Slate 800 */
+        --ml-bg-end: #0ea5e9;  /* Sky 500 */
+        
+        --ml-surface: rgba(15, 23, 42, 0.7); /* Deep Slate Blue */
+        --ml-border: rgba(14, 165, 233, 0.3); /* Sky Blue border */
+    }
+    
+    .glass-effect {
+        background: var(--ml-surface) !important;
+        border-color: var(--ml-border) !important;
+    }
+    
+    /* Overriding specific pink gradients */
+    .bg-gradient-to-r.from-orange-500.to-red-500 {
+        background: linear-gradient(to right, #0ea5e9, #2563eb) !important;
+    }
+    
+    .bg-gradient-to-r.from-purple-500.to-pink-500 {
+        background: linear-gradient(to right, #38bdf8, #2563eb) !important;
+    }
+
+    .from-rose-500.to-pink-500 {
+        background: linear-gradient(to right, #0ea5e9, #1d4ed8) !important;
+    }
+</style>
+<?php $__env->stopPush(); ?>
+
 <?php $__env->startSection('content'); ?>
 <div class="relative min-h-screen py-8 px-4 sm:px-6 lg:px-8">
     <div class="absolute inset-0 bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700"></div>
@@ -383,7 +415,8 @@
                                                         <i class="fas fa-sync-alt"></i>
                                                     </button>
                                                     <button onclick="markAsPaid(<?php echo e($payroll->id); ?>)" 
-                                                            class="text-green-400 hover:text-green-300 transition-colors duration-200">
+                                                            class="text-green-400 hover:text-green-300 transition-colors duration-200"
+                                                            title="Tandai Dibayar">
                                                         <i class="fas fa-check"></i>
                                                     </button>
                                                     <button onclick="cancelPayroll(<?php echo e($payroll->id); ?>)" 
@@ -395,6 +428,12 @@
                                                             class="text-orange-400 hover:text-orange-300 transition-colors duration-200"
                                                             title="Hapus Data Duplikat">
                                                         <i class="fas fa-trash"></i>
+                                                    </button>
+                                                <?php elseif($payroll->status === 'paid' && $payroll->paid_at && $payroll->paid_at->diffInMinutes(now()) <= 60): ?>
+                                                    <button onclick="undoPayment(<?php echo e($payroll->id); ?>)" 
+                                                            class="text-amber-400 hover:text-amber-300 transition-colors duration-200"
+                                                            title="Batalkan Aksi (Undo Payment)">
+                                                        <i class="fas fa-undo"></i>
                                                     </button>
                                                 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                             </div>
@@ -556,14 +595,48 @@ function closeMarkPaidModal() {
     document.getElementById('markPaidModal').classList.add('hidden');
 }
 
-function cancelPayroll(payrollId) {
-    const reason = prompt('Masukkan alasan pembatalan gaji (Sesi dan jam akan tetap hangus):');
-    if (reason !== null) {
-        if (reason.trim() === '') {
-            alert('Alasan pembatalan wajib diisi.');
-            return;
+function undoPayment(payrollId) {
+    window.confirmAction({
+        title: 'Batalkan Pembayaran',
+        text: 'Yakin ingin membatalkan pembayaran gaji ini dan mengembalikannya ke status Pending?',
+        icon: 'info',
+        confirmText: 'Ya, Batalkan'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/admin/payroll/${payrollId}/undo`;
+            
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '<?php echo e(csrf_token()); ?>';
+            
+            form.appendChild(csrfToken);
+            document.body.appendChild(form);
+            form.submit();
         }
-        
+    });
+}
+
+async function cancelPayroll(payrollId) {
+    const { value: reason } = await Swal.fire({
+        title: 'Batalkan Gaji',
+        text: 'Masukkan alasan pembatalan gaji (Sesi dan jam akan tetap hangus):',
+        input: 'textarea',
+        inputPlaceholder: 'Alasan pembatalan...',
+        showCancelButton: true,
+        confirmButtonText: 'Konfirmasi Pembatalan',
+        cancelButtonText: 'Batal',
+        reverseButtons: true,
+        inputValidator: (value) => {
+            if (!value) {
+                return 'Alasan pembatalan wajib diisi!';
+            }
+        }
+    });
+
+    if (reason) {
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = `/admin/payroll/${payrollId}/cancel`;
@@ -586,43 +659,57 @@ function cancelPayroll(payrollId) {
 }
 
 function deletePayroll(payrollId) {
-    if (confirm('Apakah Anda yakin ingin menghapus data gaji ini? Data yang sudah dihapus tidak dapat dikembalikan.')) {
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = `/admin/payroll/${payrollId}`;
-        
-        const methodInput = document.createElement('input');
-        methodInput.type = 'hidden';
-        methodInput.name = '_method';
-        methodInput.value = 'DELETE';
-        
-        const csrfToken = document.createElement('input');
-        csrfToken.type = 'hidden';
-        csrfToken.name = '_token';
-        csrfToken.value = '<?php echo e(csrf_token()); ?>';
-        
-        form.appendChild(methodInput);
-        form.appendChild(csrfToken);
-        document.body.appendChild(form);
-        form.submit();
-    }
+    window.confirmAction({
+        title: 'Hapus Data Gaji',
+        text: 'Apakah Anda yakin ingin menghapus data gaji ini? Data yang sudah dihapus tidak dapat dikembalikan.',
+        icon: 'warning',
+        confirmText: 'Ya, Hapus'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/admin/payroll/${payrollId}`;
+            
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'DELETE';
+            
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '<?php echo e(csrf_token()); ?>';
+            
+            form.appendChild(methodInput);
+            form.appendChild(csrfToken);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
 }
 
 function removeDuplicates() {
-    if (confirm('Apakah Anda yakin ingin menghapus data gaji duplikat?\n\nScript ini akan:\n- Mencari data gaji dengan user, periode mulai, dan periode akhir yang sama\n- Menyimpan data yang terbaru (berdasarkan created_at)\n- Menghapus data duplikat yang lebih lama\n\nData yang sudah dibayar tidak akan dihapus kecuali menggunakan force mode.')) {
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '/admin/payroll/remove-duplicates';
-        
-        const csrfToken = document.createElement('input');
-        csrfToken.type = 'hidden';
-        csrfToken.name = '_token';
-        csrfToken.value = '<?php echo e(csrf_token()); ?>';
-        
-        form.appendChild(csrfToken);
-        document.body.appendChild(form);
-        form.submit();
-    }
+    window.confirmAction({
+        title: 'Hapus Duplikat',
+        text: 'Apakah Anda yakin ingin menghapus data gaji duplikat? Script ini akan menyimpan data terbaru dan menghapus duplikat yang lama.',
+        icon: 'warning',
+        confirmText: 'Ya, Bersihkan'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/admin/payroll/remove-duplicates';
+            
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '<?php echo e(csrf_token()); ?>';
+            
+            form.appendChild(csrfToken);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
 }
 
 function openGenerateModal() {
@@ -644,43 +731,57 @@ if (generateModal) {
 }
 
 function regeneratePayroll(payrollId) {
-    if (confirm('Apakah Anda yakin ingin regenerate gaji ini?\n\nGaji akan dihitung ulang menggunakan formula terbaru berdasarkan data attendance saat ini.')) {
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = `/admin/payroll/${payrollId}/regenerate`;
-        
-        const csrfToken = document.createElement('input');
-        csrfToken.type = 'hidden';
-        csrfToken.name = '_token';
-        csrfToken.value = '<?php echo e(csrf_token()); ?>';
-        
-        form.appendChild(csrfToken);
-        document.body.appendChild(form);
-        form.submit();
-    }
+    window.confirmAction({
+        title: 'Regenerate Gaji',
+        text: 'Apakah Anda yakin ingin regenerate gaji ini? Gaji akan dihitung ulang menggunakan formula terbaru berdasarkan data attendance saat ini.',
+        icon: 'question',
+        confirmText: 'Ya, Regenerate'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/admin/payroll/${payrollId}/regenerate`;
+            
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '<?php echo e(csrf_token()); ?>';
+            
+            form.appendChild(csrfToken);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
 }
 
 function regenerateWeek(weekStart) {
-    if (confirm('Apakah Anda yakin ingin regenerate SEMUA gaji pending untuk minggu ini?\n\nSemua gaji pending akan dihitung ulang menggunakan formula terbaru.')) {
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '/admin/payroll/regenerate-week';
-        
-        const csrfToken = document.createElement('input');
-        csrfToken.type = 'hidden';
-        csrfToken.name = '_token';
-        csrfToken.value = '<?php echo e(csrf_token()); ?>';
-        
-        const weekInput = document.createElement('input');
-        weekInput.type = 'hidden';
-        weekInput.name = 'week_start';
-        weekInput.value = weekStart;
-        
-        form.appendChild(csrfToken);
-        form.appendChild(weekInput);
-        document.body.appendChild(form);
-        form.submit();
-    }
+    window.confirmAction({
+        title: 'Regenerate Satu Minggu',
+        text: 'Apakah Anda yakin ingin regenerate SEMUA gaji pending untuk minggu ini?',
+        icon: 'warning',
+        confirmText: 'Ya, Regenerate Semua'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/admin/payroll/regenerate-week';
+            
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '<?php echo e(csrf_token()); ?>';
+            
+            const weekInput = document.createElement('input');
+            weekInput.type = 'hidden';
+            weekInput.name = 'week_start';
+            weekInput.value = weekStart;
+            
+            form.appendChild(csrfToken);
+            form.appendChild(weekInput);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
 }
 
 

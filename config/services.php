@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'fivem' => [
+        'ip' => env('FIVEM_SERVER_IP'),
+        'port' => env('FIVEM_SERVER_PORT', '30120'),
+    ],
+
 ];

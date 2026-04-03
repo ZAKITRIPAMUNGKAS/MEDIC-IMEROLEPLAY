@@ -285,7 +285,18 @@
                                                     </button>
                                                 </form>
                                             @else
-                                                <span class="text-sky-300 font-medium text-sm">Selesai</span>
+                                                <div class="flex flex-col gap-2">
+                                                    @if($form->processed_at && $form->processed_at->diffInMinutes(now()) <= 60)
+                                                        <form method="POST" action="{{ route('staff.forms.undo', $form->id) }}" onsubmit="return confirm('Yakin ingin membatalkan aksi dan mengembalikan ke status Pending?');" class="inline">
+                                                            @csrf
+                                                            <button class="w-full inline-flex items-center justify-center px-3 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-amber-600 hover:to-orange-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                                                <i class="fas fa-undo mr-2"></i>Batalkan Aksi
+                                                            </button>
+                                                        </form>
+                                                    @else
+                                                        <span class="text-sky-300 font-medium text-sm">Selesai</span>
+                                                    @endif
+                                                </div>
                                             @endif
                                         </div>
                                     </td>

@@ -121,8 +121,8 @@
                                                 $name = $posValue;
                                                 $position = $posKey;
                                             }
-                                        @endphp
-                                        // Normalize names for better matching
+
+                                            // Normalize names for better matching
                                         $normalizeName = function ($str) {
                                         return trim(strtolower(preg_replace('/\s+/', ' ', $str)));
                                         };

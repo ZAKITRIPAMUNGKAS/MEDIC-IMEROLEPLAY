@@ -15,7 +15,7 @@
 
             {{-- Summary Stats --}}
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
+                <div class="glass-effect rounded-lg p-6">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sky-200 text-sm font-medium">Pending</p>
@@ -29,7 +29,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
+                <div class="glass-effect rounded-lg p-6">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sky-200 text-sm font-medium">Reimbursed</p>
@@ -43,7 +43,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
+                <div class="glass-effect rounded-lg p-6">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sky-200 text-sm font-medium">Total Paid</p>
@@ -59,7 +59,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
+                <div class="glass-effect rounded-lg p-6">
                     <button onclick="openCalculateModal()" class="w-full h-full flex items-center justify-center flex-col">
                         <i class="fas fa-calculator text-3xl text-cyan-300 mb-2"></i>
                         <span class="text-white font-semibold">Calculate Period</span>
@@ -69,7 +69,7 @@
             </div>
 
             {{-- Filters --}}
-        <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-6 mb-6 border border-white border-opacity-20">
+        <div class="glass-effect rounded-lg p-6 mb-6">
             <form method="GET" action="{{ route('admin.reimbursements.index') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-sky-200 text-sm font-medium mb-2">Minggu</label>
@@ -109,7 +109,7 @@
 
             {{-- Reimbursements Table --}}
             <div
-                class="bg-white bg-opacity-10 backdrop-blur-md rounded-lg overflow-hidden border border-white border-opacity-20">
+                class="glass-effect rounded-lg overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-white divide-opacity-10">
                         <thead class="bg-white bg-opacity-5">
@@ -222,7 +222,7 @@
     {{-- Calculate Period Modal --}}
     <div id="calculateModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50">
         <div
-            class="bg-gradient-to-br from-sky-900 to-sky-800 rounded-2xl p-8 max-w-mdw-full mx-4 border border-sky-400 border-opacity-30">
+            class="bg-slate-900 rounded-2xl p-8 max-w-md w-full mx-4 border border-sky-400 border-opacity-30 elegant-shadow">
             <div class="flex justify-between items-start mb-6">
                 <div>
                     <h3 class="text-2xl font-bold text-white mb-2">
@@ -308,45 +308,71 @@
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert(data.message);
-            window.location.reload();
+            Swal.fire({
+                title: 'Berhasil!',
+                text: data.message,
+                icon: 'success',
+                confirmButtonColor: '#10b981'
+            }).then(() => {
+                window.location.reload();
+            });
         } else {
-            alert(data.message);
+            Swal.fire({
+                title: 'Gagal',
+                text: data.message,
+                icon: 'error',
+                confirmButtonColor: '#ef4444'
+            });
         }
     })
     .catch(error => {
-        alert('Error: ' + error.message);
+        Swal.fire('Error', error.message, 'error');
     });
 }
         function markAsReimbursed(reimbursementId) {
-            if (!confirm('Are you sure you want to mark this as reimbursed?')) {
-                return;
-            }
-
-            const notes = prompt('Enter notes (optional):');
-
-            fetch(`/admin/reimbursements/${reimbursementId}/reimburse`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                    notes: notes
-                })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert(data.message);
-                        window.location.reload();
-                    } else {
-                        alert(data.message);
-                    }
-                })
-                .catch(error => {
-                    alert('Error: ' + error.message);
-                });
+            Swal.fire({
+                title: 'Konfirmasi Reimbursement',
+                text: 'Apakah Anda yakin ingin menandai record ini sebagai sudah direimburse?',
+                icon: 'question',
+                input: 'textarea',
+                inputPlaceholder: 'Tambahkan catatan (opsional)...',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Tandai',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#6b7280',
+                reverseButtons: true,
+                background: '#0f172a',
+                color: '#ffffff'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const notes = result.value;
+                    
+                    fetch(`/admin/reimbursements/${reimbursementId}/reimburse`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            notes: notes
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire('Berhasil!', data.message, 'success').then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire('Gagal', data.message, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire('Error', error.message, 'error');
+                    });
+                }
+            });
         }
     </script>
 @endsection

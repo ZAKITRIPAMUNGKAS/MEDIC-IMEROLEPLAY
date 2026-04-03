@@ -168,6 +168,7 @@ Route::middleware(['auth', 'staff'])->group(function () {
     Route::post('/staff/forms/{id}/approve', [DashboardController::class, 'approveForm'])->name('staff.forms.approve');
     Route::post('/staff/forms/{id}/reject', [DashboardController::class, 'rejectForm'])->name('staff.forms.reject');
     Route::post('/staff/forms/{id}/cancel', [DashboardController::class, 'cancelForm'])->name('staff.forms.cancel');
+    Route::post('/staff/forms/{id}/undo', [DashboardController::class, 'undoProcessForm'])->name('staff.forms.undo');
     Route::post('/staff/forms/{id}/testimoni/approve', [DashboardController::class, 'approveTestimoni'])->name('staff.forms.testimoni.approve');
 
     // Staff payroll routes
@@ -219,58 +220,64 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/attendance-reports/{id}', [\App\Http\Controllers\Admin\AttendanceReportController::class, 'deleteAttendance'])
         ->middleware('permission:manage_attendance_advanced')->name('attendance-reports.delete');
 
-    // Meeting Request routes (admin only)
+    // Meeting Request routes (Permission-based)
     Route::get('/meeting-requests', [\App\Http\Controllers\MeetingRequestController::class, 'adminIndex'])
-        ->middleware('admin')->name('meeting-requests.index');
+        ->middleware('permission:manage_meeting_requests')->name('meeting-requests.index');
     Route::post('/meeting-requests/{id}/approve', [\App\Http\Controllers\MeetingRequestController::class, 'approve'])
-        ->middleware('admin')->name('meeting-requests.approve');
+        ->middleware('permission:manage_meeting_requests')->name('meeting-requests.approve');
     Route::post('/meeting-requests/{id}/reject', [\App\Http\Controllers\MeetingRequestController::class, 'reject'])
-        ->middleware('admin')->name('meeting-requests.reject');
+        ->middleware('permission:manage_meeting_requests')->name('meeting-requests.reject');
+    Route::post('/meeting-requests/{id}/undo', [\App\Http\Controllers\MeetingRequestController::class, 'undoProcess'])
+        ->middleware('permission:manage_meeting_requests')->name('meeting-requests.undo');
 
-    // Keep staff routes for admins to use if needed, but protect them
-    Route::get('/staff/meeting-requests', [\App\Http\Controllers\MeetingRequestController::class, 'index'])->middleware('admin')->name('staff.meeting-requests.index');
-    Route::get('/staff/meeting-requests/create', [\App\Http\Controllers\MeetingRequestController::class, 'create'])->middleware('admin')->name('staff.meeting-requests.create');
-    Route::post('/staff/meeting-requests', [\App\Http\Controllers\MeetingRequestController::class, 'store'])->middleware('admin')->name('staff.meeting-requests.store');
+    // Staff-facing meeting request routes (Any staff can create themselves)
+    Route::get('/staff/meeting-requests', [\App\Http\Controllers\MeetingRequestController::class, 'index'])->name('staff.meeting-requests.index');
+    Route::get('/staff/meeting-requests/create', [\App\Http\Controllers\MeetingRequestController::class, 'create'])->name('staff.meeting-requests.create');
+    Route::post('/staff/meeting-requests', [\App\Http\Controllers\MeetingRequestController::class, 'store'])->name('staff.meeting-requests.store');
 
-    // Payroll management
-    Route::get('/payroll', [\App\Http\Controllers\Admin\PayrollController::class, 'index'])
-        ->middleware('permission:manage_payroll')->name('payroll.index');
-    Route::get('/payroll/export', [\App\Http\Controllers\Admin\PayrollController::class, 'export'])
-        ->middleware('permission:manage_payroll')->name('payroll.export');
-    Route::post('/payroll/generate', [\App\Http\Controllers\Admin\PayrollController::class, 'generate'])
-        ->middleware('permission:manage_payroll')->name('payroll.generate');
-    Route::post('/payroll/remove-duplicates', [\App\Http\Controllers\Admin\PayrollController::class, 'removeDuplicates'])
-        ->middleware('permission:manage_payroll')->name('payroll.remove-duplicates');
-    Route::get('/payroll/{payroll}', [\App\Http\Controllers\Admin\PayrollController::class, 'show'])
-        ->middleware('permission:manage_payroll')->name('payroll.show');
-    Route::post('/payroll/{payroll}/mark-paid', [\App\Http\Controllers\Admin\PayrollController::class, 'markAsPaid'])
-        ->middleware('permission:manage_payroll')->name('payroll.mark-paid');
-    Route::post('/payroll/{payroll}/cancel', [\App\Http\Controllers\Admin\PayrollController::class, 'cancel'])
-        ->middleware('permission:manage_payroll')->name('payroll.cancel');
-    Route::delete('/payroll/{payroll}', [\App\Http\Controllers\Admin\PayrollController::class, 'destroy'])
-        ->middleware('permission:manage_payroll')->name('payroll.destroy');
-    Route::post('/payroll/{payroll}/regenerate', [\App\Http\Controllers\Admin\PayrollController::class, 'regeneratePayroll'])
-        ->middleware('permission:manage_payroll')->name('payroll.regenerate');
-    Route::post('/payroll/regenerate-week', [\App\Http\Controllers\Admin\PayrollController::class, 'regenerateWeek'])
-        ->middleware('permission:manage_payroll')->name('payroll.regenerate-week');
+    // Payroll & Salary Management - ADMIN ONLY
+    Route::middleware(['admin'])->group(function () {
+        Route::get('/payroll', [\App\Http\Controllers\Admin\PayrollController::class, 'index'])
+            ->middleware('permission:manage_payroll')->name('payroll.index');
+        Route::get('/payroll/export', [\App\Http\Controllers\Admin\PayrollController::class, 'export'])
+            ->middleware('permission:manage_payroll')->name('payroll.export');
+        Route::post('/payroll/generate', [\App\Http\Controllers\Admin\PayrollController::class, 'generate'])
+            ->middleware('permission:manage_payroll')->name('payroll.generate');
+        Route::post('/payroll/remove-duplicates', [\App\Http\Controllers\Admin\PayrollController::class, 'removeDuplicates'])
+            ->middleware('permission:manage_payroll')->name('payroll.remove-duplicates');
+        Route::get('/payroll/{payroll}', [\App\Http\Controllers\Admin\PayrollController::class, 'show'])
+            ->middleware('permission:manage_payroll')->name('payroll.show');
+        Route::post('/payroll/{payroll}/mark-paid', [\App\Http\Controllers\Admin\PayrollController::class, 'markAsPaid'])
+            ->middleware('permission:manage_payroll')->name('payroll.mark-paid');
+        Route::post('/payroll/{payroll}/undo', [\App\Http\Controllers\Admin\PayrollController::class, 'undoPayment'])
+            ->middleware('permission:manage_payroll')->name('payroll.undo');
+        Route::post('/payroll/{payroll}/cancel', [\App\Http\Controllers\Admin\PayrollController::class, 'cancel'])
+            ->middleware('permission:manage_payroll')->name('payroll.cancel');
+        Route::delete('/payroll/{payroll}', [\App\Http\Controllers\Admin\PayrollController::class, 'destroy'])
+            ->middleware('permission:manage_payroll')->name('payroll.destroy');
+        Route::post('/payroll/{payroll}/regenerate', [\App\Http\Controllers\Admin\PayrollController::class, 'regeneratePayroll'])
+            ->middleware('permission:manage_payroll')->name('payroll.regenerate');
+        Route::post('/payroll/regenerate-week', [\App\Http\Controllers\Admin\PayrollController::class, 'regenerateWeek'])
+            ->middleware('permission:manage_payroll')->name('payroll.regenerate-week');
 
-    // Salary settings management
-    Route::resource('salary-settings', \App\Http\Controllers\Admin\SalarySettingController::class)
-        ->middleware('permission:manage_payroll');
-    Route::post('/salary-settings/bulk-create', [\App\Http\Controllers\Admin\SalarySettingController::class, 'bulkCreate'])
-        ->middleware('permission:manage_payroll')->name('salary-settings.bulk-create');
-    Route::post('/salary-settings/{salarySetting}/toggle-status', [\App\Http\Controllers\Admin\SalarySettingController::class, 'toggleStatus'])
-        ->middleware('permission:manage_payroll')->name('salary-settings.toggle-status');
+        // Salary settings management
+        Route::resource('salary-settings', \App\Http\Controllers\Admin\SalarySettingController::class)
+            ->middleware('permission:manage_payroll');
+        Route::post('/salary-settings/bulk-create', [\App\Http\Controllers\Admin\SalarySettingController::class, 'bulkCreate'])
+            ->middleware('permission:manage_payroll')->name('salary-settings.bulk-create');
+        Route::post('/salary-settings/{salarySetting}/toggle-status', [\App\Http\Controllers\Admin\SalarySettingController::class, 'toggleStatus'])
+            ->middleware('permission:manage_payroll')->name('salary-settings.toggle-status');
+    });
 
-    // Salary Reimbursement Tracking (Admin only)
+    // Salary Reimbursement Tracking
     Route::get('/reimbursements', [\App\Http\Controllers\Admin\SalaryReimbursementController::class, 'index'])
-        ->middleware('admin')->name('reimbursements.index');
+        ->middleware('permission:manage_reimbursements')->name('reimbursements.index');
     Route::post('/reimbursements/calculate', [\App\Http\Controllers\Admin\SalaryReimbursementController::class, 'calculatePeriod'])
-        ->middleware('admin')->name('reimbursements.calculate');
+        ->middleware('permission:manage_reimbursements')->name('reimbursements.calculate');
     Route::get('/reimbursements/{reimbursement}', [\App\Http\Controllers\Admin\SalaryReimbursementController::class, 'show'])
-        ->middleware('admin')->name('reimbursements.show');
+        ->middleware('permission:manage_reimbursements')->name('reimbursements.show');
     Route::post('/reimbursements/{reimbursement}/reimburse', [\App\Http\Controllers\Admin\SalaryReimbursementController::class, 'markAsReimbursed'])
-        ->middleware('admin')->name('reimbursements.reimburse');
+        ->middleware('permission:manage_reimbursements')->name('reimbursements.reimburse');
 
     // Duty Tracking & Ranking (Admin only)
     Route::get('/duty-tracking', [\App\Http\Controllers\Admin\DutyTrackingController::class, 'index'])

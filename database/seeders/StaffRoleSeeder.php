@@ -29,6 +29,7 @@ class StaffRoleSeeder extends Seeder
                     'manage_attendance_advanced', // Force checkout & manual attendance
                     'manage_settings',
                     'manage_payroll',
+                    'manage_reimbursements',
                     'reply_livechat' // Can reply to live chat as admin
                 ]
             ],
@@ -48,6 +49,7 @@ class StaffRoleSeeder extends Seeder
                     'manage_attendance_advanced', // Force checkout & manual attendance
                     'manage_settings',
                     'manage_payroll',
+                    'manage_reimbursements',
                     'reply_livechat' // Can reply to live chat as admin
                 ]
             ],

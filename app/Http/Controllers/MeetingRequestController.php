@@ -16,7 +16,7 @@ class MeetingRequestController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('admin');
+        // Middleware handled in web.php
     }
 
     // ===========================
@@ -291,5 +291,49 @@ class MeetingRequestController extends Controller
             'success' => true,
             'message' => 'Pengajuan meeting ditolak.'
         ]);
+    }
+
+    public function undoProcess($id)
+    {
+        $meetingRequest = MeetingRequest::findOrFail($id);
+
+        if ($meetingRequest->isPending()) {
+            return back()->with('error', 'Pengajuan masih dalam status pending.');
+        }
+
+        if (!$meetingRequest->reviewed_at || $meetingRequest->reviewed_at->diffInMinutes(now()) > 60) {
+            return back()->with('error', 'Batas waktu pembatalan (1 jam) telah berakhir.');
+        }
+
+        DB::beginTransaction();
+
+        try {
+            // Jika approved, hapus attendance yang disuntikkan
+            if ($meetingRequest->status === 'approved' && $meetingRequest->injected_attendance_id) {
+                Attendance::where('id', $meetingRequest->injected_attendance_id)->delete();
+            }
+
+            $meetingRequest->update([
+                'status' => 'pending',
+                'reviewed_by' => null,
+                'reviewed_at' => null,
+                'review_notes' => null,
+                'injected_attendance_id' => null,
+            ]);
+
+            DB::commit();
+
+            $message = 'Aksi berhasil dibatalkan. Status pengajuan kembali ke Pending.';
+            if (request()->ajax() || request()->expectsJson()) {
+                return response()->json(['success' => true, 'message' => $message]);
+            }
+            return back()->with('success', $message);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            if (request()->ajax() || request()->expectsJson()) {
+                return response()->json(['success' => false, 'message' => 'Gagal membatalkan aksi: ' . $e->getMessage()], 500);
+            }
+            return back()->with('error', 'Gagal membatalkan aksi: ' . $e->getMessage());
+        }
     }
 }

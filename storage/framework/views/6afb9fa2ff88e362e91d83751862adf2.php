@@ -1134,7 +1134,16 @@
                                                             <i class="fas fa-times mr-2"></i>Tolak
                                                         </button>
                                                     <?php else: ?>
-                                                        <span class="text-sky-300 font-medium">Selesai</span>
+                                                        <div class="flex flex-col sm:flex-row gap-2">
+                                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($form->processed_at && $form->processed_at->diffInMinutes(now()) <= 60): ?>
+                                                                <button type="button" onclick="undoProcessForm(<?php echo e($form->id); ?>, this)"
+                                                                    class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-amber-600 hover:to-orange-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                                                    <i class="fas fa-undo mr-2"></i>Batalkan Aksi
+                                                                </button>
+                                                            <?php else: ?>
+                                                                <span class="text-sky-300 font-medium">Selesai</span>
+                                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                                        </div>
                                                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                 </div>
                                             </td>
@@ -1300,7 +1309,16 @@
                                                                 <i class="fas fa-times mr-2"></i>Tolak Formulir
                                                             </button>
                                                         <?php else: ?>
-                                                            <span class="text-green-300 font-medium">Selesai</span>
+                                                            <div class="flex flex-col sm:flex-row gap-2 items-center">
+                                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($appointment->processed_at && $appointment->processed_at->diffInMinutes(now()) <= 60): ?>
+                                                                    <button type="button" onclick="undoProcessForm(<?php echo e($appointment->id); ?>, this)"
+                                                                        class="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs sm:text-sm font-bold rounded-xl hover:from-amber-600 hover:to-orange-600 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                                                        <i class="fas fa-undo mr-2"></i>Batalkan Aksi
+                                                                    </button>
+                                                                <?php else: ?>
+                                                                    <span class="text-green-300 font-medium">Selesai</span>
+                                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                                            </div>
                                                         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                     </div>
                                                 </td>
@@ -1606,7 +1624,13 @@
                     ? 'Yakin ingin menandai janji temu ini sudah ditemui?'
                     : 'Yakin ingin menyetujui formulir ini?';
 
-                if (!confirm(confirmMessage)) {
+                const result = await window.confirmAction({
+                    title: 'Konfirmasi',
+                    text: confirmMessage,
+                    icon: 'question'
+                });
+
+                if (!result.isConfirmed) {
                     return; // User membatalkan
                 }
 
@@ -1657,7 +1681,14 @@
                 // Konfirmasi sebelum reject
                 const confirmMessage = 'Yakin ingin menolak formulir ini?';
 
-                if (!confirm(confirmMessage)) {
+                const result = await window.confirmAction({
+                    title: 'Konfirmasi Penolakan',
+                    text: confirmMessage,
+                    icon: 'warning',
+                    confirmText: 'Ya, Tolak'
+                });
+
+                if (!result.isConfirmed) {
                     return; // User membatalkan
                 }
 
@@ -1694,6 +1725,49 @@
                         }
                     } else {
                         throw new Error('Gagal memproses permintaan');
+                    }
+                } catch (error) {
+                    showToast('error', 'Gagal', error.message || 'Terjadi kesalahan');
+                    button.disabled = false;
+                    button.innerHTML = originalHtml;
+                }
+            }
+
+            // Undo Process Form via AJAX
+            async function undoProcessForm(formId, button) {
+                const result = await window.confirmAction({
+                    title: 'Batalkan Aksi',
+                    text: 'Yakin ingin membatalkan aksi dan mengembalikan formulir ke status Pending?',
+                    icon: 'info',
+                    confirmText: 'Ya, Batalkan'
+                });
+
+                if (!result.isConfirmed) {
+                    return;
+                }
+
+                const originalHtml = button.innerHTML;
+                button.disabled = true;
+                button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Memproses...';
+
+                try {
+                    const response = await fetch(`/staff/forms/${formId}/undo`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        showToast('success', 'Berhasil!', data.message || 'Status formulir berhasil dikembalikan ke Pending');
+                        // Refresh page is safest to reset all UI states correctly
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        const data = await response.json();
+                        throw new Error(data.message || 'Gagal memproses permintaan');
                     }
                 } catch (error) {
                     showToast('error', 'Gagal', error.message || 'Terjadi kesalahan');

@@ -403,6 +403,38 @@ class DashboardController extends Controller
         return back()->with('success', 'Formulir berhasil dibatalkan.');
     }
 
+    public function undoProcessForm($id)
+    {
+        $form = MedicalForm::findOrFail($id);
+
+        // Hanya bisa undo jika status bukan pending dan diproses dalam 1 jam terakhir
+        if ($form->status === 'pending') {
+            return back()->with('error', 'Formulir masih dalam status pending.');
+        }
+
+        if (!$form->processed_at || $form->processed_at->diffInMinutes(now()) > 60) {
+            return back()->with('error', 'Batas waktu pembatalan (1 jam) telah berakhir.');
+        }
+
+        $form->update([
+            'status' => 'pending',
+            'processed_by' => null,
+            'processed_at' => null,
+            'notes' => null,
+        ]);
+
+        $message = 'Aksi berhasil dibatalkan. Status formulir kembali ke Pending.';
+
+        if (request()->ajax() || request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message
+            ]);
+        }
+
+        return back()->with('success', $message);
+    }
+
     public function approveTestimoni(Request $request, $id)
     {
         $form = MedicalForm::findOrFail($id);

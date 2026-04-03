@@ -193,6 +193,17 @@
                                             <i class="fas fa-times mr-2"></i> Tolak
                                         </button>
                                     </div>
+                                @else
+                                    <div class="flex flex-col justify-center gap-3 lg:w-48 lg:border-l border-white/10 lg:pl-8 pt-6 lg:pt-0 border-t lg:border-t-0 mt-6 lg:mt-0">
+                                        @if($req->reviewed_at && $req->reviewed_at->diffInMinutes(now()) <= 60)
+                                            <button onclick="undoRequest({{ $req->id }})"
+                                                class="w-full inline-flex items-center justify-center px-5 py-3 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 rounded-xl text-xs font-bold transition-all border border-amber-500/30 hover:border-amber-500/50">
+                                                <i class="fas fa-undo mr-2"></i> Batalkan Aksi
+                                            </button>
+                                        @else
+                                            <span class="text-gray-400 text-xs text-center italic">Sudah diproses</span>
+                                        @endif
+                                    </div>
                                 @endif
 
                             </div>
@@ -250,8 +261,15 @@
     <script>
         let currentRejectId = null;
 
-        function approveRequest(id) {
-            if (!confirm('Apakah Anda yakin ingin menyetujui pengajuan meeting ini?')) return;
+        async function approveRequest(id) {
+            const result = await window.confirmAction({
+                title: 'Setujui Pengajuan',
+                text: 'Apakah Anda yakin ingin menyetujui pengajuan meeting ini?',
+                icon: 'question',
+                confirmText: 'Ya, Setujui'
+            });
+
+            if (!result.isConfirmed) return;
 
             const card = document.getElementById('request-' + id);
             card.style.opacity = '0.5';
@@ -356,6 +374,50 @@
                 alert('Terjadi kesalahan: ' + err.message);
                 card.style.opacity = '1';
                 card.style.pointerEvents = 'auto';
+            });
+        }
+
+        async function undoRequest(id) {
+            const result = await window.confirmAction({
+                title: 'Batalkan Aksi',
+                text: 'Yakin ingin membatalkan aksi dan mengembalikan pengajuan ke status Pending?',
+                icon: 'info',
+                confirmText: 'Ya, Batalkan'
+            });
+
+            if (!result.isConfirmed) return;
+
+            const card = document.getElementById('request-' + id);
+            card.style.opacity = '0.5';
+            card.style.pointerEvents = 'none';
+
+            fetch(`/admin/meeting-requests/${id}/undo`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({})
+            })
+            .then(async r => {
+                const data = await r.json();
+                if (r.ok) {
+                    if (typeof showToast === 'function') {
+                        showToast('success', 'Berhasil!', data.message || 'Status pengajuan berhasil dikembalikan ke Pending');
+                    } else {
+                        alert(data.message || 'Berhasil dikembalikan ke Pending');
+                    }
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    alert('Gagal: ' + (data.message || 'Terjadi kesalahan sistem'));
+                    card.style.opacity = '1';
+                    card.style.pointerEvents = 'auto';
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                location.reload(); 
             });
         }
 

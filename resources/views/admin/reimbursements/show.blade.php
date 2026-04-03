@@ -13,7 +13,7 @@
             </div>
 
             {{-- Header --}}
-            <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-6 mb-6 border border-white border-opacity-20">
+            <div class="glass-effect rounded-lg p-6 mb-6">
                 <div class="flex items-start justify-between">
                     <div>
                         <h1 class="text-3xl font-bold text-white mb-2">
@@ -39,7 +39,7 @@
 
             {{-- Summary Cards --}}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
+                <div class="glass-effect rounded-lg p-6">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sky-200 text-sm font-medium">Manager</p>
@@ -52,7 +52,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
+                <div class="glass-effect rounded-lg p-6">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sky-200 text-sm font-medium">Total Gaji</p>
@@ -66,7 +66,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-6 border border-white border-opacity-20">
+                <div class="glass-effect rounded-lg p-6">
                     <div class="flex items-center justify-between">
                         <div>
                             <p class="text-sky-200 text-sm font-medium">Direimburse Oleh</p>
@@ -88,7 +88,7 @@
 
             {{-- Notes (if any) --}}
             @if($reimbursement->notes)
-                <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-6 mb-6 border border-white border-opacity-20">
+                <div class="glass-effect rounded-lg p-6 mb-6">
                     <h3 class="text-lg font-bold text-white mb-3">
                         <i class="fas fa-sticky-note mr-2"></i>Catatan
                     </h3>
@@ -98,7 +98,7 @@
 
             {{-- Payroll Breakdown --}}
             <div
-                class="bg-white bg-opacity-10 backdrop-blur-md rounded-lg overflow-hidden border border-white border-opacity-20">
+                class="glass-effect rounded-lg overflow-hidden">
                 <div class="px-6 py-4 bg-white bg-opacity-5 border-b border-white border-opacity-10">
                     <h3 class="text-lg font-bold text-white">
                         <i class="fas fa-list mr-2"></i>Detail Gaji yang Dibayarkan ({{ $payrolls->count() }})
@@ -195,34 +195,49 @@
 
     <script>
         function markAsReimbursed(reimbursementId) {
-            if (!confirm('Apakah Anda yakin ingin menandai ini sebagai sudah direimburse?')) {
-                return;
-            }
-
-            const notes = prompt('Catatan (opsional):');
-
-            fetch(`/admin/reimbursements/${reimbursementId}/reimburse`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                    notes: notes
-                })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert(data.message);
-                        window.location.reload();
-                    } else {
-                        alert(data.message);
-                    }
-                })
-                .catch(error => {
-                    alert('Error: ' + error.message);
-                });
+            Swal.fire({
+                title: 'Konfirmasi Reimbursement',
+                text: 'Apakah Anda yakin ingin menandai record ini sebagai sudah direimburse?',
+                icon: 'question',
+                input: 'textarea',
+                inputPlaceholder: 'Tambahkan catatan (opsional)...',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Tandai',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#6b7280',
+                reverseButtons: true,
+                background: '#0f172a',
+                color: '#ffffff'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const notes = result.value;
+                    
+                    fetch(`/admin/reimbursements/${reimbursementId}/reimburse`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            notes: notes
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire('Berhasil!', data.message, 'success').then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire('Gagal', data.message, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire('Error', error.message, 'error');
+                    });
+                }
+            });
         }
     </script>
 @endsection

@@ -1345,7 +1345,14 @@
         event.preventDefault();
         event.stopPropagation();
 
-        if (!confirm(`Apakah Anda yakin ingin melakukan Force Check Out untuk ${userName}?\n\nPerhatian: Tindakan ini akan menutup sesi absensi secara paksa.`)) {
+        const result = await window.confirmAction({
+            title: 'Force Check Out',
+            text: `Apakah Anda yakin ingin melakukan Force Check Out untuk ${userName}?\n\nPerhatian: Tindakan ini akan menutup sesi absensi secara paksa.`,
+            icon: 'warning',
+            confirmText: 'Ya, Force Check Out'
+        });
+
+        if (!result.isConfirmed) {
             return;
         }
 

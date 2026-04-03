@@ -1655,26 +1655,135 @@ class PublicController extends Controller
      */
     public function strukturalEmsDb(Request $request)
     {
-        // Get active structures for both hospitals or filter by request
-        $hospital = $request->input('hospital', 'ems'); // Default to EMS
+        // Get hospital filter (ems or roxwood)
+        $hospital = $request->input('hospital', 'ems');
 
-        $structure = \App\Models\OrganizationalStructure::where('hospital_type', $hospital)
+        // Fetch active organizational structure from database
+        $structureRecord = \App\Models\OrganizationalStructure::where('hospital_type', 'ems') // Core EMS structure
             ->where('is_active', true)
             ->first();
 
-        // If no active structure in DB, fall back to default hardcoded structure or empty
-        $hierarchy = [];
+        // If specific hospital requested (e.g. roxwood), try to find that specific structure
+        if ($hospital !== 'ems') {
+            $specificStructure = \App\Models\OrganizationalStructure::where('hospital_type', $hospital)
+                ->where('is_active', true)
+                ->first();
+            if ($specificStructure) {
+                $structureRecord = $specificStructure;
+            }
+        }
 
-        if ($structure && $structure->structure_data) {
-            // Transform DB structure to view format if needed
-            // The DB structure should match the view's expected format ideally
-            $hierarchy = $this->transformStructureForView($structure->structure_data);
+        // --- Standard Staff Data Calculation (Required by View) ---
+        
+        $normalizeName = function ($str) {
+            return trim(strtolower(preg_replace('/\s+/', ' ', $str)));
+        };
+
+        // Get Roxwood IDs for filtering
+        $rhUserIds = User::where('is_active', true)
+            ->where(function ($query) {
+                $query->whereRaw('LOWER(name) LIKE ?', ['%rh%'])
+                    ->orWhereRaw('LOWER(name) LIKE ?', ['%roxwood%'])
+                    ->orWhereRaw('LOWER(name) LIKE ?', ['%rh -%'])
+                    ->orWhereRaw('LOWER(name) LIKE ?', ['%rh-%'])
+                    ->orWhere(function ($q) {
+                        $q->whereNotNull('staff_id')
+                            ->where(function ($sq) {
+                                $sq->whereRaw('LOWER(staff_id) LIKE ?', ['%rh%'])
+                                    ->orWhereRaw('LOWER(staff_id) LIKE ?', ['%rh -%'])
+                                    ->orWhereRaw('LOWER(staff_id) LIKE ?', ['%rh-%']);
+                            });
+                    });
+            })
+            ->pluck('id')
+            ->toArray();
+
+        // All active users for matching
+        $users = User::where('is_active', true)
+            ->where(function ($q) {
+                $q->whereHas('role', function ($roleQ) {
+                    $roleQ->where('name', '!=', 'admin');
+                })->orWhereNull('role_id');
+            })
+            ->with('role')
+            ->orderByRoleLevel('desc')
+            ->get();
+
+        // Include "required names" from DB (Admins like CEO)
+        $requiredNames = $structureRecord ? ($structureRecord->required_names ?? []) : [];
+        if (!empty($requiredNames)) {
+            $additionalUsers = User::where('is_active', true)
+                ->whereHas('role', function ($roleQ) {
+                    $roleQ->where('name', 'admin');
+                })
+                ->get()
+                ->filter(function ($user) use ($requiredNames, $normalizeName) {
+                    $userNameNormalized = $normalizeName($user->name);
+                    foreach ($requiredNames as $requiredName) {
+                        $requiredNameNormalized = $normalizeName($requiredName);
+                        if ($userNameNormalized === $requiredNameNormalized || str_contains($userNameNormalized, $requiredNameNormalized)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+            $users = $users->merge($additionalUsers)->unique('id');
+        }
+
+        // Build User Mapping for view fast-lookup
+        $userByNameMap = [];
+        foreach ($users as $user) {
+            $normalizedName = $normalizeName($user->name);
+            $userByNameMap[$normalizedName] = $user;
+            $nameWords = array_filter(explode(' ', $normalizedName));
+            if (!empty($nameWords) && strlen($nameWords[0]) > 2) {
+                if (!isset($userByNameMap[$nameWords[0]])) {
+                    $userByNameMap[$nameWords[0]] = $user;
+                }
+            }
+        }
+
+        // Staff By Role (Bottom section of view)
+        $rolesToFetch = ['manajer', 'staff_manager', 'dokter_spesialis', 'dokter_umum', 'co_ass', 'perawat', 'trainee'];
+        $staffByRoleEms = [];
+        $staffByRoleRoxwood = [];
+
+        foreach ($rolesToFetch as $role) {
+            $baseQuery = User::where('is_active', true)
+                ->whereHas('role', function ($q) use ($role) {
+                    if ($role === 'perawat') {
+                        $q->whereIn('name', ['perawat', 'paramedic', 'nurse']);
+                    } else {
+                        $q->where('name', $role);
+                    }
+                })->with('role')->orderBy('name', 'asc');
+
+            $staffByRoleEms[$role] = (clone $baseQuery)
+                ->when(!empty($rhUserIds), fn($q) => $q->whereNotIn('id', $rhUserIds))
+                ->get();
+            
+            $staffByRoleRoxwood[$role] = !empty($rhUserIds) 
+                ? (clone $baseQuery)->whereIn('id', $rhUserIds)->get() 
+                : collect([]);
+        }
+
+        // --- Build Hierarchy ---
+
+        $hierarchy = [];
+        if ($structureRecord && $structureRecord->structure_data) {
+            $hierarchy = $this->transformStructureForView($structureRecord->structure_data);
         } else {
-            // Fallback hardcoded structure if nothing in DB (to prevent blank page)
             $hierarchy = $this->getDefaultStructure();
         }
 
-        return view('public.struktural-ems', compact('hierarchy', 'hospital'));
+        return view('public.struktural-ems', compact(
+            'hierarchy', 
+            'hospital', 
+            'users', 
+            'userByNameMap', 
+            'staffByRoleEms', 
+            'staffByRoleRoxwood'
+        ));
     }
 
     /**
@@ -1687,107 +1796,46 @@ class PublicController extends Controller
         // Level 0: High Command
         if (isset($data['high_command'])) {
             $hierarchy['level_0'] = [
-                'title' => $data['high_command']['title'] ?? 'High Command',
+                'title' => $data['high_command']['title'] ?? 'High Command (Pimpinan Tertinggi)',
                 'positions' => [
-                    [
-                        'title' => 'High Command',
-                        'name' => $data['high_command']['name'] ?? 'N/A',
-                        'status' => 'Available',
-                        'image' => null
-                    ]
+                    'Chief/Director' => $data['high_command']['name'] ?? 'N/A'
                 ]
             ];
-        }
-
-        // Level 1: Departments
-        if (isset($data['departments'])) {
-            $departments = $data['departments'];
-
-            // We need to flatten this for the view or adjust the view.
-            // The current view loop iterates $hierarchy as levels.
-            // Let's create a custom structure that the view can handle, 
-            // OR we adapt the view to match our JSON structure.
-
-            // Looking at the view `public/struktural-ems.blade.php`:
-            // It expects $hierarchy as array of levels with 'title' and 'positions'.
-            // The JSON structure I saved is slightly different (nested departments).
-
-            // Let's map departments to levels. 
-            // Actually, the view seems to handle generic levels.
-
-            // To make it simple for now, I will map the JSON structure 
-            // to the specific levels expected by the view or update the view.
-            // But wait, the previous `struktural-ems.blade.php` loop was generic.
-
-            // Let's create a visual mapping for Departments
-            /*
-            $hierarchy['level_1'] = [
-                'title' => 'Departments',
-                'positions' => []
-            ];
-            */
-
-            // Actually, simply passing the raw JSON might be easier if I update the view.
-            // BUT, the user wants the public page to just work.
-            // Let's check `struktural-ems.blade.php` content again to see what it expects.
-            // It loops `$hierarchy as $levelKey => $levelData`.
-            // Inside, it uses `$levelData['positions']`.
-
-            // My JSON structure:
-            // high_command -> name
-            // departments -> [ { title, name, members: [] } ]
-
-            // I should adapt the transformation to output levels 
-            // that the existing view can render.
-
-            // Level 0: High Command
-            $hierarchy['level_0'] = [
-                'title' => 'High Command',
-                'positions' => [
-                    [
-                        'name' => $data['high_command']['name'] ?? 'N/A',
-                        'role' => 'High Command'
-                    ]
-                ]
-            ];
-
-            // Level 1: Department Heads (All of them)
-            $deptHeads = [];
-            foreach ($data['departments'] as $dept) {
-                $deptHeads[] = [
-                    'name' => $dept['name'] ?? 'N/A',
-                    'role' => $dept['title'] ?? 'Department'
-                ];
-            }
-
-            if (!empty($deptHeads)) {
-                $hierarchy['level_1'] = [
-                    'title' => 'Department Heads',
-                    'positions' => $deptHeads
-                ];
-            }
-
-            // Level 2+: Members (Grouped?)
-            // The view might expect specific levels.
-            // Let's output all members in Level 2 for now, or group them.
-
-            $members = [];
-            foreach ($data['departments'] as $dept) {
-                if (isset($dept['members'])) {
-                    foreach ($dept['members'] as $member) {
-                        $members[] = [
-                            'name' => $member['name'] ?? 'N/A',
-                            'role' => ($dept['title'] ?? '') . ' - ' . ($member['role'] ?? 'Staff')
-                        ];
-                    }
+            
+            // Support multiple heads if they exist in JSON
+            if (isset($data['high_command']['heads']) && is_array($data['high_command']['heads'])) {
+                foreach ($data['high_command']['heads'] as $role => $name) {
+                    $hierarchy['level_0']['positions'][$role] = $name;
                 }
             }
+        }
 
-            if (!empty($members)) {
-                $hierarchy['level_2'] = [
-                    'title' => 'Staff Members',
-                    'positions' => $members
-                ];
+        // Level 1+: Departments
+        if (isset($data['departments']) && is_array($data['departments'])) {
+            // Group departments by their level if specified, or assign to sequential levels
+            foreach ($data['departments'] as $index => $dept) {
+                $levelKey = 'level_' . ($index + 1);
+                
+                // If the department is complex (has members/sections)
+                if (isset($dept['members']) || isset($dept['sections'])) {
+                    $hierarchy[$levelKey] = [
+                        'title' => $dept['title'] ?? 'Department',
+                        'departments' => [
+                            ($dept['subtitle'] ?? $dept['title']) => [
+                                'Head' => $dept['name'] ?? 'N/A',
+                                'Staff' => collect($dept['members'] ?? [])->map(fn($m) => $m['name'] ?? $m)->toArray()
+                            ]
+                        ]
+                    ];
+                } else {
+                    // Simple position
+                    $hierarchy[$levelKey] = [
+                        'title' => $dept['title'] ?? 'Department Head',
+                        'positions' => [
+                            ($dept['role'] ?? 'Head') => $dept['name'] ?? 'N/A'
+                        ]
+                    ];
+                }
             }
         }
 

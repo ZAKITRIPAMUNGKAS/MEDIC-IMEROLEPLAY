@@ -626,6 +626,40 @@ class PayrollController extends Controller
     }
 
     /**
+     * Undo paid status (revert to pending)
+     * Allowed only within 1 hour of payment
+     */
+    public function undoPayment(Payroll $payroll)
+    {
+        if (!$payroll->isPaid()) {
+            return redirect()->back()->with('error', 'Gaji ini belum dibayar.');
+        }
+
+        if (!$payroll->paid_at || $payroll->paid_at->diffInMinutes(now()) > 60) {
+            return redirect()->back()->with('error', 'Batas waktu pembatalan (1 jam) telah habis.');
+        }
+
+        DB::beginTransaction();
+        try {
+            $payroll->update([
+                'status' => 'pending',
+                'paid_at' => null,
+                'paid_by' => null,
+                'notes' => ($payroll->notes ? $payroll->notes . "\n" : '') . 
+                          "Pembayaran dibatalkan pada " . now()->format('Y-m-d H:i:s') . " oleh " . auth()->user()->name
+            ]);
+
+            DB::commit();
+
+            return redirect()->back()->with('success', 'Pembayaran gaji berhasil dibatalkan dan dikembalikan ke status Pending.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Cancel payroll
      */
     public function cancel(Request $request, Payroll $payroll)

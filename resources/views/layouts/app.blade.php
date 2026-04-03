@@ -41,6 +41,39 @@
     <!-- Inline Image Error Handler - Must load early to prevent 404 errors -->
     @stack('styles')
     @livewireStyles
+    <!-- SweetAlert2 (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        /* Custom SweetAlert2 Theme to match Medical Portal */
+        .swal2-popup {
+            border-radius: 1.5rem !important;
+            background: rgba(15, 23, 42, 0.95) !important;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(126, 182, 230, 0.2) !important;
+            color: #fff !important;
+        }
+        .swal2-title {
+            color: #fff !important;
+            font-size: 1.5rem !important;
+            font-weight: 700 !important;
+        }
+        .swal2-html-container {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+        .swal2-confirm {
+            background: linear-gradient(135deg, #0ea5e9, #2563eb) !important;
+            border-radius: 0.75rem !important;
+            padding: 0.75rem 2rem !important;
+            font-weight: 600 !important;
+        }
+        .swal2-cancel {
+            background: rgba(255, 255, 255, 0.1) !important;
+            border-radius: 0.75rem !important;
+            padding: 0.75rem 2rem !important;
+            font-weight: 600 !important;
+            color: #fff !important;
+        }
+    </style>
     <script>
         (function () {
             'use strict';
@@ -175,36 +208,31 @@
     </script>
 
     <style>
-        /* Cache busting: {{ time() }}
-        */ :root {
-            --ml-bg-start: #0c4a6e;
-            /* sky-900 - biru gelap medis */
-            --ml-bg-mid: #075985;
-            /* sky-800 */
-            --ml-bg-end: #0369a1;
-            /* sky-700 */
-        }
-
         /* CSS Variables */
         :root {
-            --ml-primary: #0ea5e9;
-            /* sky-500 - biru medis */
-            --ml-primary-700: #0284c7;
-            /* sky-600 */
-            --ml-secondary: #059669;
-            /* emerald-600 - hijau medis */
-            --ml-accent: #06b6d4;
-            /* cyan-500 - cyan medis */
+            /* Background Colors */
+            --ml-bg-start: #EA89B8;
+            /* Prunelle */
+            --ml-bg-mid: #F8D3E5;
+            /* Rosée */
+            --ml-bg-end: #7EB6E6;
+            /* Azuré */
+
+            /* Theme Colors */
+            --ml-primary: #EA89B8;
+            /* Prunelle */
+            --ml-primary-700: #D872A4;
+            /* Darker Prunelle */
+            --ml-secondary: #7EB6E6;
+            /* Azuré */
+            --ml-accent: #CDE9F5;
+            /* Nuage */
             --ml-success: #10b981;
-            /* emerald-500 */
             --ml-warning: #f59e0b;
-            /* amber-500 */
             --ml-danger: #ef4444;
-            /* red-500 */
-            --ml-muted: #94a3b8;
-            /* slate-400 */
-            --ml-surface: rgba(12, 74, 110, 0.9);
-            --ml-border: rgba(14, 165, 233, 0.3);
+            --ml-muted: #CBD5E1;
+            --ml-surface: rgba(234, 137, 184, 0.9);
+            --ml-border: rgba(126, 182, 230, 0.3);
         }
 
         body {
@@ -377,6 +405,7 @@
             }
         }
 
+        /* Small Devices (phones, 640px and down) */
         @media (max-width: 640px) {
             .hero-title {
                 font-size: 2rem;
@@ -387,49 +416,20 @@
             }
 
             .nav-buttons {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .nav-buttons a {
-                text-align: center;
-                padding: 0.5rem 1rem;
-                font-size: 0.875rem;
-            }
-        }
-
-        /* Extra Small Devices (phones, 480px and down) */
-        @media (max-width: 480px) {
-            .xs\:inline {
-                display: inline;
-            }
-
-            .hero-title {
-                font-size: 1.75rem;
-            }
-
-            .hero-subtitle {
-                font-size: 1rem;
-            }
-        }
-
-        /* Small Devices (phones, 640px and down) */
-        @media (max-width: 640px) {
-            .nav-buttons {
                 position: absolute;
                 top: 100%;
                 left: 0;
                 right: 0;
-                background: rgba(12, 74, 110, 0.98);
+                background: linear-gradient(to bottom, rgba(234, 137, 184, 0.98), rgba(126, 182, 230, 0.98));
                 backdrop-filter: blur(15px);
                 padding: 1rem;
-                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                border-top: 1px solid rgba(255, 255, 255, 0.2);
                 transform: translateY(-100%);
                 opacity: 0;
                 visibility: hidden;
                 transition: all 0.3s ease;
                 z-index: 40;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
             }
 
             .nav-buttons.show {
@@ -461,24 +461,7 @@
             }
         }
 
-        /* Medium Devices (tablets, 768px and down) */
-        @media (max-width: 768px) {
-            .hero-title {
-                font-size: 2.5rem;
-            }
 
-            .hero-subtitle {
-                font-size: 1.5rem;
-            }
-
-            .service-card {
-                margin-bottom: 1.5rem;
-            }
-
-            .subtle-float {
-                display: none;
-            }
-        }
 
         .mobile-menu-btn {
             display: none;
@@ -1241,7 +1224,6 @@
                 font-size: 1rem;
             }
         }
-        }
 
         /* Notification Container Position - Adjusted to be below navbar */
         .notification-container {
@@ -1280,7 +1262,8 @@
 
 <body class="min-h-screen">
     <!-- Navigation -->
-    <nav class="glass-effect fixed w-full top-0 z-50">
+    <nav
+        class="fixed w-full top-0 z-50 bg-gradient-to-r from-[#EA89B8]/90 via-[#7EB6E6]/90 to-[#CDE9F5]/90 backdrop-blur-xl border-b border-white/20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
@@ -1313,7 +1296,7 @@
                     @guest
                         <!-- Show Recruitment button only when not logged in -->
                         <button onclick="openRecruitmentModal()"
-                            class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center mr-2">
+                            class="bg-white/20 text-white px-4 py-2 rounded-lg hover:bg-white/30 transition-all duration-300 text-sm font-bold backdrop-blur-md border border-white/30 flex items-center shadow-lg transform hover:scale-105">
                             <i class="fas fa-user-plus mr-2"></i>
                             <span>Recruitment</span>
                         </button>
@@ -1346,7 +1329,7 @@
 
 
                                 {{-- Admin Dropdown Menu --}}
-                                @if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('view_attendance_reports') || auth()->user()->hasPermission('access_live_chat') || auth()->user()->hasPermission('access_feedback'))
+                                @if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('view_attendance_reports') || auth()->user()->hasPermission('access_live_chat') || auth()->user()->hasPermission('access_feedback') || auth()->user()->hasPermission('manage_meeting_requests'))
                                     <div class="relative group">
                                         <button
                                             class="bg-white bg-opacity-10 text-white px-3 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center whitespace-nowrap">
@@ -1411,14 +1394,15 @@
                                                     </a>
                                                 @endif
 
-                                                @if(auth()->user()->isAdmin())
+                                                @if(auth()->user()->hasPermission('manage_meeting_requests'))
                                                     <a href="{{ route('admin.meeting-requests.index') }}"
                                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                         <i class="fas fa-clipboard-check mr-3 w-5"></i>
                                                         Meeting Requests
                                                         @php $pendingMeetingCount = \App\Models\MeetingRequest::pending()->count(); @endphp
                                                         @if($pendingMeetingCount > 0)
-                                                            <span class="ml-auto bg-yellow-500 text-white text-xs px-2 py-0.5 rounded-full">{{ $pendingMeetingCount }}</span>
+                                                            <span
+                                                                class="ml-auto bg-yellow-500 text-white text-xs px-2 py-0.5 rounded-full">{{ $pendingMeetingCount }}</span>
                                                         @endif
                                                     </a>
                                                 @endif
@@ -1436,48 +1420,50 @@
                                 @endif
                             </div>
 
-                            <!-- Payroll Menu Dropdown -->
-                            <div class="relative group mt-0">
-                                <button
-                                    class="bg-white bg-opacity-10 text-white px-3 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center whitespace-nowrap">
-                                    <i class="fas fa-dollar-sign mr-2"></i>
-                                    <span>Gaji</span>
-                                    <i class="fas fa-chevron-down ml-2 text-xs"></i>
-                                </button>
+                            @if(auth()->user()->isAdmin())
+                                <!-- Payroll Menu Dropdown -->
+                                <div class="relative group mt-0">
+                                    <button
+                                        class="bg-white bg-opacity-10 text-white px-3 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center whitespace-nowrap">
+                                        <i class="fas fa-dollar-sign mr-2"></i>
+                                        <span>Gaji</span>
+                                        <i class="fas fa-chevron-down ml-2 text-xs"></i>
+                                    </button>
 
-                                <!-- Dropdown Menu -->
-                                <div
-                                    class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                                    <div class="py-2">
-                                        @if(auth()->user()->hasPermission('manage_payroll'))
-                                            <a href="{{ route('admin.payroll.index') }}"
-                                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                <i class="fas fa-list mr-2"></i>
-                                                Daftar Gaji
-                                            </a>
-                                            <a href="{{ route('admin.salary-settings.index') }}"
-                                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                <i class="fas fa-cog mr-2"></i>
-                                                Atur Gaji
-                                            </a>
-                                            @if(auth()->user()->isAdmin())
-                                                <div class="border-t border-gray-200 my-1"></div>
-                                                <a href="{{ route('admin.reimbursements.index') }}"
+                                    <!-- Dropdown Menu -->
+                                    <div
+                                        class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                                        <div class="py-2">
+                                            @if(auth()->user()->hasPermission('manage_payroll'))
+                                                <a href="{{ route('admin.payroll.index') }}"
                                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                    <i class="fas fa-file-invoice-dollar mr-2"></i>
-                                                    Reimbursement Tracking
+                                                    <i class="fas fa-list mr-2"></i>
+                                                    Daftar Gaji
+                                                </a>
+                                                <a href="{{ route('admin.salary-settings.index') }}"
+                                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                    <i class="fas fa-cog mr-2"></i>
+                                                    Atur Gaji
+                                                </a>
+                                                @if(auth()->user()->hasPermission('manage_reimbursements'))
+                                                    <div class="border-t border-gray-200 my-1"></div>
+                                                    <a href="{{ route('admin.reimbursements.index') }}"
+                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                        <i class="fas fa-file-invoice-dollar mr-2"></i>
+                                                        Reimbursement Tracking
+                                                    </a>
+                                                @endif
+                                            @else
+                                                <a href="{{ route('staff.payroll.index') }}"
+                                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                    <i class="fas fa-list mr-2"></i>
+                                                    Gaji Saya
                                                 </a>
                                             @endif
-                                        @else
-                                            <a href="{{ route('staff.payroll.index') }}"
-                                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                <i class="fas fa-list mr-2"></i>
-                                                Gaji Saya
-                                            </a>
-                                        @endif
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            @endif
 
                             <!-- Logout Button -->
                             <form method="POST" action="{{ route('staff.logout') }}" class="inline ml-1 sm:ml-2">
@@ -1492,7 +1478,7 @@
                     @endauth
                     @guest
                         <a href="{{ route('staff.login') }}"
-                            class="bg-white bg-opacity-10 text-white px-4 py-2 sm:px-6 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-xs sm:text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
+                            class="bg-gradient-to-r from-[#EA89B8] to-[#7EB6E6] text-white px-4 py-2 sm:px-6 rounded-lg hover:from-[#D872A4] hover:to-[#6AA5D5] transition-all duration-300 text-xs sm:text-sm font-bold backdrop-blur-sm border border-white/30 flex items-center shadow-xl transform hover:scale-105">
                             <i class="fas fa-user-md mr-2"></i>
                             <span>Login Staf</span>
                         </a>
@@ -1543,10 +1529,12 @@
                         <a href="{{ route('admin.roles.permissions') }}"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-shield-alt w-6 mr-2"></i>Role Permissions</a>
-                        @if(auth()->user()->isAdmin())
+                        @if(auth()->user()->hasPermission('manage_meeting_requests'))
                             <a href="{{ route('admin.meeting-requests.index') }}"
                                 class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                     class="fas fa-clipboard-check w-6 mr-2"></i>Meeting Requests</a>
+                        @endif
+                        @if(auth()->user()->isAdmin())
                             <a href="{{ route('admin.duty-tracking.index') }}"
                                 class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                     class="fas fa-trophy w-6 mr-2"></i>Duty Tracking</a>
@@ -1557,22 +1545,22 @@
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-chart-bar w-6 mr-2"></i>Laporan</a>
                     @endif
-                    @if(auth()->user()->hasPermission('manage_payroll'))
-                        <a href="{{ route('admin.payroll.index') }}"
-                            class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
-                                class="fas fa-list w-6 mr-2"></i>Daftar Gaji</a>
-                        <a href="{{ route('admin.salary-settings.index') }}"
-                            class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
-                                class="fas fa-cog w-6 mr-2"></i>Atur Gaji</a>
-                        @if(auth()->user()->isAdmin())
+                    @if(auth()->user()->isAdmin())
+                        @if(auth()->user()->hasPermission('manage_payroll'))
+                            <a href="{{ route('admin.payroll.index') }}"
+                                class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
+                                    class="fas fa-list w-6 mr-2"></i>Daftar Gaji</a>
+                            <a href="{{ route('admin.salary-settings.index') }}"
+                                class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
+                                    class="fas fa-cog w-6 mr-2"></i>Atur Gaji</a>
                             <a href="{{ route('admin.reimbursements.index') }}"
                                 class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                     class="fas fa-file-invoice-dollar w-6 mr-2"></i>Reimbursement</a>
+                        @else
+                            <a href="{{ route('staff.payroll.index') }}"
+                                class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
+                                    class="fas fa-dollar-sign w-6 mr-2"></i>Gaji Saya</a>
                         @endif
-                    @else
-                        <a href="{{ route('staff.payroll.index') }}"
-                            class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
-                                class="fas fa-dollar-sign w-6 mr-2"></i>Gaji Saya</a>
                     @endif
                     <form method="POST" action="{{ route('staff.logout') }}" class="block">
                         @csrf
@@ -1634,7 +1622,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="glass-effect mt-16">
+    <footer class="mt-16 border-t border-white/20" style="background: #EA89B8; backdrop-filter: blur(10px);">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="text-center">
                 <div class="flex justify-center items-center mb-4">
@@ -2741,7 +2729,7 @@
                     @elseif($errors->any())
                         alert('Terdapat kesalahan input. Silakan periksa formulir.');
                     @endif
-                                                            }, 1000);
+                                                                }, 1000);
             });
         </script>
         <style>
@@ -2764,6 +2752,56 @@
     @livewireScripts
     @livewireScriptConfig
     @stack('scripts')
+    
+    <script>
+        // Global Confirmation Handler for Forms
+        document.addEventListener('submit', function(e) {
+            const form = e.target;
+            if (form.hasAttribute('onsubmit') && form.getAttribute('onsubmit').includes('confirm(')) {
+                // Check if we've already confirmed this form
+                if (form.dataset.confirmed === 'true') {
+                    return true;
+                }
+
+                e.preventDefault();
+                
+                // Extract message from confirm('...')
+                const match = form.getAttribute('onsubmit').match(/confirm\(['"](.+)['"]\)/);
+                const message = match ? match[1] : 'Apakah Anda yakin ingin melanjutkan?';
+
+                Swal.fire({
+                    title: 'Konfirmasi',
+                    text: message,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.dataset.confirmed = 'true';
+                        form.submit();
+                    }
+                });
+                
+                return false;
+            }
+        });
+
+        // Global Swal Wrapper for AJAX actions
+        window.confirmAction = function(options = {}) {
+            return Swal.fire({
+                title: options.title || 'Konfirmasi',
+                text: options.text || 'Apakah Anda yakin?',
+                icon: options.icon || 'warning',
+                showCancelButton: true,
+                confirmButtonText: options.confirmText || 'Ya',
+                cancelButtonText: options.cancelText || 'Batal',
+                reverseButtons: true,
+                ...options
+            });
+        };
+    </script>
 </body>
 
 </html>
