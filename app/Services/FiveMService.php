@@ -73,6 +73,7 @@ class FiveMService
     /**
      * Check if a specific player is online (Name based fallback)
      * Supports matching names with prefixes like "MEDIC - Aiko"
+     * This uses Smart Matching (Multi-Keyword AND) to handle common surnames Safely.
      * 
      * @param string $userName  The name from our database (e.g. "Aiko Fukushima")
      * @param array $players  The player objects from FiveM
@@ -82,29 +83,75 @@ class FiveMService
     {
         if (empty($userName)) return false;
 
-        $normalizedDbName = strtolower(trim($userName));
+        // 1. Clean and normalize the DB name
+        // e.g. "Aiko Fukushima" -> ["aiko", "fukushima"]
+        $dbNameParts = $this->getCleanKeywords($userName);
+        if (empty($dbNameParts)) return false;
 
         foreach ($players as $player) {
             if (isset($player['name'])) {
+                // 2. Clean the online name (remove prefixes like [MEDIC], RH -, etc.)
                 $onlineNameLower = strtolower($player['name']);
-
-                // 1. Exact Match
-                if ($onlineNameLower === $normalizedDbName) return true;
-
-                // 2. Contains (Database name is part of FiveM name)
-                // e.g. "Aiko Fukushima" inside "MEDIC - Aiko Fukushima #863"
-                if (str_contains($onlineNameLower, $normalizedDbName)) return true;
-
-                // 3. Reversed contains (FiveM name is part of Database name - less common)
-                // e.g. "Aiko" inside "Aiko Fukushima"
-                // Hanya jika nama cukup unik (> 4 karakter)
-                if (strlen($onlineNameLower) > 4 && str_contains($normalizedDbName, $onlineNameLower)) return true;
                 
-                // 4. Handle "Character Name" inside square brackets if used [Aiko]
-                // This is a common roleplay convention.
+                // 3. Multi-Keyword Matching (Must match most significant parts of the name)
+                // Logic: A player is online if THE ONLINE NAME contains ALL words from the DB Name.
+                // This ensures "Aiko Fukushima" doesn't match "Aiko Sato".
+                $allMatched = true;
+                foreach ($dbNameParts as $keyword) {
+                    if (!str_contains($onlineNameLower, $keyword)) {
+                        $allMatched = false;
+                        break;
+                    }
+                }
+
+                if ($allMatched) return true;
+
+                // 4. Reverse Contains (Online name parts match DB name)
+                // If game name is just "Aiko", it will match "Aiko Fukushima" only if Aiko is unique (>4 chars)
+                $onlineNameParts = $this->getCleanKeywords($player['name']);
+                $meaningfulMatch = 0;
+                foreach($onlineNameParts as $part) {
+                    if (strlen($part) > 2 && str_contains(strtolower($userName), $part)) {
+                        $meaningfulMatch++;
+                    }
+                }
+                
+                // If online name is substantially part of DB name (e.g. "Aiko" is part of "Aiko Fukushima")
+                // We use a safe threshold: Online name must be substantial.
+                if ($meaningfulMatch >= 1 && count($onlineNameParts) >= 1) {
+                    // Logic check: only if DB name is very specific
+                    if (strlen($player['name']) >= 4 && str_contains(strtolower($userName), strtolower($player['name']))) {
+                        return true;
+                    }
+                }
             }
         }
 
         return false;
+    }
+
+    /**
+     * Internal helper to clean up names and split into keywords
+     */
+    private function getCleanKeywords(string $name): array
+    {
+        // 1. Convert to lowercase
+        $name = strtolower($name);
+
+        // 2. Remove common RP prefixes/suffixes in brackets [MEDIC], (EMS), {ID}
+        $name = preg_replace('/\[.*?\]|\(.*?\)|{.*?}/', '', $name);
+
+        // 3. Remove common text prefixes
+        $prefixes = ['medic - ', 'rh - ', 'ems - ', 'dr. ', 'dr ', 'nurse '];
+        $name = str_replace($prefixes, '', $name);
+
+        // 4. Remove special characters (keep spaces and alphanumeric)
+        $name = preg_replace('/[^a-z0-9\s]/', ' ', $name);
+
+        // 5. Split and filter empty/short words (keep words > 2 chars)
+        $parts = explode(' ', $name);
+        return array_values(array_filter($parts, function($val) {
+            return strlen(trim($val)) >= 3;
+        }));
     }
 }

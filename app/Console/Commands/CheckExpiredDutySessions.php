@@ -414,7 +414,7 @@ class CheckExpiredDutySessions extends Command
 
         // Cari semua sesi active FiveM yang sudah berjalan > 10 menit
         // (Grace period untuk menghindari false positive saat login baru / lag)
-        $graceThreshold = $now->copy()->subMinutes(10);
+        $graceThreshold = $now->copy()->subMinutes(2);
         
         $activeSessions = Attendance::where('is_active', true)
             ->where('source', 'fivem')
@@ -429,30 +429,38 @@ class CheckExpiredDutySessions extends Command
         $closedCount = 0;
         foreach ($activeSessions as $attendance) {
             $user = User::find($attendance->user_id);
-            if (!$user) continue;
+            if (!$user) {
+                Log::warning("[FiveM-Verify] User not found for attendance ID {$attendance->id}");
+                continue;
+            }
 
             $isOnline = false;
+            $matchMethod = 'None';
 
             // 1. Coba berdasarkan Identifier (License/Steam) - Ini prioritas kalau ada
             if ($user->citizen_id) {
                 $isOnline = $fivem->isPlayerOnlineByIdentifier($user->citizen_id, $playersData);
+                if ($isOnline) $matchMethod = 'CitizenID';
             } elseif ($user->staff_id) {
                 $isOnline = $fivem->isPlayerOnlineByIdentifier($user->staff_id, $playersData);
+                if ($isOnline) $matchMethod = 'StaffID';
             }
             
             // 2. Fallback: Coba berdasarkan Nama (karena server sering hidden identifiers)
             if (!$isOnline && $user->name) {
                 $isOnline = $fivem->isPlayerOnlineByName($user->name, $playersData);
-                
-                if ($isOnline) {
-                    Log::debug('[FiveM-Verify] Player found via Name fallback', [
-                        'user_id' => $user->id,
-                        'name' => $user->name
+                if ($isOnline) $matchMethod = 'SmartNameMatch';
+            }
+
+            if ($isOnline) {
+                // Log periodic check only occasionally to avoid log bloat
+                if ($now->minute % 10 === 0) {
+                    Log::debug("[FiveM-Verify] Staff online confirmed", [
+                        'user' => $user->name,
+                        'method' => $matchMethod
                     ]);
                 }
-            }
-            
-            if (!$isOnline) {
+            } else {
                 // Player tidak ditemukan di FiveM (baik Identifier maupun Nama), tutup sesi!
                 try {
                     DB::beginTransaction();
