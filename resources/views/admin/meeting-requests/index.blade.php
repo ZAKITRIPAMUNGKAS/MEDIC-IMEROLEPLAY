@@ -163,9 +163,28 @@
                                     </div>
 
                                     <!-- Agenda Box -->
-                                    <div class="bg-blue-500/10 rounded-2xl p-5 border border-blue-500/20">
-                                        <span class="text-xs font-extrabold text-sky-300 uppercase tracking-widest block mb-2">Agenda / Alasan</span>
-                                        <p class="text-gray-200 text-sm leading-relaxed">{{ $req->reason }}</p>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <div class="md:col-span-2 bg-blue-500/10 rounded-2xl p-5 border border-blue-500/20">
+                                            <span class="text-xs font-extrabold text-sky-300 uppercase tracking-widest block mb-2">Agenda / Alasan</span>
+                                            <p class="text-gray-200 text-sm leading-relaxed">{{ $req->reason }}</p>
+                                        </div>
+                                        
+                                        @if($req->photo)
+                                            <div class="bg-white/5 rounded-2xl p-3 border border-white/10 flex flex-col items-center justify-center gap-2">
+                                                <span class="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Bukti Foto</span>
+                                                <a href="{{ $req->photo_url }}" target="_blank" class="relative group cursor-zoom-in">
+                                                    <img src="{{ $req->photo_url }}" alt="Bukti" class="h-24 w-full object-cover rounded-xl shadow-lg group-hover:opacity-75 transition-opacity">
+                                                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <i class="fas fa-search-plus text-white text-xl"></i>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        @else
+                                            <div class="bg-white/5 rounded-2xl p-3 border border-white/10 flex flex-col items-center justify-center text-center opacity-50">
+                                                <i class="fas fa-image text-gray-500 mb-1"></i>
+                                                <span class="text-[10px] font-bold text-gray-400">Tidak ada foto</span>
+                                            </div>
+                                        @endif
                                     </div>
 
                                     @if($req->review_notes)

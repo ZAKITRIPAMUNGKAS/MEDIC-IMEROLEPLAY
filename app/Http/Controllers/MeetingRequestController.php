@@ -52,7 +52,14 @@ class MeetingRequestController extends Controller
      */
     public function create()
     {
-        return view('staff.meeting-requests.create');
+        $user = Auth::user();
+        $recentRequests = MeetingRequest::where('user_id', $user->id)
+            ->with('reviewer')
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+
+        return view('staff.meeting-requests.create', compact('recentRequests'));
     }
 
     /**
@@ -65,6 +72,7 @@ class MeetingRequestController extends Controller
             'start_time' => 'required',
             'end_time' => 'required',
             'reason' => 'required|string|min:10|max:1000',
+            'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:4096',
         ], [
             'requested_date.required' => 'Tanggal meeting harus diisi.',
             'start_time.required' => 'Waktu mulai harus diisi.',
@@ -72,6 +80,10 @@ class MeetingRequestController extends Controller
             'reason.required' => 'Alasan meeting harus diisi.',
             'reason.min' => 'Alasan meeting minimal 10 karakter.',
             'reason.max' => 'Alasan meeting maksimal 1000 karakter.',
+            'photo.required' => 'Bukti foto meeting harus diunggah.',
+            'photo.image' => 'File harus berupa gambar.',
+            'photo.mimes' => 'Format gambar harus jpeg, png, jpg, atau gif.',
+            'photo.max' => 'Ukuran gambar maksimal 4MB.',
         ]);
 
         $user = Auth::user();
@@ -102,12 +114,42 @@ class MeetingRequestController extends Controller
             return back()->with('error', 'Durasi meeting minimal 15 menit.')->withInput();
         }
 
+        // Handle photo upload
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            $file = $request->file('photo');
+            $fileName = time() . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', $file->getClientOriginalName());
+            $publicPath = public_path('uploads/meeting-proofs');
+            $destinationPath = $publicPath . '/' . $fileName;
+
+            // Create directory if it doesn't exist
+            if (!is_dir($publicPath)) {
+                mkdir($publicPath, 0755, true);
+            }
+
+            // Compress and save image
+            $compressed = \App\Helpers\ImageHelper::compressUploadedImage(
+                $file,
+                $destinationPath,
+                1000, // max width for proof
+                1000, // max height
+                80    // quality
+            );
+
+            if (!$compressed) {
+                $file->move($publicPath, $fileName);
+            }
+
+            $photoPath = 'uploads/meeting-proofs/' . $fileName;
+        }
+
         MeetingRequest::create([
             'user_id' => $user->id,
             'requested_date' => $request->requested_date,
             'start_time' => $request->start_time,
             'end_time' => $request->end_time,
             'reason' => $request->reason,
+            'photo' => $photoPath,
             'status' => 'pending',
         ]);
 

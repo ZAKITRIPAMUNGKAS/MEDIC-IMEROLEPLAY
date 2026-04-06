@@ -15,6 +15,7 @@ class MeetingRequest extends Model
         'end_time',
         'reason',
         'status',
+        'photo',
         'reviewed_by',
         'reviewed_at',
         'review_notes',
@@ -25,6 +26,20 @@ class MeetingRequest extends Model
         'requested_date' => 'date',
         'reviewed_at' => 'datetime',
     ];
+
+    protected $appends = [
+        'photo_url',
+    ];
+
+    // --- Attributes ---
+
+    public function getPhotoUrlAttribute(): ?string
+    {
+        if ($this->photo) {
+            return asset($this->photo);
+        }
+        return null;
+    }
 
     // --- Relationships ---
 
@@ -108,8 +123,9 @@ class MeetingRequest extends Model
      */
     public function getDurationInSeconds(): int
     {
-        $start = Carbon::parse($this->requested_date->format('Y-m-d') . ' ' . $this->start_time);
-        $end = Carbon::parse($this->requested_date->format('Y-m-d') . ' ' . $this->end_time);
+        $date = Carbon::parse($this->requested_date)->format('Y-m-d');
+        $start = Carbon::parse($date . ' ' . $this->start_time);
+        $end = Carbon::parse($date . ' ' . $this->end_time);
 
         if ($end->lt($start)) {
             $end->addDay();
