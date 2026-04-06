@@ -433,7 +433,7 @@ class PublicController extends Controller
             ->whereIn('status', ['pending', 'approved'])
             ->first();
 
-        // Validasi #9: Cooldown Operasi Plastik (28 hari sejak approved)
+        // Validasi #9: Cooldown Operasi Plastik (7 hari sejak approved)
         if ($request->form_type === 'operasi_plastik' && $request->filled('citizen_id')) {
             $lastOplas = MedicalForm::where('citizen_id', $request->citizen_id)
                 ->where('form_type', 'operasi_plastik')
@@ -442,12 +442,12 @@ class PublicController extends Controller
                 ->orderBy('processed_at', 'desc')
                 ->first();
 
-            if ($lastOplas && $lastOplas->processed_at->copy()->addDays(28)->isFuture()) {
-                $daysRemaining = (int) now()->diffInDays($lastOplas->processed_at->copy()->addDays(28), false);
+            if ($lastOplas && $lastOplas->processed_at->copy()->addDays(7)->isFuture()) {
+                $daysRemaining = (int) now()->diffInDays($lastOplas->processed_at->copy()->addDays(7), false);
                 // Biarkan jika <= 0 handling error oleh Carbon, tp normally if isFuture() then diffInDays > 0 or 0.
                 $daysRemaining = max(1, $daysRemaining); // minimal 1 hari
 
-                $errorMessage = "Citizen ID " . $request->citizen_id . " masih dalam masa cooldown Operasi Plastik (Limit Roleplay 1 Bulan = 28 Hari OOC). Anda baru bisa melakukan permintaan lagi dalam " . $daysRemaining . " hari.";
+                $errorMessage = "Citizen ID " . $request->citizen_id . " masih dalam masa cooldown Operasi Plastik (Limit Roleplay 1 Minggu = 7 Hari OOC). Anda baru bisa melakukan permintaan lagi dalam " . $daysRemaining . " hari.";
 
                 return back()
                     ->withErrors(['citizen_id' => $errorMessage])
