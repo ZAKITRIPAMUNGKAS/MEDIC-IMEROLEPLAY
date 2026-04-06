@@ -198,7 +198,7 @@
                             <div class="flex">
                                 <i class="fas fa-info-circle text-blue-400 mr-2 mt-0.5 text-xs"></i>
                                 <p class="text-blue-200 text-[11px] leading-relaxed">
-                                    <strong>Penting:</strong> Pastikan foto bukti memperlihatkan minimal 3 peserta atau agenda meeting yang jelas.
+                                    <strong>Penting:</strong> Pastikan foto bukti memperlihatkan apa yang dikerjakan atau agenda meeting yang jelas.
                                 </p>
                             </div>
                         </div>
