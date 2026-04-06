@@ -44,7 +44,7 @@
             </div>
 
             <!-- Stats / Tabs -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-10">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-5 mb-10">
                 <!-- Pending Tab -->
                 <a href="?status=pending" class="group glass-effect rounded-2xl p-6 border shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 relative overflow-hidden {{ $status === 'pending' ? 'border-sky-400 ring-1 ring-sky-400/50' : 'border-white/10 hover:border-white/30 bg-white/5' }}">
                     <div class="flex items-start justify-between relative z-10">
@@ -80,6 +80,19 @@
                         </div>
                         <div class="w-14 h-14 rounded-2xl bg-rose-500/20 text-rose-400 flex items-center justify-center transform transition-transform group-hover:rotate-6 shadow-inner border border-rose-500/30">
                             <i class="fas fa-times text-2xl"></i>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- All History Tab -->
+                <a href="?status=all" class="group glass-effect rounded-2xl p-6 border shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 relative overflow-hidden {{ $status === 'all' ? 'border-sky-400 ring-1 ring-sky-400/50' : 'border-white/10 hover:border-white/30 bg-white/5' }}">
+                    <div class="flex items-start justify-between relative z-10">
+                        <div>
+                            <p class="text-xs font-bold text-gray-300 uppercase tracking-widest mb-1">Semua Riwayat</p>
+                            <p class="text-4xl font-black text-white">{{ $pendingCount + $approvedCount + $rejectedCount }}</p>
+                        </div>
+                        <div class="w-14 h-14 rounded-2xl bg-sky-500/20 text-sky-400 flex items-center justify-center transform transition-transform group-hover:rotate-6 shadow-inner border border-sky-500/30">
+                            <i class="fas fa-history text-2xl"></i>
                         </div>
                     </div>
                 </a>

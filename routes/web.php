@@ -182,6 +182,10 @@ Route::middleware(['auth', 'staff'])->group(function () {
     Route::post('/wrapped/dismiss', [\App\Http\Controllers\WrappedController::class, 'dismiss'])->name('wrapped.dismiss');
     Route::post('/wrapped/record', [\App\Http\Controllers\WrappedController::class, 'recordView'])->name('wrapped.record');
 
+    // Meeting Request routes for staff
+    Route::get('/staff/meeting-requests', [\App\Http\Controllers\MeetingRequestController::class, 'index'])->name('staff.meeting-requests.index');
+    Route::get('/staff/meeting-requests/create', [\App\Http\Controllers\MeetingRequestController::class, 'create'])->name('staff.meeting-requests.create');
+    Route::post('/staff/meeting-requests', [\App\Http\Controllers\MeetingRequestController::class, 'store'])->name('staff.meeting-requests.store');
 });
 
 // Admin routes
@@ -229,11 +233,6 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
         ->middleware('permission:manage_meeting_requests')->name('meeting-requests.reject');
     Route::post('/meeting-requests/{id}/undo', [\App\Http\Controllers\MeetingRequestController::class, 'undoProcess'])
         ->middleware('permission:manage_meeting_requests')->name('meeting-requests.undo');
-
-    // Staff-facing meeting request routes (Any staff can create themselves)
-    Route::get('/staff/meeting-requests', [\App\Http\Controllers\MeetingRequestController::class, 'index'])->name('staff.meeting-requests.index');
-    Route::get('/staff/meeting-requests/create', [\App\Http\Controllers\MeetingRequestController::class, 'create'])->name('staff.meeting-requests.create');
-    Route::post('/staff/meeting-requests', [\App\Http\Controllers\MeetingRequestController::class, 'store'])->name('staff.meeting-requests.store');
 
     // Payroll & Salary Management - ADMIN ONLY
     Route::middleware(['admin'])->group(function () {
