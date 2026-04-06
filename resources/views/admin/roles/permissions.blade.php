@@ -5,8 +5,8 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {{-- Header --}}
         <div class="mb-8">
-            <h1 class="text-3xl font-black text-slate-900">Role Permissions Management</h1>
-            <p class="text-slate-600 mt-2">Manage permissions for each role. Toggle switches to grant or revoke permissions.</p>
+            <h1 class="text-3xl font-black text-slate-900">Manajemen Izin Role</h1>
+            <p class="text-slate-600 mt-2">Kelola izin akses untuk setiap jabatan (role). Gunakan sakelar untuk memberikan atau mencabut akses fitur.</p>
         </div>
 
         {{-- Permission Cards Grid --}}
@@ -68,12 +68,12 @@
             <div class="flex items-start">
                 <i class="fas fa-exclamation-triangle text-yellow-600 mt-1 mr-3"></i>
                 <div>
-                    <h4 class="font-bold text-yellow-800">Important Notes</h4>
+                    <h4 class="font-bold text-yellow-800">Catatan Penting</h4>
                     <ul class="text-sm text-yellow-700 mt-2 space-y-1 list-disc list-inside">
-                        <li>Permission changes take effect immediately</li>
-                        <li><strong>reply_livechat</strong> controls who can reply to user chat messages</li>
-                        <li><strong>manage_attendance_advanced</strong> allows force checkout and manual attendance</li>
-                        <li>Admin role should always have all permissions</li>
+                        <li>Perubahan izin akses akan langsung berlaku seketika</li>
+                        <li><strong>Daftar Gaji</strong> & <strong>Atur Gaji</strong> adalah fitur sensitif yang hanya boleh diberikan kepada manajemen</li>
+                        <li><strong>manage_attendance_advanced</strong> memungkinkan force checkout sesi yang macet</li>
+                        <li>Role Admin sebaiknya memiliki semua izin demi kelancaran operasional</li>
                     </ul>
                 </div>
             </div>

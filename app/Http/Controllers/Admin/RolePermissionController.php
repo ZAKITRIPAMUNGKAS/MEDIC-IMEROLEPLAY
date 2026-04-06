@@ -45,18 +45,22 @@ class RolePermissionController extends Controller
 
         // List of all available permissions
         $allPermissions = [
-            'view_dashboard' => 'View Dashboard',
-            'manage_forms' => 'Manage Forms',
-            'manage_users' => 'Manage Users',
-            'view_reports' => 'View Reports',
-            'manage_attendance' => 'Manage Attendance',
-            'manage_attendance_advanced' => 'Manage Attendance Advanced (Force Checkout & Manual)',
-            'view_attendance_reports' => 'View Attendance Reports (Read-Only)',
-            'manage_settings' => 'Manage Settings',
-            'manage_payroll' => 'Manage Payroll',
-            'manage_reimbursements' => 'Manage Reimbursement Tracking',
-            'manage_meeting_requests' => 'Manage Meeting Requests',
-            'reply_livechat' => 'Reply to Live Chat'
+            'view_dashboard' => 'Lihat Dashboard (Ringkasan statistik & informasi utama)',
+            'manage_forms' => 'Kelola Formulir (Menyetujui/menolak formulir masuk)',
+            'manage_users' => 'Kelola Staff (Tambah, edit, & kontrol akun staff)',
+            'view_reports' => 'Lihat Laporan (Akses laporan umum di dashboard)',
+            'manage_attendance' => 'Kelola Absensi (Lihat dan kelola data absensi harian)',
+            'manage_attendance_advanced' => 'Kelola Absensi Manual (Input absensi manual secara mandiri)',
+            'force_checkout' => 'Force Checkout (Hanya untuk mengakhiri sesi yang macet)',
+            'view_attendance_reports' => 'Lihat Laporan Absensi (Rekapan absensi - Read Only)',
+            'manage_settings' => 'Pengaturan Sistem (Konfigurasi dasar aplikasi)',
+            'manage_payroll' => 'Daftar Gaji (Kelola dan proses gaji mingguan)',
+            'manage_salary_settings' => 'Atur Gaji (Konfigurasi gaji dasar & bonus per jabatan)',
+            'manage_reimbursements' => 'Pelacakan Reimbursement (Kelola klaim pengembalian dana)',
+            'manage_meeting_requests' => 'Kelola Pertemuan (Setujui/tolak permintaan meeting)',
+            'access_live_chat' => 'Akses Live Chat (Melihat riwayat pesan bantuan)',
+            'reply_livechat' => 'Balas Live Chat (Membalas pesan bantuan warga)',
+            'access_feedback' => 'Akses Kritik & Saran (Melihat laporan & masukan warga)'
         ];
 
         return view('admin.roles.permissions', compact('roles', 'allPermissions'));

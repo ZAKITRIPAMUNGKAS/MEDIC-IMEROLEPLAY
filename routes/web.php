@@ -212,7 +212,7 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/attendance-reports/stats', [\App\Http\Controllers\Admin\AttendanceReportController::class, 'getStats'])
         ->middleware('permission:view_reports|view_attendance_reports')->name('attendance-reports.stats');
     Route::post('/attendance-reports/force-checkout', [\App\Http\Controllers\Admin\AttendanceReportController::class, 'forceCheckOut'])
-        ->middleware('permission:manage_attendance_advanced')->name('attendance-reports.force-checkout');
+        ->middleware('permission:force_checkout')->name('attendance-reports.force-checkout');
     Route::post('/attendance-reports/manual', [\App\Http\Controllers\Admin\AttendanceReportController::class, 'storeManualAttendance'])
         ->middleware('permission:manage_attendance_advanced')->name('attendance-reports.manual');
     Route::put('/attendance-reports/{id}', [\App\Http\Controllers\Admin\AttendanceReportController::class, 'updateAttendance'])
@@ -262,11 +262,11 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
 
         // Salary settings management
         Route::resource('salary-settings', \App\Http\Controllers\Admin\SalarySettingController::class)
-            ->middleware('permission:manage_payroll');
+            ->middleware('permission:manage_salary_settings');
         Route::post('/salary-settings/bulk-create', [\App\Http\Controllers\Admin\SalarySettingController::class, 'bulkCreate'])
-            ->middleware('permission:manage_payroll')->name('salary-settings.bulk-create');
+            ->middleware('permission:manage_salary_settings')->name('salary-settings.bulk-create');
         Route::post('/salary-settings/{salarySetting}/toggle-status', [\App\Http\Controllers\Admin\SalarySettingController::class, 'toggleStatus'])
-            ->middleware('permission:manage_payroll')->name('salary-settings.toggle-status');
+            ->middleware('permission:manage_salary_settings')->name('salary-settings.toggle-status');
     });
 
     // Salary Reimbursement Tracking
