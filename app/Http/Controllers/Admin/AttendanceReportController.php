@@ -7,6 +7,7 @@ use App\Models\Attendance;
 use App\Models\User;
 use App\Helpers\TimeHelper;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -382,14 +383,28 @@ class AttendanceReportController extends Controller
      */
     public function forceCheckOut(Request $request)
     {
-        $request->validate([
-            'attendance_id' => 'required|exists:attendances,id'
+        \Log::info('Force checkout attempt', [
+            'admin_id' => Auth::id(),
+            'attendance_id' => $request->attendance_id
         ]);
-
+        
         try {
-            $attendance = Attendance::with('user')->findOrFail($request->attendance_id);
+            $request->validate([
+                'attendance_id' => 'required|exists:attendances,id',
+            ]);
 
-            // Check if attendance already has clock out
+            $attendance = Attendance::findOrFail($request->attendance_id);
+            
+            // Re-verify permission just in case
+            if (!Auth::user()->hasPermission('force_checkout')) {
+                \Log::warning('Force checkout rejected: No permission', ['user_id' => Auth::id()]);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda tidak memiliki izin (force_checkout) untuk melakukan tindakan ini.'
+                ], 403);
+            }
+
+            // Check if already has clock out
             if ($attendance->clock_out) {
                 return response()->json([
                     'success' => false,
@@ -397,7 +412,13 @@ class AttendanceReportController extends Controller
                 ], 400);
             }
 
-            // Check if attendance is active
+            // Robust check: as long as clock_out is NULL, it should be eligible for force checkout
+            // Even if is_active is somehow false (out of sync)
+            if (!$attendance->is_active && !$attendance->clock_out) {
+                \Log::info('Force check out: repairing inactive session with NULL clock_out', ['attendance_id' => $attendance->id]);
+                $attendance->is_active = true;
+            }
+
             if (!$attendance->is_active) {
                 return response()->json([
                     'success' => false,

@@ -1356,6 +1356,7 @@
 
     // Force Check Out function
     async function forceCheckOut(event, attendanceId, userName) {
+        console.log('forceCheckOut called', {attendanceId, userName});
         event.preventDefault();
         event.stopPropagation();
 
@@ -1379,7 +1380,7 @@
             // Get CSRF token from meta tag or use csrf_token() helper
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '<?php echo e(csrf_token()); ?>';
 
-            const response = await fetch(`<?php echo e(route('admin.attendance-reports.force-checkout')); ?>`, {
+            const response = await fetch('/admin/attendance-reports/force-checkout', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

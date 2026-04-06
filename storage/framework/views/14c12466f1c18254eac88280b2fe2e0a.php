@@ -9,40 +9,6 @@
 <?php $__env->startSection('og_description', 'Portal Medis iMe Roleplay - Menyediakan perawatan komprehensif untuk semua kebutuhan kesehatan Anda dengan standar profesional tertinggi. Konsultasi Medis. Pemeriksaan umum dan diagnosis.'); ?>
 
 <?php $__env->startSection('content'); ?>
-    <style>
-        :root {
-            --color-rosee: #F8D3E5;
-            --color-prunelle: #EA89B8;
-            --color-azure: #7EB6E6;
-            --color-nuage: #CDE9F5;
-        }
-
-        .bg-prunelle { background-color: var(--color-prunelle); }
-        .bg-rosee { background-color: var(--color-rosee); }
-        .bg-azure { background-color: var(--color-azure); }
-        .bg-nuage { background-color: var(--color-nuage); }
-
-        .text-prunelle { color: var(--color-prunelle); }
-        .text-rosee { color: var(--color-rosee); }
-        .text-azure { color: var(--color-azure); }
-        .text-nuage { color: var(--color-nuage); }
-
-        .border-prunelle { border-color: var(--color-prunelle); }
-        .border-rosee { border-color: var(--color-rosee); }
-        .border-azure { border-color: var(--color-azure); }
-        .border-nuage { border-color: var(--color-nuage); }
-
-        /* Custom Gradients */
-        .gradient-premium {
-            background: linear-gradient(135deg, #EA89B8 0%, #7EB6E6 50%, #CDE9F5 100%);
-        }
-        .gradient-pink-blue {
-            background: linear-gradient(to right, #EA89B8, #7EB6E6);
-        }
-        .gradient-blue-pink {
-            background: linear-gradient(to right, #7EB6E6, #EA89B8);
-        }
-    </style>
     <!-- Pop-up Informasi Kenaikan Regulasi -->
     <div id="regulationModal"
         class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4"
@@ -51,7 +17,7 @@
             class="bg-white rounded-3xl shadow-2xl max-w-5xl w-full max-h-[95vh] overflow-hidden animate-fade-in-up flex flex-col">
             <!-- Header -->
             <div
-                class="gradient-pink-blue text-white p-6 sm:p-8 relative overflow-hidden">
+                class="bg-gradient-to-r from-red-500 via-red-600 to-pink-600 text-white p-6 sm:p-8 relative overflow-hidden">
                 <!-- Background Pattern -->
                 <div class="absolute inset-0 opacity-10">
                     <div class="absolute top-0 right-0 w-32 h-32 bg-white rounded-full -translate-y-16 translate-x-16">
@@ -90,17 +56,17 @@
                 class="flex-1 p-6 sm:p-8 space-y-6 sm:space-y-8 bg-gradient-to-b from-gray-50 to-white overflow-y-auto custom-scrollbar">
                 <!-- Summary Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                    <div class="gradient-blue-pink text-white p-4 rounded-2xl text-center shadow-lg border border-white/20">
+                    <div class="bg-gradient-to-r from-blue-500 to-cyan-500 text-white p-4 rounded-2xl text-center">
                         <i class="fas fa-cash-register text-2xl mb-2"></i>
                         <h4 class="font-bold text-lg">Cash Payment</h4>
                         <p class="text-sm opacity-90">Pembayaran Tunai</p>
                     </div>
-                    <div class="gradient-pink-blue text-white p-4 rounded-2xl text-center shadow-lg border border-white/20">
+                    <div class="bg-gradient-to-r from-green-500 to-emerald-500 text-white p-4 rounded-2xl text-center">
                         <i class="fas fa-file-invoice text-2xl mb-2"></i>
                         <h4 class="font-bold text-lg">Invoice Payment</h4>
                         <p class="text-sm opacity-90">Pembayaran Tagihan</p>
                     </div>
-                    <div class="bg-[#7EB6E6] text-white p-4 rounded-2xl text-center shadow-lg border border-white/20">
+                    <div class="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-4 rounded-2xl text-center">
                         <i class="fas fa-chart-line text-2xl mb-2"></i>
                         <h4 class="font-bold text-lg">Price Update</h4>
                         <p class="text-sm opacity-90">Update Harga</p>
@@ -155,8 +121,8 @@
 
                 <!-- REGULASI KONSULTASI KESEHATAN (CASH) -->
                 <div
-                    class="bg-white rounded-3xl shadow-lg border border-pink-200 overflow-hidden hover:shadow-xl transition-all duration-300">
-                    <div class="bg-gradient-to-r from-pink-500 to-blue-500 text-white p-6">
+                    class="bg-white rounded-3xl shadow-lg border border-emerald-200 overflow-hidden hover:shadow-xl transition-all duration-300">
+                    <div class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white p-6">
                         <h3 class="text-2xl font-bold flex items-center">
                             <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mr-4">
                                 <i class="fas fa-user-md text-xl"></i>
@@ -279,8 +245,8 @@
 
                 <!-- REGULASI PENANGANAN PINGSAN (CASH) -->
                 <div
-                    class="bg-white rounded-3xl shadow-lg border border-pink-200 overflow-hidden hover:shadow-xl transition-all duration-300">
-                    <div class="bg-gradient-to-r from-pink-500 to-blue-500 text-white p-6">
+                    class="bg-white rounded-3xl shadow-lg border border-green-200 overflow-hidden hover:shadow-xl transition-all duration-300">
+                    <div class="bg-gradient-to-r from-green-500 to-emerald-500 text-white p-6">
                         <h3 class="text-2xl font-bold flex items-center">
                             <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mr-4">
                                 <i class="fas fa-ambulance text-xl"></i>
@@ -448,8 +414,8 @@
 
                 <!-- REGULASI OPERASI (CASH) -->
                 <div
-                    class="bg-white rounded-3xl shadow-lg border border-pink-200 overflow-hidden hover:shadow-xl transition-all duration-300">
-                    <div class="bg-gradient-to-r from-pink-500 to-blue-500 text-white p-6">
+                    class="bg-white rounded-3xl shadow-lg border border-orange-200 overflow-hidden hover:shadow-xl transition-all duration-300">
+                    <div class="bg-gradient-to-r from-orange-500 to-red-500 text-white p-6">
                         <h3 class="text-2xl font-bold flex items-center">
                             <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mr-4">
                                 <i class="fas fa-cut text-xl"></i>
@@ -639,8 +605,8 @@
 
                 <!-- REGULASI VISUM DAN OTOPSI MAYAT -->
                 <div
-                    class="bg-white rounded-3xl shadow-lg border border-pink-200 overflow-hidden hover:shadow-xl transition-all duration-300">
-                    <div class="bg-gradient-to-r from-pink-500 to-blue-500 text-white p-6">
+                    class="bg-white rounded-3xl shadow-lg border border-yellow-200 overflow-hidden hover:shadow-xl transition-all duration-300">
+                    <div class="bg-gradient-to-r from-yellow-500 to-amber-500 text-white p-6">
                         <h3 class="text-2xl font-bold flex items-center">
                             <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mr-4">
                                 <i class="fas fa-search text-xl"></i>
@@ -709,8 +675,8 @@
 
                 <!-- OPERASI PLASTIK -->
                 <div
-                    class="bg-white rounded-3xl shadow-lg border border-pink-200 overflow-hidden hover:shadow-xl transition-all duration-300">
-                    <div class="bg-gradient-to-r from-pink-500 to-blue-600 text-white p-6">
+                    class="bg-white rounded-3xl shadow-lg border border-fuchsia-200 overflow-hidden hover:shadow-xl transition-all duration-300">
+                    <div class="bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white p-6">
                         <h3 class="text-2xl font-bold flex items-center">
                             <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mr-4">
                                 <i class="fas fa-magic text-xl"></i>
@@ -764,8 +730,8 @@
             <div class="bg-gradient-to-r from-gray-50 to-slate-50 p-4 sm:p-6 border-t border-gray-200">
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div class="flex items-center space-x-3 sm:space-x-4">
-                    <div
-                            class="w-12 h-12 bg-gradient-to-r from-pink-500 to-blue-500 rounded-2xl flex items-center justify-center">
+                        <div
+                            class="w-12 h-12 bg-gradient-to-r from-red-500 to-pink-500 rounded-2xl flex items-center justify-center">
                             <i class="fas fa-exclamation-triangle text-white text-xl"></i>
                         </div>
                         <div>
@@ -788,25 +754,31 @@
             </div>
         </div>
     </div>
-    <!-- Hero Section - Premium Pink & Blue Redesign -->
-    <div class="relative min-h-screen overflow-hidden" style="background: linear-gradient(135deg, var(--ml-primary), var(--ml-secondary));">
+    <!-- Hero Section - Premium Redesign -->
+    <div class="relative min-h-screen bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700 overflow-hidden">
         <!-- Modern Background Layers -->
         <div class="absolute inset-0">
             <!-- Base Gradient -->
-            <div class="absolute inset-0" style="background: linear-gradient(135deg, var(--ml-primary), var(--ml-secondary));"></div>
+            <div class="absolute inset-0 bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700"></div>
 
             <!-- Hero Image Background -->
             <div class="absolute inset-0 opacity-40">
-                <img src="<?php echo e(asset('images/hero.webp')); ?>" alt="Medical Background" class="w-full h-full object-cover">
+                <img src="<?php echo e(asset('images/hero.png')); ?>" alt="Medical Background" class="w-full h-full object-cover object-[center_bottom]">
+            </div>
+
+            <!-- Blurred Medical Illustration Overlay -->
+            <div class="absolute inset-0 opacity-20">
+                <img src="<?php echo e(asset('images/hero.png')); ?>" alt="Medical Background"
+                    class="w-full h-full object-cover blur-2xl scale-110 object-[center_bottom]">
             </div>
 
             <!-- Animated Gradient Orbs -->
-            <div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#f472b6]/30 rounded-full blur-3xl animate-pulse">
+            <div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-cyan-500/20 rounded-full blur-3xl animate-pulse">
             </div>
-            <div class="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-[#93c5fd]/30 rounded-full blur-3xl animate-pulse"
+            <div class="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-sky-500/20 rounded-full blur-3xl animate-pulse"
                 style="animation-delay: 2s;"></div>
             <div
-                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/10 rounded-full blur-3xl">
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-sky-500/15 rounded-full blur-3xl">
             </div>
 
             <!-- Grid Pattern Overlay -->
@@ -826,14 +798,14 @@
                     <div class="flex justify-center lg:justify-start items-center gap-5 mb-8">
                         <div class="relative group">
                             <div
-                                class="absolute inset-0 bg-[#EA89B8]/40 rounded-full blur-2xl group-hover:opacity-75 transition-opacity duration-300">
+                                class="absolute inset-0 bg-cyan-500/30 rounded-full blur-2xl group-hover:opacity-75 transition-opacity duration-300">
                             </div>
                             <img src="<?php echo e(asset('images/logoime.webp')); ?>" alt="MOTIONLIFE"
                                 class="relative h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 object-contain drop-shadow-2xl animate-float">
                         </div>
                         <div class="relative group">
                             <div
-                                class="absolute inset-0 bg-[#7EB6E6]/40 rounded-full blur-2xl group-hover:opacity-75 transition-opacity duration-300">
+                                class="absolute inset-0 bg-blue-500/30 rounded-full blur-2xl group-hover:opacity-75 transition-opacity duration-300">
                             </div>
                             <div
                                 class="relative h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 flex items-center justify-center bg-white/15 backdrop-blur-xl rounded-3xl border-2 border-white/30 shadow-2xl animate-float hover:bg-white/25 transition-all duration-300">
@@ -846,20 +818,19 @@
                     <!-- Title Section with Enhanced Typography -->
                     <div class="space-y-5">
                         <h1
-                            class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black tracking-tight"
-                            style="background: linear-gradient(to right, #FFFFFF, #F8D3E5, #7EB6E6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3)); line-height: 0.9;">
+                            class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-cyan-300 to-blue-300 leading-[0.9] tracking-tight drop-shadow-2xl">
                             iMe
                         </h1>
                         <h2
-                            class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight drop-shadow-lg">
+                            class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-sky-100 leading-tight drop-shadow-lg">
                             Portal Medis Terpadu
                         </h2>
                     </div>
 
                     <!-- Description with Better Readability -->
                     <p
-                        class="text-lg sm:text-xl lg:text-2xl text-white/95 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-light">
-                        Dapatkan layanan medis <span class="font-bold text-[#F8D3E5]">in-character</span> yang realistis,
+                        class="text-lg sm:text-xl lg:text-2xl text-sky-200/95 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-light">
+                        Dapatkan layanan medis <span class="font-semibold text-cyan-300">in-character</span> yang realistis,
                         profesional, dan cepat untuk segala kebutuhan kesehatan Anda.
                     </p>
 
@@ -867,7 +838,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 max-w-2xl mx-auto lg:mx-0 pt-6">
                         <!-- Primary Button (Layanan) -->
                         <a href="#services"
-                            class="group relative inline-flex items-center justify-center gap-3 gradient-pink-blue text-white font-bold text-base px-6 py-4 rounded-xl shadow-2xl hover:shadow-[#EA89B8]/50 transition-all duration-300 transform hover:scale-[1.02] overflow-hidden">
+                            class="group relative inline-flex items-center justify-center gap-3 bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-600 text-white font-bold text-base px-6 py-4 rounded-xl shadow-2xl hover:shadow-cyan-500/50 hover:from-sky-500 hover:via-cyan-500 hover:to-blue-500 transition-all duration-300 transform hover:scale-[1.02] overflow-hidden">
                             <div
                                 class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/25 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700">
                             </div>
@@ -877,15 +848,15 @@
 
                         <!-- Jadwal Praktek Button -->
                         <a href="<?php echo e(route('public.doctor-schedule')); ?>"
-                            class="relative z-10 group inline-flex items-center justify-center gap-2 bg-white/20 backdrop-blur-xl border-2 border-white/40 text-white font-semibold text-base px-6 py-4 rounded-xl shadow-xl hover:bg-white/30 hover:border-white/60 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]">
-                            <i class="fas fa-calendar-check text-lg text-blue-300"></i>
+                            class="relative z-10 group inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-xl border-2 border-white/25 text-white font-semibold text-base px-6 py-4 rounded-xl shadow-xl hover:bg-white/20 hover:border-white/40 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]">
+                            <i class="fas fa-calendar-check text-lg text-cyan-400"></i>
                             <span>Jadwal Praktek</span>
                         </a>
 
                         <!-- Regulasi Button -->
                         <button onclick="showRegulationModal()" type="button"
-                            class="relative z-10 group inline-flex items-center justify-center gap-2 bg-white/20 backdrop-blur-xl border-2 border-white/40 text-white font-semibold text-base px-6 py-4 rounded-xl shadow-xl hover:bg-white/30 hover:border-white/60 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] cursor-pointer">
-                            <i class="fas fa-file-alt text-lg text-pink-300"></i>
+                            class="relative z-10 group inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-xl border-2 border-white/25 text-white font-semibold text-base px-6 py-4 rounded-xl shadow-xl hover:bg-white/20 hover:border-white/40 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] cursor-pointer">
+                            <i class="fas fa-file-alt text-lg text-amber-400"></i>
                             <span>Lihat Regulasi</span>
                         </button>
 
@@ -901,18 +872,18 @@
                 <!-- Right Column: Staff On Duty Card with Premium Glassmorphism -->
                 <div class="animate-fade-in-right">
                     <div
-                        class="bg-white/20 backdrop-blur-2xl rounded-3xl border-2 border-white/40 shadow-2xl p-8 sm:p-10 max-w-lg mx-auto lg:mx-0 relative overflow-hidden group hover:shadow-[#EA89B8]/30 hover:border-white/60 transition-all duration-500">
+                        class="bg-white/10 backdrop-blur-2xl rounded-3xl border-2 border-white/25 shadow-2xl p-8 sm:p-10 max-w-lg mx-auto lg:mx-0 relative overflow-hidden group hover:shadow-cyan-500/30 hover:border-white/40 transition-all duration-500">
 
                         <!-- Animated Background Glow -->
                         <div
-                            class="absolute inset-0 bg-gradient-to-br from-[#EA89B8]/20 via-[#7EB6E6]/20 to-[#CDE9F5]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            class="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                         </div>
 
                         <!-- Subtle Animated Orbs -->
-                        <div class="absolute top-6 right-6 w-24 h-24 bg-[#EA89B8]/30 rounded-full blur-2xl animate-pulse">
+                        <div class="absolute top-6 right-6 w-24 h-24 bg-cyan-400/20 rounded-full blur-2xl animate-pulse">
                         </div>
                         <div
-                            class="absolute bottom-6 left-6 w-20 h-20 bg-[#7EB6E6]/30 rounded-full blur-2xl animate-pulse delay-1000">
+                            class="absolute bottom-6 left-6 w-20 h-20 bg-blue-400/20 rounded-full blur-2xl animate-pulse delay-1000">
                         </div>
 
                         <!-- Shine Effect -->
@@ -924,40 +895,40 @@
                         <div class="relative z-10 text-center mb-8">
                             <div class="relative inline-block mb-5">
                                 <div
-                                    class="absolute inset-0 bg-gradient-to-br from-[#EA89B8] to-[#7EB6E6] rounded-2xl blur-xl opacity-60 group-hover:opacity-80 transition-opacity duration-300">
+                                    class="absolute inset-0 bg-gradient-to-br from-sky-400 to-cyan-400 rounded-2xl blur-xl opacity-60 group-hover:opacity-80 transition-opacity duration-300">
                                 </div>
                                 <div
-                                    class="relative w-20 h-20 bg-gradient-to-br from-[#EA89B8] via-[#F8D3E5] to-[#7EB6E6] rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                                    class="relative w-20 h-20 bg-gradient-to-br from-sky-500 via-cyan-500 to-blue-500 rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
                                     <i class="fas fa-user-md text-white text-3xl"></i>
                                 </div>
                             </div>
                             <h3 class="text-2xl sm:text-3xl font-black text-white mb-2 drop-shadow-lg">Staff On Duty</h3>
-                            <p class="text-sm text-[#F8D3E5] font-medium drop-shadow-md">Tim medis yang siap melayani Anda</p>
+                            <p class="text-sm text-sky-200/90 font-medium">Tim medis yang siap melayani Anda</p>
                         </div>
 
                         <!-- Stats Cards with Enhanced Design -->
                         <div class="relative z-10 space-y-5">
-                             <!-- Alta Hospital -->
+                            <!-- Alta Hospital -->
                             <div
-                                class="bg-white/20 backdrop-blur-md rounded-2xl p-6 border-2 border-white/30 hover:border-[#EA89B8]/50 hover:bg-white/25 transition-all duration-300 group/item relative overflow-hidden">
+                                class="bg-white/15 backdrop-blur-md rounded-2xl p-6 border-2 border-white/20 hover:border-cyan-400/50 hover:bg-white/20 transition-all duration-300 group/item relative overflow-hidden">
                                 <div
-                                    class="absolute inset-0 bg-gradient-to-r from-[#EA89B8]/0 via-[#EA89B8]/10 to-[#EA89B8]/0 translate-x-[-100%] group-hover/item:translate-x-[100%] transition-transform duration-1000">
+                                    class="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-cyan-500/10 to-cyan-500/0 translate-x-[-100%] group-hover/item:translate-x-[100%] transition-transform duration-1000">
                                 </div>
                                 <div class="relative z-10">
                                     <div class="flex items-center gap-4 mb-4">
                                         <div class="relative">
                                             <div
-                                                class="absolute inset-0 bg-[#EA89B8]/40 rounded-xl blur-lg group-hover/item:opacity-75 transition-opacity duration-300">
+                                                class="absolute inset-0 bg-cyan-400/40 rounded-xl blur-lg group-hover/item:opacity-75 transition-opacity duration-300">
                                             </div>
                                             <div
-                                                class="relative w-16 h-16 bg-gradient-to-br from-[#EA89B8] via-[#F8D3E5] to-[#7EB6E6] rounded-xl flex items-center justify-center shadow-xl group-hover/item:scale-110 group-hover/item:rotate-6 transition-all duration-300">
+                                                class="relative w-16 h-16 bg-gradient-to-br from-blue-500 via-cyan-500 to-sky-500 rounded-xl flex items-center justify-center shadow-xl group-hover/item:scale-110 group-hover/item:rotate-6 transition-all duration-300">
                                                 <i class="fas fa-hospital text-white text-xl"></i>
                                             </div>
                                         </div>
                                         <div>
                                             <p class="text-sm font-bold text-white uppercase tracking-wide drop-shadow-md">
                                                 Alta Hospital</p>
-                                            <p class="text-xs text-[#CDE9F5] mt-1 font-medium italic">Emergency Medical Services
+                                            <p class="text-xs text-sky-300/80 mt-1 font-medium">Emergency Medical Services
                                             </p>
                                         </div>
                                     </div>
@@ -1056,69 +1027,67 @@
         </div>
     </div>
 
-    <!-- Stats Section - Blue & Indigo Theme -->
-    <div class="relative py-20 sm:py-24 overflow-hidden"
-        style="background: linear-gradient(135deg, #93c5fd, #6366f1);">
+    <!-- Stats Section - Dark Theme -->
+    <div class="relative py-20 sm:py-24 bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700 overflow-hidden">
         <!-- Background Effects -->
         <div class="absolute inset-0">
-            <div class="absolute top-0 right-1/4 w-96 h-96 bg-[#EA89B8]/20 rounded-full blur-3xl"></div>
-            <div class="absolute bottom-0 left-1/4 w-96 h-96 bg-[#7EB6E6]/20 rounded-full blur-3xl"></div>
+            <div class="absolute top-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 left-1/4 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl"></div>
         </div>
 
         <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
                 <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-4 drop-shadow-lg">Keunggulan Kami</h2>
-                <p class="text-pink-100 text-lg sm:text-xl font-medium">Bukti kualitas pelayanan medis terbaik</p>
+                <p class="text-sky-200/90 text-lg sm:text-xl font-medium">Bukti kualitas pelayanan medis terbaik</p>
             </div>
 
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
                 <div class="group animate-fade-in-up bg-white/10 backdrop-blur-xl rounded-2xl border-2 border-white/20 p-6 sm:p-8 hover:bg-white/15 hover:border-white/30 transition-all duration-300 transform hover:scale-105 flex flex-col items-center justify-center text-center h-full"
                     style="animation-delay: 0.1s;">
                     <div
-                        class="relative w-20 h-20 bg-gradient-to-br from-[#EA89B8] to-[#7EB6E6] rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-xl group-hover:scale-110 transition-transform duration-300">
+                        class="relative w-20 h-20 bg-gradient-to-br from-sky-400 to-cyan-400 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-xl group-hover:scale-110 transition-transform duration-300">
                         <i class="fas fa-users text-white text-2xl"></i>
                     </div>
-                    <h4 class="text-4xl font-black text-white mb-3 drop-shadow-lg leading-none">
+                    <h4 class="text-4xl font-black text-cyan-300 mb-3 drop-shadow-lg leading-none">
                         <?php echo e(number_format($stats['total_forms'])); ?>+
                     </h4>
-                    <p class="text-pink-100 font-bold text-base uppercase tracking-wider">Pasien Puas</p>
+                    <p class="text-sky-200 font-semibold text-base">Pasien Puas</p>
                 </div>
                 <div class="group animate-fade-in-up bg-white/10 backdrop-blur-xl rounded-2xl border-2 border-white/20 p-6 sm:p-8 hover:bg-white/15 hover:border-white/30 transition-all duration-300 transform hover:scale-105 flex flex-col items-center justify-center text-center h-full"
                     style="animation-delay: 0.2s;">
                     <div
-                        class="relative w-20 h-20 bg-gradient-to-br from-[#7EB6E6] to-[#EA89B8] rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-xl group-hover:scale-110 transition-transform duration-300">
+                        class="relative w-20 h-20 bg-gradient-to-br from-emerald-400 to-teal-400 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-xl group-hover:scale-110 transition-transform duration-300">
                         <i class="fas fa-user-md text-white text-2xl"></i>
                     </div>
-                    <h4 class="text-4xl font-black text-white mb-3 drop-shadow-lg leading-none">
+                    <h4 class="text-4xl font-black text-emerald-300 mb-3 drop-shadow-lg leading-none">
                         <?php echo e($stats['total_staff']); ?>+
                     </h4>
-                    <p class="text-pink-100 font-bold text-base uppercase tracking-wider">Dokter Ahli</p>
+                    <p class="text-sky-200 font-semibold text-base">Dokter Ahli</p>
                 </div>
                 <div class="group animate-fade-in-up bg-white/10 backdrop-blur-xl rounded-2xl border-2 border-white/20 p-6 sm:p-8 hover:bg-white/15 hover:border-white/30 transition-all duration-300 transform hover:scale-105 flex flex-col items-center justify-center text-center h-full"
                     style="animation-delay: 0.3s;">
                     <div
-                        class="relative w-20 h-20 bg-gradient-to-br from-[#F8D3E5] to-[#7EB6E6] rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-xl group-hover:scale-110 transition-transform duration-300">
+                        class="relative w-20 h-20 bg-gradient-to-br from-cyan-400 to-blue-400 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-xl group-hover:scale-110 transition-transform duration-300">
                         <i class="fas fa-check-circle text-white text-2xl"></i>
                     </div>
-                    <h4 class="text-4xl font-black text-white mb-3 drop-shadow-lg leading-none">98%</h4>
-                    <p class="text-pink-100 font-bold text-base uppercase tracking-wider">Tingkat Keberhasilan</p>
+                    <h4 class="text-4xl font-black text-cyan-300 mb-3 drop-shadow-lg leading-none">98%</h4>
+                    <p class="text-sky-200 font-semibold text-base">Tingkat Keberhasilan</p>
                 </div>
                 <div class="group animate-fade-in-up bg-white/10 backdrop-blur-xl rounded-2xl border-2 border-white/20 p-6 sm:p-8 hover:bg-white/15 hover:border-white/30 transition-all duration-300 transform hover:scale-105 flex flex-col items-center justify-center text-center h-full"
                     style="animation-delay: 0.4s;">
                     <div
-                        class="relative w-20 h-20 bg-gradient-to-br from-[#7EB6E6] to-[#F8D3E5] rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-xl group-hover:scale-110 transition-transform duration-300">
+                        class="relative w-20 h-20 bg-gradient-to-br from-red-400 to-pink-400 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-xl group-hover:scale-110 transition-transform duration-300">
                         <i class="fas fa-heartbeat text-white text-2xl"></i>
                     </div>
-                    <h4 class="text-4xl font-black text-white mb-3 drop-shadow-lg leading-none">24/7</h4>
-                    <p class="text-pink-100 font-bold text-base uppercase tracking-wider">Gawat Darurat</p>
+                    <h4 class="text-4xl font-black text-red-300 mb-3 drop-shadow-lg leading-none">24/7</h4>
+                    <p class="text-sky-200 font-semibold text-base">Gawat Darurat</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Hospital Service Hours Section - Purple & Cyan Theme -->
-    <div class="relative py-16 sm:py-20 overflow-hidden"
-        style="background: linear-gradient(135deg, #a78bfa, #67e8f9);">
+    <!-- Hospital Service Hours Section - Sky Blue Theme -->
+    <div class="relative py-16 sm:py-20 bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700 overflow-hidden">
         <!-- Background Effects -->
         <div class="absolute inset-0">
             <div class="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
@@ -1134,9 +1103,9 @@
                         <i class="fas fa-clock text-white text-3xl"></i>
                     </div>
                     <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-white drop-shadow-lg">
-                        <i class="fas fa-clock mr-3 text-[#F8D3E5]"></i>
+                        <i class="fas fa-clock mr-3 text-cyan-300"></i>
                         LAYANAN RUMAH SAKIT
-                        <i class="fas fa-clock ml-3 text-[#F8D3E5]"></i>
+                        <i class="fas fa-clock ml-3 text-cyan-300"></i>
                     </h2>
                 </div>
                 <div
@@ -1158,31 +1127,31 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
                 <!-- OPLAS Card -->
                 <div
-                    class="group bg-white/10 backdrop-blur-xl rounded-3xl border-2 border-white/20 p-8 hover:bg-white/15 hover:border-[#EA89B8]/50 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-[#EA89B8]/30">
+                    class="group bg-white/10 backdrop-blur-xl rounded-3xl border-2 border-white/20 p-8 hover:bg-white/15 hover:border-amber-400/50 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-amber-500/30">
                     <div class="text-center mb-6">
                         <div
-                            class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#EA89B8] to-[#7EB6E6] rounded-2xl shadow-xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                            class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl shadow-xl mb-4 group-hover:scale-110 transition-transform duration-300">
                             <i class="fas fa-user-md text-white text-3xl"></i>
                         </div>
                         <h3 class="text-2xl font-black text-white mb-2">JAM PELAYANAN OPLAS</h3>
-                        <div class="w-16 h-1 bg-gradient-to-r from-[#EA89B8] to-[#7EB6E6] mx-auto rounded-full"></div>
+                        <div class="w-16 h-1 bg-gradient-to-r from-purple-400 to-pink-400 mx-auto rounded-full"></div>
                     </div>
                     <div class="space-y-4">
                         <div
                             class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all">
                             <div class="flex items-center justify-between mb-2">
-                                <span class="text-[#EA89B8] font-bold text-lg">Shift 1</span>
+                                <span class="text-cyan-300 font-bold text-lg">Shift 1</span>
                                 <span
-                                    class="text-xs bg-[#EA89B8]/30 text-white px-3 py-1 rounded-full font-semibold">Siang</span>
+                                    class="text-xs bg-purple-500/30 text-purple-200 px-3 py-1 rounded-full font-semibold">Siang</span>
                             </div>
                             <p class="text-white text-xl font-black">13:00 - 16:00 WIB</p>
                         </div>
                         <div
                             class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all">
                             <div class="flex items-center justify-between mb-2">
-                                <span class="text-[#7EB6E6] font-bold text-lg">Shift 2</span>
+                                <span class="text-cyan-300 font-bold text-lg">Shift 2</span>
                                 <span
-                                    class="text-xs bg-[#7EB6E6]/30 text-white px-3 py-1 rounded-full font-semibold">Malam</span>
+                                    class="text-xs bg-indigo-500/30 text-indigo-200 px-3 py-1 rounded-full font-semibold">Malam</span>
                             </div>
                             <p class="text-white text-xl font-black">20:00 - 22:00 WIB</p>
                         </div>
@@ -1242,7 +1211,7 @@
 
                         <div class="relative z-10 text-center">
                             <div class="flex items-center justify-center gap-3 mb-4">
-                                <i class="fas fa-check-circle text-blue-300 text-4xl animate-bounce"></i>
+                                <i class="fas fa-check-circle text-green-300 text-4xl animate-bounce"></i>
                                 <h4 class="text-3xl font-black text-white">BUKA 24 JAM</h4>
                             </div>
                             <div class="space-y-2">
@@ -1266,9 +1235,9 @@
         </div>
     </div>
 
-    <!-- Services Section - Purple & Cyan Theme -->
-    <div class="relative py-20 sm:py-24 overflow-hidden"
-        id="services" style="background: linear-gradient(135deg, #a78bfa, #67e8f9);">
+    <!-- Services Section - Dark Theme -->
+    <div class="relative py-20 sm:py-24 bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700 overflow-hidden"
+        id="services">
         <!-- Background Effects -->
         <div class="absolute inset-0">
             <div class="absolute top-1/4 left-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
@@ -1279,7 +1248,7 @@
             <div class="text-center mb-16">
                 <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 drop-shadow-lg">Layanan
                     Medis Kami</h2>
-                <p class="text-lg sm:text-xl text-pink-100/90 max-w-3xl mx-auto leading-relaxed font-medium">Menyediakan
+                <p class="text-lg sm:text-xl text-sky-200/90 max-w-3xl mx-auto leading-relaxed font-medium">Menyediakan
                     perawatan komprehensif untuk semua kebutuhan kesehatan Anda dengan standar profesional tertinggi.</p>
             </div>
 
@@ -1293,22 +1262,22 @@
                                 class="absolute inset-0 bg-sky-400/40 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300">
                             </div>
                             <div
-                                class="relative w-20 h-20 bg-gradient-to-br from-[#EA89B8] to-[#7EB6E6] rounded-2xl flex items-center justify-center mx-auto shadow-xl group-hover:scale-110 transition-transform duration-300">
+                                class="relative w-20 h-20 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto shadow-xl group-hover:scale-110 transition-transform duration-300">
                                 <i class="fas fa-stethoscope text-white text-2xl"></i>
                             </div>
                         </div>
                         <h4 class="text-2xl font-black text-white mb-3 drop-shadow-md">Konsultasi Medis</h4>
-                        <p class="text-pink-200 font-bold text-sm sm:text-base uppercase tracking-wider">Pemeriksaan Umum</p>
+                        <p class="text-sky-300 font-semibold text-sm sm:text-base">Pemeriksaan umum dan diagnosis</p>
                     </div>
-                    <p class="text-white/90 mb-6 text-center text-sm sm:text-base leading-relaxed">Konsultasi menyeluruh
+                    <p class="text-sky-200/90 mb-6 text-center text-sm sm:text-base leading-relaxed">Konsultasi menyeluruh
                         dengan dokter berpengalaman untuk mendiagnosis dan menangani keluhan kesehatan Anda.</p>
                     <div class="space-y-3">
                         <a href="<?php echo e(route('public.cek-kesehatan')); ?>"
-                            class="block w-full bg-gradient-to-r from-[#EA89B8] to-[#F8D3E5] text-white font-bold text-base py-3.5 px-6 rounded-xl shadow-lg hover:shadow-[#EA89B8]/50 transition-all duration-300 transform hover:scale-[1.02] text-center">
+                            class="block w-full bg-gradient-to-r from-sky-600 to-cyan-600 text-white font-bold text-base py-3.5 px-6 rounded-xl shadow-lg hover:shadow-xl hover:from-sky-500 hover:to-cyan-500 transition-all duration-300 transform hover:scale-[1.02] text-center">
                             <i class="fas fa-file-medical mr-2"></i>Form Surat Kesehatan
                         </a>
                         <a href="<?php echo e(route('public.form', 'janji_temu')); ?>"
-                            class="block w-full bg-white/20 backdrop-blur-md border-2 border-white/40 text-white font-bold text-base py-3.5 px-6 rounded-xl hover:bg-white/30 hover:border-white/60 transition-all duration-300 transform hover:scale-[1.02] text-center">
+                            class="block w-full bg-white/10 backdrop-blur-md border-2 border-white/30 text-white font-bold text-base py-3.5 px-6 rounded-xl hover:bg-white/20 hover:border-white/40 transition-all duration-300 transform hover:scale-[1.02] text-center">
                             <i class="fas fa-calendar-check mr-2"></i>Form Janji Temu
                         </a>
                     </div>
@@ -1319,20 +1288,20 @@
                     <div class="text-center mb-6">
                         <div class="relative inline-block mb-4">
                             <div
-                                class="absolute inset-0 bg-pink-400/40 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300">
+                                class="absolute inset-0 bg-emerald-400/40 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300">
                             </div>
                             <div
-                                class="relative w-20 h-20 bg-gradient-to-br from-[#EA89B8] to-[#F8D3E5] rounded-2xl flex items-center justify-center mx-auto shadow-xl group-hover:scale-110 transition-transform duration-300">
+                                class="relative w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center mx-auto shadow-xl group-hover:scale-110 transition-transform duration-300">
                                 <i class="fas fa-cut text-white text-2xl"></i>
                             </div>
                         </div>
                         <h4 class="text-2xl font-black text-white mb-3 drop-shadow-md">Operasi Plastik</h4>
-                        <p class="text-pink-100 font-bold text-sm sm:text-base uppercase tracking-wider">Estetika Medis</p>
+                        <p class="text-emerald-300 font-semibold text-sm sm:text-base">Layanan estetika profesional</p>
                     </div>
-                    <p class="text-white/90 mb-6 text-center text-sm sm:text-base leading-relaxed">Prosedur bedah kosmetik
+                    <p class="text-sky-200/90 mb-6 text-center text-sm sm:text-base leading-relaxed">Prosedur bedah kosmetik
                         yang aman dan dilakukan oleh ahli bedah plastik bersertifikat untuk meningkatkan penampilan.</p>
                     <a href="<?php echo e(route('public.operasi-plastik')); ?>"
-                        class="block w-full bg-gradient-to-r from-[#EA89B8] to-[#F8D3E5] text-white font-bold text-base py-3.5 px-6 rounded-xl shadow-lg hover:shadow-[#EA89B8]/50 transition-all duration-300 transform hover:scale-[1.02] text-center">
+                        class="block w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-base py-3.5 px-6 rounded-xl shadow-lg hover:shadow-xl hover:from-emerald-500 hover:to-teal-500 transition-all duration-300 transform hover:scale-[1.02] text-center">
                         <i class="fas fa-user-md mr-2"></i>Form Operasi Plastik
                     </a>
                 </div>
@@ -1342,21 +1311,21 @@
                     <div class="text-center mb-6">
                         <div class="relative inline-block mb-4">
                             <div
-                                class="absolute inset-0 bg-blue-400/40 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300">
+                                class="absolute inset-0 bg-cyan-400/40 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300">
                             </div>
                             <div
-                                class="relative w-20 h-20 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto shadow-xl group-hover:scale-110 transition-transform duration-300">
+                                class="relative w-20 h-20 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto shadow-xl group-hover:scale-110 transition-transform duration-300">
                                 <i class="fas fa-brain text-white text-2xl"></i>
                             </div>
                         </div>
                         <h4 class="text-2xl font-black text-white mb-3 drop-shadow-md">Konsultasi Psikologi</h4>
-                        <p class="text-blue-100 font-bold text-sm sm:text-base uppercase tracking-wider">Kesehatan Mental</p>
+                        <p class="text-cyan-300 font-semibold text-sm sm:text-base">Dukungan kesehatan mental</p>
                     </div>
-                    <p class="text-white/90 mb-6 text-center text-sm sm:text-base leading-relaxed">Sesi konseling dan
+                    <p class="text-sky-200/90 mb-6 text-center text-sm sm:text-base leading-relaxed">Sesi konseling dan
                         terapi bersama psikolog profesional untuk membantu Anda mengatasi masalah kesehatan mental.</p>
                     <div class="space-y-3">
                         <a href="<?php echo e(route('public.surat-psikolog')); ?>"
-                            class="block w-full bg-gradient-to-r from-[#7EB6E6] to-[#CDE9F5] text-white font-bold text-base py-3.5 px-6 rounded-xl shadow-lg hover:shadow-[#7EB6E6]/50 transition-all duration-300 transform hover:scale-[1.02] text-center">
+                            class="block w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold text-base py-3.5 px-6 rounded-xl shadow-lg hover:shadow-xl hover:from-cyan-500 hover:to-blue-500 transition-all duration-300 transform hover:scale-[1.02] text-center">
                             <i class="fas fa-clipboard-check mr-2"></i>Formulir Psikologi
                         </a>
                     </div>
@@ -1368,21 +1337,21 @@
                     <div class="text-center mb-6">
                         <div class="relative inline-block mb-4">
                             <div
-                                class="absolute inset-0 bg-pink-400/40 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300">
+                                class="absolute inset-0 bg-red-400/40 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300">
                             </div>
                             <div
-                                class="relative w-20 h-20 bg-gradient-to-br from-pink-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto shadow-xl group-hover:scale-110 transition-transform duration-300">
+                                class="relative w-20 h-20 bg-gradient-to-br from-red-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto shadow-xl group-hover:scale-110 transition-transform duration-300">
                                 <i class="fas fa-exclamation-triangle text-white text-2xl"></i>
                             </div>
                         </div>
                         <h4 class="text-2xl font-black text-white mb-3 drop-shadow-md">Karakter Kill</h4>
-                        <p class="text-pink-100 font-bold text-sm sm:text-base uppercase tracking-wider">Layanan Khusus</p>
+                        <p class="text-red-300 font-semibold text-sm sm:text-base">Layanan medis khusus</p>
                     </div>
-                    <p class="text-white/90 mb-6 text-center text-sm sm:text-base leading-relaxed">Daftarkan karakter Anda
+                    <p class="text-sky-200/90 mb-6 text-center text-sm sm:text-base leading-relaxed">Daftarkan karakter Anda
                         untuk layanan medis khusus dan perawatan intensif dalam skenario kritis dengan tim medis
                         berpengalaman.</p>
                     <a href="<?php echo e(route('public.pendaftaran-karakter')); ?>"
-                        class="block w-full bg-gradient-to-r from-[#EA89B8] to-[#7EB6E6] text-white font-bold text-base py-3.5 px-6 rounded-xl shadow-lg hover:shadow-[#EA89B8]/50 transition-all duration-300 transform hover:scale-[1.02] text-center">
+                        class="block w-full bg-gradient-to-r from-red-600 to-pink-600 text-white font-bold text-base py-3.5 px-6 rounded-xl shadow-lg hover:shadow-xl hover:from-red-500 hover:to-pink-500 transition-all duration-300 transform hover:scale-[1.02] text-center">
                         <i class="fas fa-user-plus mr-2"></i>Daftar Sekarang
                     </a>
                 </div>
@@ -1390,17 +1359,16 @@
         </div>
     </div>
 
-    <!-- Testimonial Section - Clean Light Theme -->
-    <div class="relative py-24 sm:py-32 overflow-hidden"
-        style="background: linear-gradient(135deg, #e0f2fe, #f0fdf4);">
+    <!-- Testimonial Section - Premium Dark Theme -->
+    <div class="relative py-24 sm:py-32 bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700 overflow-hidden">
         <!-- Background Effects -->
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
-            <div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-sky-200/40 rounded-full blur-[100px] animate-pulse">
+            <div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-cyan-500/20 rounded-full blur-[100px] animate-pulse">
             </div>
-            <div class="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-green-200/40 rounded-full blur-[100px]"
+            <div class="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-sky-500/20 rounded-full blur-[100px]"
                 style="animation-delay: 2s;"></div>
             <div
-                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5 brightness-100 contrast-150">
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 brightness-100 contrast-150">
             </div>
         </div>
 
@@ -1408,35 +1376,35 @@
             <!-- Section Header -->
             <div class="text-center mb-20 animate-fade-in-up">
                 <div
-                    class="inline-flex items-center justify-center p-1 rounded-full bg-blue-500/10 border border-blue-500/20 backdrop-blur-md mb-6 shadow-sm">
-                    <span class="px-5 py-2 text-sm font-bold text-blue-800 tracking-wide uppercase flex items-center gap-2">
-                        <i class="fas fa-heart text-pink-500 animate-pulse"></i> Testimonials
+                    class="inline-flex items-center justify-center p-1 rounded-full bg-gradient-to-r from-sky-500/20 to-cyan-500/20 border border-sky-500/30 backdrop-blur-md mb-6 shadow-[0_0_15px_rgba(14,165,233,0.3)]">
+                    <span class="px-5 py-2 text-sm font-bold text-sky-300 tracking-wide uppercase flex items-center gap-2">
+                        <i class="fas fa-heart text-sky-400 animate-pulse"></i> Testimonials
                     </span>
                 </div>
 
-                <h2 class="text-5xl sm:text-6xl md:text-7xl font-black text-slate-900 mb-6 tracking-tight leading-tight text-center">
-                    Apa Kata <span class="relative inline-block px-1">
-                        <span class="absolute inset-0 blur-xl opacity-20 text-blue-400 select-none pointer-events-none" aria-hidden="true" style="-webkit-text-fill-color: #93c5fd; filter: blur(8px);">Pasien Kami</span>
-                        <span class="relative" style="background: linear-gradient(135deg, #1e40af, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Pasien Kami</span>
-                    </span>
+                <h2 class="text-5xl sm:text-6xl md:text-7xl font-black text-white mb-6 drop-shadow-2xl tracking-tight leading-tight"
+                    style="text-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+                    Apa Kata <span
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-cyan-300 to-blue-400 filter drop-shadow-[0_0_10px_rgba(14,165,233,0.5)]">Pasien
+                        Kami</span>
                 </h2>
 
-                <p class="text-lg sm:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed font-normal mb-8">
+                <p class="text-lg sm:text-xl text-sky-100/90 max-w-2xl mx-auto leading-relaxed font-light mb-8">
                     Kami bangga dapat memberikan pelayanan terbaik bagi komunitas dengan standar profesional tertinggi.
                 </p>
 
                 <!-- New Statistics Badge -->
                 <div
-                    class="inline-flex items-center gap-3 bg-blue-500/5 backdrop-blur-md border border-blue-500/10 rounded-full px-6 py-3 shadow-sm hover:bg-blue-500/10 transition-colors cursor-default group">
+                    class="inline-flex items-center gap-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-full px-6 py-3 shadow-lg hover:bg-white/10 transition-colors cursor-default group">
                     <div class="flex items-center gap-1">
                         <i
-                            class="fas fa-star text-amber-500 text-lg drop-shadow-sm group-hover:scale-110 transition-transform"></i>
-                        <span class="text-2xl font-bold text-slate-800 ml-1">4.9</span>
+                            class="fas fa-star text-amber-400 text-lg drop-shadow-[0_0_5px_rgba(251,191,36,0.5)] group-hover:scale-110 transition-transform"></i>
+                        <span class="text-2xl font-bold text-white ml-1">4.9</span>
                     </div>
-                    <div class="h-8 w-px bg-slate-300"></div>
+                    <div class="h-8 w-px bg-white/20"></div>
                     <div class="text-left">
-                        <div class="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Rating Rata-rata</div>
-                        <div class="text-sm font-bold text-slate-800">dari 1.200+ Ulasan Asli</div>
+                        <div class="text-[10px] text-sky-200 uppercase tracking-wider font-semibold">Rating Rata-rata</div>
+                        <div class="text-sm font-bold text-white">dari 1.200+ Ulasan Asli</div>
                     </div>
                 </div>
             </div>
@@ -1450,54 +1418,54 @@
                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $testimonials; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $testimoniItem): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                 <div class="w-full flex-shrink-0">
                                     <div
-                                        class="bg-white/40 backdrop-blur-xl border-2 border-white/60 rounded-3xl p-8 md:p-12 relative overflow-hidden shadow-sm">
-                                        <!-- Gradient overlay matching section theme -->
+                                        class="bg-white/10 backdrop-blur-xl border-2 border-white/20 rounded-3xl p-8 md:p-12 relative overflow-hidden">
+                                        <!-- Gradient overlay matching landing page -->
                                         <div
-                                            class="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-green-500/5 to-transparent pointer-events-none">
+                                            class="absolute inset-0 bg-gradient-to-br from-sky-500/10 via-cyan-500/5 to-transparent pointer-events-none">
                                         </div>
- 
+
                                         <!-- Quote Icon -->
-                                        <div class="absolute top-8 right-8 text-blue-400/10">
+                                        <div class="absolute top-8 right-8 text-sky-400/20">
                                             <i class="fas fa-quote-right text-7xl"></i>
                                         </div>
- 
+
                                         <!-- Content -->
                                         <div class="relative z-10">
                                             <!-- Stars -->
                                             <div class="flex items-center gap-1 mb-6">
                                                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php for($i = 1; $i <= 5; $i++): ?>
                                                     <i
-                                                        class="fas fa-star text-2xl <?php echo e($i <= $testimoniItem->rating ? 'text-amber-500' : 'text-slate-300'); ?>"></i>
+                                                        class="fas fa-star text-2xl <?php echo e($i <= $testimoniItem->rating ? 'text-amber-400' : 'text-white/20'); ?>"></i>
                                                 <?php endfor; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                             </div>
- 
+
                                             <!-- Testimonial Text -->
                                             <blockquote
-                                                class="text-slate-800 text-xl md:text-2xl leading-relaxed mb-8 font-medium italic">
+                                                class="text-white text-xl md:text-2xl leading-relaxed mb-8 font-light italic">
                                                 "<?php echo e($testimoniItem->testimoni); ?>"
                                             </blockquote>
- 
+
                                             <!-- Author Info -->
-                                            <div class="flex items-center gap-4 pt-6 border-t border-slate-200">
+                                            <div class="flex items-center gap-4 pt-6 border-t border-white/20">
                                                 <div
-                                                    class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-green-400 p-0.5 shadow-md">
+                                                    class="w-16 h-16 rounded-full bg-gradient-to-br from-sky-400 via-cyan-400 to-blue-400 p-0.5 shadow-lg shadow-sky-500/30">
                                                     <div
-                                                        class="w-full h-full rounded-full bg-white flex items-center justify-center">
-                                                        <span class="text-2xl font-bold text-blue-600">
+                                                        class="w-full h-full rounded-full bg-sky-900 flex items-center justify-center">
+                                                        <span class="text-2xl font-bold text-white">
                                                             <?php echo e(strtoupper(substr($testimoniItem->character_name, 0, 1))); ?>
 
                                                         </span>
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <h4 class="text-slate-900 font-bold text-lg"><?php echo e($testimoniItem->character_name); ?>
+                                                    <h4 class="text-white font-bold text-lg"><?php echo e($testimoniItem->character_name); ?>
 
                                                     </h4>
-                                                    <p class="text-blue-600 text-sm flex items-center gap-2">
-                                                        <i class="fas fa-check-circle text-xs text-blue-500"></i>
+                                                    <p class="text-sky-300 text-sm flex items-center gap-2">
+                                                        <i class="fas fa-check-circle text-xs"></i>
                                                         Verified Patient
                                                     </p>
-                                                    <p class="text-slate-500 text-xs mt-1">
+                                                    <p class="text-sky-200/60 text-xs mt-1">
                                                         <?php echo e($testimoniItem->created_at->diffForHumans()); ?>
 
                                                     </p>
@@ -1512,11 +1480,11 @@
 
                     <!-- Navigation Arrows -->
                     <button id="prevBtn"
-                        class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 w-14 h-14 bg-white/20 backdrop-blur-xl border-2 border-white/40 rounded-full flex items-center justify-center text-white hover:border-pink-400 hover:bg-pink-500/30 hover:scale-110 transition-all duration-300 shadow-xl">
+                        class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 w-14 h-14 bg-white/15 backdrop-blur-xl border-2 border-white/30 rounded-full flex items-center justify-center text-white hover:border-sky-400 hover:bg-sky-500/30 hover:scale-110 transition-all duration-300 shadow-xl">
                         <i class="fas fa-chevron-left text-xl"></i>
                     </button>
                     <button id="nextBtn"
-                        class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 w-14 h-14 bg-white/20 backdrop-blur-xl border-2 border-white/40 rounded-full flex items-center justify-center text-white hover:border-pink-400 hover:bg-pink-500/30 hover:scale-110 transition-all duration-300 shadow-xl">
+                        class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 w-14 h-14 bg-white/15 backdrop-blur-xl border-2 border-white/30 rounded-full flex items-center justify-center text-white hover:border-sky-400 hover:bg-sky-500/30 hover:scale-110 transition-all duration-300 shadow-xl">
                         <i class="fas fa-chevron-right text-xl"></i>
                     </button>
 
@@ -1524,13 +1492,13 @@
                     <div id="dotsContainer" class="flex justify-center gap-3 mt-10">
                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__currentLoopData = $testimonials; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                             <button
-                                class="testimonial-dot w-2.5 h-2.5 rounded-full bg-slate-300 hover:bg-blue-400 transition-all duration-300"
+                                class="testimonial-dot w-2.5 h-2.5 rounded-full bg-white/40 hover:bg-sky-400 transition-all duration-300"
                                 data-index="<?php echo e($index); ?>"></button>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
                 </div>
             <?php else: ?>
-                <div class="text-center text-pink-100/60 py-12 text-lg">Belum ada testimoni.</div>
+                <div class="text-center text-sky-200/60 py-12 text-lg">Belum ada testimoni.</div>
             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
     </div>

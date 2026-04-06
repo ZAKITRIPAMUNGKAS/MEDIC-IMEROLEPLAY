@@ -33,7 +33,14 @@ class CheckPermission
             }
         }
 
-        // If not authorized, redirect back with error message
+        // If not authorized
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda tidak memiliki izin untuk melakukan tindakan ini.'
+            ], 403);
+        }
+
         return redirect()->route('staff.dashboard')->with('error', 'Anda tidak memiliki izin untuk mengakses halaman ini.');
     }
 }

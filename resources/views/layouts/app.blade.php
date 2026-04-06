@@ -2573,6 +2573,66 @@
             });
         };
 
+        // Custom Confirm Function wrapper for SWEETALERT-like API 
+        window.confirmAction = async function (options = {}) {
+            const result = await window.showConfirm(options.text || '', {
+                type: options.icon || 'warning',
+                title: options.title || 'Konfirmasi',
+                confirmText: options.confirmText || 'Ya',
+                cancelText: options.cancelText || 'Batal',
+                confirmClass: options.confirmClass || 'modal-btn-danger'
+            });
+            return { isConfirmed: result };
+        };
+
+        // Custom Toast Function
+        window.showToast = function (type, title, message) {
+            const container = document.getElementById('notificationContainer');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = `fixed top-5 right-5 z-[1000] w-full max-w-sm animate-fade-in-right pointer-events-auto`;
+            
+            const bgColor = {
+                'success': 'bg-emerald-600',
+                'error': 'bg-rose-600',
+                'info': 'bg-sky-600',
+                'warning': 'bg-amber-600'
+            }[type] || 'bg-slate-800';
+
+            const iconClass = {
+                'success': 'fa-check-circle',
+                'error': 'fa-times-circle',
+                'info': 'fa-info-circle',
+                'warning': 'fa-exclamation-triangle'
+            }[type] || 'fa-info-circle';
+
+            toast.innerHTML = `
+                <div class="${bgColor} text-white p-4 rounded-xl shadow-2xl flex items-start gap-3 border-l-4 border-white/30 relative overflow-hidden">
+                    <div class="flex-shrink-0 mt-0.5"><i class="fas ${iconClass} text-xl"></i></div>
+                    <div class="flex-1">
+                        <h4 class="font-bold text-sm">${title}</h4>
+                        <p class="text-xs opacity-90 mt-1 leading-relaxed">${message}</p>
+                    </div>
+                    <button class="opacity-70 hover:opacity-100 transition-opacity"><i class="fas fa-times"></i></button>
+                    <div class="absolute bottom-0 left-0 h-1 bg-white/20 w-full animate-shrink"></div>
+                </div>
+            `;
+
+            container.appendChild(toast);
+
+            const closeBtn = toast.querySelector('button');
+            const dismiss = () => {
+                toast.style.transition = 'all 0.4s ease-in';
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(20px)';
+                setTimeout(() => toast.remove(), 400);
+            };
+
+            closeBtn.onclick = dismiss;
+            setTimeout(dismiss, 5000);
+        };
+
         // Backward compatibility - override native alert
         window.alert = function (message) {
             showAlert(message, 'info');

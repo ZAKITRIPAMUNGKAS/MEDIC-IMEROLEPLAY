@@ -97,7 +97,7 @@
             <div class="glass-effect rounded-xl elegant-shadow-lg p-4 sm:p-6">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-                        <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                        <div class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-sky-500 to-blue-600 rounded-lg flex items-center justify-center">
                             <i class="fas fa-dollar-sign text-white text-sm sm:text-base"></i>
                         </div>
                     </div>
