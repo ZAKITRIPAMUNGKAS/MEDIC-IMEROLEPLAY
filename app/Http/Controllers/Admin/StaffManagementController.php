@@ -32,6 +32,10 @@ class StaffManagementController extends Controller
             $query->where('role_id', request('role'));
         }
 
+        if (request('hospital')) {
+            $query->where('hospital', request('hospital'));
+        }
+
         // Explicit Status Filter
         if (request()->has('active') && request('active') !== null && request('active') !== '') {
             $isActive = request('active') == '1';
@@ -380,6 +384,10 @@ class StaffManagementController extends Controller
 
         if ($request->get('role')) {
             $query->where('role_id', $request->get('role'));
+        }
+
+        if ($request->get('hospital')) {
+            $query->where('hospital', $request->get('hospital'));
         }
 
         if ($request->has('active') && $request->get('active') !== null && $request->get('active') !== '') {

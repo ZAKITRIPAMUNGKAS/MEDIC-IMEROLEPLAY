@@ -70,7 +70,7 @@
             </div>
 
             <!-- Search and Filter -->
-            <form method="GET" action="{{ route('admin.staff.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <form method="GET" action="{{ route('admin.staff.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                 <div class="sm:col-span-2 lg:col-span-1">
                     <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama atau email..." 
                            class="w-full bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 text-sm">
@@ -94,6 +94,14 @@
                         <option value="0" @selected(request('active') === '0') class="bg-slate-800 text-slate-100">Nonaktif</option>
                     </select>
                 </div>
+                <!-- Hospital Filter -->
+                <div class="sm:col-span-2 lg:col-span-1">
+                    <select name="hospital" class="w-full bg-white/10 text-white border border-white/20 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 appearance-none text-sm">
+                        <option value="">Semua RS</option>
+                        <option value="alta" @selected(request('hospital') === 'alta') class="bg-slate-800 text-slate-100">Alta Hospital</option>
+                        <option value="roxwood" @selected(request('hospital') === 'roxwood') class="bg-slate-800 text-slate-100">Roxwood Hospital</option>
+                    </select>
+                </div>
                 <div class="sm:col-span-2 lg:col-span-1 flex gap-2">
                     <button type="submit" class="flex-1 inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white rounded-lg font-semibold transition-all duration-300 text-sm">
                         <i class="fas fa-search mr-2"></i><span class="hidden xs:inline">Cari</span>
@@ -113,6 +121,7 @@
                         <tr>
                             <th class="px-3 sm:px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Staf</th>
                             <th class="hidden sm:table-cell px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Peran</th>
+                            <th class="hidden sm:table-cell px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">RS</th>
                             <th class="hidden md:table-cell px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Status</th>
                             <th class="hidden lg:table-cell px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Terakhir Login</th>
                             <th class="px-3 sm:px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Aksi</th>
@@ -130,11 +139,15 @@
                                             <p class="text-white font-semibold text-sm sm:text-lg truncate">{{ $user->name }}</p>
                                             <p class="text-gray-300 text-xs sm:text-sm truncate">{{ $user->email }}</p>
                                             <!-- Mobile: Show role and status -->
-                                            <div class="sm:hidden mt-1 space-y-1">
-                                                <div class="inline-flex items-center px-2 py-1 bg-sky-500/20 text-sky-300 rounded-full text-xs font-medium border border-sky-500/30">
-                                                    <i class="fas fa-user-tag mr-1"></i>
-                                                    {{ $user->role->display_name ?? $user->role->name ?? 'Tidak ada' }}
-                                                </div>
+                                                @if($user->isRoxwood())
+                                                    <div class="inline-flex items-center px-2 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs font-medium border border-purple-500/30">
+                                                        <i class="fas fa-hospital mr-1"></i>Roxwood
+                                                    </div>
+                                                @else
+                                                    <div class="inline-flex items-center px-2 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-xs font-medium border border-emerald-500/30">
+                                                        <i class="fas fa-hospital mr-1"></i>Alta
+                                                    </div>
+                                                @endif
                                                 @if($user->is_active)
                                                     <div class="inline-flex items-center px-2 py-1 bg-green-500/20 text-green-300 rounded-full text-xs font-medium border border-green-500/30">
                                                         <i class="fas fa-check-circle mr-1"></i>Aktif
@@ -153,6 +166,17 @@
                                         <i class="fas fa-user-tag mr-2"></i>
                                         {{ $user->role->display_name ?? $user->role->name ?? 'Tidak ada' }}
                                     </div>
+                                </td>
+                                <td class="hidden sm:table-cell px-6 py-4">
+                                    @if($user->isRoxwood())
+                                        <div class="inline-flex items-center px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm font-medium border border-purple-500/30">
+                                            <i class="fas fa-hospital mr-2"></i>Roxwood
+                                        </div>
+                                    @else
+                                        <div class="inline-flex items-center px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-sm font-medium border border-emerald-500/30">
+                                            <i class="fas fa-hospital mr-2"></i>Alta
+                                        </div>
+                                    @endif
                                 </td>
                                 <td class="hidden md:table-cell px-6 py-4">
                                     @if($user->is_active)
