@@ -765,12 +765,12 @@
 
             <!-- Hero Image Background -->
             <div class="absolute inset-0 opacity-40">
-                <img src="{{ asset('images/hero.jpg') }}" alt="Medical Background" class="w-full h-full object-cover">
+                <img src="{{ asset('images/hero.png') }}" alt="Medical Background" class="w-full h-full object-cover">
             </div>
 
             <!-- Blurred Medical Illustration Overlay -->
             <div class="absolute inset-0 opacity-20">
-                <img src="{{ asset('images/hero.jpg') }}" alt="Medical Background"
+                <img src="{{ asset('images/hero.png') }}" alt="Medical Background"
                     class="w-full h-full object-cover blur-2xl scale-110">
             </div>
 
