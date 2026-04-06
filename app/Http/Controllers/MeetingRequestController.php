@@ -30,8 +30,13 @@ class MeetingRequestController extends Controller
     {
         $user = Auth::user();
 
+        if (!$user->hasPermission('manage_meeting_requests')) {
+            return redirect()->route('staff.meeting-requests.create')
+                ->with('error', 'Anda tidak memiliki hak akses untuk melihat riwayat pengajuan.');
+        }
+
         $requests = MeetingRequest::where('user_id', $user->id)
-            ->with('reviewer')
+            ->with(['reviewer', 'user'])
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
@@ -53,11 +58,15 @@ class MeetingRequestController extends Controller
     public function create()
     {
         $user = Auth::user();
-        $recentRequests = MeetingRequest::where('user_id', $user->id)
-            ->with('reviewer')
-            ->orderBy('created_at', 'desc')
-            ->take(5)
-            ->get();
+        $recentRequests = collect();
+
+        if ($user->hasPermission('manage_meeting_requests')) {
+            $recentRequests = MeetingRequest::where('user_id', $user->id)
+                ->with('reviewer')
+                ->orderBy('created_at', 'desc')
+                ->take(5)
+                ->get();
+        }
 
         return view('staff.meeting-requests.create', compact('recentRequests'));
     }
@@ -153,7 +162,12 @@ class MeetingRequestController extends Controller
             'status' => 'pending',
         ]);
 
-        return redirect()->route('staff.meeting-requests.index')
+        if ($user->hasPermission('manage_meeting_requests')) {
+            return redirect()->route('staff.meeting-requests.index')
+                ->with('success', 'Pengajuan meeting berhasil dikirim. Menunggu persetujuan admin.');
+        }
+
+        return redirect()->route('staff.meeting-requests.create')
             ->with('success', 'Pengajuan meeting berhasil dikirim. Menunggu persetujuan admin.');
     }
 
