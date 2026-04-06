@@ -765,13 +765,13 @@
 
             <!-- Hero Image Background -->
             <div class="absolute inset-0 opacity-40">
-                <img src="{{ asset('images/hero.png') }}" alt="Medical Background" class="w-full h-full object-cover">
+                <img src="{{ asset('images/hero.png') }}" alt="Medical Background" class="w-full h-full object-cover object-[center_bottom]">
             </div>
 
             <!-- Blurred Medical Illustration Overlay -->
             <div class="absolute inset-0 opacity-20">
                 <img src="{{ asset('images/hero.png') }}" alt="Medical Background"
-                    class="w-full h-full object-cover blur-2xl scale-110">
+                    class="w-full h-full object-cover blur-2xl scale-110 object-[center_bottom]">
             </div>
 
             <!-- Animated Gradient Orbs -->
