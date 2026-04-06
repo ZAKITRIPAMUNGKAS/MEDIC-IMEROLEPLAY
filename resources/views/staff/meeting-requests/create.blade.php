@@ -17,18 +17,12 @@
                         </h1>
                         <p class="text-sky-200 text-lg">Buat pengajuan meeting baru dengan bukti foto</p>
                     </div>
-                    @if(auth()->user()->hasPermission('manage_meeting_requests'))
-                        <a href="{{ route('staff.meeting-requests.index') }}"
-                            class="inline-flex items-center px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white/20">
-                            <i class="fas fa-history mr-2"></i>Lihat Semua Riwayat
-                        </a>
-                    @endif
+                    {{-- Removed Lihat Semua Riwayat button --}}
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 {{ auth()->user()->hasPermission('manage_meeting_requests') ? 'lg:grid-cols-3' : '' }} gap-8">
                 <!-- Form Section -->
-                <div class="{{ auth()->user()->hasPermission('manage_meeting_requests') ? 'lg:col-span-2' : 'max-w-3xl mx-auto' }}">
+                <div class="max-w-3xl mx-auto w-full">
                     <div class="glass-effect rounded-2xl elegant-shadow-lg p-6 md:p-8 h-full">
                         @if(session('error'))
                             <div class="bg-red-500/15 border border-red-500/30 rounded-xl p-4 mb-6">
@@ -157,57 +151,6 @@
                     </div>
                 </div>
 
-                <!-- History Section -->
-                @if(auth()->user()->hasPermission('manage_meeting_requests'))
-                    <div class="lg:col-span-1">
-                        <div class="glass-effect rounded-2xl elegant-shadow-lg p-6 md:p-8 h-full">
-                            <h3 class="text-xl font-bold text-white mb-6 flex items-center">
-                                <i class="fas fa-history mr-3 text-sky-400"></i>Riwayat Terakhir
-                            </h3>
-
-                            @if($recentRequests->isEmpty())
-                                <div class="text-center py-10">
-                                    <div class="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <i class="fas fa-calendar-alt text-gray-500 text-xl"></i>
-                                    </div>
-                                    <p class="text-gray-400 text-sm">Belum ada pengajuan</p>
-                                </div>
-                            @else
-                                <div class="space-y-4">
-                                    @foreach($recentRequests as $req)
-                                        @php
-                                            $badge = $req->getStatusBadge();
-                                            $colorMap = [
-                                                'yellow' => ['bg' => 'bg-yellow-500/20', 'text' => 'text-yellow-300'],
-                                                'green' => ['bg' => 'bg-green-500/20', 'text' => 'text-green-300'],
-                                                'red' => ['bg' => 'bg-red-500/20', 'text' => 'text-red-300'],
-                                            ];
-                                            $colors = $colorMap[$badge['color']] ?? ['bg' => 'bg-gray-500/20', 'text' => 'text-gray-300'];
-                                        @endphp
-                                        <div class="bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-all duration-200">
-                                            <div class="flex justify-between items-start mb-2">
-                                                <span class="text-white font-bold text-sm">{{ $req->requested_date->format('d/m/Y') }}</span>
-                                                <span class="{{ $colors['bg'] }} {{ $colors['text'] }} px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider">
-                                                    {{ $badge['label'] }}
-                                                </span>
-                                            </div>
-                                            <p class="text-gray-400 text-xs mb-2 italic line-clamp-1">"{{ $req->reason }}"</p>
-                                            <div class="flex items-center text-[10px] text-sky-200/70">
-                                                <i class="fas fa-clock mr-1"></i>
-                                                {{ Carbon\Carbon::parse($req->start_time)->format('H:i') }} - {{ Carbon\Carbon::parse($req->end_time)->format('H:i') }}
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                                <div class="mt-6 text-center">
-                                    <a href="{{ route('staff.meeting-requests.index') }}" class="text-sky-400 hover:text-sky-300 text-xs font-semibold underline underline-offset-4 decoration-sky-400/30">
-                                        Lihat Semua Riwayat <i class="fas fa-chevron-right ml-1"></i>
-                                    </a>
-                                </div>
-                            @endif
-                        </div>
-                    </div>
-                @endif
             </div>
         </div>
     </div>

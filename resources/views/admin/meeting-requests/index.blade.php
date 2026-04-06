@@ -200,14 +200,24 @@
                                         @endif
                                     </div>
 
-                                    @if($req->review_notes)
-                                        <div class="mt-4 text-sm flex items-start gap-3 p-4 bg-rose-500/10 rounded-2xl border border-rose-500/20">
-                                            <div class="w-8 h-8 rounded-full bg-rose-500/20 flex items-center justify-center text-rose-400 shrink-0">
-                                                <i class="fas fa-comment-dots"></i>
+                                    @if(!$req->isPending())
+                                        @php
+                                            $isApproved = $req->status === 'approved';
+                                            $reviewColor = $isApproved ? 'emerald' : 'rose';
+                                        @endphp
+                                        <div class="mt-4 text-sm flex items-start gap-3 p-4 bg-{{ $reviewColor }}-500/10 rounded-2xl border border-{{ $reviewColor }}-500/20">
+                                            <div class="w-8 h-8 rounded-full bg-{{ $reviewColor }}-500/20 flex items-center justify-center text-{{ $reviewColor }}-400 shrink-0">
+                                                <i class="fas {{ $isApproved ? 'fa-check' : 'fa-comment-dots' }}"></i>
                                             </div>
                                             <div>
-                                                <span class="font-bold text-rose-200 block mb-0.5">Catatan Admin ({{ $req->reviewer->name ?? 'Sistem' }})</span>
-                                                <p class="text-rose-100/80">{{ $req->review_notes }}</p>
+                                                <span class="font-bold text-{{ $reviewColor }}-200 block mb-0.5">
+                                                    {{ $isApproved ? 'Disetujui' : 'Ditolak' }} oleh {{ $req->reviewer->name ?? 'Sistem' }}
+                                                </span>
+                                                @if($req->review_notes)
+                                                    <p class="text-{{ $reviewColor }}-100/80">{{ $req->review_notes }}</p>
+                                                @else
+                                                    <p class="text-{{ $reviewColor }}-100/60 italic text-xs">Tidak ada catatan tambahan.</p>
+                                                @endif
                                             </div>
                                         </div>
                                     @endif
