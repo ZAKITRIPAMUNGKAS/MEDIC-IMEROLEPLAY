@@ -158,15 +158,16 @@ class Attendance extends Model
             if ($this->session_duration && !$isAutoCheckout && !$hasScheduledTimer) {
                 // For normal mode only: validate it matches calculated duration
                 if (abs($this->session_duration - $calculatedDuration) > 1) {
-                    \Log::warning('Session duration mismatch detected (normal mode)', [
+                    \Log::warning('Session duration mismatch detected (normal mode) - fixing both session_duration and total_hours', [
                         'attendance_id' => $this->id,
                         'calculated_duration' => $calculatedDuration,
                         'stored_duration' => $this->session_duration,
                         'auto_fixing' => true
                     ]);
 
-                    // Auto-fix: Update session_duration to match calculated duration (only for normal mode)
+                    // Auto-fix: Update session_duration to match calculated duration (seconds) and total_hours (minutes)
                     $this->session_duration = $calculatedDuration;
+                    $this->total_hours = max(1, floor($calculatedDuration / 60));
                 }
             }
         }
