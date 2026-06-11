@@ -79,31 +79,27 @@ class FixDataSyncCommand extends Command
      */
     private function fixAttendanceDurationData($isDryRun = false)
     {
-        $fixed = 0;
-        
-        // Find records with inconsistent duration data
-        $records = Attendance::whereNotNull('clock_out')
-            ->where(function($query) {
-                $query->whereNull('session_duration')
-                      ->orWhereNull('total_hours')
-                      ->orWhereRaw('session_duration != (total_hours * 60)');
-            })
-            ->get();
-            
-        foreach ($records as $record) {
-            $durationSeconds = $record->clock_in->diffInSeconds($record->clock_out);
-            
-            if (!$isDryRun) {
-                $record->update([
-                    'session_duration' => $durationSeconds,
-                    'total_hours' => max(1, floor($durationSeconds / 60))
-                ]);
-            }
-            
-            $fixed++;
+        if ($isDryRun) {
+            return Attendance::whereNotNull('clock_out')
+                ->where(function($query) {
+                    $query->whereNull('session_duration')
+                          ->orWhereNull('total_hours')
+                          ->orWhereRaw('session_duration != (total_hours * 60)');
+                })
+                ->count();
         }
         
-        return $fixed;
+        // Direct SQL update is extremely fast and avoids memory limit crashes!
+        $affectedRows = DB::update("
+            UPDATE attendances 
+            SET 
+                session_duration = TIMESTAMPDIFF(SECOND, clock_in, clock_out),
+                total_hours = GREATEST(1, FLOOR(TIMESTAMPDIFF(SECOND, clock_in, clock_out) / 60))
+            WHERE clock_out IS NOT NULL 
+              AND (session_duration IS NULL OR total_hours IS NULL OR session_duration != (total_hours * 60))
+        ");
+        
+        return $affectedRows;
     }
     
     /**
@@ -119,29 +115,34 @@ class FixDataSyncCommand extends Command
             return $fixed;
         }
         
-        // Find absensi records without corresponding user
-        $absensiRecords = Absensi::whereDoesntHave('user', function($query) {
+        // Use chunking to avoid memory exhaustion
+        Absensi::whereDoesntHave('user', function($query) {
             $query->whereColumn('users.staff_id', 'absensi.player_id');
-        })->get();
-        
-        foreach ($absensiRecords as $record) {
-            // Try to find user by staff_id
-            $user = User::where('staff_id', $record->player_id)->first();
-            
-            if (!$user) {
-                // Try to find by name similarity
-                $user = User::where('name', 'LIKE', '%' . $record->player_name . '%')->first();
-            }
-            
-            if ($user && !$isDryRun) {
-                // Update user's staff_id if missing
-                if (!$user->staff_id) {
-                    $user->update(['staff_id' => $record->player_id]);
+        })->chunk(1000, function ($absensiRecords) use (&$fixed, $isDryRun) {
+            foreach ($absensiRecords as $record) {
+                // Try to find user by staff_id
+                $user = User::where('staff_id', $record->player_id)->first();
+                
+                if (!$user) {
+                    // Try to find by citizen_id
+                    $user = User::where('citizen_id', $record->player_id)->first();
                 }
+                
+                if (!$user) {
+                    // Try to find by name similarity
+                    $user = User::where('name', 'LIKE', '%' . $record->player_name . '%')->first();
+                }
+                
+                if ($user && !$isDryRun) {
+                    // Update user's staff_id if missing
+                    if (!$user->staff_id) {
+                        $user->update(['staff_id' => $record->player_id]);
+                    }
+                }
+                
+                $fixed++;
             }
-            
-            $fixed++;
-        }
+        });
         
         return $fixed;
     }
