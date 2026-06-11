@@ -323,10 +323,12 @@ class AttendanceIntegrationService
         if ($existingRecord) {
             // Jika sudah ada, update saja
             $existingRecord->update([
-                'clock_out' => $absensi->clock_out,
-                'is_active' => !$absensi->clock_out,
-                'session_duration' => $absensi->clock_out ? $this->calculateDuration($absensi->clock_in, $absensi->clock_out) : null,
-                'total_hours' => $absensi->clock_out ? $this->calculateDuration($absensi->clock_in, $absensi->clock_out) : null
+                'clock_out'        => $absensi->clock_out,
+                'is_active'        => !$absensi->clock_out,
+                // session_duration = DETIK (untuk perhitungan akurat)
+                'session_duration' => $absensi->clock_out ? $this->calculateDurationSeconds($absensi->clock_in, $absensi->clock_out) : null,
+                // total_hours = MENIT (backward compatibility)
+                'total_hours'      => $absensi->clock_out ? $this->calculateDuration($absensi->clock_in, $absensi->clock_out) : null
             ]);
             return $existingRecord;
         }
@@ -335,17 +337,19 @@ class AttendanceIntegrationService
         $sessionNumber = Attendance::getNextSessionNumber($user->id, $workDate);
 
         $attendance = Attendance::create([
-            'user_id' => $user->id,
-            'clock_in' => $absensi->clock_in,
-            'clock_out' => $absensi->clock_out,
-            'work_date' => $workDate,
-            'session_number' => $sessionNumber,
-            'session_type' => 'work',
-            'is_active' => !$absensi->clock_out,
-            'session_duration' => $absensi->clock_out ? $this->calculateDuration($absensi->clock_in, $absensi->clock_out) : null,
-            'notes' => 'Generated from automatic attendance (FiveM)',
-            'total_hours' => $absensi->clock_out ? $this->calculateDuration($absensi->clock_in, $absensi->clock_out) : null,
-            'source' => 'fivem'
+            'user_id'          => $user->id,
+            'clock_in'         => $absensi->clock_in,
+            'clock_out'        => $absensi->clock_out,
+            'work_date'        => $workDate,
+            'session_number'   => $sessionNumber,
+            'session_type'     => 'work',
+            'is_active'        => !$absensi->clock_out,
+            // session_duration = DETIK (untuk perhitungan akurat)
+            'session_duration' => $absensi->clock_out ? $this->calculateDurationSeconds($absensi->clock_in, $absensi->clock_out) : null,
+            'notes'            => 'Generated from automatic attendance (FiveM)',
+            // total_hours = MENIT (backward compatibility)
+            'total_hours'      => $absensi->clock_out ? $this->calculateDuration($absensi->clock_in, $absensi->clock_out) : null,
+            'source'           => 'fivem'
         ]);
 
         // Update user status to 'working' to match manual clock-in behavior
@@ -361,11 +365,19 @@ class AttendanceIntegrationService
     }
 
     /**
-     * Hitung durasi dalam menit
+     * Hitung durasi dalam menit (untuk total_hours - backward compatibility)
      */
     private function calculateDuration($clockIn, $clockOut)
     {
         return Carbon::parse($clockIn)->diffInMinutes(Carbon::parse($clockOut));
+    }
+
+    /**
+     * Hitung durasi dalam detik (untuk session_duration - nilai akurat)
+     */
+    private function calculateDurationSeconds($clockIn, $clockOut)
+    {
+        return Carbon::parse($clockIn)->diffInSeconds(Carbon::parse($clockOut));
     }
 
     /**

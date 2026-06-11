@@ -945,23 +945,27 @@ class Attendance extends Model
     {
         $fixed = 0;
 
-        // Find sessions that cross weeks
-        $records = self::whereNotNull('clock_out')
+        // Ambil hanya record yang cross-week kandidat: clock_out lebih dari 7 hari setelah clock_in
+        // Ini mengurangi jumlah data yang ditarik dan filter lebih lanjut di PHP via isCrossWeek()
+        self::whereNotNull('clock_out')
             ->where('is_active', false)
-            ->get()
-            ->filter(function ($record) {
-                return $record->isCrossWeek();
-            });
+            ->whereRaw('DATEDIFF(clock_out, clock_in) >= 7') // hanya kandidat cross-week
+            ->chunk(500, function ($records) use (&$fixed) {
+                foreach ($records as $record) {
+                    // Validasi cross-week di PHP (lebih akurat via isCrossWeek)
+                    if (!$record->isCrossWeek()) {
+                        continue;
+                    }
 
-        foreach ($records as $record) {
-            if ($record->splitCrossWeekSession()) {
-                $fixed++;
-                \Log::info('Cross-week session split successfully', [
-                    'attendance_id' => $record->id,
-                    'user_id' => $record->user_id
-                ]);
-            }
-        }
+                    if ($record->splitCrossWeekSession()) {
+                        $fixed++;
+                        \Log::info('Cross-week session split successfully', [
+                            'attendance_id' => $record->id,
+                            'user_id'       => $record->user_id
+                        ]);
+                    }
+                }
+            });
 
         return $fixed;
     }
