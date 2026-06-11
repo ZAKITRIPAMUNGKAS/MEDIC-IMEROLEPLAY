@@ -186,10 +186,31 @@ class AttendanceIntegrationService
                 // Pastikan tidak error logika (clock out < clock in)
                 // Jika FiveM login SEBELUM manual clock in, ini edge case aneh - skip close
                 if ($manualClockOutTime->lte($manualClockInTime)) {
+                    // PERBAIKAN: Cek apakah ini adalah clock_out untuk sesi FiveM yang SAMA
+                    // (clock_in identik → ini bukan konflik, ini update sesi yang sudah ada)
+                    if ($clockOut && $activeSession->source === 'fivem' &&
+                        Carbon::parse($activeSession->clock_in)->eq(Carbon::parse($clockIn))) {
+                        // Update sesi FiveM yang sudah aktif dengan clock_out
+                        $durationSeconds = Carbon::parse($clockIn)->diffInSeconds(Carbon::parse($clockOut));
+                        $activeSession->update([
+                            'clock_out'        => $clockOut,
+                            'is_active'        => false,
+                            'session_duration' => $durationSeconds,
+                            'total_hours'      => max(1, floor($durationSeconds / 60)),
+                        ]);
+                        // Update absensi record juga
+                        $this->saveAutomaticAttendance($playerId, $playerName, $clockIn, $clockOut, $timeOnDuty);
+                        return [
+                            'success'       => true,
+                            'message'       => 'Sesi FiveM aktif ditutup dengan clock_out.',
+                            'priority'      => 'automatic',
+                        ];
+                    }
+
                     Log::warning('FiveM clock_in is before or equal to manual clock_in, skipping close', [
-                        'player_id' => $playerId,
+                        'player_id'       => $playerId,
                         'manual_clock_in' => $manualClockInTime->toDateTimeString(),
-                        'fivem_clock_in' => $manualClockOutTime->toDateTimeString()
+                        'fivem_clock_in'  => $manualClockOutTime->toDateTimeString()
                     ]);
 
                     // Simpan FiveM sebagai sesi terpisah tanpa menutup manual
@@ -197,17 +218,19 @@ class AttendanceIntegrationService
                     $this->createManualAttendanceRecord($user, $absensi);
 
                     return [
-                        'success' => true,
-                        'message' => 'Absensi FiveM dimulai (sesi manual tetap aktif karena timing conflict).',
-                        'priority' => 'automatic',
+                        'success'       => true,
+                        'message'       => 'Absensi FiveM dimulai (sesi manual tetap aktif karena timing conflict).',
+                        'priority'      => 'automatic',
                         'conflict_note' => 'Manual session remains active due to timing anomaly'
                     ];
                 }
 
                 // Tutup sesi manual
                 $activeSession->clock_out = $manualClockOutTime;
-                $activeSession->session_duration = $this->calculateDuration($activeSession->clock_in, $activeSession->clock_out);
-                $activeSession->is_active = false;
+                // BUG FIX: session_duration harus DETIK, bukan menit
+                $activeSession->session_duration = $this->calculateDurationSeconds($activeSession->clock_in, $activeSession->clock_out);
+                $activeSession->total_hours      = max(1, floor($activeSession->session_duration / 60));
+                $activeSession->is_active        = false;
 
                 // Handle null notes safely
                 $existingNotes = $activeSession->notes ?? '';
