@@ -229,7 +229,7 @@ class AbsensiController extends Controller
     {
         try {
             $onDutyPlayers = Absensi::active()
-                ->with(['player_id', 'player_name', 'clock_in'])
+                ->select(['id', 'player_id', 'player_name', 'clock_in'])
                 ->orderBy('clock_in', 'desc')
                 ->get();
 
