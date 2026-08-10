@@ -7,21 +7,20 @@
 @section('content')
     <!-- Pop-up Gambar Regulasi Pengobatan -->
     <div id="regulationModal"
-        class="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-[99999] p-3 sm:p-6"
+        class="fixed inset-0 bg-black/85 backdrop-blur-md z-[99999] overflow-y-auto p-3 sm:p-6 flex items-start justify-center"
         style="display: none;">
-        <div class="relative bg-slate-900 rounded-3xl shadow-2xl max-w-4xl w-full max-h-[92vh] overflow-hidden flex flex-col border border-white/20 animate-fade-in-up">
-            <!-- Floating Close Button -->
-            <button onclick="closeRegulationModal()"
-                class="absolute top-4 right-4 z-20 w-10 h-10 bg-black/60 hover:bg-black/90 text-white rounded-full flex items-center justify-center backdrop-blur-md border border-white/20 transition-all duration-300 hover:scale-110 shadow-lg">
-                <i class="fas fa-times text-lg"></i>
-            </button>
+        
+        <!-- Sticky Close Button -->
+        <button onclick="closeRegulationModal()"
+            class="fixed top-4 right-4 sm:top-6 sm:right-6 z-[100000] w-11 h-11 bg-black/80 hover:bg-black text-white rounded-full flex items-center justify-center border border-white/30 transition-all duration-300 hover:scale-110 shadow-2xl">
+            <i class="fas fa-times text-xl"></i>
+        </button>
 
-            <!-- Image Container -->
-            <div class="flex-1 overflow-auto custom-scrollbar p-2 sm:p-4 flex items-center justify-center bg-slate-950">
-                <img src="{{ asset('images/REGULASI_IME_MEDICAL_CENTER.jpg') }}"
-                     alt="Regulasi iMe Medical Center"
-                     class="max-w-full h-auto object-contain rounded-2xl shadow-xl">
-            </div>
+        <!-- Modal Body Container -->
+        <div class="relative bg-slate-950 rounded-2xl sm:rounded-3xl shadow-2xl max-w-3xl w-full my-auto overflow-hidden border border-white/20 p-2 sm:p-4 animate-fade-in-up">
+            <img src="{{ asset('images/REGULASI_IME_MEDICAL_CENTER.jpg') }}"
+                 alt="Regulasi iMe Medical Center"
+                 class="w-full h-auto object-contain rounded-xl sm:rounded-2xl shadow-xl block">
         </div>
     </div>
 
