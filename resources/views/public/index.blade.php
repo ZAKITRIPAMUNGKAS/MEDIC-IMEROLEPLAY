@@ -41,12 +41,12 @@
                         </div>
 
                         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.05]">
-                            Innovation<br>
-                            <span class="text-slate-900">Clinic</span><span class="text-sky-500">.</span>
+                            iMe<br>
+                            <span class="text-slate-900">Medical Center</span><span class="text-sky-500">.</span>
                         </h1>
 
                         <p class="text-sm text-slate-500 leading-relaxed max-w-md">
-                            Kami menggabungkan teknologi modern dengan pendekatan berorientasi pasien untuk memberikan pelayanan medis yang cepat, profesional, dan terpercaya.
+                            Pusat pelayanan medis terpadu dan profesional untuk seluruh warga Los Santos dengan standar pelayanan terbaik 24/7.
                         </p>
 
                         <div class="flex flex-wrap items-center gap-3 pt-2">
