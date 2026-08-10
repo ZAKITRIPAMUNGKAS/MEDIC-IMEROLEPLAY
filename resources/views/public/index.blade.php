@@ -366,47 +366,97 @@
             </div>
 
             <!-- =========================================================
-                 5. JAM OPERASIONAL & CTA CARD
+                 5. JAM OPERASIONAL & CTA CARD (SIDE-BY-SIDE)
             ========================================================= -->
-            <div id="jadwal" class="bg-white rounded-[32px] p-6 sm:p-10 shadow-2xl space-y-6">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-6">
+            <div id="jadwal" class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+
+                <!-- LEFT: JAM OPERASIONAL TABLE -->
+                <div class="lg:col-span-7 bg-white rounded-[32px] p-6 sm:p-8 shadow-2xl flex flex-col justify-between space-y-6">
                     <div>
-                        <span class="text-xs font-bold text-sky-500 uppercase tracking-wider">Jadwal Shift</span>
-                        <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Jam Operasional Pelayanan</h3>
-                    </div>
-                    <div class="px-4 py-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-medium flex items-center gap-2">
-                        <i class="fas fa-exclamation-circle text-amber-500"></i> Pelayanan diberikan saat nakes On Duty
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="p-5 rounded-2xl bg-slate-50 border border-slate-100 space-y-2">
-                        <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center text-sm font-bold"><i class="fas fa-user-nurse"></i></div>
-                            <h4 class="font-bold text-slate-800 text-sm">Operasi Plastik</h4>
-                        </div>
-                        <p class="text-xs text-slate-500">Shift 1: 13:00&ndash;16:00 | Shift 2: 20:00&ndash;22:00 WIB</p>
-                    </div>
-
-                    <div class="p-5 rounded-2xl bg-slate-50 border border-slate-100 space-y-2">
-                        <div class="flex items-center gap-3">
-                            <div class="w-9 h-9 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center text-sm font-bold"><i class="fas fa-file-medical"></i></div>
-                            <h4 class="font-bold text-slate-800 text-sm">Surat-Suratan Medis</h4>
-                        </div>
-                        <p class="text-xs text-slate-500">Shift 1: 13:00&ndash;17:00 | Shift 2: 19:00&ndash;22:00 WIB</p>
-                    </div>
-
-                    <div class="p-5 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-2">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-sm font-bold"><i class="fas fa-pills"></i></div>
-                                <h4 class="font-bold text-slate-800 text-sm">Layanan Farmasi</h4>
+                        <div class="flex items-center justify-between gap-4 border-b border-slate-100 pb-4 mb-4">
+                            <div>
+                                <span class="text-xs font-bold text-sky-500 uppercase tracking-wider">Jadwal Shift</span>
+                                <h3 class="text-2xl font-black text-slate-900 tracking-tight">Jam Operasional</h3>
                             </div>
-                            <span class="px-2.5 py-1 rounded-full bg-emerald-500 text-white text-[10px] font-bold">24 JAM</span>
                         </div>
-                        <p class="text-xs text-emerald-700 font-medium">Pengambilan & pengobatan medis tersedia nonstop</p>
+
+                        <!-- Notice banner -->
+                        <div class="px-4 py-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-medium flex items-start gap-2.5 mb-6">
+                            <i class="fas fa-exclamation-triangle text-amber-500 text-sm mt-0.5"></i>
+                            <div>
+                                <strong class="font-bold">Info:</strong> Pelayanan sesuai ketersediaan tenaga medis (On Duty).
+                            </div>
+                        </div>
+
+                        <!-- Rows -->
+                        <div class="space-y-4">
+                            <!-- Row 1: Operasi Plastik -->
+                            <div class="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:border-sky-200 transition-all">
+                                <div class="flex items-center gap-3.5">
+                                    <div class="w-10 h-10 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center text-base flex-shrink-0">
+                                        <i class="fas fa-user-nurse"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-800 text-sm">Operasi Plastik</h4>
+                                        <p class="text-xs text-slate-500 mt-0.5">Shift 1: 13:00&ndash;16:00 &middot; Shift 2: 20:00&ndash;22:00 WIB</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row 2: Surat-Suratan Medis -->
+                            <div class="flex items-center justify-between p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:border-sky-200 transition-all">
+                                <div class="flex items-center gap-3.5">
+                                    <div class="w-10 h-10 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center text-base flex-shrink-0">
+                                        <i class="fas fa-file-medical"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-800 text-sm">Surat-Suratan Medis</h4>
+                                        <p class="text-xs text-slate-500 mt-0.5">Shift 1: 13:00&ndash;17:00 &middot; Shift 2: 19:00&ndash;22:00 WIB</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row 3: Layanan Farmasi (24 Jam) -->
+                            <div class="flex items-center justify-between p-4 rounded-2xl bg-emerald-50 border border-emerald-200 hover:border-emerald-300 transition-all">
+                                <div class="flex items-center gap-3.5">
+                                    <div class="w-10 h-10 rounded-2xl bg-emerald-500 text-white flex items-center justify-center text-base flex-shrink-0">
+                                        <i class="fas fa-pills"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-bold text-slate-800 text-sm">Layanan Farmasi</h4>
+                                        <p class="text-xs text-emerald-700 font-medium mt-0.5">Pengambilan & pengobatan medis</p>
+                                    </div>
+                                </div>
+                                <span class="px-3 py-1.5 rounded-full bg-emerald-500 text-white text-[11px] font-bold flex items-center gap-1.5 shadow-sm">
+                                    <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span> BUKA 24 JAM
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                <!-- RIGHT: CTA CARD -->
+                <div class="lg:col-span-5 bg-gradient-to-br from-sky-500 via-blue-600 to-blue-700 rounded-[32px] p-8 text-white shadow-2xl flex flex-col justify-between space-y-6 relative overflow-hidden">
+                    <div class="absolute -right-12 -top-12 w-48 h-48 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                    <div class="space-y-4 z-10">
+                        <span class="text-xs font-bold uppercase tracking-widest text-sky-200">Ready when you are</span>
+                        <h3 class="text-2xl sm:text-3xl font-black text-white leading-tight">Butuh layanan medis sekarang?</h3>
+                        <p class="text-xs text-white/80 leading-relaxed">
+                            Akses layanan iMe dengan mudah dan dapatkan bantuan dari tenaga medis kami kapan saja.
+                        </p>
+                    </div>
+
+                    <div class="space-y-3 z-10 pt-4 border-t border-white/15">
+                        <a href="#layanan" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-white hover:bg-sky-50 text-sky-600 text-sm font-bold shadow-lg transition-all hover:scale-[1.02]">
+                            Lihat Layanan <i class="fas fa-arrow-right text-xs"></i>
+                        </a>
+                        <button onclick="showRegulationModal()" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-white/15 hover:bg-white/25 text-white border border-white/30 text-sm font-bold backdrop-blur-md transition-all">
+                            Regulasi Pengobatan <i class="fas fa-file-alt text-xs opacity-80"></i>
+                        </button>
+                    </div>
+                </div>
+
             </div>
 
         </div>
