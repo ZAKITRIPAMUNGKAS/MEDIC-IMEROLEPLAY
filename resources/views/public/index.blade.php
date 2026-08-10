@@ -24,33 +24,52 @@
         </div>
     </div>
 
+    <!-- INDEPENDENCE DAY SPECIAL TOP BANNER -->
+    <div class="relative overflow-hidden bg-gradient-to-r from-red-700 via-rose-600 to-red-800 text-white py-3 px-4 shadow-xl border-b border-red-500/40">
+        <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+        <div class="max-w-[1240px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5 text-center sm:text-left relative z-10">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl animate-bounce">🇲🇨</span>
+                <div>
+                    <span class="inline-block bg-white/20 text-amber-200 text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-widest mr-2 border border-white/30 shadow-sm">HUT RI KE-81</span>
+                    <span class="text-xs sm:text-sm font-extrabold tracking-wide text-white drop-shadow-sm">
+                        Dirgahayu Republik Indonesia! 1945 — 2026
+                    </span>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 text-xs font-bold text-red-100 bg-black/25 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/20 shadow-inner">
+                <span>Nusantara Baru, Indonesia Sehat & Maju 🎆</span>
+            </div>
+        </div>
+    </div>
+
     <!-- MAIN PAGE CONTAINER -->
-    <div class="min-h-screen bg-slate-100 pt-20 pb-16 px-3 sm:px-6 lg:px-8 font-sans">
+    <div class="min-h-screen bg-slate-100 pt-8 pb-16 px-3 sm:px-6 lg:px-8 font-sans">
         <div class="max-w-[1240px] mx-auto bg-white rounded-[32px] shadow-2xl border border-slate-200 overflow-hidden divide-y divide-slate-100">
 
             <!-- =========================================================
                  1. HERO SECTION
             ========================================================= -->
-            <div class="p-6 sm:p-10 lg:p-12 bg-gradient-to-b from-slate-50 to-white">
+            <div class="p-6 sm:p-10 lg:p-12 bg-gradient-to-b from-red-50/40 via-slate-50 to-white relative overflow-hidden">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
 
                     <!-- HERO LEFT COPY -->
                     <div class="space-y-6">
-                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-50 border border-sky-200 text-xs font-bold text-sky-600">
-                            <span class="w-2 h-2 rounded-full bg-sky-500 animate-pulse"></span> Portal Medis Terpadu
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-red-500/10 to-amber-500/10 border border-red-200/80 text-xs font-bold text-red-700 shadow-sm">
+                            <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping"></span> 🇮🇩 Edisi Khusus Hari Kemerdekaan RI Ke-81
                         </div>
 
                         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.05]">
                             iMe<br>
-                            <span class="text-slate-900">Medical Center</span><span class="text-sky-500">.</span>
+                            <span class="text-slate-900">Medical Center</span><span class="text-red-600">.</span>
                         </h1>
 
                         <p class="text-sm text-slate-500 leading-relaxed max-w-md">
-                            Pusat pelayanan medis terpadu dan profesional untuk seluruh warga Los Santos dengan standar pelayanan terbaik 24/7.
+                            Pusat pelayanan medis terpadu dan profesional untuk seluruh warga Los Santos dengan standar pelayanan terbaik 24/7 dan semangat pengabdian Kemerdekaan.
                         </p>
 
                         <div class="flex flex-wrap items-center gap-3 pt-2">
-                            <a href="#layanan" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-sky-500 hover:bg-sky-600 text-white text-sm font-bold shadow-lg shadow-sky-500/25 transition-all hover:scale-105">
+                            <a href="#layanan" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white text-sm font-bold shadow-lg shadow-red-500/25 transition-all hover:scale-105">
                                 Lihat Layanan <i class="fas fa-arrow-right text-xs"></i>
                             </a>
                             <button onclick="showRegulationModal()" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition-all">
@@ -71,7 +90,7 @@
                             </div>
                             <div class="h-8 w-px bg-slate-200"></div>
                             <div>
-                                <div class="text-2xl font-black text-sky-500">100%</div>
+                                <div class="text-2xl font-black text-red-600">100%</div>
                                 <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Digital</div>
                             </div>
                         </div>
@@ -79,25 +98,25 @@
 
                     <!-- HERO RIGHT PHOTO & BADGES -->
                     <div class="relative flex justify-center items-center">
-                        <div class="relative w-full max-w-md h-[400px] rounded-[28px] overflow-hidden shadow-xl bg-gradient-to-b from-sky-400 to-blue-600 border-4 border-white">
+                        <div class="relative w-full max-w-md h-[400px] rounded-[28px] overflow-hidden shadow-xl bg-gradient-to-b from-red-600 via-rose-700 to-slate-900 border-4 border-white">
                             <img src="{{ asset('images/foto_dokter.jpg') }}"
-                                 alt="Dokter iMe Medical Center"
+                                 alt="Dokter iMe Medical Center - HUT RI Ke-81"
                                  class="w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-700">
 
-                            <!-- Floating Badges -->
-                            <div class="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md border border-slate-100 flex items-center gap-2 animate-float-1">
-                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping opacity-75"></span>
-                                <span class="text-xs font-bold text-slate-800">Reliability</span>
+                            <!-- Floating Badges (Themes) -->
+                            <div class="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md border border-red-100 flex items-center gap-2 animate-float-1">
+                                <span class="text-sm">🇮🇩</span>
+                                <span class="text-xs font-bold text-slate-800">Merdeka 81th</span>
                             </div>
 
-                            <div class="absolute top-12 right-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md border border-slate-100 flex items-center gap-2 animate-float-2">
-                                <i class="fas fa-award text-amber-500 text-xs"></i>
-                                <span class="text-xs font-bold text-slate-800">Experience</span>
+                            <div class="absolute top-12 right-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md border border-amber-100 flex items-center gap-2 animate-float-2">
+                                <i class="fas fa-fire-alt text-amber-500 text-xs animate-pulse"></i>
+                                <span class="text-xs font-bold text-slate-800">Semangat 45</span>
                             </div>
 
-                            <div class="absolute bottom-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md border border-slate-100 flex items-center gap-2 animate-float-3">
-                                <i class="fas fa-user-md text-sky-500 text-xs"></i>
-                                <span class="text-xs font-bold text-slate-800">Professional</span>
+                            <div class="absolute bottom-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md border border-red-100 flex items-center gap-2 animate-float-3">
+                                <i class="fas fa-heartbeat text-red-600 text-xs"></i>
+                                <span class="text-xs font-bold text-slate-800">Indonesia Sehat</span>
                             </div>
                         </div>
                     </div>
