@@ -820,9 +820,9 @@
                             class="absolute inset-0 bg-amber-500/30 rounded-full blur-2xl group-hover:opacity-75 transition-opacity duration-300">
                         </div>
                         <div
-                            class="relative h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 flex items-center justify-center bg-white/15 backdrop-blur-xl rounded-3xl border-2 border-white/30 shadow-2xl animate-float hover:bg-white/25 transition-all duration-300 p-2">
+                            class="relative h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 flex items-center justify-center bg-white/15 backdrop-blur-xl rounded-3xl border-2 border-white/30 shadow-2xl animate-float hover:bg-white/25 transition-all duration-300 p-1.5">
                             <img src="{{ asset('images/logo rhv2.png') }}" alt="Roxwood Hospital"
-                                class="h-16 w-16 sm:h-20 sm:w-20 lg:h-24 lg:w-24 object-contain drop-shadow-lg">
+                                class="h-17 w-17 sm:h-22 sm:w-22 lg:h-26 lg:w-26 object-contain drop-shadow-lg">
                         </div>
                     </div>
                 </div>
