@@ -17,8 +17,12 @@ return new class extends Migration
         }
 
         Schema::table('absensi', function (Blueprint $table) {
-            $table->string('source')->default('automatic')->after('time_on_duty');
-            $table->text('notes')->nullable()->after('source');
+            if (!Schema::hasColumn('absensi', 'source')) {
+                $table->string('source')->default('automatic')->after('time_on_duty');
+            }
+            if (!Schema::hasColumn('absensi', 'notes')) {
+                $table->text('notes')->nullable()->after('source');
+            }
         });
     }
 
