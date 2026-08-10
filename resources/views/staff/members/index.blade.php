@@ -184,7 +184,7 @@
 
             {{-- Pagination --}}
             <div class="mt-8">
-                {{ $members->links() }}
+                {{ $members->links('vendor.pagination.tailwind') }}
             </div>
         @else
             <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-2xl border border-white border-opacity-20 p-12 text-center">

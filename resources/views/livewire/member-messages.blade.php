@@ -78,7 +78,10 @@
                                         
                                         <div class="flex items-center gap-1 shrink-0 ml-1">
                                             @if($memberItem->streak_count > 0)
-                                                <span class="text-xs" title="Streak {{ $memberItem->streak_count }} Hari">🔥{{ $memberItem->streak_count }}</span>
+                                                <span class="inline-flex items-center gap-1 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-red-500/20 border border-amber-500/40 text-amber-300 text-[11px] font-black px-2 py-0.5 rounded-full shadow-[0_0_8px_rgba(245,158,11,0.3)] shrink-0 transition-transform hover:scale-105" title="Streak {{ $memberItem->streak_count }} Hari">
+                                                    <span class="text-[12px] drop-shadow-[0_0_4px_rgba(245,158,11,0.9)] animate-pulse">🔥</span>
+                                                    <span class="tracking-tight text-amber-200">{{ $memberItem->streak_count }}</span>
+                                                </span>
                                             @endif
                                             @if($memberItem->unread_count > 0)
                                                 <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-md shrink-0 ml-1 animate-bounce">
@@ -140,9 +143,9 @@
                                     {{ $activeUser->name }}
                                 </h3>
                                 @if($streakCount > 0)
-                                    <div class="flex items-center gap-1 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-full text-amber-400 font-bold text-[10px] select-none animate-pulse" title="Streak {{ $streakCount }} Hari">
-                                        <span>🔥</span>
-                                        <span>{{ $streakCount }} {{ $streakCount === 1 ? 'Day' : 'Days' }}</span>
+                                    <div class="flex items-center gap-1.5 bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-red-500/20 border border-amber-500/40 px-2.5 py-0.5 rounded-full text-amber-300 font-extrabold text-xs select-none shadow-[0_0_12px_rgba(245,158,11,0.35)] shrink-0" title="Streak {{ $streakCount }} Hari">
+                                        <span class="text-sm drop-shadow-[0_0_6px_rgba(245,158,11,0.9)] animate-pulse">🔥</span>
+                                        <span class="tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-orange-300">{{ $streakCount }} {{ $streakCount === 1 ? 'Day' : 'Days' }}</span>
                                     </div>
                                 @endif
                             </div>
