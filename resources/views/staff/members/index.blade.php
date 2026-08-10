@@ -10,9 +10,9 @@
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
                 <h1 class="text-4xl font-bold text-white mb-2">
-                    <i class="fas fa-users mr-3 text-sky-400"></i>Direktori Anggota & Staf
+                    <i class="fas fa-user-md mr-3 text-sky-400"></i>Direktori Dokter & Manajemen
                 </h1>
-                <p class="text-sky-200">Pantau profil, status duty, statistik jam kerja, dan komunikasi antar anggota medis</p>
+                <p class="text-sky-200">Pantau jadwal praktek, status duty, dan profil jajaran Dokter hingga Manajemen</p>
             </div>
         </div>
 
@@ -126,8 +126,37 @@
                             </div>
                         </div>
 
+                        {{-- Doctor Schedules --}}
+                        @php
+                            $doctorSchedules = isset($schedules) ? ($schedules->get($member->name) ?? collect()) : collect();
+                        @endphp
+                        @if($doctorSchedules->count() > 0)
+                            <div class="mt-4 pt-3 border-t border-white border-opacity-10">
+                                <p class="text-[10px] uppercase tracking-widest text-sky-400 font-bold mb-2">
+                                    <i class="far fa-calendar-alt mr-1"></i> Jadwal Praktek
+                                </p>
+                                <div class="space-y-2">
+                                    @foreach($doctorSchedules as $schedule)
+                                        <div class="bg-black bg-opacity-20 rounded-lg p-2 border border-white border-opacity-5">
+                                            <p class="text-[11px] text-white font-semibold mb-1">
+                                                {{ str_replace('🩺 ', '', $schedule->poli) }}
+                                            </p>
+                                            <div class="flex flex-wrap gap-1 mb-1.5">
+                                                @foreach($schedule->day as $day)
+                                                    <span class="text-[9px] bg-white bg-opacity-10 px-1.5 py-0.5 rounded text-sky-100">{{ $day }}</span>
+                                                @endforeach
+                                            </div>
+                                            <p class="text-[10px] text-sky-300">
+                                                <i class="far fa-clock mr-1 text-[9px]"></i>{{ \Carbon\Carbon::parse($schedule->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($schedule->end_time)->format('H:i') }} WIB
+                                            </p>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
                         {{-- Stats & Actions --}}
-                        <div class="mt-6 pt-4 border-t border-white border-opacity-10">
+                        <div class="mt-4 pt-4 border-t border-white border-opacity-10">
                             <div class="flex justify-between items-center text-xs mb-4">
                                 <span class="text-sky-200">Total Jam Kerja:</span>
                                 <span class="font-bold text-white tracking-wide">

@@ -40,13 +40,16 @@ class MemberController extends Controller
         }
 
         $members = $query->join('staff_roles', 'users.role_id', '=', 'staff_roles.id')
+            ->where('staff_roles.level', '>=', 3)
             ->select('users.*')
             ->orderByDesc('staff_roles.level')
             ->orderBy('users.name', 'asc')
             ->paginate(12)
             ->withQueryString();
 
-        return view('staff.members.index', compact('members', 'search', 'hospital'));
+        $schedules = \App\Models\DoctorSchedule::where('is_active', true)->get()->groupBy('doctor_name');
+
+        return view('staff.members.index', compact('members', 'search', 'hospital', 'schedules'));
     }
 
     /**
