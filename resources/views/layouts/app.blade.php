@@ -1286,8 +1286,10 @@
 
                 {{-- Brand Logo --}}
                 <a href="{{ route('public.index') }}" class="flex-shrink-0 flex items-center gap-2.5 group">
-                    <div class="h-9 w-9 flex items-center justify-center bg-white/95 rounded-xl shadow-md group-hover:shadow-lg transition-all duration-300">
-                        <img src="{{ asset('images/motionlife-logo.png') }}" alt="iMe ROLEPLAY" class="h-6 w-6 object-contain">
+                    <div class="flex items-center gap-1.5 bg-white/95 px-2 py-1 rounded-xl shadow-md group-hover:shadow-lg group-hover:bg-white transition-all duration-300">
+                        <img src="{{ asset('images/motionlife-logo.png') }}" alt="EMS Alta" class="h-6 w-6 object-contain" title="Alta Hospital (EMS)">
+                        <div class="h-4 w-px bg-slate-300"></div>
+                        <img src="{{ asset('images/logo rhv2.png') }}" alt="Roxwood Hospital" class="h-6 w-6 object-contain" title="Roxwood Hospital">
                     </div>
                     <div class="leading-none">
                         <div class="text-sm font-bold text-white tracking-widest uppercase group-hover:text-sky-200 transition-colors duration-300">iMe</div>
@@ -1600,11 +1602,12 @@
     <footer class="glass-effect mt-16">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="text-center">
-                <div class="flex justify-center items-center mb-4">
-                    <!-- Logo iMe ROLEPLAY -->
-                    <div class="h-8 w-8 flex items-center justify-center mr-3 bg-white rounded-lg elegant-shadow">
-                        <img src="{{ asset('images/motionlife-logo.png') }}" alt="iMe ROLEPLAY"
-                            class="h-5 w-5 object-contain">
+                <div class="flex justify-center items-center gap-2.5 mb-4">
+                    <!-- Logo Alta & Roxwood Hospital -->
+                    <div class="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-xl elegant-shadow">
+                        <img src="{{ asset('images/motionlife-logo.png') }}" alt="Alta Hospital" class="h-6 w-6 object-contain">
+                        <div class="h-4 w-px bg-slate-300"></div>
+                        <img src="{{ asset('images/logo rhv2.png') }}" alt="Roxwood Hospital" class="h-6 w-6 object-contain">
                     </div>
                     <span class="text-lg font-semibold text-white">iMe ROLEPLAY</span>
                 </div>
