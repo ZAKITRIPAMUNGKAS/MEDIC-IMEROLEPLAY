@@ -29,7 +29,7 @@
         <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
         <div class="max-w-[1240px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5 text-center sm:text-left relative z-10">
             <div class="flex items-center gap-3">
-                <span class="text-2xl animate-bounce">🇲🇨</span>
+                <img src="{{ asset('images/bendera_indonesia.png') }}" alt="Bendera Indonesia" class="w-8 h-5 sm:w-9 sm:h-6 object-cover rounded shadow-md border border-white/40 animate-bounce shrink-0">
                 <div>
                     <span class="inline-block bg-white/20 text-amber-200 text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-widest mr-2 border border-white/30 shadow-sm">HUT RI KE-81</span>
                     <span class="text-xs sm:text-sm font-extrabold tracking-wide text-white drop-shadow-sm">
