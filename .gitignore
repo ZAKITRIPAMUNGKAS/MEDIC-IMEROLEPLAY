@@ -152,11 +152,42 @@ jspm_packages/
 /public/error_log
 *.zip
 
+
 # Server / User Data
 /public/uploads/
 /storage/uploads/
 /public/error_log
+/error_log
 *.zip
 /node_modules/
 /vendor/
 .env
+
+# Runtime / Server Generated
+/storage/framework/views/
+/storage/framework/cache/
+/storage/framework/sessions/
+/storage/logs/
+/public/vendor/
+
+# Server / deployment files
+*.service
+*.bat
+*.ps1
+*.sh
+
+
+
+# CPanel miscellaneous files
+/BATCH_RENAME_*.md
+/*_mapping.csv
+/example_user_rename_mapping.json
+/UPLOAD_TO_CPANEL.txt
+/docker-compose.queue.yml
+/ecosystem.config.js
+/walkthrough.md
+/public/images/
+/public/promo.html
+/BOXMOLLUCASFULLSET2_*.jpg
+/Yogyakarta-Rustic_*.webp
+/ers as $u) {
