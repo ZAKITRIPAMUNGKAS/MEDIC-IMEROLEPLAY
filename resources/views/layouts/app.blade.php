@@ -1280,7 +1280,7 @@
 
 <body class="min-h-screen">
     <!-- Navigation -->
-    <nav class="glass-effect fixed w-full top-0 z-50">
+    <nav class="glass-effect fixed w-full top-0 z-[9999]">
         <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
 

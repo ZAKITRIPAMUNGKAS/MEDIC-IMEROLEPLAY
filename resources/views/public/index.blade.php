@@ -199,7 +199,7 @@
                     </a>
 
                     <!-- FEATURED CENTER CARD -->
-                    <a href="{{ route('public.doctor-schedule') }}" class="group bg-gradient-to-br from-sky-500 to-blue-700 rounded-[24px] p-6 shadow-lg text-white flex flex-col justify-between min-h-[200px] relative overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02]">
+                    <a href="{{ route('public.doctor-schedule') }}" class="group bg-gradient-to-br from-sky-500 to-blue-700 rounded-[24px] p-6 shadow-lg text-white flex flex-col justify-between min-h-[200px] relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
                         <div class="z-10">
                             <div class="text-lg font-black tracking-tight leading-tight">iMe<br><span class="font-normal opacity-80 text-xs">Medical Center</span></div>
                         </div>
