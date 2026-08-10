@@ -871,64 +871,59 @@
             <div class="lp-services__grid">
 
                 <!-- 01 -->
-                <article class="lp-service-card">
+                <a href="{{ route('public.cek-kesehatan') }}" class="lp-service-card">
                     <div class="lp-service-card__num">01</div>
                     <div class="lp-service-card__icon"><i class="fas fa-stethoscope text-sky-500"></i></div>
                     <h3 class="lp-service-card__title">Konsultasi Medis</h3>
                     <p class="lp-service-card__desc">Pemeriksaan umum, diagnosis, dan layanan kesehatan standar.</p>
-                    <a href="{{ route('public.cek-kesehatan') }}" class="lp-service-card__link">Surat Kesehatan</a>
-                    <span class="lp-service-card__tba">TBA</span>
-                </article>
+                    <span class="lp-service-card__link">Surat Kesehatan &rarr;</span>
+                </a>
 
                 <!-- Featured center card (blue) -->
-                <article class="lp-service-card lp-service-card--featured">
+                <a href="{{ route('public.doctor-schedule') }}" class="lp-service-card lp-service-card--featured">
                     <div class="lp-service-card__logo">iMe<br><span>Medical</span></div>
                     <img
                         src="https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?auto=format&fit=crop&w=600&q=80"
                         alt="Medical"
                         class="lp-service-card__bg-img"
                     >
-                </article>
+                </a>
 
                 <!-- 02 -->
-                <article class="lp-service-card">
+                <a href="{{ route('public.operasi-plastik') }}" class="lp-service-card">
                     <div class="lp-service-card__num">02</div>
                     <div class="lp-service-card__icon"><i class="fas fa-user-nurse text-sky-500"></i></div>
                     <h3 class="lp-service-card__title">Operasi Plastik</h3>
                     <p class="lp-service-card__desc">Prosedur bedah estetika oleh tenaga profesional terlatih.</p>
-                    <a href="{{ route('public.operasi-plastik') }}" class="lp-service-card__link">Daftar Oplas</a>
-                    <span class="lp-service-card__tba">TBA</span>
-                </article>
+                    <span class="lp-service-card__link">Daftar Oplas &rarr;</span>
+                </a>
 
                 <!-- 03 -->
-                <article class="lp-service-card">
+                <a href="{{ route('public.surat-psikolog') }}" class="lp-service-card">
                     <div class="lp-service-card__num">03</div>
                     <div class="lp-service-card__icon"><i class="fas fa-brain text-sky-500"></i></div>
                     <h3 class="lp-service-card__title">Psikologi</h3>
                     <p class="lp-service-card__desc">Dukungan kesehatan mental untuk karakter Anda.</p>
-                    <a href="{{ route('public.surat-psikolog') }}" class="lp-service-card__link">Formulir Psikologi</a>
-                    <span class="lp-service-card__tba">TBA</span>
-                </article>
+                    <span class="lp-service-card__link">Formulir Psikologi &rarr;</span>
+                </a>
 
                 <!-- 04 -->
-                <article class="lp-service-card">
+                <a href="{{ route('public.pendaftaran-karakter') }}" class="lp-service-card">
                     <div class="lp-service-card__num">04</div>
                     <div class="lp-service-card__icon"><i class="fas fa-heartbeat text-sky-500"></i></div>
                     <h3 class="lp-service-card__title">Karakter Kill</h3>
                     <p class="lp-service-card__desc">Layanan medis kritis untuk kebutuhan storyline roleplay.</p>
-                    <a href="{{ route('public.pendaftaran-karakter') }}" class="lp-service-card__link">Daftar Sekarang</a>
-                    <span class="lp-service-card__tba">TBA</span>
-                </article>
+                    <span class="lp-service-card__link">Daftar Sekarang &rarr;</span>
+                </a>
 
                 <!-- 05 -->
-                <article class="lp-service-card">
+                <a href="{{ route('public.cek-kesehatan') }}" class="lp-service-card">
                     <div class="lp-service-card__num">05</div>
                     <div class="lp-service-card__icon"><i class="fas fa-file-medical text-sky-500"></i></div>
                     <h3 class="lp-service-card__title">Surat Medis</h3>
                     <p class="lp-service-card__desc">Surat sehat, bebas narkoba, dan keterangan khusus.</p>
-                    <a href="{{ route('public.cek-kesehatan') }}" class="lp-service-card__link">Buat Surat</a>
-                    <span class="lp-service-card__tba">TBA</span>
-                </article>
+                    <span class="lp-service-card__link">Buat Surat &rarr;</span>
+                </a>
 
             </div>
         </div>
@@ -1393,12 +1388,15 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  transition: box-shadow .2s, transform .2s;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
   min-height: 200px;
 }
 .lp-service-card:hover {
-  box-shadow: 0 8px 32px rgba(37,99,235,.12);
-  transform: translateY(-2px);
+  box-shadow: 0 20px 40px -10px rgba(14, 165, 233, 0.22);
+  transform: translateY(-8px) scale(1.015);
+  border-color: #38bdf8;
 }
 .lp-service-card__num {
   font-size: 11px;
@@ -1406,12 +1404,24 @@
   color: var(--lp-muted);
   letter-spacing: .08em;
 }
-.lp-service-card__icon { font-size: 22px; margin: 4px 0; }
+.lp-service-card__icon {
+  font-size: 24px;
+  margin: 4px 0;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+.lp-service-card:hover .lp-service-card__icon {
+  transform: scale(1.25) rotate(4deg);
+}
 .lp-service-card__title {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--lp-ink);
   letter-spacing: -.02em;
+  transition: color 0.25s ease;
+}
+.lp-service-card:hover .lp-service-card__title {
+  color: var(--lp-blue2);
 }
 .lp-service-card__desc {
   font-size: 12px;
@@ -1423,19 +1433,15 @@
   font-size: 12px;
   font-weight: 700;
   color: var(--lp-blue);
-  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  transition: all 0.25s ease;
 }
-.lp-service-card__link:hover { text-decoration: underline; }
-.lp-service-card__tba {
-  position: absolute;
-  top: 20px; right: 20px;
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--lp-muted);
-  background: var(--lp-light);
-  padding: 2px 8px;
-  border-radius: 50px;
-  border: 1px solid var(--lp-border);
+.lp-service-card:hover .lp-service-card__link {
+  color: var(--lp-blue2);
+  transform: translateX(6px);
 }
 
 /* featured blue card */
