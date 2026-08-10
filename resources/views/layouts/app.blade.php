@@ -1305,28 +1305,12 @@
                 </div>
 
                 {{-- Desktop Menu --}}
-                <div class="hidden md:flex items-center gap-1 sm:gap-2" id="desktop-menu">
-                    {{-- Public Nav Links --}}
-                    <a href="{{ route('public.index') }}#services" class="px-3 py-1.5 text-xs font-medium text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200">
-                        Layanan
-                    </a>
-                    <a href="{{ route('public.doctor-schedule') }}" class="px-3 py-1.5 text-xs font-medium text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200">
-                        Jadwal
-                    </a>
-                    <button onclick="showRegulationModal()" type="button" class="px-3 py-1.5 text-xs font-medium text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200 cursor-pointer">
-                        Regulasi
-                    </button>
-                    <a href="{{ route('public.struktural-ems') }}" class="px-3 py-1.5 text-xs font-medium text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200">
-                        Struktur EMS
-                    </a>
-
-                    <div class="h-4 w-px bg-white/20 mx-1 hidden lg:block"></div>
-
+                <div class="hidden sm:flex items-center gap-1.5" id="desktop-menu">
                     @guest
                         <button onclick="openRecruitmentModal()" class="inline-flex items-center gap-1.5 h-9 px-3 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-lg border border-white/20 transition-all duration-200 whitespace-nowrap">
                             <i class="fas fa-user-plus text-sm"></i><span>Recruitment</span>
                         </button>
-                        <a href="{{ route('staff.login') }}" class="inline-flex items-center gap-1.5 h-9 px-3 bg-cyan-500/30 hover:bg-cyan-500/50 text-white text-xs font-semibold rounded-lg border border-cyan-400/40 transition-all duration-200 whitespace-nowrap shadow-sm">
+                        <a href="{{ route('staff.login') }}" class="inline-flex items-center gap-1.5 h-9 px-3 bg-sky-500/30 hover:bg-sky-500/50 text-white text-xs font-semibold rounded-lg border border-sky-400/40 transition-all duration-200 whitespace-nowrap">
                             <i class="fas fa-user-md text-sm"></i><span>Login Staf</span>
                         </a>
                     @endguest
