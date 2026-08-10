@@ -518,6 +518,16 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/feedback', [PublicController::class, 'showFeedbackForm'])->name('feedback.form');
     Route::post('/feedback', [PublicController::class, 'submitFeedback'])->name('feedback.submit');
     Route::get('/feedback/success', [PublicController::class, 'feedbackSuccess'])->name('feedback.success');
+
+    // GIPHY & Custom Stickers API Routes
+    Route::get('/api/stickers/trending', [\App\Http\Controllers\StickerController::class, 'trending']);
+    Route::get('/api/stickers/search', [\App\Http\Controllers\StickerController::class, 'search']);
+    Route::get('/api/stickers/categories', [\App\Http\Controllers\StickerController::class, 'categories']);
+    Route::get('/api/stickers/packs', [\App\Http\Controllers\StickerController::class, 'packs']);
+    Route::get('/api/stickers/favorites', [\App\Http\Controllers\StickerController::class, 'getFavorites']);
+    Route::post('/api/stickers/favorites', [\App\Http\Controllers\StickerController::class, 'toggleFavorite']);
+    Route::get('/api/stickers/recents', [\App\Http\Controllers\StickerController::class, 'getRecents']);
+    Route::get('/api/stickers/{id}', [\App\Http\Controllers\StickerController::class, 'show']);
 });
 
 // Form success route (used after submit)
@@ -643,6 +653,15 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
     // Admin Operations deletion
     Route::delete('/operations/{id}', [\App\Http\Controllers\Admin\OperationRecordController::class, 'destroy'])
         ->middleware('permission:manage_users')->name('operations.destroy');
+
+    // Admin Sticker Management
+    Route::get('/stickers', [\App\Http\Controllers\Admin\StickerManagementController::class, 'index'])->name('stickers.index');
+    Route::post('/stickers/pack', [\App\Http\Controllers\Admin\StickerManagementController::class, 'storePack'])->name('stickers.store-pack');
+    Route::put('/stickers/pack/{id}', [\App\Http\Controllers\Admin\StickerManagementController::class, 'updatePack'])->name('stickers.update-pack');
+    Route::delete('/stickers/pack/{id}', [\App\Http\Controllers\Admin\StickerManagementController::class, 'destroyPack'])->name('stickers.destroy-pack');
+    Route::post('/stickers/pack/{id}/upload', [\App\Http\Controllers\Admin\StickerManagementController::class, 'uploadStickers'])->name('stickers.upload');
+    Route::delete('/stickers/{id}', [\App\Http\Controllers\Admin\StickerManagementController::class, 'destroySticker'])->name('stickers.destroy-sticker');
+    Route::post('/stickers/toggle-giphy', [\App\Http\Controllers\Admin\StickerManagementController::class, 'toggleGiphy'])->name('stickers.toggle-giphy');
     // Route::resource('medical-forms', \App\Http\Controllers\Admin\MedicalFormController::class)->middleware('permission:manage_forms');
     // Route::resource('staff-roles', \App\Http\Controllers\Admin\StaffRoleController::class)->middleware('permission:manage_settings');
     // Attendance reports

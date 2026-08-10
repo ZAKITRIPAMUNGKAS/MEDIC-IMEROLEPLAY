@@ -16,6 +16,10 @@ class MemberMessage extends Model
         'message',
         'is_read',
         'read_at',
+        'message_type',
+        'sticker_source',
+        'sticker_id',
+        'sticker_url',
     ];
 
     protected $casts = [

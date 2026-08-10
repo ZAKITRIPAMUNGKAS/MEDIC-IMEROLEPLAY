@@ -27,6 +27,7 @@ class DoctorScheduleController extends Controller
         '🩺 Spesialis Obstetri dan Ginekologi',
         '🩺 Spesialis Jantung dan Pembuluh Darah',
         '🩺 Spesialis Paru',
+        '🩺 Poli Kejiwaan',
     ];
 
     public const DAYS = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
