@@ -93,10 +93,10 @@
                                 <div
                                     class="flex items-center justify-between p-4 bg-blue-50 rounded-xl border border-blue-200">
                                     <div class="flex items-center space-x-3">
-                                        <i class="fas fa-hospital text-blue-600 text-xl"></i>
+                                        <i class="fas fa-hospital text-sky-500 text-xl"></i>
                                         <span class="font-semibold text-gray-800">TREATMENT RS</span>
                                     </div>
-                                    <span class="text-2xl font-bold text-blue-600">$200</span>
+                                    <span class="text-2xl font-bold text-sky-500">$200</span>
                                 </div>
                                 <div
                                     class="flex items-center justify-between p-4 bg-cyan-50 rounded-xl border border-cyan-200">
@@ -205,9 +205,9 @@
                             </div>
                             <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-200">
                                 <div class="flex items-center justify-between mb-2">
-                                    <i class="fas fa-tooth text-blue-600 text-xl"></i>
+                                    <i class="fas fa-tooth text-sky-500 text-xl"></i>
                                     <div class="text-right">
-                                        <span class="text-xl font-bold text-blue-600">$1,300</span>
+                                        <span class="text-xl font-bold text-sky-500">$1,300</span>
                                         <span class="text-sm text-blue-500">- $1,900</span>
                                     </div>
                                 </div>
@@ -298,8 +298,8 @@
                             <div
                                 class="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-200 hover:shadow-md transition-all duration-300">
                                 <div class="flex items-center justify-between mb-2">
-                                    <i class="fas fa-bomb text-blue-600 text-xl"></i>
-                                    <span class="text-2xl font-bold text-blue-600">$500</span>
+                                    <i class="fas fa-bomb text-sky-500 text-xl"></i>
+                                    <span class="text-2xl font-bold text-sky-500">$500</span>
                                 </div>
                                 <h4 class="font-bold text-gray-800 text-sm">ZONA PERANG / PRA-SITUASI</h4>
                                 <p class="text-xs text-gray-600 mt-1">Area konflik</p>
@@ -400,11 +400,11 @@
                             <div class="bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-xl border border-blue-200">
                                 <div class="flex items-center justify-between mb-4">
                                     <div class="flex items-center space-x-3">
-                                        <i class="fas fa-user-graduate text-blue-600 text-2xl"></i>
+                                        <i class="fas fa-user-graduate text-sky-500 text-2xl"></i>
                                         <h4 class="font-bold text-gray-800">KONSULTASI SPESIALIS</h4>
                                     </div>
                                     <div class="text-right">
-                                        <span class="text-2xl font-bold text-blue-600">$5,000</span>
+                                        <span class="text-2xl font-bold text-sky-500">$5,000</span>
                                         <span class="text-lg text-blue-500">- $10,000</span>
                                     </div>
                                 </div>
@@ -494,9 +494,9 @@
                             </div>
                             <div
                                 class="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-200 text-center">
-                                <i class="fas fa-pills text-blue-600 text-3xl mb-3"></i>
+                                <i class="fas fa-pills text-sky-500 text-3xl mb-3"></i>
                                 <h4 class="font-bold text-gray-800 mb-2">PAINKILLER</h4>
-                                <div class="text-2xl font-bold text-blue-600 mb-1">$70</div>
+                                <div class="text-2xl font-bold text-sky-500 mb-1">$70</div>
                                 <p class="text-xs text-gray-600">MAX 6 PCS</p>
                             </div>
                         </div>
@@ -547,9 +547,9 @@
                             </div>
                             <div class="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200">
                                 <div class="text-center mb-4">
-                                    <i class="fas fa-users text-blue-600 text-3xl mb-3"></i>
+                                    <i class="fas fa-users text-sky-500 text-3xl mb-3"></i>
                                     <h4 class="font-bold text-gray-800 mb-2">PAKET C. KELUARGA</h4>
-                                    <div class="text-3xl font-bold text-blue-600">$7,500</div>
+                                    <div class="text-3xl font-bold text-sky-500">$7,500</div>
                                 </div>
                                 <p class="text-sm text-gray-600 mb-2 font-semibold">CASH</p>
                                 <ul class="text-sm text-gray-600 space-y-1 list-disc list-inside">
@@ -838,9 +838,9 @@
         <div class="lp-container">
             <p class="lp-about__text">
                 We combine innovative
-                <i class="fas fa-plus-circle text-blue-600"></i>
+                <i class="fas fa-plus-circle text-sky-500"></i>
                 technologies with a human approach to make every patient
-                <i class="fas fa-user-md text-blue-600"></i>
+                <i class="fas fa-user-md text-sky-500"></i>
                 feel <em>confident and calm.</em>
             </p>
             <p class="lp-about__sub">
@@ -873,7 +873,7 @@
                 <!-- 01 -->
                 <article class="lp-service-card">
                     <div class="lp-service-card__num">01</div>
-                    <div class="lp-service-card__icon"><i class="fas fa-stethoscope text-blue-600"></i></div>
+                    <div class="lp-service-card__icon"><i class="fas fa-stethoscope text-sky-500"></i></div>
                     <h3 class="lp-service-card__title">Konsultasi Medis</h3>
                     <p class="lp-service-card__desc">Pemeriksaan umum, diagnosis, dan layanan kesehatan standar.</p>
                     <a href="{{ route('public.cek-kesehatan') }}" class="lp-service-card__link">Surat Kesehatan</a>
@@ -893,7 +893,7 @@
                 <!-- 02 -->
                 <article class="lp-service-card">
                     <div class="lp-service-card__num">02</div>
-                    <div class="lp-service-card__icon"><i class="fas fa-user-nurse text-blue-600"></i></div>
+                    <div class="lp-service-card__icon"><i class="fas fa-user-nurse text-sky-500"></i></div>
                     <h3 class="lp-service-card__title">Operasi Plastik</h3>
                     <p class="lp-service-card__desc">Prosedur bedah estetika oleh tenaga profesional terlatih.</p>
                     <a href="{{ route('public.operasi-plastik') }}" class="lp-service-card__link">Daftar Oplas</a>
@@ -903,7 +903,7 @@
                 <!-- 03 -->
                 <article class="lp-service-card">
                     <div class="lp-service-card__num">03</div>
-                    <div class="lp-service-card__icon"><i class="fas fa-brain text-blue-600"></i></div>
+                    <div class="lp-service-card__icon"><i class="fas fa-brain text-sky-500"></i></div>
                     <h3 class="lp-service-card__title">Psikologi</h3>
                     <p class="lp-service-card__desc">Dukungan kesehatan mental untuk karakter Anda.</p>
                     <a href="{{ route('public.surat-psikolog') }}" class="lp-service-card__link">Formulir Psikologi</a>
@@ -913,7 +913,7 @@
                 <!-- 04 -->
                 <article class="lp-service-card">
                     <div class="lp-service-card__num">04</div>
-                    <div class="lp-service-card__icon"><i class="fas fa-heartbeat text-blue-600"></i></div>
+                    <div class="lp-service-card__icon"><i class="fas fa-heartbeat text-sky-500"></i></div>
                     <h3 class="lp-service-card__title">Karakter Kill</h3>
                     <p class="lp-service-card__desc">Layanan medis kritis untuk kebutuhan storyline roleplay.</p>
                     <a href="{{ route('public.pendaftaran-karakter') }}" class="lp-service-card__link">Daftar Sekarang</a>
@@ -923,7 +923,7 @@
                 <!-- 05 -->
                 <article class="lp-service-card">
                     <div class="lp-service-card__num">05</div>
-                    <div class="lp-service-card__icon"><i class="fas fa-file-medical text-blue-600"></i></div>
+                    <div class="lp-service-card__icon"><i class="fas fa-file-medical text-sky-500"></i></div>
                     <h3 class="lp-service-card__title">Surat Medis</h3>
                     <p class="lp-service-card__desc">Surat sehat, bebas narkoba, dan keterangan khusus.</p>
                     <a href="{{ route('public.cek-kesehatan') }}" class="lp-service-card__link">Buat Surat</a>
@@ -1068,7 +1068,7 @@
                 <!-- 01 -->
                 <article class="lp-service-card">
                     <div class="lp-service-card__num">01</div>
-                    <div class="lp-service-card__icon"><i class="fas fa-stethoscope text-blue-600"></i></div>
+                    <div class="lp-service-card__icon"><i class="fas fa-stethoscope text-sky-500"></i></div>
                     <h3 class="lp-service-card__title">Konsultasi Medis</h3>
                     <p class="lp-service-card__desc">Pemeriksaan umum, diagnosis, dan layanan kesehatan standar.</p>
                     <a href="{{ route('public.cek-kesehatan') }}" class="lp-service-card__link">Surat Kesehatan</a>
@@ -1088,7 +1088,7 @@
                 <!-- 02 -->
                 <article class="lp-service-card">
                     <div class="lp-service-card__num">02</div>
-                    <div class="lp-service-card__icon"><i class="fas fa-user-nurse text-blue-600"></i></div>
+                    <div class="lp-service-card__icon"><i class="fas fa-user-nurse text-sky-500"></i></div>
                     <h3 class="lp-service-card__title">Operasi Plastik</h3>
                     <p class="lp-service-card__desc">Prosedur bedah estetika oleh tenaga profesional terlatih.</p>
                     <a href="{{ route('public.operasi-plastik') }}" class="lp-service-card__link">Daftar Oplas</a>
@@ -1098,7 +1098,7 @@
                 <!-- 03 -->
                 <article class="lp-service-card">
                     <div class="lp-service-card__num">03</div>
-                    <div class="lp-service-card__icon"><i class="fas fa-brain text-blue-600"></i></div>
+                    <div class="lp-service-card__icon"><i class="fas fa-brain text-sky-500"></i></div>
                     <h3 class="lp-service-card__title">Psikologi</h3>
                     <p class="lp-service-card__desc">Dukungan kesehatan mental untuk karakter Anda.</p>
                     <a href="{{ route('public.surat-psikolog') }}" class="lp-service-card__link">Formulir Psikologi</a>
@@ -1108,7 +1108,7 @@
                 <!-- 04 -->
                 <article class="lp-service-card">
                     <div class="lp-service-card__num">04</div>
-                    <div class="lp-service-card__icon"><i class="fas fa-heartbeat text-blue-600"></i></div>
+                    <div class="lp-service-card__icon"><i class="fas fa-heartbeat text-sky-500"></i></div>
                     <h3 class="lp-service-card__title">Karakter Kill</h3>
                     <p class="lp-service-card__desc">Layanan medis kritis untuk kebutuhan storyline roleplay.</p>
                     <a href="{{ route('public.pendaftaran-karakter') }}" class="lp-service-card__link">Daftar Sekarang</a>
@@ -1118,7 +1118,7 @@
                 <!-- 05 -->
                 <article class="lp-service-card">
                     <div class="lp-service-card__num">05</div>
-                    <div class="lp-service-card__icon"><i class="fas fa-file-medical text-blue-600"></i></div>
+                    <div class="lp-service-card__icon"><i class="fas fa-file-medical text-sky-500"></i></div>
                     <h3 class="lp-service-card__title">Surat Medis</h3>
                     <p class="lp-service-card__desc">Surat sehat, bebas narkoba, dan keterangan khusus.</p>
                     <a href="{{ route('public.cek-kesehatan') }}" class="lp-service-card__link">Buat Surat</a>
@@ -1263,14 +1263,15 @@
    TOKENS
 ================================================ */
 :root {
-  --lp-blue:   #2563EB;
-  --lp-blue2:  #1D4ED8;
-  --lp-dark:   #0F172A;
-  --lp-ink:    #111827;
-  --lp-muted:  #6B7280;
-  --lp-light:  #F8FAFC;
-  --lp-border: #E5E7EB;
-  --lp-white:  #FFFFFF;
+  --lp-blue:   #0ea5e9; /* Sky 500 - Biru Medis Navbar */
+  --lp-blue2:  #0284c7; /* Sky 600 */
+  --lp-navy:   #0c4a6e; /* Sky 900 - Background Navbar */
+  --lp-dark:   #075985; /* Sky 800 */
+  --lp-ink:    #0f172a;
+  --lp-muted:  #64748b;
+  --lp-light:  #f0f9ff; /* Sky 50 */
+  --lp-border: #e0f2fe; /* Sky 100 */
+  --lp-white:  #ffffff;
   --lp-radius: 16px;
   font-family: 'Inter', sans-serif;
 }
@@ -1358,7 +1359,8 @@
    HERO
 ================================================ */
 .lp-hero {
-  background: var(--lp-blue);
+  background: linear-gradient(180deg, var(--lp-navy) 0%, var(--lp-dark) 100%);
+  padding-top: 40px;
   overflow: hidden;
   position: relative;
 }
@@ -1663,7 +1665,7 @@
    WHY CHOOSE US
 ================================================ */
 .lp-why {
-  background: var(--lp-dark);
+  background: var(--lp-navy);
   padding: 80px 0;
 }
 .lp-why__inner {
@@ -1813,7 +1815,7 @@
 
 /* CTA card */
 .lp-cta-card {
-  background: var(--lp-blue);
+  background: linear-gradient(135deg, var(--lp-navy) 0%, var(--lp-dark) 100%);
   border-radius: 20px;
   padding: 36px 28px;
   color: white;
