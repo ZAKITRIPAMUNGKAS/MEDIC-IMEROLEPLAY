@@ -202,7 +202,7 @@
         @php
             $opHospital = strtolower(trim($operation->hospital ?? 'roxwood'));
             $hospitalName = ($opHospital === 'alta') ? 'ALTA MEDICAL CENTER' : 'ROXWOOD MEDICAL CENTER';
-            $hospitalLogo = ($opHospital === 'alta') ? asset('images/logo_ems.webp') : asset('images/logo rh.png');
+            $hospitalLogo = ($opHospital === 'alta') ? asset('images/logo_ems.webp') : asset('images/logo rhv2.png');
         @endphp
 
         {{-- Print Kop Surat / Logo RS (Hanya tampil saat Print/Export PDF) --}}
