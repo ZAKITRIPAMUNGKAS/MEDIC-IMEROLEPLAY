@@ -135,7 +135,16 @@
                                     <div class="w-8 h-8 rounded-full bg-gradient-to-br from-sky-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm mr-3 shadow-md">
                                         {{ substr($op->nama_pasien, 0, 1) }}
                                     </div>
-                                    <span class="text-white font-medium text-sm">{{ $op->nama_pasien }}</span>
+                                    <div>
+                                        <span class="text-white font-medium text-sm block">{{ $op->nama_pasien }}</span>
+                                        @php $lastLog = $op->logs->first(); @endphp
+                                        @if($lastLog)
+                                            <span class="text-[10px] text-sky-300/80 flex items-center gap-1 mt-0.5" title="{{ $lastLog->created_at->format('d M Y H:i') }}">
+                                                <i class="fas {{ $lastLog->action === 'edit' ? 'fa-pen text-amber-400' : ($lastLog->action === 'create' ? 'fa-plus text-emerald-400' : 'fa-eye text-sky-400') }} text-[9px]"></i>
+                                                <span>{{ ucfirst($lastLog->action) }}: {{ $lastLog->user->name ?? 'Staf' }} ({{ $lastLog->created_at->diffForHumans() }})</span>
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
                             </td>
                             <td class="px-6 py-5 whitespace-nowrap">

@@ -1281,263 +1281,169 @@
 <body class="min-h-screen">
     <!-- Navigation -->
     <nav class="glass-effect fixed w-full top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex items-center">
-                    <a href="{{ route('public.index') }}" class="flex-shrink-0 flex items-center group">
-                        <!-- Logo MOTIONLIFE ROLEPLAY -->
-                        <div
-                            class="h-10 w-10 flex items-center justify-center bg-white rounded-lg elegant-shadow group-hover:shadow-lg transition-all duration-300">
-                            <img src="{{ asset('images/motionlife-logo.png') }}" alt="MOTIONLIFE ROLEPLAY"
-                                class="h-6 w-6 object-contain">
-                        </div>
-                        <div class="ml-3">
-                            <div
-                                class="text-lg font-semibold text-white group-hover:text-gray-200 transition-colors duration-300">
-                                MOTIONLIFE</div>
-                            <div
-                                class="text-xs text-gray-300 -mt-1 group-hover:text-gray-400 transition-colors duration-300">
-                                Portal Medis</div>
-                        </div>
-                    </a>
-                </div>
+        <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
 
-                <!-- Mobile Menu Button (hidden on screens larger than sm) -->
+                {{-- Brand Logo --}}
+                <a href="{{ route('public.index') }}" class="flex-shrink-0 flex items-center gap-2.5 group">
+                    <div class="h-9 w-9 flex items-center justify-center bg-white/95 rounded-xl shadow-md group-hover:shadow-lg transition-all duration-300">
+                        <img src="{{ asset('images/motionlife-logo.png') }}" alt="iMe ROLEPLAY" class="h-6 w-6 object-contain">
+                    </div>
+                    <div class="leading-none">
+                        <div class="text-sm font-bold text-white tracking-widest uppercase group-hover:text-sky-200 transition-colors duration-300">iMe</div>
+                        <div class="text-[10px] text-white/50 tracking-wide">Portal Medis</div>
+                    </div>
+                </a>
+
+                {{-- Mobile Toggle --}}
                 <div class="sm:hidden flex items-center">
-                    <button id="mobile-menu-button"
-                        class="text-white p-2 rounded-lg hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white transition-all duration-300">
-                        <i class="fas fa-bars text-xl"></i>
+                    <button id="mobile-menu-button" class="text-white p-2 rounded-lg hover:bg-white/10 focus:outline-none transition-all duration-300">
+                        <i class="fas fa-bars text-lg"></i>
                     </button>
                 </div>
-                <div class="hidden sm:flex items-center space-x-2 sm:space-x-4" id="desktop-menu">
+
+                {{-- Desktop Menu --}}
+                <div class="hidden sm:flex items-center gap-1.5" id="desktop-menu">
                     @guest
-                        <!-- Show Recruitment button only when not logged in -->
-                        <button onclick="openRecruitmentModal()"
-                            class="bg-white bg-opacity-10 text-white px-4 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center mr-2">
-                            <i class="fas fa-user-plus mr-2"></i>
-                            <span>Recruitment</span>
+                        <button onclick="openRecruitmentModal()" class="inline-flex items-center gap-1.5 h-9 px-3 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-lg border border-white/20 transition-all duration-200 whitespace-nowrap">
+                            <i class="fas fa-user-plus text-sm"></i><span>Recruitment</span>
                         </button>
+                        <a href="{{ route('staff.login') }}" class="inline-flex items-center gap-1.5 h-9 px-3 bg-sky-500/30 hover:bg-sky-500/50 text-white text-xs font-semibold rounded-lg border border-sky-400/40 transition-all duration-200 whitespace-nowrap">
+                            <i class="fas fa-user-md text-sm"></i><span>Login Staf</span>
+                        </a>
                     @endguest
 
                     @auth
-                        <!-- User Info -->
-                        <div class="flex items-center space-x-4">
-                            <div class="text-right">
-                                <div class="text-white text-sm font-medium">Selamat datang,</div>
-                                <div class="text-gray-300 text-xs">{{ auth()->user()->name }}</div>
-                            </div>
+                        {{-- User Badge --}}
+                        <div class="hidden xl:flex items-center gap-2 bg-white/10 border border-white/15 px-3 h-9 rounded-lg mr-1">
+                            <i class="fas fa-user-circle text-sky-300 text-sm"></i>
+                            <span class="text-white/90 text-xs font-medium max-w-[110px] truncate" title="{{ auth()->user()->name }}">{{ auth()->user()->name }}</span>
                         </div>
 
-                        <!-- Navigation Menu -->
-                        <div class="flex items-center space-x-2">
-                            <!-- Primary Menu Items -->
-                            <div class="flex items-center space-x-2">
-                                <a href="{{ route('staff.dashboard') }}"
-                                    class="bg-white bg-opacity-10 text-white px-3 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center whitespace-nowrap">
-                                    <i class="fas fa-tachometer-alt mr-2"></i>
-                                    <span>Dashboard</span>
-                                </a>
+                        {{-- Dashboard --}}
+                        <a href="{{ route('staff.dashboard') }}" class="inline-flex items-center gap-1.5 h-9 px-3 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-lg border border-white/20 transition-all duration-200 whitespace-nowrap">
+                            <i class="fas fa-tachometer-alt text-sm"></i><span>Dashboard</span>
+                        </a>
 
-                                <a href="{{ route('staff.profile') }}"
-                                    class="bg-white bg-opacity-10 text-white px-3 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center whitespace-nowrap">
-                                    <i class="fas fa-user-cog mr-2"></i>
-                                    <span>Profil</span>
-                                </a>
+                        {{-- Profil --}}
+                        <a href="{{ route('staff.profile') }}" class="inline-flex items-center gap-1.5 h-9 px-3 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-lg border border-white/20 transition-all duration-200 whitespace-nowrap">
+                            <i class="fas fa-user-cog text-sm"></i><span>Profil</span>
+                        </a>
 
-                                <a href="{{ route('staff.members.index') }}"
-                                    class="bg-white bg-opacity-10 text-white px-3 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center whitespace-nowrap">
-                                    <i class="fas fa-users mr-2 text-sky-300"></i>
-                                    <span>Anggota</span>
-                                </a>
-
-                                <a href="{{ route('staff.messages.index') }}"
-                                    class="bg-white bg-opacity-10 text-white px-3 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center whitespace-nowrap">
-                                    <i class="fas fa-envelope mr-2 text-cyan-300"></i>
-                                    <span>Pesan</span>
-                                    @php
-                                        try {
-                                            $unreadMessagesCount = \App\Models\MemberMessage::where('receiver_id', auth()->id())->where('is_read', false)->count();
-                                        } catch (\Throwable $e) {
-                                            $unreadMessagesCount = 0;
-                                        }
-                                    @endphp
-                                    @if($unreadMessagesCount > 0)
-                                        <span class="ml-1.5 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold shadow-[0_0_5px_rgba(239,68,68,0.5)] animate-pulse">{{ $unreadMessagesCount }}</span>
-                                    @endif
-                                </a>
-
-                                <a href="{{ route('staff.voting.index') }}"
-                                    class="bg-white bg-opacity-10 text-white px-3 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center whitespace-nowrap">
-                                    <i class="fas fa-vote-yea mr-2 text-indigo-300"></i>
-                                    <span>Voting</span>
-                                </a>
-                                
-                                @if(auth()->user()->isAdmin() || strtolower(trim(auth()->user()->role?->name ?? '')) !== 'trainee')
-                                <a href="{{ route('staff.operations.index') }}"
-                                    class="bg-white bg-opacity-10 text-white px-3 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center whitespace-nowrap">
-                                    <i class="fas fa-procedures mr-2 text-emerald-300"></i>
-                                    <span>Rekam Operasi</span>
-                                </a>
+                        {{-- Menu Staf Dropdown --}}
+                        @php
+                            try { $unreadMessagesCount = \App\Models\MemberMessage::where('receiver_id', auth()->id())->where('is_read', false)->count(); }
+                            catch (\Throwable $e) { $unreadMessagesCount = 0; }
+                        @endphp
+                        <div class="relative group">
+                            <button class="inline-flex items-center gap-1.5 h-9 px-3 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-lg border border-white/20 transition-all duration-200 whitespace-nowrap">
+                                <i class="fas fa-th-large text-sm text-sky-300"></i>
+                                <span>Menu Staf</span>
+                                @if($unreadMessagesCount > 0)
+                                    <span class="inline-flex items-center justify-center w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full animate-pulse">{{ $unreadMessagesCount }}</span>
+                                @else
+                                    <i class="fas fa-chevron-down text-[9px] opacity-60"></i>
                                 @endif
-
-
-                                {{-- Admin Dropdown Menu --}}
-                                @if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('view_attendance_reports') || auth()->user()->hasPermission('access_live_chat') || auth()->user()->hasPermission('access_feedback'))
-                                    <div class="relative group">
-                                        <button
-                                            class="bg-white bg-opacity-10 text-white px-3 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center whitespace-nowrap">
-                                            <i class="fas fa-user-shield mr-2"></i>
-                                            <span>Admin</span>
-                                            <i class="fas fa-chevron-down ml-2 text-xs"></i>
-                                        </button>
-
-                                        {{-- Dropdown Menu --}}
-                                        <div
-                                            class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                                            <div class="py-2">
-                                                @if(auth()->user()->hasPermission('manage_users'))
-                                                    <a href="{{ route('admin.staff.index') }}"
-                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                        <i class="fas fa-users-cog mr-3 w-5"></i>
-                                                        Manajemen Staf
-                                                    </a>
-                                                    <a href="{{ route('admin.doctor-schedules.index') }}"
-                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                        <i class="fas fa-calendar-alt mr-3 w-5"></i>
-                                                        Jadwal Dokter
-                                                    </a>
-                                                    <a href="{{ route('admin.voting.index') }}"
-                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                        <i class="fas fa-poll-h mr-3 w-5 text-indigo-600"></i>
-                                                        Kelola Voting
-                                                    </a>
-                                                @endif
-
-                                                @if(auth()->user()->hasPermission('access_live_chat'))
-                                                    <a href="{{ route('admin.chat.index') }}"
-                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                        <i class="fas fa-comments mr-3 w-5"></i>
-                                                        Live Chat
-                                                    </a>
-                                                @endif
-
-                                                @if(auth()->user()->hasPermission('access_feedback'))
-                                                    <a href="{{ route('admin.feedback.index') }}"
-                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                        <i class="fas fa-comment-dots mr-3 w-5"></i>
-                                                        Laporan & Masukan
-                                                    </a>
-                                                @endif
-
-                                                @if(auth()->user()->isAdmin())
-                                                    <a href="{{ route('admin.organizational-structure.index') }}"
-                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                        <i class="fas fa-sitemap mr-3 w-5"></i>
-                                                        Struktural EMS
-                                                    </a>
-
-                                                    <a href="{{ route('admin.roles.permissions') }}"
-                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                        <i class="fas fa-shield-alt mr-3 w-5"></i>
-                                                        Role Permissions
-                                                    </a>
-                                                @endif
-
-                                                @if(auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('view_attendance_reports'))
-                                                    <div class="border-t border-gray-200 my-1"></div>
-                                                    <a href="{{ route('admin.attendance-reports.index') }}"
-                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                        <i class="fas fa-chart-bar mr-3 w-5"></i>
-                                                        Laporan Absensi
-                                                    </a>
-                                                @endif
-
-                                                @if(auth()->user()->isAdmin())
-                                                    <a href="{{ route('admin.meeting-requests.index') }}"
-                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                        <i class="fas fa-clipboard-check mr-3 w-5"></i>
-                                                        Meeting Requests
-                                                        @php $pendingMeetingCount = \App\Models\MeetingRequest::pending()->count(); @endphp
-                                                        @if($pendingMeetingCount > 0)
-                                                            <span class="ml-auto bg-yellow-500 text-white text-xs px-2 py-0.5 rounded-full">{{ $pendingMeetingCount }}</span>
-                                                        @endif
-                                                    </a>
-                                                @endif
-
-                                                @if(auth()->user()->isAdmin())
-                                                    <a href="{{ route('admin.duty-tracking.index') }}"
-                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                        <i class="fas fa-trophy mr-3 w-5"></i>
-                                                        Duty Tracking
-                                                    </a>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
-                            </div>
-
-                            <!-- Payroll Menu Dropdown -->
-                            <div class="relative group mt-0">
-                                <button
-                                    class="bg-white bg-opacity-10 text-white px-3 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center whitespace-nowrap">
-                                    <i class="fas fa-dollar-sign mr-2"></i>
-                                    <span>Gaji</span>
-                                    <i class="fas fa-chevron-down ml-2 text-xs"></i>
-                                </button>
-
-                                <!-- Dropdown Menu -->
-                                <div
-                                    class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                                    <div class="py-2">
-                                        @if(auth()->user()->hasPermission('manage_payroll'))
-                                            <a href="{{ route('admin.payroll.index') }}"
-                                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                <i class="fas fa-list mr-2"></i>
-                                                Daftar Gaji
-                                            </a>
-                                            <a href="{{ route('admin.salary-settings.index') }}"
-                                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                <i class="fas fa-cog mr-2"></i>
-                                                Atur Gaji
-                                            </a>
-                                            @if(auth()->user()->isAdmin())
-                                                <div class="border-t border-gray-200 my-1"></div>
-                                                <a href="{{ route('admin.reimbursements.index') }}"
-                                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                    <i class="fas fa-file-invoice-dollar mr-2"></i>
-                                                    Reimbursement Tracking
-                                                </a>
-                                            @endif
-                                        @else
-                                            <a href="{{ route('staff.payroll.index') }}"
-                                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
-                                                <i class="fas fa-list mr-2"></i>
-                                                Gaji Saya
-                                            </a>
+                            </button>
+                            <div class="absolute left-0 top-full mt-2 w-52 bg-white rounded-xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-1 group-hover:translate-y-0 transition-all duration-200 z-[9999] overflow-hidden">
+                                <div class="px-3 pt-2.5 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400 border-b border-gray-100">Fitur Staf</div>
+                                <div class="py-1">
+                                    <a href="{{ route('staff.members.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                                        <i class="fas fa-users w-4 text-sky-500 text-sm"></i> Anggota Staf
+                                    </a>
+                                    <a href="{{ route('staff.messages.index') }}" class="flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                                        <span class="flex items-center gap-2.5"><i class="fas fa-envelope w-4 text-cyan-500 text-sm"></i> Pesan Internal</span>
+                                        @if($unreadMessagesCount > 0)
+                                            <span class="inline-flex items-center justify-center w-5 h-5 bg-red-500 text-white text-[9px] font-bold rounded-full animate-pulse">{{ $unreadMessagesCount }}</span>
                                         @endif
-                                    </div>
+                                    </a>
+                                    <a href="{{ route('staff.voting.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                                        <i class="fas fa-vote-yea w-4 text-indigo-500 text-sm"></i> Voting & Poll
+                                    </a>
+                                    @if(auth()->user()->isAdmin() || strtolower(trim(auth()->user()->role?->name ?? '')) !== 'trainee')
+                                        <a href="{{ route('staff.operations.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                                            <i class="fas fa-procedures w-4 text-emerald-500 text-sm"></i> Rekam Operasi
+                                        </a>
+                                    @endif
                                 </div>
                             </div>
-
-                            <!-- Logout Button -->
-                            <form method="POST" action="{{ route('staff.logout') }}" class="inline ml-1 sm:ml-2">
-                                @csrf
-                                <button type="submit"
-                                    class="bg-rose-500/20 text-white px-3 py-2 rounded-lg hover:bg-rose-500/30 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-rose-500/30 flex items-center whitespace-nowrap">
-                                    <i class="fas fa-sign-out-alt mr-2"></i>
-                                    <span>Logout</span>
-                                </button>
-                            </form>
                         </div>
+
+                        {{-- Admin Dropdown --}}
+                        @if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('view_attendance_reports') || auth()->user()->hasPermission('access_live_chat') || auth()->user()->hasPermission('access_feedback'))
+                        <div class="relative group">
+                            <button class="inline-flex items-center gap-1.5 h-9 px-3 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-lg border border-white/20 transition-all duration-200 whitespace-nowrap">
+                                <i class="fas fa-user-shield text-sm text-amber-300"></i>
+                                <span>Admin</span>
+                                <i class="fas fa-chevron-down text-[9px] opacity-60"></i>
+                            </button>
+                            <div class="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-1 group-hover:translate-y-0 transition-all duration-200 z-[9999] overflow-hidden">
+                                <div class="px-3 pt-2.5 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400 border-b border-gray-100">Panel Admin</div>
+                                <div class="py-1">
+                                    @if(auth()->user()->hasPermission('manage_users'))
+                                        <a href="{{ route('admin.staff.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-users-cog w-4 text-slate-500 text-sm"></i> Manajemen Staf</a>
+                                        <a href="{{ route('admin.doctor-schedules.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-calendar-alt w-4 text-blue-500 text-sm"></i> Jadwal Dokter</a>
+                                        <a href="{{ route('admin.voting.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-poll-h w-4 text-indigo-500 text-sm"></i> Kelola Voting</a>
+                                    @endif
+                                    @if(auth()->user()->hasPermission('access_live_chat'))
+                                        <a href="{{ route('admin.chat.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-comments w-4 text-green-500 text-sm"></i> Live Chat</a>
+                                    @endif
+                                    @if(auth()->user()->hasPermission('access_feedback'))
+                                        <a href="{{ route('admin.feedback.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-comment-dots w-4 text-orange-500 text-sm"></i> Laporan & Masukan</a>
+                                    @endif
+                                    @if(auth()->user()->isAdmin())
+                                        <a href="{{ route('admin.organizational-structure.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-sitemap w-4 text-teal-500 text-sm"></i> Struktural EMS</a>
+                                        <a href="{{ route('admin.roles.permissions') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-shield-alt w-4 text-violet-500 text-sm"></i> Role Permissions</a>
+                                    @endif
+                                    @if(auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('view_attendance_reports'))
+                                        <div class="my-1 border-t border-gray-100"></div>
+                                        <a href="{{ route('admin.attendance-reports.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-chart-bar w-4 text-sky-500 text-sm"></i> Laporan Absensi</a>
+                                    @endif
+                                    @if(auth()->user()->isAdmin())
+                                        <a href="{{ route('admin.meeting-requests.index') }}" class="flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
+                                            <span class="flex items-center gap-2.5"><i class="fas fa-clipboard-check w-4 text-yellow-500 text-sm"></i> Meeting Requests</span>
+                                            @php $pendingMeetingCount = \App\Models\MeetingRequest::pending()->count(); @endphp
+                                            @if($pendingMeetingCount > 0)<span class="inline-flex items-center justify-center min-w-[20px] h-5 bg-yellow-400 text-gray-800 text-[9px] font-bold px-1.5 rounded-full">{{ $pendingMeetingCount }}</span>@endif
+                                        </a>
+                                        <a href="{{ route('admin.duty-tracking.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-trophy w-4 text-amber-500 text-sm"></i> Duty Tracking</a>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
+                        {{-- Gaji Dropdown --}}
+                        <div class="relative group">
+                            <button class="inline-flex items-center gap-1.5 h-9 px-3 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-lg border border-white/20 transition-all duration-200 whitespace-nowrap">
+                                <i class="fas fa-wallet text-sm text-emerald-300"></i>
+                                <span>Gaji</span>
+                                <i class="fas fa-chevron-down text-[9px] opacity-60"></i>
+                            </button>
+                            <div class="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-1 group-hover:translate-y-0 transition-all duration-200 z-[9999] overflow-hidden">
+                                <div class="px-3 pt-2.5 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400 border-b border-gray-100">Penggajian</div>
+                                <div class="py-1">
+                                    @if(auth()->user()->hasPermission('manage_payroll'))
+                                        <a href="{{ route('admin.payroll.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-list w-4 text-slate-500 text-sm"></i> Daftar Gaji</a>
+                                        <a href="{{ route('admin.salary-settings.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-sliders-h w-4 text-blue-500 text-sm"></i> Atur Gaji</a>
+                                        @if(auth()->user()->isAdmin())
+                                            <div class="my-1 border-t border-gray-100"></div>
+                                            <a href="{{ route('admin.reimbursements.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-file-invoice-dollar w-4 text-green-500 text-sm"></i> Reimbursement</a>
+                                        @endif
+                                    @else
+                                        <a href="{{ route('staff.payroll.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-money-bill-wave w-4 text-green-500 text-sm"></i> Gaji Saya</a>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Logout --}}
+                        <form method="POST" action="{{ route('staff.logout') }}" class="inline">
+                            @csrf
+                            <button type="submit" class="inline-flex items-center gap-1.5 h-9 px-3 bg-red-500/15 hover:bg-red-500/30 text-red-300 hover:text-white text-xs font-medium rounded-lg border border-red-500/25 transition-all duration-200 whitespace-nowrap">
+                                <i class="fas fa-sign-out-alt text-sm"></i><span>Keluar</span>
+                            </button>
+                        </form>
                     @endauth
-                    @guest
-                        <a href="{{ route('staff.login') }}"
-                            class="bg-white bg-opacity-10 text-white px-4 py-2 sm:px-6 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-xs sm:text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center">
-                            <i class="fas fa-user-md mr-2"></i>
-                            <span>Login Staf</span>
-                        </a>
-                    @endguest
                 </div>
             </div>
         </div>
@@ -1695,12 +1601,12 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="text-center">
                 <div class="flex justify-center items-center mb-4">
-                    <!-- Logo MOTIONLIFE ROLEPLAY -->
+                    <!-- Logo iMe ROLEPLAY -->
                     <div class="h-8 w-8 flex items-center justify-center mr-3 bg-white rounded-lg elegant-shadow">
-                        <img src="{{ asset('images/motionlife-logo.png') }}" alt="MOTIONLIFE ROLEPLAY"
+                        <img src="{{ asset('images/motionlife-logo.png') }}" alt="iMe ROLEPLAY"
                             class="h-5 w-5 object-contain">
                     </div>
-                    <span class="text-lg font-semibold text-white">MOTIONLIFE ROLEPLAY</span>
+                    <span class="text-lg font-semibold text-white">iMe ROLEPLAY</span>
                 </div>
                 <p class="text-gray-300 text-sm mb-4">Layanan medis profesional untuk komunitas role-playing</p>
                 <div class="flex justify-center space-x-6 text-gray-400 text-sm">
@@ -1724,8 +1630,6 @@
             </div>
         </div>
     </footer>
-
-    @stack('scripts')
 
     <!-- Global Image Error Handler - Prevents 404 errors for missing profile images -->
     <script>

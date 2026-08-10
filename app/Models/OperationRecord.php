@@ -49,6 +49,11 @@ class OperationRecord extends Model
         return $this->hasMany(OperationPhoto::class, 'operation_record_id');
     }
 
+    public function logs()
+    {
+        return $this->hasMany(OperationRecordLog::class, 'operation_record_id')->with('user')->orderBy('created_at', 'desc');
+    }
+
 
     /**
      * Get base points by operation type (PHP 7.4+ compatible)

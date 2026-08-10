@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Staff;
 use App\Http\Controllers\Controller;
 use App\Models\OperationRecord;
 use App\Models\OperationPhoto;
+use App\Models\OperationRecordLog;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -42,7 +43,7 @@ class OperationRecordController extends Controller
         // Isolasi data per rumah sakit — hanya tampilkan rekam operasi milik hospital user login
         $userHospital = strtolower(trim(Auth::user()->hospital ?? 'roxwood'));
 
-        $query = OperationRecord::with(['creator', 'dpjp', 'members'])
+        $query = OperationRecord::with(['creator', 'dpjp', 'members', 'logs.user'])
                     ->where('hospital', $userHospital);
 
         // Filters
@@ -197,6 +198,14 @@ class OperationRecordController extends Controller
             }
 
             
+            // Record log creation
+            OperationRecordLog::create([
+                'operation_record_id' => $operation->id,
+                'user_id'             => Auth::id(),
+                'action'              => 'create',
+                'details'             => 'Membuat rekam operasi medis baru',
+            ]);
+
             DB::commit();
 
             return redirect()->route('staff.operations.index')->with('success', 'Rekam Operasi berhasil disimpan.');
@@ -225,12 +234,32 @@ class OperationRecordController extends Controller
     public function show($id)
     {
         $this->checkPermission();
-        $operation = OperationRecord::with(['creator', 'dpjp', 'members.role', 'photos'])->findOrFail($id);
+        $operation = OperationRecord::with(['creator', 'dpjp', 'members.role', 'photos', 'logs.user'])->findOrFail($id);
         
         // Proteksi: staff hanya bisa lihat rekam operasi dari hospital mereka sendiri
         $userHospital = strtolower(trim(Auth::user()->hospital ?? 'roxwood'));
         if (strtolower(trim($operation->hospital ?? '')) !== $userHospital) {
             abort(403, 'Anda tidak memiliki akses ke rekam operasi ini.');
+        }
+
+        // Log view action (debounce 2 mins)
+        try {
+            $lastView = OperationRecordLog::where('operation_record_id', $operation->id)
+                ->where('user_id', Auth::id())
+                ->where('action', 'view')
+                ->where('created_at', '>=', now()->subMinutes(2))
+                ->first();
+
+            if (!$lastView) {
+                OperationRecordLog::create([
+                    'operation_record_id' => $operation->id,
+                    'user_id'             => Auth::id(),
+                    'action'              => 'view',
+                    'details'             => 'Melihat detail rekam operasi',
+                ]);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Gagal mencatat log view: ' . $e->getMessage());
         }
 
         $canEdit = $this->canUserEdit(Auth::user(), $operation);
@@ -351,6 +380,14 @@ class OperationRecordController extends Controller
                     }
                 }
             }
+
+            // Record log edit
+            OperationRecordLog::create([
+                'operation_record_id' => $operation->id,
+                'user_id'             => Auth::id(),
+                'action'              => 'edit',
+                'details'             => 'Mengubah / memperbarui rekam operasi',
+            ]);
 
             DB::commit();
 

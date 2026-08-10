@@ -672,6 +672,68 @@
                     </div>
                 </div>
 
+                {{-- Log Akses & Edit Rekam Medis --}}
+                <div class="bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 overflow-hidden print:hidden">
+                    <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between" style="background: rgba(14,165,233,0.15);">
+                        <h2 class="text-sm font-bold text-white flex items-center gap-2">
+                            <i class="fas fa-history text-sky-400"></i> Log Akses & Edit
+                        </h2>
+                        <span class="px-2 py-0.5 bg-sky-500/20 text-sky-300 text-[11px] font-semibold rounded-full border border-sky-400/30">
+                            {{ $operation->logs->count() }} Aktivitas
+                        </span>
+                    </div>
+
+                    <div class="p-4 max-h-80 overflow-y-auto space-y-2.5 custom-scrollbar">
+                        @forelse($operation->logs as $log)
+                            @php
+                                $actionConfig = [
+                                    'create' => [
+                                        'icon' => 'fa-plus-circle',
+                                        'icon_bg' => 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
+                                        'label' => 'Dibuat oleh',
+                                        'badge' => 'bg-emerald-500/20 text-emerald-300 border-emerald-400/30',
+                                    ],
+                                    'edit' => [
+                                        'icon' => 'fa-edit',
+                                        'icon_bg' => 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+                                        'label' => 'Diedit oleh',
+                                        'badge' => 'bg-amber-500/20 text-amber-300 border-amber-400/30',
+                                    ],
+                                    'view' => [
+                                        'icon' => 'fa-eye',
+                                        'icon_bg' => 'bg-sky-500/20 text-sky-400 border-sky-500/30',
+                                        'label' => 'Dilihat oleh',
+                                        'badge' => 'bg-sky-500/20 text-sky-300 border-sky-400/30',
+                                    ],
+                                ];
+                                $cfg = $actionConfig[$log->action] ?? $actionConfig['view'];
+                            @endphp
+                            <div class="flex items-start gap-3 bg-white/5 hover:bg-white/10 p-2.5 rounded-xl border border-white/5 transition-all text-xs">
+                                <div class="w-7 h-7 rounded-lg {{ $cfg['icon_bg'] }} border flex items-center justify-center shrink-0 mt-0.5">
+                                    <i class="fas {{ $cfg['icon'] }} text-xs"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between gap-1">
+                                        <span class="text-white font-semibold truncate">{{ $log->user->name ?? 'Staf' }}</span>
+                                        <span class="text-[10px] px-1.5 py-0.5 rounded font-mono border {{ $cfg['badge'] }}">
+                                            {{ strtoupper($log->action) }}
+                                        </span>
+                                    </div>
+                                    <p class="text-sky-300/80 text-[10px] mt-0.5">
+                                        {{ $log->created_at ? $log->created_at->format('d M Y, H:i') . ' WIB' : '-' }}
+                                        <span class="text-white/40">({{ $log->created_at ? $log->created_at->diffForHumans() : '' }})</span>
+                                    </p>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="text-center py-6 text-sky-300/60 text-xs">
+                                <i class="fas fa-info-circle text-base mb-1 block"></i>
+                                Belum ada log aktivitas tercatat.
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+
                 {{-- Action Admin / CEO / Executive --}}
                 @php
                     $uRole = strtolower(trim(auth()->user()->role->name ?? ''));
