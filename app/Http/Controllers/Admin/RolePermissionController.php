@@ -60,7 +60,8 @@ class RolePermissionController extends Controller
             'manage_meeting_requests' => 'Kelola Pertemuan (Setujui/tolak permintaan meeting)',
             'access_live_chat' => 'Akses Live Chat (Melihat riwayat pesan bantuan)',
             'reply_livechat' => 'Balas Live Chat (Membalas pesan bantuan warga)',
-            'access_feedback' => 'Akses Kritik & Saran (Melihat laporan & masukan warga)'
+            'access_feedback' => 'Akses Kritik & Saran (Melihat laporan & masukan warga)',
+            'view_medical_records' => 'Lihat Rekam Medis (Akses melihat riwayat rekam medis anggota)'
         ];
 
         return view('admin.roles.permissions', compact('roles', 'allPermissions'));

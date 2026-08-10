@@ -64,6 +64,61 @@ class AttendanceHelper
     }
 
     /**
+     * Get monthly leaderboard data
+     *
+     * @param int $limit
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public static function getMonthlyLeaderboard(int $limit = 10)
+    {
+        $startOfMonth = now()->startOfMonth();
+        $endOfMonth   = now()->endOfMonth();
+
+        return User::with(['role'])
+            ->whereHas('attendances', function ($query) use ($startOfMonth, $endOfMonth) {
+                $query->whereBetween('work_date', [$startOfMonth, $endOfMonth])
+                    ->where('session_type', 'work')
+                    ->whereNotNull('session_duration')
+                    ->where('session_duration', '>', 0);
+            })
+            ->withCount([
+                'attendances' => function ($query) use ($startOfMonth, $endOfMonth) {
+                    $query->whereBetween('work_date', [$startOfMonth, $endOfMonth])
+                        ->where('session_type', 'work')
+                        ->whereNotNull('session_duration')
+                        ->where('session_duration', '>', 0);
+                }
+            ])
+            ->withSum([
+                'attendances' => function ($query) use ($startOfMonth, $endOfMonth) {
+                    $query->whereBetween('work_date', [$startOfMonth, $endOfMonth])
+                        ->whereIn('session_type', ['work', 'meeting'])
+                        ->whereNotNull('session_duration')
+                        ->where('session_duration', '>', 0);
+                }
+            ], 'session_duration')
+            ->orderBy('attendances_sum_session_duration', 'desc')
+            ->limit($limit)
+            ->get()
+            ->map(function ($user) use ($startOfMonth, $endOfMonth) {
+                // Add unique work days count
+                $uniqueWorkDays = Attendance::where('user_id', $user->id)
+                    ->whereBetween('work_date', [$startOfMonth, $endOfMonth])
+                    ->where('session_type', 'work')
+                    ->whereNotNull('session_duration')
+                    ->where('session_duration', '>', 0)
+                    ->distinct('work_date')
+                    ->count('work_date');
+
+                $user->unique_work_days = $uniqueWorkDays;
+                $user->total_hours_formatted = TimeHelper::formatDuration($user->attendances_sum_session_duration);
+                $user->total_hours_decimal   = TimeHelper::secondsToHours($user->attendances_sum_session_duration);
+
+                return $user;
+            });
+    }
+
+    /**
      * Get total number of times a user has been #1 in weekly leaderboard
      *
      * @param int $userId

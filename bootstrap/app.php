@@ -32,6 +32,7 @@ return Application::configure(basePath: dirname(__DIR__))
             StartSession::class,
             ShareErrorsFromSession::class,
             VerifyCsrfToken::class,
+            \App\Http\Middleware\UpdateLastSeen::class,
         ]);
 
         // API group untuk middleware khusus API

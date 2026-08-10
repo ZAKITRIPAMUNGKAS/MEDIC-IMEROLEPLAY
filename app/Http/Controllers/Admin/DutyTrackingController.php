@@ -78,7 +78,7 @@ class DutyTrackingController extends Controller
                     'users.citizen_id', 'users.hospital', 'users.is_active', 'users.profile_image',
                     'users.custom_permissions', 'users.custom_salary', 'users.status',
                     'users.created_at', 'users.updated_at', 'users.password', 'users.remember_token',
-                    'users.email_verified_at'
+                    'users.email_verified_at', 'users.last_seen_at'
                 )
                 ->orderByDesc('total_duty_seconds')
                 ->paginate(50);
@@ -121,34 +121,107 @@ class DutyTrackingController extends Controller
         ];
 
         // Calculate Service Letter Statistics (Top Approvers Overall)
-        $topApproversQuery = MedicalForm::select('processed_by', DB::raw('count(*) as total'))
-            ->with([
-                'processedBy' => function ($query) {
-                    $query->select('id', 'name', 'profile_image', 'role_id', 'staff_id')
-                        ->with('role:id,name');
+        $topApprovers = collect();
+        try {
+            $topApproversQuery = MedicalForm::select('processed_by', DB::raw('count(*) as total'))
+                ->with([
+                    'processedBy' => function ($query) {
+                        $query->select('id', 'name', 'profile_image', 'role_id', 'staff_id')
+                            ->with('role:id,name');
+                    }
+                ])
+                ->where('status', 'approved')
+                ->whereNotNull('processed_by');
+
+            if ($mode === 'weekly') {
+                $topApproversQuery->whereIn(DB::raw('DATE(DATE_SUB(processed_at, INTERVAL WEEKDAY(processed_at) DAY))'), $selectedWeeks);
+            } else {
+                $topApproversQuery->whereIn(DB::raw('DATE_FORMAT(processed_at, "%Y-%m")'), $selectedMonths);
+            }
+
+            if ($hospital !== 'all') {
+                $topApproversQuery->whereHas('processedBy', function($q) use ($hospital) {
+                    $q->where('hospital', $hospital);
+                });
+            }
+
+            $topApprovers = $topApproversQuery->groupBy('processed_by')
+                ->orderByDesc('total')
+                ->take(4)
+                ->get();
+        } catch (\Exception $e) {
+            // Table may not exist yet; skip gracefully
+            $topApprovers = collect();
+        }
+
+        // Calculate Top Operation Points
+        $topOperators = collect();
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('operation_records')) {
+                $opQuery = \App\Models\OperationRecord::with(['members', 'creator']);
+                if ($mode === 'weekly') {
+                    $opQuery->whereIn(DB::raw('DATE(DATE_SUB(tanggal_waktu, INTERVAL WEEKDAY(tanggal_waktu) DAY))'), $selectedWeeks);
+                } else {
+                    $opQuery->whereIn(DB::raw('DATE_FORMAT(tanggal_waktu, "%Y-%m")'), $selectedMonths);
                 }
-            ])
-            ->where('status', 'approved')
-            ->whereNotNull('processed_by');
-            
-        if ($mode === 'weekly') {
-            $topApproversQuery->whereIn(DB::raw('DATE(DATE_SUB(processed_at, INTERVAL WEEKDAY(processed_at) DAY))'), $selectedWeeks);
-        } else {
-            $topApproversQuery->whereIn(DB::raw('DATE_FORMAT(processed_at, "%Y-%m")'), $selectedMonths);
+
+                $operations = $opQuery->get();
+                $userPoints = [];
+
+                foreach ($operations as $op) {
+                    switch ($op->jenis_operasi) {
+                        case 'Operasi Mayor':
+                            $base = 60; break;
+                        case 'Operasi Minor':
+                            $base = 30; break;
+                        case 'Emergency':
+                            $base = 25; break;
+                        case 'Konsultasi Spesialisasi':
+                            $base = 40; break;
+                        default:
+                            $base = 15; break;
+                    }
+
+                    foreach ($op->members as $idx => $member) {
+                        $uId = $member->id;
+                        if (!isset($userPoints[$uId])) {
+                            $userPoints[$uId] = [
+                                'user'         => $member,
+                                'total_points' => 0,
+                                'total_ops'    => 0,
+                                'dpjp_count'   => 0,
+                            ];
+                        }
+                        
+                        // DPJP detection (dpjp_id or first member)
+                        $isDpjp = ($op->dpjp_id && $op->dpjp_id == $uId) || (!$op->dpjp_id && ($op->created_by == $uId || $idx === 0));
+                        $pts = $base + ($isDpjp ? 20 : 0);
+                        
+                        $userPoints[$uId]['total_points'] += $pts;
+                        $userPoints[$uId]['total_ops']    += 1;
+                        if ($isDpjp) {
+                            $userPoints[$uId]['dpjp_count'] += 1;
+                        }
+                    }
+                }
+
+                $topOperators = collect($userPoints)->sortByDesc('total_points')->take(4)->values();
+
+                // Always attach operation_points to each user in rankings
+                foreach ($rankings as $userItem) {
+                    $userItem->operation_points = $userPoints[$userItem->id]['total_points'] ?? 0;
+                    $userItem->operation_count  = $userPoints[$userItem->id]['total_ops']    ?? 0;
+                }
+            }
+        } catch (\Exception $e) {
+            // Table may not exist yet; skip gracefully
+            $topOperators = collect();
         }
 
-        if ($hospital !== 'all') {
-            $topApproversQuery->whereHas('processedBy', function($q) use ($hospital) {
-                $q->where('hospital', $hospital);
-            });
-        }
-
-        $topApprovers = $topApproversQuery->groupBy('processed_by')
-            ->orderByDesc('total')
-            ->take(4)
-            ->get();
-
-        return view('admin.duty-tracking.index', compact('rankings', 'stats', 'selectedMonths', 'availableMonths', 'selectedWeeks', 'availableWeeks', 'topApprovers', 'mode', 'hospital'));
+        return view('admin.duty-tracking.index', compact(
+            'rankings', 'stats', 'selectedMonths', 'availableMonths', 
+            'selectedWeeks', 'availableWeeks', 'topApprovers', 'topOperators', 'mode', 'hospital'
+        ));
     }
 
     /**
@@ -246,7 +319,8 @@ class DutyTrackingController extends Controller
                 'users.updated_at',
                 'users.password',
                 'users.remember_token',
-                'users.email_verified_at'
+                'users.email_verified_at',
+                'users.last_seen_at'
             )
             ->orderByDesc('total_duty_seconds')
             ->get();

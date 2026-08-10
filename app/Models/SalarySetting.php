@@ -90,12 +90,12 @@ class SalarySetting extends Model
 
         // ≥ 10 jam = 100% + overtime
         // Base: 100% weekly salary untuk 10 jam pertama
-        // Overtime: (total jam - 10) × $500 per jam
+        // Overtime: (total jam - 10) × $2000 per jam
         $baseSalary = (int) $weeklySalary;
 
         if ($totalHours > $tenHours) {
             $overtimeHours = $totalHours - $tenHours;
-            $overtimeRatePerHour = 500;
+            $overtimeRatePerHour = 2000;
             $overtimePay = $overtimeHours * $overtimeRatePerHour;
 
             return (int) ($baseSalary + $overtimePay);

@@ -230,6 +230,63 @@
                     </form>
                 </div>
             </div>
+
+            <!-- Riwayat Operasi Card -->
+            <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl mt-8"
+                style="background-color: rgba(7, 89, 133, 0.9);">
+                <div class="p-6 sm:p-8">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div
+                            class="h-12 w-12 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center shadow-lg">
+                            <i class="fas fa-procedures text-white text-xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-white">Riwayat Operasi</h2>
+                            <p class="text-sky-200 text-sm">Daftar operasi yang pernah Anda tangani</p>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="text-sky-200 border-b border-sky-500/30">
+                                    <th class="py-3 px-4 font-semibold">Tanggal</th>
+                                    <th class="py-3 px-4 font-semibold">Jenis Operasi</th>
+                                    <th class="py-3 px-4 font-semibold">Lokasi</th>
+                                    <th class="py-3 px-4 font-semibold">Nama Pasien</th>
+                                    <th class="py-3 px-4 font-semibold text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($operations as $op)
+                                    <tr class="border-b border-sky-500/10 hover:bg-sky-500/10 transition">
+                                        <td class="py-3 px-4 text-white">{{ $op->tanggal_waktu->format('d M Y') }}</td>
+                                        <td class="py-3 px-4">
+                                            <span class="px-2 py-1 text-xs font-semibold rounded-full 
+                                                {{ $op->jenis_operasi == 'Operasi Mayor' ? 'bg-red-500/20 text-red-300 border border-red-500/30' : ($op->jenis_operasi == 'Operasi Minor' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30' : 'bg-blue-500/20 text-blue-300 border border-blue-500/30') }}">
+                                                {{ $op->jenis_operasi }}
+                                            </span>
+                                        </td>
+                                        <td class="py-3 px-4 text-gray-300">{{ $op->lokasi }}</td>
+                                        <td class="py-3 px-4 text-white font-medium">{{ $op->nama_pasien }}</td>
+                                        <td class="py-3 px-4 text-center">
+                                            <a href="{{ route('staff.operations.show', $op->id) }}" class="text-sky-300 hover:text-sky-100 text-sm">
+                                                <i class="fas fa-eye"></i> Detail
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="py-6 text-center text-sky-200">
+                                            Belum ada riwayat operasi yang tercatat.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 @endsection

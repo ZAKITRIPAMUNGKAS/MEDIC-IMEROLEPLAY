@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Carbon\Carbon;
 
 class MeetingRequest extends Model
 {
+    public const STATUS_PENDING  = 'pending';
+    public const STATUS_APPROVED = 'approved';
+    public const STATUS_REJECTED = 'rejected';
+
     protected $fillable = [
         'user_id',
         'requested_date',
@@ -24,24 +28,18 @@ class MeetingRequest extends Model
 
     protected $casts = [
         'requested_date' => 'date',
-        'reviewed_at' => 'datetime',
+        'reviewed_at'    => 'datetime',
     ];
 
     protected $appends = [
         'photo_url',
     ];
 
-    // --- Attributes ---
-
-    public function getPhotoUrlAttribute(): ?string
-    {
-        if ($this->photo) {
-            return asset($this->photo);
-        }
-        return null;
-    }
-
-    // --- Relationships ---
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
 
     public function user(): BelongsTo
     {
@@ -58,108 +56,142 @@ class MeetingRequest extends Model
         return $this->belongsTo(Attendance::class, 'injected_attendance_id');
     }
 
-    // --- Scopes ---
+    /*
+    |--------------------------------------------------------------------------
+    | Accessors
+    |--------------------------------------------------------------------------
+    */
+
+    public function getPhotoUrlAttribute(): ?string
+    {
+        return $this->photo ? asset($this->photo) : null;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Query Scopes
+    |--------------------------------------------------------------------------
+    */
 
     public function scopePending($query)
     {
-        return $query->where('status', 'pending');
+        return $query->where('status', self::STATUS_PENDING);
     }
 
     public function scopeApproved($query)
     {
-        return $query->where('status', 'approved');
+        return $query->where('status', self::STATUS_APPROVED);
     }
 
     public function scopeRejected($query)
     {
-        return $query->where('status', 'rejected');
+        return $query->where('status', self::STATUS_REJECTED);
     }
 
-    // --- Helpers ---
+    /*
+    |--------------------------------------------------------------------------
+    | Status Helpers
+    |--------------------------------------------------------------------------
+    */
 
     public function isPending(): bool
     {
-        return $this->status === 'pending';
+        return $this->status === self::STATUS_PENDING;
     }
 
     public function isApproved(): bool
     {
-        return $this->status === 'approved';
+        return $this->status === self::STATUS_APPROVED;
     }
 
     public function isRejected(): bool
     {
-        return $this->status === 'rejected';
+        return $this->status === self::STATUS_REJECTED;
     }
 
-    /**
-     * Get formatted duration of the meeting request
-     */
-    public function getFormattedDuration(): string
-    {
-        $start = Carbon::parse($this->start_time);
-        $end = Carbon::parse($this->end_time);
+    /*
+    |--------------------------------------------------------------------------
+    | Duration Helpers
+    |--------------------------------------------------------------------------
+    */
 
-        // Handle cross-day
+    protected function getStartAndEndTime(): array
+    {
+        $date = $this->requested_date->format('Y-m-d');
+
+        $start = Carbon::parse("$date {$this->start_time}");
+        $end   = Carbon::parse("$date {$this->end_time}");
+
         if ($end->lt($start)) {
             $end->addDay();
         }
 
-        $diffMinutes = $start->diffInMinutes($end);
-        $hours = floor($diffMinutes / 60);
-        $minutes = $diffMinutes % 60;
-
-        if ($hours > 0 && $minutes > 0) {
-            return "{$hours} jam {$minutes} menit";
-        } elseif ($hours > 0) {
-            return "{$hours} jam";
-        } else {
-            return "{$minutes} menit";
-        }
+        return [$start, $end];
     }
 
-    /**
-     * Get duration in seconds
-     */
     public function getDurationInSeconds(): int
     {
-        $date = Carbon::parse($this->requested_date)->format('Y-m-d');
-        $start = Carbon::parse($date . ' ' . $this->start_time);
-        $end = Carbon::parse($date . ' ' . $this->end_time);
-
-        if ($end->lt($start)) {
-            $end->addDay();
-        }
+        [$start, $end] = $this->getStartAndEndTime();
 
         return $start->diffInSeconds($end);
     }
 
-    /**
-     * Get status badge info for display
-     */
-    public function getStatusBadge(): array
-    {
-        return match ($this->status) {
-            'pending' => [
+   public function getFormattedDuration(): string
+{
+    [$start, $end] = $this->getStartAndEndTime();
+
+    $minutes = $start->diffInMinutes($end);
+
+    $hours = floor($minutes / 60);
+    $mins = $minutes % 60;
+
+    if ($hours > 0 && $mins > 0) {
+        return "{$hours} jam {$mins} menit";
+    }
+
+    if ($hours > 0) {
+        return "{$hours} jam";
+    }
+
+    return "{$mins} menit";
+}
+
+    /*
+    |--------------------------------------------------------------------------
+    | UI Helpers
+    |--------------------------------------------------------------------------
+    */
+
+   public function getStatusBadge(): array
+{
+    switch ($this->status) {
+        case self::STATUS_PENDING:
+            return [
                 'label' => 'Menunggu',
                 'color' => 'yellow',
-                'icon' => 'fa-clock',
-            ],
-            'approved' => [
+                'icon'  => 'fa-clock',
+            ];
+
+        case self::STATUS_APPROVED:
+            return [
                 'label' => 'Disetujui',
                 'color' => 'green',
-                'icon' => 'fa-check-circle',
-            ],
-            'rejected' => [
+                'icon'  => 'fa-check-circle',
+            ];
+
+        case self::STATUS_REJECTED:
+            return [
                 'label' => 'Ditolak',
                 'color' => 'red',
-                'icon' => 'fa-times-circle',
-            ],
-            default => [
+                'icon'  => 'fa-times-circle',
+            ];
+
+        default:
+            return [
                 'label' => 'Unknown',
                 'color' => 'gray',
-                'icon' => 'fa-question-circle',
-            ],
-        };
+                'icon'  => 'fa-question-circle',
+            ];
     }
+}
 }

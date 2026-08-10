@@ -303,164 +303,165 @@
     <script>
         let currentRejectId = null;
 
+function showRejectModal(id) {
+currentRejectId = id;
+
+document.getElementById('rejectModal').classList.remove('hidden');
+document.getElementById('rejectReason').value = '';
+
+setTimeout(() => {
+    document.getElementById('rejectReason').focus();
+}, 100);
+
+document.getElementById('rejectError').classList.add('hidden');
+
+}
+
+function closeRejectModal() {
+document.getElementById('rejectModal').classList.add('hidden');
+}
+
+function confirmReject() {
+const reason = document.getElementById('rejectReason').value.trim();
+
+if (reason.length < 5) {
+    document.getElementById('rejectError').classList.remove('hidden');
+    document.getElementById('rejectReason').focus();
+    return;
+}
+
+const rejectId = currentRejectId;
+
+if (!rejectId) {
+    alert('ID pengajuan tidak ditemukan.');
+    return;
+}
+
+const card = document.getElementById('request-' + rejectId);
+
+if (card) {
+    card.style.opacity = '0.5';
+    card.style.pointerEvents = 'none';
+}
+
+closeRejectModal();
+
+fetch(`/admin/meeting-requests/${rejectId}/reject`, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN':
+            document.querySelector('meta[name="csrf-token"]')?.content,
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+    },
+    body: JSON.stringify({
+        review_notes: reason
+    })
+})
+.then(async response => {
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || 'Terjadi kesalahan');
+    }
+
+    return data;
+})
+.then(data => {
+    if (data.success) {
+        card.innerHTML = `
+            <div class="flex flex-col items-center justify-center py-10 text-center">
+                <div class="w-16 h-16 bg-rose-500/20 border border-rose-500/30 text-rose-400 rounded-full flex items-center justify-center mb-4 shadow-inner">
+                    <i class="fas fa-times text-3xl"></i>
+                </div>
+                <h4 class="text-rose-400 font-extrabold text-xl">Pengajuan Ditolak</h4>
+                <p class="text-gray-300 text-sm mt-2">${data.message}</p>
+            </div>
+        `;
+
+        card.style.opacity = '1';
+        card.classList.replace('border-white/10', 'border-rose-500/50');
+        card.classList.add('bg-rose-500/10');
+
+        currentRejectId = null;
+
+        setTimeout(() => {
+            location.reload();
+        }, 1500);
+    } else {
+        throw new Error(data.message || 'Gagal menolak pengajuan');
+    }
+})
+.catch(error => {
+    console.error(error);
+
+    alert(error.message);
+
+    if (card) {
+        card.style.opacity = '1';
+        card.style.pointerEvents = 'auto';
+    }
+});
+        }
+
         async function approveRequest(id) {
-            const result = await window.confirmAction({
-                title: 'Setujui Pengajuan',
-                text: 'Apakah Anda yakin ingin menyetujui pengajuan meeting ini?',
-                icon: 'question',
-                confirmText: 'Ya, Setujui'
-            });
+    const result = await window.confirmAction({
+        title: 'Setujui Pengajuan',
+        text: 'Yakin ingin menyetujui pengajuan meeting ini? Jam kerja akan otomatis ditambahkan.',
+        icon: 'question',
+        confirmText: 'Ya, Setujui'
+    });
 
-            if (!result.isConfirmed) return;
+    if (!result.isConfirmed) return;
 
-            const card = document.getElementById('request-' + id);
-            card.style.opacity = '0.5';
-            card.style.pointerEvents = 'none';
+    const card = document.getElementById('request-' + id);
+    card.style.opacity = '0.5';
+    card.style.pointerEvents = 'none';
 
-            fetch(`/admin/meeting-requests/${id}/approve`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({})
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (data.success) {
-                    card.innerHTML = `
-                        <div class="flex flex-col items-center justify-center py-10 text-center">
-                            <div class="w-16 h-16 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 rounded-full flex items-center justify-center mb-4 shadow-inner">
-                                <i class="fas fa-check text-3xl"></i>
-                            </div>
-                            <h4 class="text-emerald-400 font-extrabold text-xl">Berhasil Disetujui!</h4>
-                            <p class="text-gray-300 text-sm mt-2">${data.message}</p>
-                        </div>
-                    `;
-                    card.style.opacity = '1';
-                    card.classList.replace('border-white/10', 'border-emerald-500/50');
-                    card.classList.add('bg-emerald-500/10');
-                    setTimeout(() => location.reload(), 1500);
-                } else {
-                    alert('Gagal: ' + (data.message || 'Terjadi kesalahan sistem'));
-                    card.style.opacity = '1';
-                    card.style.pointerEvents = 'auto';
-                }
-            })
-            .catch(err => {
-                alert('Terjadi kesalahan: ' + err.message);
-                card.style.opacity = '1';
-                card.style.pointerEvents = 'auto';
-            });
+    fetch(`/admin/meeting-requests/${id}/approve`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content,
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({ review_notes: null })
+    })
+    .then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message || 'Terjadi kesalahan');
         }
+        return data;
+    })
+    .then(data => {
+        if (data.success) {
+            card.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-10 text-center">
+                    <div class="w-16 h-16 bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 rounded-full flex items-center justify-center mb-4 shadow-inner">
+                        <i class="fas fa-check text-3xl"></i>
+                    </div>
+                    <h4 class="text-emerald-400 font-extrabold text-xl">Pengajuan Disetujui</h4>
+                    <p class="text-gray-300 text-sm mt-2">${data.message}</p>
+                </div>
+            `;
+            card.style.opacity = '1';
+            card.classList.replace('border-white/10', 'border-emerald-500/50');
+            card.classList.add('bg-emerald-500/10');
 
-        function showRejectModal(id) {
-            currentRejectId = id;
-            document.getElementById('rejectModal').classList.remove('hidden');
-            document.getElementById('rejectReason').value = '';
-            setTimeout(() => document.getElementById('rejectReason').focus(), 100);
-            document.getElementById('rejectError').classList.add('hidden');
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            throw new Error(data.message || 'Gagal menyetujui pengajuan');
         }
-
-        function closeRejectModal() {
-            document.getElementById('rejectModal').classList.add('hidden');
-            currentRejectId = null;
-        }
-
-        function confirmReject() {
-            const reason = document.getElementById('rejectReason').value.trim();
-            if (reason.length < 5) {
-                document.getElementById('rejectError').classList.remove('hidden');
-                document.getElementById('rejectReason').focus();
-                return;
-            }
-
-            const card = document.getElementById('request-' + currentRejectId);
-            card.style.opacity = '0.5';
-            card.style.pointerEvents = 'none';
-            closeRejectModal();
-
-            fetch(`/admin/meeting-requests/${currentRejectId}/reject`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ review_notes: reason })
-            })
-            .then(r => r.json())
-            .then(data => {
-                if (data.success) {
-                    card.innerHTML = `
-                        <div class="flex flex-col items-center justify-center py-10 text-center">
-                            <div class="w-16 h-16 bg-rose-500/20 border border-rose-500/30 text-rose-400 rounded-full flex items-center justify-center mb-4 shadow-inner">
-                                <i class="fas fa-times text-3xl"></i>
-                            </div>
-                            <h4 class="text-rose-400 font-extrabold text-xl">Pengajuan Ditolak</h4>
-                            <p class="text-gray-300 text-sm mt-2">${data.message}</p>
-                        </div>
-                    `;
-                    card.style.opacity = '1';
-                    card.classList.replace('border-white/10', 'border-rose-500/50');
-                    card.classList.add('bg-rose-500/10');
-                    setTimeout(() => location.reload(), 1500);
-                } else {
-                    alert('Gagal: ' + (data.message || 'Terjadi kesalahan sistem'));
-                    card.style.opacity = '1';
-                    card.style.pointerEvents = 'auto';
-                }
-            })
-            .catch(err => {
-                alert('Terjadi kesalahan: ' + err.message);
-                card.style.opacity = '1';
-                card.style.pointerEvents = 'auto';
-            });
-        }
-
-        async function undoRequest(id) {
-            const result = await window.confirmAction({
-                title: 'Batalkan Aksi',
-                text: 'Yakin ingin membatalkan aksi dan mengembalikan pengajuan ke status Pending?',
-                icon: 'info',
-                confirmText: 'Ya, Batalkan'
-            });
-
-            if (!result.isConfirmed) return;
-
-            const card = document.getElementById('request-' + id);
-            card.style.opacity = '0.5';
-            card.style.pointerEvents = 'none';
-
-            fetch(`/admin/meeting-requests/${id}/undo`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({})
-            })
-            .then(async r => {
-                const data = await r.json();
-                if (r.ok) {
-                    if (typeof showToast === 'function') {
-                        showToast('success', 'Berhasil!', data.message || 'Status pengajuan berhasil dikembalikan ke Pending');
-                    } else {
-                        alert(data.message || 'Berhasil dikembalikan ke Pending');
-                    }
-                    setTimeout(() => location.reload(), 1500);
-                } else {
-                    alert('Gagal: ' + (data.message || 'Terjadi kesalahan sistem'));
-                    card.style.opacity = '1';
-                    card.style.pointerEvents = 'auto';
-                }
-            })
-            .catch(err => {
-                console.error(err);
-                location.reload(); 
-            });
+    })
+    .catch(error => {
+        console.error(error);
+        alert(error.message);
+        card.style.opacity = '1';
+        card.style.pointerEvents = 'auto';
+    });
         }
 
         // Close modal on outside click

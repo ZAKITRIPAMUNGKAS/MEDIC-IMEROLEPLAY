@@ -158,16 +158,15 @@ class Attendance extends Model
             if ($this->session_duration && !$isAutoCheckout && !$hasScheduledTimer) {
                 // For normal mode only: validate it matches calculated duration
                 if (abs($this->session_duration - $calculatedDuration) > 1) {
-                    \Log::warning('Session duration mismatch detected (normal mode) - fixing both session_duration and total_hours', [
+                    \Log::warning('Session duration mismatch detected (normal mode)', [
                         'attendance_id' => $this->id,
                         'calculated_duration' => $calculatedDuration,
                         'stored_duration' => $this->session_duration,
                         'auto_fixing' => true
                     ]);
 
-                    // Auto-fix: Update session_duration to match calculated duration (seconds) and total_hours (minutes)
+                    // Auto-fix: Update session_duration to match calculated duration (only for normal mode)
                     $this->session_duration = $calculatedDuration;
-                    $this->total_hours = max(1, floor($calculatedDuration / 60));
                 }
             }
         }
@@ -945,27 +944,23 @@ class Attendance extends Model
     {
         $fixed = 0;
 
-        // Ambil hanya record yang cross-week kandidat: clock_out lebih dari 7 hari setelah clock_in
-        // Ini mengurangi jumlah data yang ditarik dan filter lebih lanjut di PHP via isCrossWeek()
-        self::whereNotNull('clock_out')
+        // Find sessions that cross weeks
+        $records = self::whereNotNull('clock_out')
             ->where('is_active', false)
-            ->whereRaw('DATEDIFF(clock_out, clock_in) >= 7') // hanya kandidat cross-week
-            ->chunk(500, function ($records) use (&$fixed) {
-                foreach ($records as $record) {
-                    // Validasi cross-week di PHP (lebih akurat via isCrossWeek)
-                    if (!$record->isCrossWeek()) {
-                        continue;
-                    }
-
-                    if ($record->splitCrossWeekSession()) {
-                        $fixed++;
-                        \Log::info('Cross-week session split successfully', [
-                            'attendance_id' => $record->id,
-                            'user_id'       => $record->user_id
-                        ]);
-                    }
-                }
+            ->get()
+            ->filter(function ($record) {
+                return $record->isCrossWeek();
             });
+
+        foreach ($records as $record) {
+            if ($record->splitCrossWeekSession()) {
+                $fixed++;
+                \Log::info('Cross-week session split successfully', [
+                    'attendance_id' => $record->id,
+                    'user_id' => $record->user_id
+                ]);
+            }
+        }
 
         return $fixed;
     }

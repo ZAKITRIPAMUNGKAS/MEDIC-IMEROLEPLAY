@@ -144,4 +144,19 @@ jspm_packages/
 
 # DynamoDB Local files
 .dynamodb/
-/storage/framework/views/*
+/storage/framework/views/*/public/uploads/
+/public/error_log
+*.zip
+
+/public/uploads/
+/public/error_log
+*.zip
+
+# Server / User Data
+/public/uploads/
+/storage/uploads/
+/public/error_log
+*.zip
+/node_modules/
+/vendor/
+.env

@@ -819,6 +819,105 @@
                 </div>
 
 
+                {{-- ============================================================
+                     LEADERBOARD FILTER BAR
+                ============================================================= --}}
+                <div class="card backdrop-blur-xl border-2 border-white/20 rounded-2xl shadow-xl p-4 sm:p-5"
+                     style="background: linear-gradient(135deg, rgba(15,23,42,0.85), rgba(30,58,138,0.7));">
+                    <form method="GET" action="{{ url()->current() }}" id="lb-filter-form"
+                          class="flex flex-col gap-4">
+
+                        {{-- Preserve other query params (e.g. year for heatmap) --}}
+                        @if(request('year'))
+                            <input type="hidden" name="year" value="{{ request('year') }}">
+                        @endif
+
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                            {{-- Icon + Label --}}
+                            <div class="flex items-center gap-2 shrink-0">
+                                <div class="w-9 h-9 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-lg">
+                                    <i class="fas fa-filter text-white text-sm"></i>
+                                </div>
+                                <span class="text-white font-semibold text-sm sm:text-base">Filter Leaderboard</span>
+                            </div>
+
+                            {{-- Mode toggle --}}
+                            <div class="flex rounded-xl border border-white/20 overflow-hidden text-xs font-semibold shrink-0">
+                                <button type="button" id="lb-mode-month"
+                                        onclick="setLbMode('month')"
+                                        class="px-3 py-2 transition-all duration-200">
+                                    <i class="fas fa-calendar-alt mr-1"></i>Per Bulan
+                                </button>
+                                <button type="button" id="lb-mode-range"
+                                        onclick="setLbMode('range')"
+                                        class="px-3 py-2 transition-all duration-200">
+                                    <i class="fas fa-calendar-week mr-1"></i>Rentang Tanggal
+                                </button>
+                            </div>
+
+                            {{-- Active period badge --}}
+                            <div class="ml-auto px-3 py-1.5 bg-sky-500/20 border border-sky-400/40 rounded-full text-sky-200 text-xs font-medium hidden sm:flex items-center gap-1.5">
+                                <i class="fas fa-clock text-sky-400"></i>
+                                Periode: <strong>{{ $lbFilter['label'] }}</strong>
+                            </div>
+                        </div>
+
+                        {{-- Month mode inputs --}}
+                        <div id="lb-input-month" class="flex flex-col sm:flex-row items-end gap-3">
+                            <div class="flex-1">
+                                <label class="block text-sky-300 text-xs font-semibold mb-1 uppercase tracking-wider">
+                                    <i class="fas fa-calendar mr-1"></i>Pilih Bulan
+                                </label>
+                                <input type="month" name="lb_month" id="lb_month_input"
+                                       value="{{ $lbFilter['month'] }}"
+                                       max="{{ now()->format('Y-m') }}"
+                                       class="w-full px-4 py-2.5 rounded-xl border-2 border-sky-400/50 bg-sky-900/40 text-white text-sm font-medium focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-400/30 transition-all duration-200 cursor-pointer">
+                            </div>
+                            <button type="submit"
+                                    class="px-6 py-2.5 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition-all duration-200 hover:scale-105 flex items-center gap-2 whitespace-nowrap">
+                                <i class="fas fa-search"></i>Tampilkan
+                            </button>
+                        </div>
+
+                        {{-- Range mode inputs --}}
+                        <div id="lb-input-range" class="hidden flex-col sm:flex-row items-end gap-3">
+                            <div class="flex-1">
+                                <label class="block text-sky-300 text-xs font-semibold mb-1 uppercase tracking-wider">
+                                    <i class="fas fa-play mr-1"></i>Dari Tanggal
+                                </label>
+                                <input type="date" name="lb_start" id="lb_start_input"
+                                       value="{{ $lbFilter['start'] }}"
+                                       max="{{ now()->format('Y-m-d') }}"
+                                       class="w-full px-4 py-2.5 rounded-xl border-2 border-sky-400/50 bg-sky-900/30 text-white text-sm font-medium focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-400/30 transition-all duration-200 cursor-pointer">
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-sky-300 text-xs font-semibold mb-1 uppercase tracking-wider">
+                                    <i class="fas fa-stop mr-1"></i>Sampai Tanggal
+                                </label>
+                                <input type="date" name="lb_end" id="lb_end_input"
+                                       value="{{ $lbFilter['end'] }}"
+                                       max="{{ now()->format('Y-m-d') }}"
+                                       class="w-full px-4 py-2.5 rounded-xl border-2 border-sky-400/50 bg-sky-900/30 text-white text-sm font-medium focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-400/30 transition-all duration-200 cursor-pointer">
+                            </div>
+                            <button type="submit"
+                                    class="px-6 py-2.5 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition-all duration-200 hover:scale-105 flex items-center gap-2 whitespace-nowrap">
+                                <i class="fas fa-search"></i>Tampilkan
+                            </button>
+                        </div>
+
+                        {{-- Reset link --}}
+                        <div class="flex items-center justify-between">
+                            <a href="{{ url()->current() }}" class="text-xs text-white/40 hover:text-white/70 transition-colors duration-200 flex items-center gap-1">
+                                <i class="fas fa-undo text-xs"></i>Reset ke bulan ini
+                            </a>
+                            <span class="sm:hidden text-violet-300 text-xs font-medium flex items-center gap-1">
+                                <i class="fas fa-clock text-violet-400 text-xs"></i>
+                                {{ $lbFilter['label'] }}
+                            </span>
+                        </div>
+                    </form>
+                </div>
+
                 <!-- Leaderboard -->
                 <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl elegant-card elegant-stagger"
                     style="background-color: rgba(7, 89, 133, 0.9);">
@@ -827,9 +926,9 @@
                             <div>
                                 <h3 class="text-xl sm:text-2xl font-bold text-white mb-1 sm:mb-2 flex items-center">
                                     <i class="fas fa-trophy text-yellow-400 mr-2 sm:mr-3"></i>
-                                    Leaderboard Absensi Mingguan
+                                    Leaderboard Absensi Bulanan
                                 </h3>
-                                <p class="text-sky-100 font-medium">Peringkat staf berdasarkan total jam kerja</p>
+                                <p class="text-sky-100 font-medium">Peringkat staf berdasarkan total jam kerja bulan ini</p>
                             </div>
                             <div
                                 class="px-3 py-1 bg-sky-500/40 text-sky-100 text-sm font-medium rounded-full border-2 border-sky-400/70 shadow-lg">
@@ -911,6 +1010,91 @@
                     </div>
                 </div>
 
+                {{-- ============================================================
+                     LEADERBOARD PENANGANAN SURAT BULANAN
+                     Tampil untuk semua role yang bisa memproses surat (level >= 2)
+                ============================================================= --}}
+                @if(auth()->user()->isAdmin() || (optional(auth()->user()->role)->level ?? 0) >= 2)
+                <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl elegant-card elegant-stagger"
+                    style="background-color: rgba(7, 89, 133, 0.88);">
+                    <div class="px-6 sm:px-8 py-6 border-b-2 border-sky-400/50">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                            <div>
+                                <h3 class="text-xl sm:text-2xl font-bold text-white mb-1 sm:mb-2 flex items-center">
+                                    <i class="fas fa-file-medical text-sky-400 mr-2 sm:mr-3"></i>
+                                    Leaderboard Penanganan Surat Bulanan
+                                </h3>
+                                <p class="text-sky-100 font-medium">Peringkat staf berdasarkan jumlah surat yang ditangani bulan ini</p>
+                            </div>
+                            <div class="px-3 py-1 bg-sky-500/40 text-sky-100 text-sm font-medium rounded-full border-2 border-sky-400/70 shadow-lg">
+                                {{ $formLeaderboard->count() }} Staf
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-6 sm:p-8 space-y-4">
+                        @forelse($formLeaderboard as $index => $staff)
+                            <div
+                                class="bg-gradient-to-r from-sky-800/50 to-blue-900/40 backdrop-blur-xl rounded-2xl p-4 sm:p-6 hover:from-sky-700/60 hover:to-blue-800/50 transition-all duration-300 card-hover group border-2 border-sky-400/50 hover:border-sky-400/70 shadow-xl {{ $index < 3 ? 'ring-2 ring-yellow-400/70 shadow-2xl' : '' }}">
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                    {{-- Rank Badge + Info --}}
+                                    <div class="flex items-center space-x-3 sm:space-x-4">
+                                        <div class="relative">
+                                            @if($index < 3)
+                                                <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br {{ $index === 0 ? 'from-yellow-500 to-orange-500' : ($index === 1 ? 'from-gray-400 to-gray-500' : 'from-amber-600 to-amber-700') }} text-white rounded-2xl flex items-center justify-center text-lg font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                                    {{ $index + 1 }}
+                                                </div>
+                                                @if($index === 0)
+                                                    <div class="absolute -top-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 bg-yellow-400 rounded-full flex items-center justify-center">
+                                                        <i class="fas fa-crown text-yellow-800 text-xs"></i>
+                                                    </div>
+                                                @endif
+                                            @else
+                                                <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-sky-500 to-cyan-500 text-white rounded-2xl flex items-center justify-center text-lg font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">
+                                                    {{ $index + 1 }}
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="flex items-center space-x-2 mb-1">
+                                                <p class="font-bold text-base sm:text-lg text-white group-hover:text-sky-200 transition-colors duration-300">
+                                                    {{ $staff->name }}
+                                                </p>
+                                                @if($index < 3)
+                                                    <span class="px-2 py-1 text-xs font-medium rounded-full {{ $index === 0 ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-400/30' : ($index === 1 ? 'bg-gray-500/20 text-gray-300 border border-gray-400/30' : 'bg-amber-500/20 text-amber-300 border border-amber-400/30') }}">
+                                                        {{ $index === 0 ? 'Juara 1' : ($index === 1 ? 'Juara 2' : 'Juara 3') }}
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <p class="text-sky-300 font-medium text-sm sm:text-base">
+                                                {{ $staff->role->display_name ?? 'Staf' }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    {{-- Stats --}}
+                                    <div class="text-right">
+                                        <p class="font-black text-2xl sm:text-3xl text-sky-200 group-hover:text-white transition-colors duration-300 drop-shadow-lg leaderboard-number">
+                                            {{ $staff->forms_count }}
+                                        </p>
+                                        <p class="text-sky-300 font-medium text-sm sm:text-lg">surat ditangani</p>
+                                        <p class="text-sky-400 text-xs mt-1">
+                                            <i class="fas fa-check-circle mr-1"></i>{{ $staff->approved_count }} disetujui
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="text-center py-12">
+                                <div class="w-16 h-16 mx-auto mb-4 bg-white/10 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-file-alt text-sky-400 text-2xl"></i>
+                                </div>
+                                <p class="text-sky-200 text-lg font-medium">Belum ada data penanganan surat bulan ini.</p>
+                                <p class="text-sky-300 text-sm mt-2">Data akan muncul setelah surat diproses.</p>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+                @endif
+
                 @if(auth()->user()->isAdmin() || (optional(auth()->user()->role)->level ?? 0) >= 2)
                     <!-- Statistik Form Mingguan (dipindah ke bawah Leaderboard) -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -970,6 +1154,50 @@
                             </div>
                         </div>
                     </div>
+                    
+                    @if(auth()->user()->isAdmin() || in_array(auth()->user()->role->name ?? '', ['perawat', 'co_ass', 'dokter_umum', 'dokter_spesialis', 'management', 'high_command']))
+                    <!-- Rekam Operasi Statistics Row -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                        <!-- Total Operasi -->
+                        <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl elegant-card elegant-stagger"
+                            style="background-color: rgba(7, 89, 133, 0.9);">
+                            <div class="p-4 sm:p-6 text-center">
+                                <div
+                                    class="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
+                                    <i class="fas fa-procedures text-xl sm:text-2xl text-white"></i>
+                                </div>
+                                <h3 class="text-3xl font-black text-sky-300 stat-number mb-2">{{ $opStats['total'] }}</h3>
+                                <p class="text-white font-semibold">Total Operasi</p>
+                            </div>
+                        </div>
+
+                        <!-- Operasi Bulan Ini -->
+                        <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl elegant-card elegant-stagger"
+                            style="background-color: rgba(7, 89, 133, 0.9);">
+                            <div class="p-4 sm:p-6 text-center">
+                                <div
+                                    class="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-sky-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
+                                    <i class="fas fa-calendar-alt text-xl sm:text-2xl text-white"></i>
+                                </div>
+                                <h3 class="text-3xl font-black text-sky-300 stat-number mb-2">{{ $opStats['monthly'] }}</h3>
+                                <p class="text-white font-semibold">Operasi Bulan Ini</p>
+                            </div>
+                        </div>
+
+                        <!-- Operasi Hari Ini -->
+                        <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl elegant-card elegant-stagger"
+                            style="background-color: rgba(7, 89, 133, 0.9);">
+                            <div class="p-4 sm:p-6 text-center">
+                                <div
+                                    class="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
+                                    <i class="fas fa-calendar-day text-xl sm:text-2xl text-white"></i>
+                                </div>
+                                <h3 class="text-3xl font-black text-cyan-300 stat-number mb-2">{{ $opStats['daily'] }}</h3>
+                                <p class="text-white font-semibold">Operasi Hari Ini</p>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
 
                     <!-- Recent Forms Table -->
                     <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl overflow-hidden elegant-card elegant-stagger"
@@ -2017,5 +2245,63 @@
                         });
                 }
             });
+
+        // =====================================================
+        // Leaderboard Filter Mode Toggle
+        // =====================================================
+        const LB_ACTIVE   = 'bg-gradient-to-r from-sky-500 to-cyan-500 text-white shadow-md';
+        const LB_INACTIVE = 'bg-transparent text-white/50 hover:text-white/80';
+
+        function setLbMode(mode) {
+            const monthBtn   = document.getElementById('lb-mode-month');
+            const rangeBtn   = document.getElementById('lb-mode-range');
+            const monthInput = document.getElementById('lb-input-month');
+            const rangeInput = document.getElementById('lb-input-range');
+            
+            const startInput = document.getElementById('lb_start_input');
+            const endInput = document.getElementById('lb_end_input');
+            const mnInput = document.getElementById('lb_month_input');
+
+            if (mode === 'month') {
+                monthBtn.className   = `px-3 py-2 transition-all duration-200 ${LB_ACTIVE}`;
+                rangeBtn.className   = `px-3 py-2 transition-all duration-200 ${LB_INACTIVE}`;
+                monthInput.classList.remove('hidden');
+                monthInput.classList.add('flex');
+                rangeInput.classList.remove('flex');
+                rangeInput.classList.add('hidden');
+                
+                // Clear range inputs so they don't get submitted or validated
+                startInput.removeAttribute('name');
+                startInput.disabled = true;
+                endInput.removeAttribute('name');
+                endInput.disabled = true;
+                
+                mnInput.name = 'lb_month';
+                mnInput.disabled = false;
+            } else {
+                rangeBtn.className   = `px-3 py-2 transition-all duration-200 ${LB_ACTIVE}`;
+                monthBtn.className   = `px-3 py-2 transition-all duration-200 ${LB_INACTIVE}`;
+                rangeInput.classList.remove('hidden');
+                rangeInput.classList.add('flex');
+                monthInput.classList.remove('flex');
+                monthInput.classList.add('hidden');
+                
+                // Clear month input so it doesn't get submitted or validated
+                mnInput.removeAttribute('name');
+                mnInput.disabled = true;
+                
+                startInput.name = 'lb_start';
+                startInput.disabled = false;
+                endInput.name   = 'lb_end';
+                endInput.disabled = false;
+            }
+        }
+
+        // Initialize on page load based on active filter mode from server
+        (function initLbFilter() {
+            const activeMode = @json($lbFilter['mode']);
+            setLbMode(activeMode);
+        })();
+
         </script>
 @endpush

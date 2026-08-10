@@ -1344,6 +1344,42 @@
                                     <span>Profil</span>
                                 </a>
 
+                                <a href="{{ route('staff.members.index') }}"
+                                    class="bg-white bg-opacity-10 text-white px-3 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center whitespace-nowrap">
+                                    <i class="fas fa-users mr-2 text-sky-300"></i>
+                                    <span>Anggota</span>
+                                </a>
+
+                                <a href="{{ route('staff.messages.index') }}"
+                                    class="bg-white bg-opacity-10 text-white px-3 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center whitespace-nowrap">
+                                    <i class="fas fa-envelope mr-2 text-cyan-300"></i>
+                                    <span>Pesan</span>
+                                    @php
+                                        try {
+                                            $unreadMessagesCount = \App\Models\MemberMessage::where('receiver_id', auth()->id())->where('is_read', false)->count();
+                                        } catch (\Throwable $e) {
+                                            $unreadMessagesCount = 0;
+                                        }
+                                    @endphp
+                                    @if($unreadMessagesCount > 0)
+                                        <span class="ml-1.5 bg-red-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold shadow-[0_0_5px_rgba(239,68,68,0.5)] animate-pulse">{{ $unreadMessagesCount }}</span>
+                                    @endif
+                                </a>
+
+                                <a href="{{ route('staff.voting.index') }}"
+                                    class="bg-white bg-opacity-10 text-white px-3 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center whitespace-nowrap">
+                                    <i class="fas fa-vote-yea mr-2 text-indigo-300"></i>
+                                    <span>Voting</span>
+                                </a>
+                                
+                                @if(auth()->user()->isAdmin() || strtolower(trim(auth()->user()->role?->name ?? '')) !== 'trainee')
+                                <a href="{{ route('staff.operations.index') }}"
+                                    class="bg-white bg-opacity-10 text-white px-3 py-2 rounded-lg hover:bg-opacity-20 transition-all duration-300 text-sm font-medium backdrop-blur-sm border border-white border-opacity-20 flex items-center whitespace-nowrap">
+                                    <i class="fas fa-procedures mr-2 text-emerald-300"></i>
+                                    <span>Rekam Operasi</span>
+                                </a>
+                                @endif
+
 
                                 {{-- Admin Dropdown Menu --}}
                                 @if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('view_attendance_reports') || auth()->user()->hasPermission('access_live_chat') || auth()->user()->hasPermission('access_feedback'))
@@ -1369,6 +1405,11 @@
                                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
                                                         <i class="fas fa-calendar-alt mr-3 w-5"></i>
                                                         Jadwal Dokter
+                                                    </a>
+                                                    <a href="{{ route('admin.voting.index') }}"
+                                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                        <i class="fas fa-poll-h mr-3 w-5 text-indigo-600"></i>
+                                                        Kelola Voting
                                                     </a>
                                                 @endif
 
@@ -1520,6 +1561,22 @@
                     <a href="{{ route('staff.profile') }}"
                         class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                             class="fas fa-user-cog w-6 mr-2"></i>Profil</a>
+                    <a href="{{ route('staff.members.index') }}"
+                        class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
+                            class="fas fa-users w-6 mr-2 text-sky-300"></i>Anggota</a>
+                    <a href="{{ route('staff.messages.index') }}"
+                        class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium flex items-center justify-between">
+                        <span><i class="fas fa-envelope w-6 mr-2 text-cyan-300"></i>Pesan</span>
+                        @php $unreadMessagesCount = \App\Models\MemberMessage::where('receiver_id', auth()->id())->where('is_read', false)->count(); @endphp
+                        @if($unreadMessagesCount > 0)
+                            <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-[0_0_5px_rgba(239,68,68,0.5)] animate-pulse">{{ $unreadMessagesCount }}</span>
+                        @endif
+                    </a>
+                    @if(auth()->user()->isAdmin() || strtolower(trim(auth()->user()->role?->name ?? '')) !== 'trainee')
+                    <a href="{{ route('staff.operations.index') }}"
+                        class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
+                            class="fas fa-procedures w-6 mr-2 text-emerald-300"></i>Rekam Operasi</a>
+                    @endif
                     @if(auth()->user()->hasPermission('access_live_chat'))
                         <a href="{{ route('admin.chat.index') }}"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
@@ -2824,6 +2881,38 @@
     @livewireScripts
     @livewireScriptConfig
     @stack('scripts')
+
+    {{-- Global Heartbeat: Update last_seen_at setiap 30 detik selama user aktif di website --}}
+    @auth
+    <script>
+    (function () {
+        var csrfToken = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').content : '';
+
+        function sendHeartbeat() {
+            fetch('/ping-online', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                credentials: 'same-origin'
+            }).catch(function () {});
+        }
+
+        // Kirim heartbeat pertama segera
+        sendHeartbeat();
+
+        // Ulangi setiap 30 detik
+        setInterval(sendHeartbeat, 30000);
+
+        // Refresh CSRF token setiap 4 menit agar sesi tidak expired
+        setInterval(function () {
+            fetch('/sanctum/csrf-cookie', { credentials: 'same-origin' }).catch(function () {});
+        }, 240000);
+    })();
+    </script>
+    @endauth
 </body>
 
 </html>

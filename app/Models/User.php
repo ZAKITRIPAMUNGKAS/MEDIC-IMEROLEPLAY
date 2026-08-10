@@ -30,6 +30,7 @@ class User extends Authenticatable
         'custom_permissions',
         'custom_salary',
         'status',
+        'last_seen_at',
     ];
 
     /**
@@ -54,6 +55,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_active' => 'boolean',
             'custom_permissions' => 'array',
+            'last_seen_at' => 'datetime',
         ];
     }
 
@@ -127,7 +129,7 @@ class User extends Authenticatable
         }
 
         // Check role permissions
-        return $this->role?->hasPermission($permission) ?? false;
+        return (bool) ($this->role?->hasPermission($permission) ?? false);
     }
 
     /**
@@ -343,5 +345,48 @@ class User extends Authenticatable
     public function renameLogs()
     {
         return $this->hasMany(UserRenameLog::class, 'user_id');
+    }
+
+    /**
+     * Get private messages sent by this user
+     */
+    public function sentMessages()
+    {
+        return $this->hasMany(MemberMessage::class, 'sender_id');
+    }
+
+    /**
+     * Get private messages received by this user
+     */
+    public function receivedMessages()
+    {
+        return $this->hasMany(MemberMessage::class, 'receiver_id');
+    }
+
+    /**
+     * Check if user is currently online on the dashboard
+     */
+    public function isOnline(): bool
+    {
+        if ($this->isClockedIn()) {
+            return true;
+        }
+        return $this->last_seen_at && $this->last_seen_at->greaterThanOrEqualTo(now()->subMinutes(5));
+    }
+
+    /**
+     * Get total duty duration in seconds (all-time)
+     */
+    public function getTotalDutySeconds(): int
+    {
+        return $this->attendances()->whereNotNull('clock_out')->sum('session_duration') ?? 0;
+    }
+
+    /**
+     * Get total duty duration formatted as human readable (all-time)
+     */
+    public function getTotalDutyHoursFormatted(): string
+    {
+        return \App\Helpers\TimeHelper::getHumanReadableDuration($this->getTotalDutySeconds());
     }
 }

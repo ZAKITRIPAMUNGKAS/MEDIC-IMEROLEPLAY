@@ -24,8 +24,62 @@ class DashboardController extends Controller
         $isAdmin = $user->isAdmin();
         $userHospital = $isAdmin ? null : $user->getHospital();
 
-        // Get weekly leaderboard data - filter berdasarkan rumah sakit
-        $leaderboard = $this->getWeeklyLeaderboard($isAdmin, $userHospital);
+        // ---------------------------------------------------------------
+        // Leaderboard date filter: supports ?lb_month=YYYY-MM  OR
+        //   ?lb_start=YYYY-MM-DD&lb_end=YYYY-MM-DD
+        // Default: current month
+        // ---------------------------------------------------------------
+        $lbMonth = request('lb_month');           // e.g. "2026-07"
+        $lbStart = request('lb_start');           // e.g. "2026-07-01"
+        $lbEnd   = request('lb_end');             // e.g. "2026-07-31"
+
+        if ($lbStart && $lbEnd) {
+            // Custom date range takes priority
+            try {
+                $lbStartDate = Carbon::parse($lbStart)->startOfDay();
+                $lbEndDate   = Carbon::parse($lbEnd)->endOfDay();
+            } catch (\Exception $e) {
+                $lbStartDate = now()->startOfMonth();
+                $lbEndDate   = now()->endOfMonth();
+            }
+        } elseif ($lbMonth) {
+            // Month picker (YYYY-MM or fallback string)
+            try {
+                $lbStartDate = Carbon::createFromFormat('Y-m', $lbMonth)->startOfMonth();
+                $lbEndDate   = Carbon::createFromFormat('Y-m', $lbMonth)->endOfMonth();
+            } catch (\Exception $e) {
+                try {
+                    $parsed = Carbon::parse($lbMonth);
+                    $lbStartDate = $parsed->copy()->startOfMonth();
+                    $lbEndDate   = $parsed->copy()->endOfMonth();
+                } catch (\Exception $e2) {
+                    $lbStartDate = now()->startOfMonth();
+                    $lbEndDate   = now()->endOfMonth();
+                }
+            }
+        } else {
+            // Default: current month
+            $lbStartDate = now()->startOfMonth();
+            $lbEndDate   = now()->endOfMonth();
+        }
+
+        // Build the label shown in the UI
+        $lbFilterLabel = $lbStartDate->format('d M Y') . ' – ' . $lbEndDate->format('d M Y');
+
+        // Pass the active filter values back to the view for the filter UI
+        $lbFilter = [
+            'month'  => $lbStartDate->format('Y-m'),   // for month input
+            'start'  => $lbStartDate->format('Y-m-d'),  // for date inputs
+            'end'    => $lbEndDate->format('Y-m-d'),
+            'label'  => $lbFilterLabel,
+            'mode'   => ($lbStart && $lbEnd) ? 'range' : 'month',
+        ];
+
+        // Get monthly leaderboard data - filter berdasarkan rumah sakit
+        $leaderboard = $this->getMonthlyLeaderboard($isAdmin, $userHospital, $lbStartDate, $lbEndDate);
+
+        // Get monthly form-handling leaderboard
+        $formLeaderboard = $this->getFormLeaderboard($isAdmin, $userHospital, $lbStartDate, $lbEndDate);
 
         // Appointment types definition
         $appointmentTypes = [
@@ -133,6 +187,17 @@ class DashboardController extends Controller
             'total_forms_today' => (clone $statsQuery)->whereDate('created_at', today())->count(),
         ];
 
+        // Get Operations stats (only if the table exists)
+        $opStats = ['total' => 0, 'monthly' => 0, 'daily' => 0];
+        if (\Illuminate\Support\Facades\Schema::hasTable('operation_records')) {
+            $opStats = [
+                'total' => \App\Models\OperationRecord::count(),
+                'monthly' => \App\Models\OperationRecord::whereMonth('tanggal_waktu', now()->month)
+                                                        ->whereYear('tanggal_waktu', now()->year)->count(),
+                'daily' => \App\Models\OperationRecord::whereDate('tanggal_waktu', today())->count(),
+            ];
+        }
+
         // Get user's attendance sessions for today
         // Only include sessions that actually started today (work_date = today)
         $todaySessions = Attendance::getTodaySessions($user->id);
@@ -162,6 +227,8 @@ class DashboardController extends Controller
 
         return view('staff.dashboard', compact(
             'leaderboard',
+            'formLeaderboard',
+            'lbFilter',
             'recentForms',
             'recentAppointments',
             'stats',
@@ -172,7 +239,8 @@ class DashboardController extends Controller
             'heatmapData',
             'heatmapStats',
             'weeklyStats',
-            'totalEmsHours'
+            'totalEmsHours',
+            'opStats'
         ));
     }
 
@@ -711,26 +779,25 @@ class DashboardController extends Controller
         return view('staff.reports', compact('leaderboardData', 'formStats'));
     }
 
-    private function getWeeklyLeaderboard($isAdmin = false, $userHospital = null)
+    private function getMonthlyLeaderboard($isAdmin = false, $userHospital = null, $startOfMonth = null, $endOfMonth = null)
     {
-        $startOfWeek = now()->startOfWeek();
-        $endOfWeek = now()->endOfWeek();
+        $startOfMonth = $startOfMonth ?? now()->startOfMonth();
+        $endOfMonth   = $endOfMonth   ?? now()->endOfMonth();
 
-        // Query dasar untuk user yang punya attendance
-        $usersQuery = User::whereHas('attendances', function ($query) use ($startOfWeek, $endOfWeek) {
-            $query->whereBetween('work_date', [$startOfWeek, $endOfWeek])
-                ->whereIn('session_type', ['work', 'meeting'])
-                ->whereNotNull('session_duration')
-                ->where('session_duration', '>', 0);
-        });
+        $cacheKey = "dashboard_monthly_lb_" . ($isAdmin ? 'admin' : 'staff') . "_" . ($userHospital ?? 'all') . "_{$startOfMonth->format('Y-m-d')}_{$endOfMonth->format('Y-m-d')}";
+
+        return \Illuminate\Support\Facades\Cache::remember($cacheKey, 60 * 5, function () use ($isAdmin, $userHospital, $startOfMonth, $endOfMonth) {
+            // Query dasar untuk user yang punya attendance bulan ini
+            $usersQuery = User::with(['role'])->whereHas('attendances', function ($query) use ($startOfMonth, $endOfMonth) {
+                $query->whereBetween('work_date', [$startOfMonth, $endOfMonth])
+                    ->whereIn('session_type', ['work', 'meeting'])
+                    ->whereNotNull('session_duration')
+                    ->where('session_duration', '>', 0);
+            });
 
         // Filter berdasarkan rumah sakit jika bukan admin
         if (!$isAdmin && $userHospital) {
-            // Filter user berdasarkan rumah sakit mereka
-            // Alta: user yang bukan Roxwood
-            // Roxwood: user yang merupakan Roxwood
             if ($userHospital === 'alta') {
-                // Exclude user Roxwood (yang namanya mengandung RH, roxwood, dll)
                 $usersQuery->where(function ($q) {
                     $q->whereRaw('LOWER(name) NOT LIKE ?', ['%rh%'])
                         ->whereRaw('LOWER(name) NOT LIKE ?', ['%roxwood%'])
@@ -746,7 +813,6 @@ class DashboardController extends Controller
                         });
                 });
             } else {
-                // Roxwood: user yang namanya mengandung RH, roxwood, dll
                 $usersQuery->where(function ($q) {
                     $q->whereRaw('LOWER(name) LIKE ?', ['%rh%'])
                         ->orWhereRaw('LOWER(name) LIKE ?', ['%roxwood%'])
@@ -766,16 +832,16 @@ class DashboardController extends Controller
 
         $users = $usersQuery
             ->withCount([
-                'attendances' => function ($query) use ($startOfWeek, $endOfWeek) {
-                    $query->whereBetween('work_date', [$startOfWeek, $endOfWeek])
+                'attendances' => function ($query) use ($startOfMonth, $endOfMonth) {
+                    $query->whereBetween('work_date', [$startOfMonth, $endOfMonth])
                         ->whereIn('session_type', ['work', 'meeting'])
                         ->whereNotNull('session_duration')
                         ->where('session_duration', '>', 0);
                 }
             ])
             ->withSum([
-                'attendances' => function ($query) use ($startOfWeek, $endOfWeek) {
-                    $query->whereBetween('work_date', [$startOfWeek, $endOfWeek])
+                'attendances' => function ($query) use ($startOfMonth, $endOfMonth) {
+                    $query->whereBetween('work_date', [$startOfMonth, $endOfMonth])
                         ->whereIn('session_type', ['work', 'meeting'])
                         ->whereNotNull('session_duration')
                         ->where('session_duration', '>', 0);
@@ -788,7 +854,7 @@ class DashboardController extends Controller
         // Add unique work days count and total juara 1 count for each user
         foreach ($users as $user) {
             $uniqueWorkDays = Attendance::where('user_id', $user->id)
-                ->whereBetween('work_date', [$startOfWeek, $endOfWeek])
+                ->whereBetween('work_date', [$startOfMonth, $endOfMonth])
                 ->whereIn('session_type', ['work', 'meeting'])
                 ->whereNotNull('session_duration')
                 ->where('session_duration', '>', 0)
@@ -802,6 +868,61 @@ class DashboardController extends Controller
         }
 
         return $users;
+        });
+    }
+
+    /**
+     * Get monthly form-handling leaderboard.
+     * Ranks staff by number of forms processed (approved OR rejected) this month.
+     */
+    private function getFormLeaderboard($isAdmin = false, $userHospital = null, $startOfMonth = null, $endOfMonth = null)
+    {
+        $startOfMonth = $startOfMonth ?? now()->startOfMonth();
+        $endOfMonth   = $endOfMonth   ?? now()->endOfMonth();
+
+        $cacheKey = "dashboard_form_lb_" . ($isAdmin ? 'admin' : 'staff') . "_" . ($userHospital ?? 'all') . "_{$startOfMonth->format('Y-m-d')}_{$endOfMonth->format('Y-m-d')}";
+
+        return \Illuminate\Support\Facades\Cache::remember($cacheKey, 60 * 5, function () use ($isAdmin, $userHospital, $startOfMonth, $endOfMonth) {
+            $query = User::with(['role'])
+                ->whereHas('processedForms', function ($q) use ($startOfMonth, $endOfMonth) {
+                    $q->whereIn('status', ['approved', 'rejected'])
+                        ->whereBetween('processed_at', [$startOfMonth, $endOfMonth]);
+                })
+            ->withCount([
+                'processedForms as forms_count' => function ($q) use ($startOfMonth, $endOfMonth) {
+                    $q->whereIn('status', ['approved', 'rejected'])
+                        ->whereBetween('processed_at', [$startOfMonth, $endOfMonth]);
+                },
+                'processedForms as approved_count' => function ($q) use ($startOfMonth, $endOfMonth) {
+                    $q->where('status', 'approved')
+                        ->whereBetween('processed_at', [$startOfMonth, $endOfMonth]);
+                },
+            ]);
+
+        // Filter berdasarkan rumah sakit jika bukan admin
+        if (!$isAdmin && $userHospital) {
+            if ($userHospital === 'alta') {
+                $query->where(function ($q) {
+                    $q->whereRaw('LOWER(name) NOT LIKE ?', ['%rh%'])
+                        ->whereRaw('LOWER(name) NOT LIKE ?', ['%roxwood%'])
+                        ->whereRaw('LOWER(name) NOT LIKE ?', ['%rh -%'])
+                        ->whereRaw('LOWER(name) NOT LIKE ?', ['%rh-%']);
+                });
+            } else {
+                $query->where(function ($q) {
+                    $q->whereRaw('LOWER(name) LIKE ?', ['%rh%'])
+                        ->orWhereRaw('LOWER(name) LIKE ?', ['%roxwood%'])
+                        ->orWhereRaw('LOWER(name) LIKE ?', ['%rh -%'])
+                        ->orWhereRaw('LOWER(name) LIKE ?', ['%rh-%']);
+                });
+            }
+        }
+
+        return $query
+                ->orderBy('forms_count', 'desc')
+                ->limit(10)
+                ->get();
+        });
     }
 
     private function getUserWeeklyStats($userId)

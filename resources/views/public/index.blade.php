@@ -1729,4 +1729,5 @@
         // --- REDESIGNED TESTIMONIAL CAROUSEL ENGINE ---
         // (Removed: Switched to Grid Layout for better visibility of 10+ reviews)
     </script>
+</script>
 @endpush

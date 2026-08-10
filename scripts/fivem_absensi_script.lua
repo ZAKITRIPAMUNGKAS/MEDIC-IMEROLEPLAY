@@ -8,6 +8,42 @@ local API_KEY = "45b712ffc6bae5375bdc2be08d487a91422d430d75cfea3390a37ae52817aa1
 -- Untuk keamanan maksimal, gunakan server-side authentication atau environment variables
 
 -- Fungsi untuk mengirim data absensi ke Laravel API
+local function externalPost(cfg, jobName, action, playerId, playerName, clockIn, clockOut, durationSec)
+    if not (cfg and cfg.url) then return end
+
+    local key = tostring(playerId) .. ':' .. action
+    local now = GetGameTimer()
+    if lastExternalAt[key] and (now - lastExternalAt[key]) < DEBOUNCE_MS then
+        return
+    end
+    lastExternalAt[key] = now
+
+    local body = {
+        job          = jobName,
+        action       = action,
+        player_id    = tostring(playerId),
+        player_name  = playerName,
+        clock_in     = clockIn,
+        clock_out    = clockOut,
+        time_on_duty = durationSec and string.format('%02d:%02d:%02d',
+            math.floor(durationSec / 3600),
+            math.floor((durationSec % 3600) / 60),
+            durationSec % 60) or nil,
+    }
+    local headers = { ['Content-Type'] = 'application/json' }
+    if cfg.style == 'apiKey' then
+        headers['X-API-Key'] = cfg.key
+    elseif cfg.style == 'bodyKey' then
+        body.api_key = cfg.key
+    end
+    PerformHttpRequest(cfg.url, function(code, resBody)
+        if code ~= 200 and code ~= 201 and code ~= 302 then
+            print(('^3[mi-bossmenu duty]^7 external %s POST (%s) -> %s %s'):format(
+                action, cfg.url, tostring(code), tostring(resBody and resBody:sub(1, 300) or '')))
+        end
+    end, 'POST', json.encode(body), headers)
+end
+-- Fungsi untuk mengirim data absensi ke Laravel API
 function SendAbsensiData(playerId, playerName, clockIn, clockOut, timeOnDuty)
     -- Validasi input
     if not playerId or not playerName or not clockIn then

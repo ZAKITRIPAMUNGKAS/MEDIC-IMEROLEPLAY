@@ -15,7 +15,12 @@ class StaffController extends Controller
 {
     public function showProfile()
     {
-        return view('staff.profile');
+        $user = Auth::user();
+        $operations = \App\Models\OperationRecord::whereHas('members', function($q) use ($user) {
+            $q->where('user_id', $user->id);
+        })->orderBy('tanggal_waktu', 'desc')->get();
+        
+        return view('staff.profile', compact('operations'));
     }
     public function showLoginForm()
     {

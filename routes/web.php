@@ -4,11 +4,417 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\VotingController;
 use App\Http\Controllers\Admin\StaffManagementController;
+
+// Temporary Debug Route for operations create
+Route::get('/debug-create', function () {
+    try {
+        $controller = app()->make(\App\Http\Controllers\Staff\OperationRecordController::class);
+        return $controller->create();
+    } catch (\Throwable $e) {
+        return '❌ ERROR: ' . $e->getMessage() . '<br>📍 File: ' . $e->getFile() . ':' . $e->getLine() . '<br><pre>' . $e->getTraceAsString() . '</pre>';
+    }
+});
 
 // Test Route
 Route::get('/test', function () {
     return 'Aplikasi berjalan dengan baik!';
+});
+
+// TEMPORARY: Run operation tables migration via browser
+// DELETE THIS ROUTE AFTER USE!
+Route::get('/install-operations', function () {
+    $results = [];
+
+    // Table 1: operation_records
+    if (!\Illuminate\Support\Facades\Schema::hasTable('operation_records')) {
+        \Illuminate\Support\Facades\Schema::create('operation_records', function (\Illuminate\Database\Schema\Blueprint $table) {
+            $table->id();
+            $table->dateTime('tanggal_waktu');
+            $table->string('lokasi');
+            $table->enum('jenis_operasi', ['Operasi Minor', 'Operasi Mayor', 'Emergency', 'Bedah Umum', 'Orthopedi', 'Lainnya']);
+            $table->string('nama_pasien');
+            $table->text('diagnosa');
+            $table->text('tindakan_operasi');
+            $table->text('hasil_operasi');
+            $table->text('catatan')->nullable();
+            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
+            $table->timestamps();
+        });
+        $results[] = '✅ Tabel operation_records berhasil dibuat.';
+    } else {
+        $results[] = '⚠️ Tabel operation_records sudah ada.';
+    }
+
+    // Table 2: operation_record_members
+    if (!\Illuminate\Support\Facades\Schema::hasTable('operation_record_members')) {
+        \Illuminate\Support\Facades\Schema::create('operation_record_members', function (\Illuminate\Database\Schema\Blueprint $table) {
+            $table->id();
+            $table->foreignId('operation_record_id')->constrained('operation_records')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->timestamps();
+        });
+        $results[] = '✅ Tabel operation_record_members berhasil dibuat.';
+    } else {
+        $results[] = '⚠️ Tabel operation_record_members sudah ada.';
+    }
+
+    // Table 3: operation_photos
+    if (!\Illuminate\Support\Facades\Schema::hasTable('operation_photos')) {
+        \Illuminate\Support\Facades\Schema::create('operation_photos', function (\Illuminate\Database\Schema\Blueprint $table) {
+            $table->id();
+            $table->foreignId('operation_record_id')->constrained('operation_records')->onDelete('cascade');
+            $table->string('file_path');
+            $table->timestamps();
+        });
+        $results[] = '✅ Tabel operation_photos berhasil dibuat.';
+    } else {
+        $results[] = '⚠️ Tabel operation_photos sudah ada.';
+    }
+
+    $results[] = '';
+    $results[] = '🎉 Selesai! Silakan hapus route /install-operations dari routes/web.php setelah ini.';
+
+    return implode('<br>', $results);
+});
+
+// TEMPORARY: Add dpjp_id column to operation_records
+// DELETE THIS ROUTE AFTER USE!
+Route::get('/install-dpjp', function () {
+    $results = [];
+
+    try {
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('operation_records', 'dpjp_id')) {
+            \Illuminate\Support\Facades\Schema::table('operation_records', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->unsignedBigInteger('dpjp_id')->nullable()->after('created_by');
+                $table->foreign('dpjp_id')->references('id')->on('users')->onDelete('set null');
+            });
+            $results[] = '✅ Kolom dpjp_id berhasil ditambahkan ke tabel operation_records.';
+        } else {
+            $results[] = '⚠️ Kolom dpjp_id sudah ada. Tidak ada perubahan.';
+        }
+    } catch (\Exception $e) {
+        $results[] = '❌ Error: ' . $e->getMessage();
+    }
+
+    $results[] = '';
+    $results[] = '🎉 Selesai! Silakan hapus route /install-dpjp dari routes/web.php setelah ini.';
+
+    return implode('<br>', $results);
+});
+
+// TEMPORARY: Add medical_details column to operation_records
+// DELETE THIS ROUTE AFTER USE!
+Route::get('/install-medical-details', function () {
+    $results = [];
+
+    try {
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('operation_records', 'medical_details')) {
+            \Illuminate\Support\Facades\Schema::table('operation_records', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->longText('medical_details')->nullable()->after('catatan');
+            });
+            $results[] = '✅ Kolom medical_details berhasil ditambahkan ke tabel operation_records.';
+        } else {
+            $results[] = '⚠️ Kolom medical_details sudah ada. Tidak ada perubahan.';
+        }
+    } catch (\Exception $e) {
+        $results[] = '❌ Error: ' . $e->getMessage();
+    }
+
+    $results[] = '';
+    $results[] = '🎉 Selesai! Silakan hapus route /install-medical-details dari routes/web.php setelah ini.';
+
+    return implode('<br>', $results);
+});
+
+// TEMPORARY: Add hospital column to operation_records
+// DELETE THIS ROUTE AFTER USE!
+Route::get('/install-hospital-column', function () {
+    $results = [];
+
+    try {
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('operation_records', 'hospital')) {
+            \Illuminate\Support\Facades\Schema::table('operation_records', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->string('hospital')->nullable()->default('roxwood')->after('jenis_operasi');
+            });
+            $results[] = '✅ Kolom hospital berhasil ditambahkan ke tabel operation_records.';
+        } else {
+            $results[] = '⚠️ Kolom hospital sudah ada. Tidak ada perubahan.';
+        }
+    } catch (\Exception $e) {
+        $results[] = '❌ Error: ' . $e->getMessage();
+    }
+
+    $results[] = '';
+    $results[] = '🎉 Selesai! Silakan hapus route /install-hospital-column dari routes/web.php setelah ini.';
+
+    return implode('<br>', $results);
+});
+
+// TEMPORARY: Storage installer & folder creator for shared hosting
+Route::get('/fix-storage-link', function () {
+    $results = [];
+    try {
+        // 0. Cek konfigurasi server
+        $maxUpload = ini_get('upload_max_filesize');
+        $maxPost = ini_get('post_max_size');
+        $results[] = "⚙️ <b>Server Config:</b> Max Upload Size: $maxUpload, Max Post Size: $maxPost";
+        
+        // 1. Cek folder public/uploads/operations/ — tempat foto disimpan
+        $uploadsOps = public_path('uploads/operations');
+        if (!file_exists($uploadsOps)) {
+            @mkdir($uploadsOps, 0777, true);
+            $results[] = '✅ Folder public/uploads/operations dibuat.';
+        } else {
+            $results[] = 'ℹ️ Folder public/uploads/operations sudah ada.';
+        }
+
+        // 2. Test write ke folder uploads/operations
+        $testFile = $uploadsOps . '/test_' . time() . '.txt';
+        @file_put_contents($testFile, 'OK');
+        if (file_exists($testFile)) {
+            @unlink($testFile);
+            $results[] = '🚀 Uji penulisan di uploads/operations BERHASIL! Foto bisa diupload.';
+        } else {
+            $results[] = '❌ GAGAL menulis ke uploads/operations. Cek permission folder (chmod 755 atau 775).';
+        }
+
+        // 3. URL yang akan digunakan
+        $sampleUrl = asset('uploads/operations/contoh.jpg');
+        $results[] = '🔗 URL foto akan berformat: <code>' . $sampleUrl . '</code>';
+
+        // 4. Hitung foto di database
+        $photoCount = \App\Models\OperationPhoto::count();
+        $results[] = '';
+        $results[] = "📊 Total foto tersimpan di database: <strong>{$photoCount}</strong> record.";
+        if ($photoCount > 0) {
+            $photos = \App\Models\OperationPhoto::latest()->take(5)->get();
+            foreach ($photos as $p) {
+                $fileFull = public_path($p->file_path);
+                $exists = file_exists($fileFull);
+                $icon = $exists ? '✅' : '❌';
+                $results[] = "$icon ID#{$p->id}: {$p->file_path} " . ($exists ? '(file ada)' : '(FILE TIDAK ADA!)');
+            }
+        }
+
+        $results[] = '';
+        $results[] = '🎉 Selesai! Upload rekam operasi baru dengan foto untuk uji coba.';
+    } catch (\Exception $e) {
+        $results[] = '❌ Exception: ' . $e->getMessage();
+    }
+
+    return implode('<br>', $results);
+});
+
+
+
+// TEMPORARY DIAGNOSTIC ROUTE - DELETE AFTER DEBUGGING
+Route::get('/check-member-system', function () {
+    $results = [];
+    try {
+        $results[] = '✅ PHP: ' . phpversion();
+        $results[] = '✅ Laravel: ' . app()->version();
+
+        // Test member_messages table
+        $msgCount = \App\Models\MemberMessage::count();
+        $results[] = "✅ Tabel member_messages OK - Total: {$msgCount} pesan.";
+
+        // Test last_seen_at column
+        $userCount = \App\Models\User::whereNotNull('last_seen_at')->count();
+        $results[] = "✅ Kolom last_seen_at OK - {$userCount} user pernah online.";
+
+        // Test MemberController can be resolved
+        $controller = app()->make(\App\Http\Controllers\Staff\MemberController::class);
+        $results[] = '✅ MemberController berhasil di-resolve.';
+
+        // Test Livewire component
+        $component = app()->make(\App\Livewire\MemberMessages::class);
+        $results[] = '✅ MemberMessages Livewire component berhasil di-resolve.';
+
+        // Test routes
+        $results[] = '✅ Route staff.members.index: ' . route('staff.members.index');
+        $results[] = '✅ Route staff.messages.index: ' . route('staff.messages.index');
+
+        $results[] = '';
+        $results[] = '🎉 SEMUA KOMPONEN BERFUNGSI DENGAN BAIK!';
+        $results[] = '🗑️ Hapus route /check-member-system dari routes/web.php setelah debug selesai.';
+    } catch (\Exception $e) {
+        $results[] = '❌ ERROR: ' . $e->getMessage();
+        $results[] = '📍 Di: ' . $e->getFile() . ':' . $e->getLine();
+    }
+    return implode('<br>', $results);
+});
+
+// Route web untuk mengecek status migrasi langsung dari browser
+Route::get('/migrate-status', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate:status');
+        return '<pre>' . \Illuminate\Support\Facades\Artisan::output() . '</pre>';
+    } catch (\Exception $e) {
+        return '❌ Error: ' . $e->getMessage();
+    }
+});
+
+// Route web untuk menjalankan migrasi langsung dari browser
+Route::get('/run-migrate', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        return '<pre>' . \Illuminate\Support\Facades\Artisan::output() . '</pre>';
+    } catch (\Exception $e) {
+        return '❌ Error: ' . $e->getMessage();
+    }
+});
+
+// Route otomatis untuk melengkapi kolom & tabel baru di database hosting secara langsung
+Route::get('/auto-setup-db', function () {
+    $logs = [];
+    try {
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('users', 'last_seen_at')) {
+            \Illuminate\Support\Facades\Schema::table('users', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->timestamp('last_seen_at')->nullable();
+            });
+            $logs[] = '✅ Kolom last_seen_at berhasil ditambahkan ke tabel users.';
+        } else {
+            $logs[] = 'ℹ️ Kolom last_seen_at sudah ada di tabel users.';
+        }
+
+        if (!\Illuminate\Support\Facades\Schema::hasTable('member_messages')) {
+            \Illuminate\Support\Facades\Schema::create('member_messages', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->id();
+                $table->foreignId('sender_id')->constrained('users')->onDelete('cascade');
+                $table->foreignId('receiver_id')->constrained('users')->onDelete('cascade');
+                $table->text('message');
+                $table->boolean('is_read')->default(false);
+                $table->timestamp('read_at')->nullable();
+                $table->timestamps();
+
+                $table->index(['sender_id', 'receiver_id']);
+                $table->index(['receiver_id', 'is_read']);
+            });
+            $logs[] = '✅ Tabel member_messages berhasil dibuat.';
+        } else {
+            $logs[] = 'ℹ️ Tabel member_messages sudah ada.';
+        }
+
+        $logs[] = '';
+        $logs[] = '🎉 DATABASE SETUP BERHASIL 100%! SILAKAN KEMBALI KE HALAMAN UTAMA / REFRESH WEBSITE ANDA.';
+    } catch (\Exception $e) {
+        $logs[] = '❌ Error: ' . $e->getMessage();
+    }
+    return implode('<br>', $logs);
+});
+
+// DEBUG: Cek nilai last_seen_at di database
+Route::get('/debug-online', function () {
+    $logs = [];
+    try {
+        $currentUserId = auth()->id();
+        $logs[] = '<b>== Debug Status Online ==</b>';
+        $logs[] = 'Waktu server: ' . now()->toDateTimeString();
+        $logs[] = '';
+
+        // Cek kolom last_seen_at ada atau tidak
+        $hasColumn = \Illuminate\Support\Facades\Schema::hasColumn('users', 'last_seen_at');
+        $logs[] = 'Kolom last_seen_at: ' . ($hasColumn ? '✅ Ada' : '❌ BELUM ADA — jalankan /auto-setup-db dulu!');
+
+        if (!$hasColumn) {
+            return implode('<br>', $logs);
+        }
+
+        // Tampilkan last_seen_at semua user yang login
+        $users = \Illuminate\Support\Facades\DB::table('users')
+            ->whereNotNull('role_id')
+            ->select('id', 'name', 'last_seen_at')
+            ->get();
+
+        $logs[] = '';
+        $logs[] = '<b>Daftar last_seen_at semua staff:</b>';
+        foreach ($users as $u) {
+            $lastSeen = $u->last_seen_at;
+            if ($lastSeen) {
+                $diff = now()->diffInMinutes(\Carbon\Carbon::parse($lastSeen));
+                $status = $diff <= 5 ? '🟢 ONLINE' : '⚫ Offline (' . $diff . ' menit lalu)';
+            } else {
+                $status = '⚫ Offline (belum pernah aktif)';
+            }
+            $marker = ($u->id == $currentUserId) ? ' <-- AKUN ANDA' : '';
+            $logs[] = "- [{$u->id}] {$u->name}: {$lastSeen} → {$status}{$marker}";
+        }
+
+        // Update last_seen_at akun yang sedang login sekarang
+        if ($currentUserId) {
+            \Illuminate\Support\Facades\DB::table('users')
+                ->where('id', $currentUserId)
+                ->update(['last_seen_at' => now()]);
+            $logs[] = '';
+            $logs[] = '✅ last_seen_at akun Anda diperbarui ke: ' . now()->toDateTimeString();
+            $logs[] = 'Silakan buka /staff/members dan lihat apakah indikator hijau muncul.';
+        }
+    } catch (\Exception $e) {
+        $logs[] = '❌ Error: ' . $e->getMessage();
+    }
+    return implode('<br>', $logs);
+});
+
+// REAL-TIME: Heartbeat — update last_seen_at akun yang sedang aktif
+Route::post('/ping-online', function () {
+    try {
+        if (auth()->check()) {
+            \Illuminate\Support\Facades\DB::table('users')
+                ->where('id', auth()->id())
+                ->update(['last_seen_at' => now()]);
+        }
+        return response()->json(['ok' => true]);
+    } catch (\Throwable $e) {
+        return response()->json(['ok' => false]);
+    }
+})->middleware(['web']);
+
+// REAL-TIME: API daftar user ID yang sedang online (untuk polling JS)
+Route::get('/api-online-users', function () {
+    try {
+        $threshold = now()->subMinutes(5);
+
+        $onlineByActivity = \Illuminate\Support\Facades\DB::table('users')
+            ->whereNotNull('role_id')
+            ->where('last_seen_at', '>=', $threshold)
+            ->pluck('id')
+            ->toArray();
+
+        $onlineByClock = \Illuminate\Support\Facades\DB::table('attendances')
+            ->whereNull('clock_out')
+            ->pluck('user_id')
+            ->toArray();
+
+        $allOnline = array_values(array_unique(array_merge($onlineByActivity, $onlineByClock)));
+
+        return response()->json(['online_ids' => $allOnline]);
+    } catch (\Throwable $e) {
+        return response()->json(['online_ids' => []]);
+    }
+})->middleware(['web']);
+
+// TEMPORARY: Fix jenis_operasi enum to include Konsultasi Spesialisasi
+// Run: /fix-operasi-enum — then delete this route
+Route::get('/fix-operasi-enum', function () {
+    $results = [];
+    try {
+        // MySQL ALTER TABLE to change enum values
+        \Illuminate\Support\Facades\DB::statement("ALTER TABLE operation_records MODIFY COLUMN jenis_operasi ENUM('Operasi Minor','Operasi Mayor','Emergency','Konsultasi Spesialisasi','Lainnya') NOT NULL");
+        $results[] = '✅ Berhasil! Kolom jenis_operasi sekarang mendukung semua jenis operasi:';
+        $results[] = '&nbsp;&nbsp;✅ Operasi Minor';
+        $results[] = '&nbsp;&nbsp;✅ Operasi Mayor';
+        $results[] = '&nbsp;&nbsp;✅ Emergency';
+        $results[] = '&nbsp;&nbsp;✅ Konsultasi Spesialisasi';
+        $results[] = '&nbsp;&nbsp;✅ Lainnya';
+        $results[] = '';
+        $results[] = '🎉 Sekarang Anda bisa menambahkan rekam operasi jenis apapun!';
+        $results[] = '🗑️ Hapus route /fix-operasi-enum dari routes/web.php setelah ini.';
+    } catch (\Exception $e) {
+        $results[] = '❌ Error: ' . $e->getMessage();
+    }
+    return implode('<br>', $results);
 });
 
 // New Modern Auth Portal Route
@@ -186,6 +592,31 @@ Route::middleware(['auth', 'staff'])->group(function () {
     Route::get('/staff/meeting-requests', [\App\Http\Controllers\MeetingRequestController::class, 'index'])->name('staff.meeting-requests.index');
     Route::get('/staff/meeting-requests/create', [\App\Http\Controllers\MeetingRequestController::class, 'create'])->name('staff.meeting-requests.create');
     Route::post('/staff/meeting-requests', [\App\Http\Controllers\MeetingRequestController::class, 'store'])->name('staff.meeting-requests.store');
+
+    // Voting routes for staff
+    Route::get('/staff/voting', [VotingController::class, 'index'])->name('staff.voting.index');
+    Route::get('/staff/voting/{id}', [VotingController::class, 'show'])->name('staff.voting.show');
+    Route::post('/staff/voting/{id}/vote', [VotingController::class, 'vote'])->name('staff.voting.vote');
+
+    // Operations routes for staff
+    Route::get('/staff/operations', [\App\Http\Controllers\Staff\OperationRecordController::class, 'index'])->name('staff.operations.index');
+    Route::get('/staff/operations/create', [\App\Http\Controllers\Staff\OperationRecordController::class, 'create'])->name('staff.operations.create');
+    Route::post('/staff/operations', [\App\Http\Controllers\Staff\OperationRecordController::class, 'store'])->name('staff.operations.store');
+    Route::get('/staff/operations/{id}/edit', [\App\Http\Controllers\Staff\OperationRecordController::class, 'edit'])->name('staff.operations.edit');
+    Route::put('/staff/operations/{id}', [\App\Http\Controllers\Staff\OperationRecordController::class, 'update'])->name('staff.operations.update');
+    Route::get('/staff/operations/{id}', [\App\Http\Controllers\Staff\OperationRecordController::class, 'show'])->name('staff.operations.show');
+    
+    // API endpoint for searching members
+    Route::get('/api/members/search', [\App\Http\Controllers\Staff\OperationRecordController::class, 'searchMembers'])->name('api.members.search');
+
+    // Members Directory & Profiles
+    Route::get('/staff/members', [\App\Http\Controllers\Staff\MemberController::class, 'index'])->name('staff.members.index');
+    Route::get('/staff/members/{user}', [\App\Http\Controllers\Staff\MemberController::class, 'show'])->name('staff.members.show');
+
+    // Private Messages (Direct Messaging)
+    Route::get('/staff/messages', function () {
+        return view('staff.messages.index');
+    })->name('staff.messages.index');
 });
 
 // Admin routes
@@ -208,6 +639,10 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
         ->middleware('permission:manage_users');
     Route::post('/doctor-schedules/{doctor_schedule}/toggle-active', [\App\Http\Controllers\Admin\DoctorScheduleController::class, 'toggleActive'])
         ->middleware('permission:manage_users')->name('doctor-schedules.toggle-active');
+
+    // Admin Operations deletion
+    Route::delete('/operations/{id}', [\App\Http\Controllers\Admin\OperationRecordController::class, 'destroy'])
+        ->middleware('permission:manage_users')->name('operations.destroy');
     // Route::resource('medical-forms', \App\Http\Controllers\Admin\MedicalFormController::class)->middleware('permission:manage_forms');
     // Route::resource('staff-roles', \App\Http\Controllers\Admin\StaffRoleController::class)->middleware('permission:manage_settings');
     // Attendance reports
@@ -373,4 +808,13 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/telegram/test', [\App\Http\Controllers\Admin\TelegramSettingController::class, 'test'])
         ->middleware('admin')
         ->name('telegram.test');
+
+    // Voting Management (Admin / High Command)
+    Route::get('/voting', [VotingController::class, 'adminIndex'])->middleware('permission:manage_users')->name('voting.index');
+    Route::get('/voting/create', [VotingController::class, 'create'])->middleware('permission:manage_users')->name('voting.create');
+    Route::post('/voting', [VotingController::class, 'store'])->middleware('permission:manage_users')->name('voting.store');
+    Route::get('/voting/{id}/edit', [VotingController::class, 'edit'])->middleware('permission:manage_users')->name('voting.edit');
+    Route::put('/voting/{id}', [VotingController::class, 'update'])->middleware('permission:manage_users')->name('voting.update');
+    Route::post('/voting/{id}/toggle-status', [VotingController::class, 'toggleStatus'])->middleware('permission:manage_users')->name('voting.toggle-status');
+    Route::delete('/voting/{id}', [VotingController::class, 'destroy'])->middleware('permission:manage_users')->name('voting.destroy');
 });

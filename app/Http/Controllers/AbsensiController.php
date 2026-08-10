@@ -20,11 +20,13 @@ class AbsensiController extends Controller
     {
         // Validasi input dengan sanitasi
         $validator = Validator::make($request->all(), [
-            'player_id' => 'required|string|max:255|regex:/^[a-zA-Z0-9_:]+$/',
-            'player_name' => 'required|string|max:255|regex:/^[a-zA-Z0-9\s_-]+$/',
-            'clock_in' => 'required|date|before_or_equal:now',
-            'clock_out' => 'nullable|date|after:clock_in',
-            'time_on_duty' => 'nullable|string|regex:/^\d{2}:\d{2}:\d{2}$/'
+    'action'      => 'nullable|string|in:clock_in,clock_out', // ← tambah ini
+    'job'         => 'nullable|string|max:100',               // ← tambah ini
+    'player_id'   => 'required|string|max:255|regex:/^[a-zA-Z0-9_:]+$/',
+    'player_name' => 'required|string|max:255|regex:/^[a-zA-Z0-9\s_-]+$/',
+    'clock_in'    => 'required|date|before_or_equal:now',
+    'clock_out'   => 'nullable|date|after:clock_in',
+    'time_on_duty' => 'nullable|string|regex:/^\d{2}:\d{2}:\d{2}$/'
         ], [
             'player_id.required' => 'Player ID wajib diisi',
             'player_id.regex' => 'Player ID hanya boleh berisi huruf, angka, underscore, dan colon',
