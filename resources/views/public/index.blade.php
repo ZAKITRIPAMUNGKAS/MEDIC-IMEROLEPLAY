@@ -794,22 +794,35 @@
             <div class="text-center space-y-8 animate-fade-in-up">
 
                 <!-- Logo Section with Enhanced Effects -->
-                <div class="flex justify-center items-center gap-5 mb-8">
+                <div class="flex justify-center items-center gap-4 sm:gap-6 mb-8 flex-wrap">
+                    <!-- iMe Logo -->
                     <div class="relative group">
                         <div
                             class="absolute inset-0 bg-cyan-500/30 rounded-full blur-2xl group-hover:opacity-75 transition-opacity duration-300">
                         </div>
-                        <img src="{{ asset('images/logoime.webp') }}" alt="MOTIONLIFE"
+                        <img src="{{ asset('images/logoime.webp') }}" alt="iMe Roleplay"
                             class="relative h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 object-contain drop-shadow-2xl animate-float">
                     </div>
+                    <!-- EMS Alta Logo -->
                     <div class="relative group">
                         <div
                             class="absolute inset-0 bg-blue-500/30 rounded-full blur-2xl group-hover:opacity-75 transition-opacity duration-300">
                         </div>
                         <div
                             class="relative h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 flex items-center justify-center bg-white/15 backdrop-blur-xl rounded-3xl border-2 border-white/30 shadow-2xl animate-float hover:bg-white/25 transition-all duration-300">
-                            <img src="{{ asset('images/motionlife-logo.png') }}" alt="EMS"
+                            <img src="{{ asset('images/motionlife-logo.png') }}" alt="EMS Alta"
                                 class="h-16 w-16 sm:h-20 sm:w-20 lg:h-24 lg:w-24 object-contain">
+                        </div>
+                    </div>
+                    <!-- Roxwood Hospital Logo -->
+                    <div class="relative group">
+                        <div
+                            class="absolute inset-0 bg-amber-500/30 rounded-full blur-2xl group-hover:opacity-75 transition-opacity duration-300">
+                        </div>
+                        <div
+                            class="relative h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 flex items-center justify-center bg-white/15 backdrop-blur-xl rounded-3xl border-2 border-white/30 shadow-2xl animate-float hover:bg-white/25 transition-all duration-300 p-2">
+                            <img src="{{ asset('images/logo rh.png') }}" alt="Roxwood Hospital"
+                                class="h-16 w-16 sm:h-20 sm:w-20 lg:h-24 lg:w-24 object-contain drop-shadow-lg">
                         </div>
                     </div>
                 </div>
