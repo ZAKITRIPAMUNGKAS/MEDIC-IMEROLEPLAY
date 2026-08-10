@@ -55,13 +55,24 @@
                 <!-- Poliklinik -->
                 <div>
                     <label for="poli" class="block text-sm font-semibold text-gray-300 mb-2">Poliklinik (Poli)</label>
-                    <select name="poli" id="poli" required
-                            class="w-full bg-white/10 text-white border border-white/20 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 appearance-none text-sm cursor-pointer">
-                        <option value="">Pilih Poliklinik</option>
-                        @foreach($poliList as $pli)
-                            <option value="{{ $pli }}" @selected(old('poli') == $pli) class="bg-slate-800 text-slate-100">{{ $pli }}</option>
-                        @endforeach
-                    </select>
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-sky-400 pointer-events-none text-sm"></i>
+                        <input type="text"
+                               name="poli"
+                               id="poli"
+                               list="poli_suggestions"
+                               value="{{ old('poli') }}"
+                               placeholder="Ketik nama poliklinik..."
+                               autocomplete="off"
+                               required
+                               class="w-full bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded-lg pl-12 pr-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 text-sm transition-all">
+                        <datalist id="poli_suggestions">
+                            @foreach($poliList as $pli)
+                                <option value="{{ $pli }}">{{ $pli }}</option>
+                            @endforeach
+                        </datalist>
+                    </div>
+                    <p class="text-[11px] text-sky-400/70 mt-1.5"><i class="fas fa-info-circle mr-1"></i>Ketik untuk mencari atau masukkan nama poli baru secara manual.</p>
                 </div>
 
                 <!-- Days (Multiple Selection) -->
