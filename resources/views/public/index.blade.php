@@ -1,4 +1,4 @@
-﻿@extends('layouts.app')
+@extends('layouts.app')
 
 @section('title', 'Portal Medis iMe Roleplay - Layanan Medis untuk Komunitas RP')
 
@@ -756,949 +756,1101 @@
             </div>
         </div>
     </div>
-    <!-- =========================================================
-         HERO
-    ========================================================= -->
-    <section class="hero-wrapper">
-        <div class="hero">
+    <!-- ================================================================
+         HERO â€” Innovation Clinic style
+    ================================================================ -->
+    <section class="lp-hero">
+        <div class="lp-hero__inner">
 
-            <!-- HERO COPY -->
-            <div class="hero-content">
-                <div class="hero-eyebrow">Los Santos Medical Services</div>
-                <h1 class="hero-title">iMe</h1>
-                <p class="hero-subtitle">
-                    Portal medis terpadu untuk mendapatkan layanan kesehatan
-                    yang cepat, profesional, dan terpercaya.
+            <!-- LEFT: copy -->
+            <div class="lp-hero__copy">
+                <p class="lp-hero__eyebrow">Los Santos Medical Services</p>
+                <h1 class="lp-hero__title">iMe<br><span>Medical</span></h1>
+                <p class="lp-hero__sub">
+                    We combine innovative technologies with a human approach
+                    to make every patient feel confident and calm.
                 </p>
-                <div class="hero-arrow">â†“</div>
+                <div class="lp-hero__actions">
+                    <a href="#layanan" class="lp-btn lp-btn--white">Lihat Layanan</a>
+                    <a href="{{ route('public.doctor-schedule') }}" class="lp-btn lp-btn--outline">Jadwal Dokter</a>
+                </div>
+                <!-- stats -->
+                <div class="lp-hero__stats">
+                    <div class="lp-stat">
+                        <strong>{{ number_format($stats['total_forms']) }}+</strong>
+                        <span>Pasien</span>
+                    </div>
+                    <div class="lp-stat-divider"></div>
+                    <div class="lp-stat">
+                        <strong>{{ $stats['total_staff'] }}+</strong>
+                        <span>Tenaga Medis</span>
+                    </div>
+                    <div class="lp-stat-divider"></div>
+                    <div class="lp-stat">
+                        <strong>100%</strong>
+                        <span>Digital</span>
+                    </div>
+                </div>
             </div>
 
-            <!-- WEBSITE MOCKUP -->
-            <div class="mockup-stage">
-                <div class="browser">
-                    <div class="browser-bar">
-                        <span class="dot"></span>
-                        <span class="dot"></span>
-                        <span class="dot"></span>
-                        <div class="ml-4 h-5 w-64 rounded-full bg-white border border-gray-200"></div>
-                    </div>
+            <!-- RIGHT: doctor image + floating chips -->
+            <div class="lp-hero__visual">
+                <div class="lp-hero__img-wrap">
+                    <img
+                        src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=900&q=85"
+                        alt="Doctor iMe Medical"
+                        class="lp-hero__doctor"
+                    >
+                    <!-- floating chips -->
+                    <div class="lp-chip lp-chip--1">Reliability</div>
+                    <div class="lp-chip lp-chip--2">Experience</div>
+                    <div class="lp-chip lp-chip--3">Professional</div>
 
-                    <div class="browser-content">
-                        <div class="browser-left">
-                            <div class="browser-small">INNOVATIVE MEDICAL SERVICE</div>
-                            <h2 class="browser-heading">
-                                Medical care
-                                <span>with confidence.</span>
-                            </h2>
-                            <p class="browser-description">
-                                Kami menghadirkan pengalaman pelayanan medis
-                                yang nyaman, cepat, dan profesional untuk
-                                seluruh masyarakat Los Santos.
-                            </p>
-                            <a href="#layanan" class="browser-button">Lihat Layanan â†’</a>
+                    <!-- mini card bottom-right -->
+                    <div class="lp-hero__mini-card">
+                        <div class="lp-hero__mini-card-img">
+                            <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=400&q=80" alt="Hospital">
                         </div>
-
-                        <div class="browser-right">
-                            <img
-                                class="doctor-image"
-                                src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=900&q=85"
-                                alt="Doctor"
-                            >
-                            <div class="floating-label label-1">Reliability</div>
-                            <div class="floating-label label-2">Professional</div>
-                            <div class="floating-label label-3">Experience</div>
+                        <div>
+                            <div class="lp-hero__mini-card-title">Alta Hospital</div>
+                            <div class="lp-hero__mini-card-sub">Alta Street, Los Santos</div>
                         </div>
                     </div>
+                </div>
+
+                <!-- right-side text block -->
+                <div class="lp-hero__right-text">
+                    <p class="lp-hero__right-label">With Advanced Technologies</p>
+                    <p class="lp-hero__right-desc">
+                        Sistem digital terpadu, diagnostik modern â€” semua dalam
+                        satu portal khusus untuk komunitas RP.
+                    </p>
                 </div>
             </div>
 
         </div>
     </section>
 
-    <!-- =========================================================
-         MAIN CONTENT
-    ========================================================= -->
-    <main class="content-section">
-        <div class="section-container">
+    <!-- ================================================================
+         ABOUT â€” centered statement
+    ================================================================ -->
+    <section class="lp-about">
+        <div class="lp-container">
+            <p class="lp-about__text">
+                We combine innovative
+                <span class="lp-icon-inline">âœš</span>
+                technologies with a human approach to make every patient
+                <span class="lp-icon-inline">ðŸ‘¨â€âš•ï¸</span>
+                feel <em>confident and calm.</em>
+            </p>
+            <p class="lp-about__sub">
+                iMe adalah platform yang menjadi space of trust, modern medicine and care, based
+                on many years of experience and love for people.
+            </p>
+            <a href="#tentang" class="lp-btn lp-btn--dark">More about us â†’</a>
+        </div>
+    </section>
 
-            <!-- INTRO -->
-            <div class="intro">
-                <div class="text-xs uppercase tracking-[.18em] text-blue-600 font-bold">iMe Medical</div>
-                <h2 class="mt-4">
-                    Teknologi medis,<br>dengan sentuhan manusia.
-                </h2>
-                <p>
-                    Kami menggabungkan sistem digital dengan pelayanan
-                    kesehatan yang humanis agar setiap pasien mendapatkan
-                    pengalaman yang cepat, nyaman, dan terpercaya.
+    <!-- ================================================================
+         SERVICES
+    ================================================================ -->
+    <section id="layanan" class="lp-services">
+        <div class="lp-container">
+
+            <div class="lp-services__header">
+                <div>
+                    <h2 class="lp-section-title">Our medical<br>services <span class="lp-tag">iMe</span></h2>
+                </div>
+                <p class="lp-services__desc">
+                    We provide a full range of medical services â€”
+                    from consultation to diagnosis and treatment.
+                    <a href="{{ route('public.doctor-schedule') }}" class="lp-link">See all services â†’</a>
                 </p>
             </div>
 
-            <!-- ABOUT -->
-            <section id="tentang">
-                <div class="about-block">
-                    <div class="about-content">
-                        <div class="text-xs uppercase tracking-[.15em] text-blue-600 font-bold">Tentang iMe</div>
-                        <h3 class="mt-4">
-                            Pelayanan yang
-                            <span class="text-blue-600">sederhana.</span>
-                        </h3>
-                        <p>
-                            Seluruh kebutuhan medis Anda tersedia dalam
-                            satu portal. Mulai dari konsultasi, tindakan
-                            medis, administrasi hingga layanan khusus karakter.
-                        </p>
-                        <div class="stats">
-                            <div class="stat">
-                                <strong>{{ number_format($stats['total_forms']) }}+</strong>
-                                <span>Pasien</span>
-                            </div>
-                            <div class="stat">
-                                <strong>{{ $stats['total_staff'] }}+</strong>
-                                <span>Tenaga Medis</span>
-                            </div>
-                            <div class="stat">
-                                <strong>98%</strong>
-                                <span>Kepuasan</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            <div class="lp-services__grid">
 
-            <!-- SERVICES -->
-            <section id="layanan" class="services-section">
-                <div class="section-header">
-                    <div>
-                        <div class="text-xs uppercase tracking-[.15em] text-blue-600 font-bold">Our Services</div>
-                        <h3 class="mt-3">Layanan medis</h3>
-                    </div>
-                    <p>
-                        Pilih layanan yang Anda butuhkan
-                        dan dapatkan pelayanan dari tenaga
-                        medis profesional.
-                    </p>
-                </div>
+                <!-- 01 -->
+                <article class="lp-service-card">
+                    <div class="lp-service-card__num">01</div>
+                    <div class="lp-service-card__icon">âœš</div>
+                    <h3 class="lp-service-card__title">Konsultasi Medis</h3>
+                    <p class="lp-service-card__desc">Pemeriksaan umum, diagnosis, dan layanan kesehatan standar.</p>
+                    <a href="{{ route('public.cek-kesehatan') }}" class="lp-service-card__link">Surat Kesehatan</a>
+                    <span class="lp-service-card__tba">TBA</span>
+                </article>
 
-                <div class="service-grid">
-                    <article class="service-card">
-                        <div class="service-number">01</div>
-                        <div class="service-icon">âœš</div>
-                        <h4>Konsultasi Medis</h4>
-                        <p>Pemeriksaan dan konsultasi kesehatan umum.</p>
-                        <a href="{{ route('public.cek-kesehatan') }}" class="service-link">Surat Kesehatan â†’</a>
-                        <a href="{{ route('public.form', 'janji_temu') }}" class="service-link" style="margin-left:8px;">Janji Temu â†’</a>
-                    </article>
+                <!-- Featured center card (blue) -->
+                <article class="lp-service-card lp-service-card--featured">
+                    <div class="lp-service-card__logo">iMe<br><span>Medical</span></div>
+                    <img
+                        src="https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?auto=format&fit=crop&w=600&q=80"
+                        alt="Medical"
+                        class="lp-service-card__bg-img"
+                    >
+                </article>
 
-                    <article class="service-card">
-                        <div class="service-number">02</div>
-                        <div class="service-icon">âœ¦</div>
-                        <h4>Operasi Plastik</h4>
-                        <p>Prosedur bedah estetika dengan tenaga profesional.</p>
-                        <a href="{{ route('public.operasi-plastik') }}" class="service-link">Daftar Oplas â†’</a>
-                    </article>
+                <!-- 02 -->
+                <article class="lp-service-card">
+                    <div class="lp-service-card__num">02</div>
+                    <div class="lp-service-card__icon">ðŸ¥</div>
+                    <h3 class="lp-service-card__title">Operasi Plastik</h3>
+                    <p class="lp-service-card__desc">Prosedur bedah estetika oleh tenaga profesional terlatih.</p>
+                    <a href="{{ route('public.operasi-plastik') }}" class="lp-service-card__link">Daftar Oplas</a>
+                    <span class="lp-service-card__tba">TBA</span>
+                </article>
 
-                    <article class="service-card">
-                        <div class="service-number">03</div>
-                        <div class="service-icon">â—‰</div>
-                        <h4>Konsultasi Psikologi</h4>
-                        <p>Dukungan kesehatan mental untuk karakter Anda.</p>
-                        <a href="{{ route('public.surat-psikolog') }}" class="service-link">Formulir Psikologi â†’</a>
-                    </article>
+                <!-- 03 -->
+                <article class="lp-service-card">
+                    <div class="lp-service-card__num">03</div>
+                    <div class="lp-service-card__icon">ðŸ§ </div>
+                    <h3 class="lp-service-card__title">Psikologi</h3>
+                    <p class="lp-service-card__desc">Dukungan kesehatan mental untuk karakter Anda.</p>
+                    <a href="{{ route('public.surat-psikolog') }}" class="lp-service-card__link">Formulir Psikologi</a>
+                    <span class="lp-service-card__tba">TBA</span>
+                </article>
 
-                    <article class="service-card">
-                        <div class="service-number">04</div>
-                        <div class="service-icon">â™¡</div>
-                        <h4>Karakter Kill</h4>
-                        <p>Layanan khusus penanganan medis kritis untuk kebutuhan roleplay.</p>
-                        <a href="{{ route('public.pendaftaran-karakter') }}" class="service-link">Daftar Sekarang â†’</a>
-                    </article>
-                </div>
-            </section>
+                <!-- 04 -->
+                <article class="lp-service-card">
+                    <div class="lp-service-card__num">04</div>
+                    <div class="lp-service-card__icon">â™¡</div>
+                    <h3 class="lp-service-card__title">Karakter Kill</h3>
+                    <p class="lp-service-card__desc">Layanan medis kritis untuk kebutuhan storyline roleplay.</p>
+                    <a href="{{ route('public.pendaftaran-karakter') }}" class="lp-service-card__link">Daftar Sekarang</a>
+                    <span class="lp-service-card__tba">TBA</span>
+                </article>
 
-            <!-- WHY US -->
-            <section class="why-section">
-                <div class="why-block">
-                    <div class="why-copy">
-                        <div class="text-xs uppercase tracking-[.15em] text-blue-200 font-bold">Why choose us</div>
-                        <h3 class="mt-4">
-                            Care<br>beyond<br>medicine.
-                        </h3>
-                        <p>
-                            Karena pelayanan kesehatan bukan hanya
-                            tentang tindakan medis. Kami memastikan
-                            setiap pasien merasa aman dan dihargai.
-                        </p>
-                    </div>
+                <!-- 05 -->
+                <article class="lp-service-card">
+                    <div class="lp-service-card__num">05</div>
+                    <div class="lp-service-card__icon">ðŸ“‹</div>
+                    <h3 class="lp-service-card__title">Surat Medis</h3>
+                    <p class="lp-service-card__desc">Surat sehat, bebas narkoba, dan keterangan khusus.</p>
+                    <a href="{{ route('public.cek-kesehatan') }}" class="lp-service-card__link">Buat Surat</a>
+                    <span class="lp-service-card__tba">TBA</span>
+                </article>
 
-                    <div class="why-image">
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================
+         WHY CHOOSE US
+    ================================================================ -->
+    <section class="lp-why">
+        <div class="lp-container">
+            <div class="lp-why__inner">
+
+                <!-- left: image + chips -->
+                <div class="lp-why__visual">
+                    <div class="lp-why__img-wrap">
                         <img
-                            src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=85"
+                            src="https://images.unsplash.com/photo-1551601651-2a8555f1a136?auto=format&fit=crop&w=900&q=85"
                             alt="Medical team"
+                            class="lp-why__img"
                         >
-
-                        <!-- FLOATING PHONE -->
-                        <div class="phone">
-                            <div class="phone-screen">
-                                <div class="phone-top">iMe Medical</div>
-                                <h4>Find<br>Doctor</h4>
-                                <img
-                                    src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=500&q=80"
-                                    alt="Doctor"
-                                >
-                                <a href="{{ route('public.doctor-schedule') }}" class="phone-button">Lihat Jadwal â†’</a>
-                            </div>
+                        <div class="lp-why__chip lp-why__chip--1">
+                            <span class="lp-why__chip-dot"></span>
+                            Experienced Doctors
+                        </div>
+                        <div class="lp-why__chip lp-why__chip--2">
+                            <span class="lp-why__chip-dot"></span>
+                            Modern Equipment
+                        </div>
+                        <div class="lp-why__chip lp-why__chip--3">
+                            <span class="lp-why__chip-dot"></span>
+                            Certified Clinic
                         </div>
                     </div>
                 </div>
-            </section>
 
-            <!-- JAM OPERASIONAL -->
-            <section id="jadwal" class="py-16">
-                <div class="text-center mb-10">
-                    <div class="text-xs uppercase tracking-[.15em] text-blue-600 font-bold">Jam Operasional</div>
-                    <h2 class="mt-4 font-display" style="font-family:'DM Sans',sans-serif;font-size:clamp(32px,4vw,52px);line-height:.95;letter-spacing:-.05em;font-weight:500;">
-                        Jadwal pelayanan<br>rumah sakit.
-                    </h2>
+                <!-- right: copy + stats -->
+                <div class="lp-why__copy">
+                    <p class="lp-eyebrow">Why choose us</p>
+                    <h2 class="lp-why__title">Why<br>choose us</h2>
+                    <p class="lp-why__sub">
+                        Kami adalah platform yang telah dipercaya komunitas roleplay
+                        Los Santos dengan standar medis yang konsisten dan profesional.
+                    </p>
+                    <div class="lp-why__stats">
+                        <div class="lp-why__stat">
+                            <strong>10+</strong>
+                            <span>Years of experience</span>
+                        </div>
+                        <div class="lp-why__stat">
+                            <strong>15</strong>
+                            <span>Areas of medicine</span>
+                        </div>
+                        <div class="lp-why__stat">
+                            <strong>95%</strong>
+                            <span>Satisfied patients</span>
+                        </div>
+                        <div class="lp-why__stat">
+                            <strong>98%</strong>
+                            <span>Diagnostics</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="schedule-table">
-                    <!-- Notice -->
-                    <div class="notice-bar">
-                        <span style="font-size:13px;">âš ï¸</span>
-                        <span><strong>Informasi:</strong> Pelayanan diberikan apabila tenaga medis bersangkutan bersedia & available (On Duty).</span>
-                    </div>
+            </div>
+        </div>
+    </section>
 
-                    <!-- Rows -->
-                    <div class="schedule-row">
-                        <div class="schedule-info">
-                            <div class="schedule-icon">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                            </div>
+    <!-- ================================================================
+         SCHEDULE + CTA
+    ================================================================ -->
+    <section id="jadwal" class="lp-schedule">
+        <div class="lp-container">
+            <div class="lp-schedule__inner">
+
+                <!-- schedule table -->
+                <div class="lp-schedule__table">
+                    <h2 class="lp-section-title" style="margin-bottom:24px;">Jam Operasional</h2>
+                    <div class="lp-schedule__notice">
+                        âš ï¸ <strong>Info:</strong> Pelayanan sesuai ketersediaan tenaga medis (On Duty).
+                    </div>
+                    <div class="lp-schedule__row">
+                        <div class="lp-schedule__info">
+                            <div class="lp-schedule__icon">âœš</div>
                             <div>
-                                <div class="schedule-name">Operasi Plastik</div>
-                                <div class="schedule-desc">Layanan estetika & pembedahan</div>
+                                <div class="lp-schedule__name">Operasi Plastik</div>
+                                <div class="lp-schedule__desc">Shift 1: 13:00â€“16:00 Â· Shift 2: 20:00â€“22:00</div>
                             </div>
                         </div>
-                        <div class="schedule-time">Shift 1: 13:00â€“16:00 &nbsp;â€¢&nbsp; Shift 2: 20:00â€“22:00 WIB</div>
                     </div>
-
-                    <div class="schedule-row">
-                        <div class="schedule-info">
-                            <div class="schedule-icon">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                            </div>
+                    <div class="lp-schedule__row">
+                        <div class="lp-schedule__info">
+                            <div class="lp-schedule__icon">ðŸ“‹</div>
                             <div>
-                                <div class="schedule-name">Surat-Suratan Medis</div>
-                                <div class="schedule-desc">Surat sehat, bebas narkoba & psikologi</div>
+                                <div class="lp-schedule__name">Surat-Suratan Medis</div>
+                                <div class="lp-schedule__desc">Shift 1: 13:00â€“17:00 Â· Shift 2: 19:00â€“22:00</div>
                             </div>
                         </div>
-                        <div class="schedule-time">Shift 1: 13:00â€“17:00 &nbsp;â€¢&nbsp; Shift 2: 19:00â€“22:00 WIB</div>
                     </div>
-
-                    <div class="schedule-row">
-                        <div class="schedule-info">
-                            <div class="schedule-icon" style="background:#dcfce7;color:#16a34a;">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                            </div>
+                    <div class="lp-schedule__row">
+                        <div class="lp-schedule__info">
+                            <div class="lp-schedule__icon lp-schedule__icon--green">ðŸ¥</div>
                             <div>
-                                <div class="schedule-name">Layanan Farmasi</div>
-                                <div class="schedule-desc">Pengambilan & pengobatan medis</div>
+                                <div class="lp-schedule__name">Layanan Farmasi</div>
+                                <div class="lp-schedule__desc">Pengambilan & pengobatan medis</div>
                             </div>
                         </div>
-                        <div class="schedule-badge">
-                            <span class="badge-dot"></span>
+                        <div class="lp-badge-green">
+                            <span class="lp-badge-dot"></span>
                             BUKA 24 JAM
                         </div>
                     </div>
                 </div>
-            </section>
 
-            <!-- TESTIMONIALS -->
-            @if(isset($testimonials) && $testimonials->count() > 0)
-            <section class="py-16">
-                <div class="text-center mb-10">
-                    <div class="text-xs uppercase tracking-[.15em] text-blue-600 font-bold">Pengalaman Pasien</div>
-                    <h2 class="mt-4" style="font-family:'DM Sans',sans-serif;font-size:clamp(32px,4vw,52px);line-height:.95;letter-spacing:-.05em;font-weight:500;">
-                        Apa kata mereka?
-                    </h2>
+                <!-- CTA card -->
+                <div class="lp-cta-card">
+                    <p class="lp-eyebrow lp-eyebrow--light">Ready when you are</p>
+                    <h3>Butuh layanan medis sekarang?</h3>
+                    <p>Akses layanan iMe dengan mudah dan dapatkan bantuan dari tenaga medis kami kapan saja.</p>
+                    <a href="#layanan" class="lp-btn lp-btn--white" style="margin-top:24px;display:inline-block;">Lihat Layanan</a>
+                    <button onclick="showRegulationModal()" class="lp-btn lp-btn--outline-light" style="margin-top:12px;">
+                        Regulasi Pengobatan
+<div class="lp-container">
+
+            <div class="lp-services__header">
+                <div>
+                    <h2 class="lp-section-title">Our medical<br>services <span class="lp-tag">iMe</span></h2>
+                </div>
+                <p class="lp-services__desc">
+                    We provide a full range of medical services â€”
+                    from consultation to diagnosis and treatment.
+                    <a href="{{ route('public.doctor-schedule') }}" class="lp-link">See all services â†’</a>
+                </p>
+            </div>
+
+            <div class="lp-services__grid">
+
+                <!-- 01 -->
+                <article class="lp-service-card">
+                    <div class="lp-service-card__num">01</div>
+                    <div class="lp-service-card__icon">âœš</div>
+                    <h3 class="lp-service-card__title">Konsultasi Medis</h3>
+                    <p class="lp-service-card__desc">Pemeriksaan umum, diagnosis, dan layanan kesehatan standar.</p>
+                    <a href="{{ route('public.cek-kesehatan') }}" class="lp-service-card__link">Surat Kesehatan</a>
+                    <span class="lp-service-card__tba">TBA</span>
+                </article>
+
+                <!-- Featured center card (blue) -->
+                <article class="lp-service-card lp-service-card--featured">
+                    <div class="lp-service-card__logo">iMe<br><span>Medical</span></div>
+                    <img
+                        src="https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?auto=format&fit=crop&w=600&q=80"
+                        alt="Medical"
+                        class="lp-service-card__bg-img"
+                    >
+                </article>
+
+                <!-- 02 -->
+                <article class="lp-service-card">
+                    <div class="lp-service-card__num">02</div>
+                    <div class="lp-service-card__icon">ðŸ ¥</div>
+                    <h3 class="lp-service-card__title">Operasi Plastik</h3>
+                    <p class="lp-service-card__desc">Prosedur bedah estetika oleh tenaga profesional terlatih.</p>
+                    <a href="{{ route('public.operasi-plastik') }}" class="lp-service-card__link">Daftar Oplas</a>
+                    <span class="lp-service-card__tba">TBA</span>
+                </article>
+
+                <!-- 03 -->
+                <article class="lp-service-card">
+                    <div class="lp-service-card__num">03</div>
+                    <div class="lp-service-card__icon">ðŸ§ </div>
+                    <h3 class="lp-service-card__title">Psikologi</h3>
+                    <p class="lp-service-card__desc">Dukungan kesehatan mental untuk karakter Anda.</p>
+                    <a href="{{ route('public.surat-psikolog') }}" class="lp-service-card__link">Formulir Psikologi</a>
+                    <span class="lp-service-card__tba">TBA</span>
+                </article>
+
+                <!-- 04 -->
+                <article class="lp-service-card">
+                    <div class="lp-service-card__num">04</div>
+                    <div class="lp-service-card__icon">â™¡</div>
+                    <h3 class="lp-service-card__title">Karakter Kill</h3>
+                    <p class="lp-service-card__desc">Layanan medis kritis untuk kebutuhan storyline roleplay.</p>
+                    <a href="{{ route('public.pendaftaran-karakter') }}" class="lp-service-card__link">Daftar Sekarang</a>
+                    <span class="lp-service-card__tba">TBA</span>
+                </article>
+
+                <!-- 05 -->
+                <article class="lp-service-card">
+                    <div class="lp-service-card__num">05</div>
+                    <div class="lp-service-card__icon">ðŸ“‹</div>
+                    <h3 class="lp-service-card__title">Surat Medis</h3>
+                    <p class="lp-service-card__desc">Surat sehat, bebas narkoba, dan keterangan khusus.</p>
+                    <a href="{{ route('public.cek-kesehatan') }}" class="lp-service-card__link">Buat Surat</a>
+                    <span class="lp-service-card__tba">TBA</span>
+                </article>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================
+         WHY CHOOSE US
+    ================================================================ -->
+    <section class="lp-why">
+        <div class="lp-container">
+            <div class="lp-why__inner">
+
+                <!-- left: image + chips -->
+                <div class="lp-why__visual">
+                    <div class="lp-why__img-wrap">
+                        <img
+                            src="https://images.unsplash.com/photo-1551601651-2a8555f1a136?auto=format&fit=crop&w=900&q=85"
+                            alt="Medical team"
+                            class="lp-why__img"
+                        >
+                        <div class="lp-why__chip lp-why__chip--1">
+                            <span class="lp-why__chip-dot"></span>
+                            Experienced Doctors
+                        </div>
+                        <div class="lp-why__chip lp-why__chip--2">
+                            <span class="lp-why__chip-dot"></span>
+                            Modern Equipment
+                        </div>
+                        <div class="lp-why__chip lp-why__chip--3">
+                            <span class="lp-why__chip-dot"></span>
+                            Certified Clinic
+                        </div>
+                    </div>
                 </div>
 
-                <div class="relative" style="overflow:hidden;">
-                    <div id="testimonialTrack" style="display:flex;transition:transform .6s ease;">
-                        @foreach($testimonials as $index => $testimoniItem)
-                        <div style="min-width:100%;padding:0 4px;">
-                            <div class="about-block" style="text-align:left;">
-                                <div class="about-content" style="max-width:100%;">
-                                    <div style="display:flex;gap:3px;margin-bottom:16px;">
-                                        @for($i = 1; $i <= 5; $i++)
-                                            <span style="font-size:14px;color:{{ $i <= $testimoniItem->rating ? '#f59e0b' : '#e5e7eb' }};">â˜…</span>
-                                        @endfor
-                                    </div>
-                                    <p style="font-size:16px;line-height:1.7;color:#111827;font-style:italic;margin-bottom:20px;">
-                                        "{{ $testimoniItem->testimoni }}"
-                                    </p>
-                                    <div style="display:flex;align-items:center;gap:12px;">
-                                        <div style="width:36px;height:36px;border-radius:50%;background:#2563eb;color:white;display:grid;place-items:center;font-weight:700;font-size:14px;">
-                                            {{ strtoupper(substr($testimoniItem->character_name, 0, 1)) }}
-                                        </div>
-                                        <div>
-                                            <div style="font-weight:700;font-size:13px;color:#111827;">{{ $testimoniItem->character_name }}</div>
-                                            <div style="font-size:10px;color:#667085;">Pasien Terverifikasi &nbsp;â€¢&nbsp; {{ $testimoniItem->created_at->diffForHumans() }}</div>
-                                        </div>
-                                    </div>
-                                </div>
+                <!-- right: copy + stats -->
+                <div class="lp-why__copy">
+                    <p class="lp-eyebrow">Why choose us</p>
+                    <h2 class="lp-why__title">Why<br>choose us</h2>
+                    <p class="lp-why__sub">
+                        Kami adalah platform yang telah dipercaya komunitas roleplay
+                        Los Santos dengan standar medis yang konsisten dan profesional.
+                    </p>
+                    <div class="lp-why__stats">
+                        <div class="lp-why__stat">
+                            <strong>10+</strong>
+                            <span>Years of experience</span>
+                        </div>
+                        <div class="lp-why__stat">
+                            <strong>15</strong>
+                            <span>Areas of medicine</span>
+                        </div>
+                        <div class="lp-why__stat">
+                            <strong>95%</strong>
+                            <span>Satisfied patients</span>
+                        </div>
+                        <div class="lp-why__stat">
+                            <strong>98%</strong>
+                            <span>Diagnostics</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ================================================================
+         SCHEDULE + CTA
+    ================================================================ -->
+    <section id="jadwal" class="lp-schedule">
+        <div class="lp-container">
+            <div class="lp-schedule__inner">
+
+                <!-- schedule table -->
+                <div class="lp-schedule__table">
+                    <h2 class="lp-section-title" style="margin-bottom:24px;">Jam Operasional</h2>
+                    <div class="lp-schedule__notice">
+                        âš ï¸  <strong>Info:</strong> Pelayanan sesuai ketersediaan tenaga medis (On Duty).
+                    </div>
+                    <div class="lp-schedule__row">
+                        <div class="lp-schedule__info">
+                            <div class="lp-schedule__icon">âœš</div>
+                            <div>
+                                <div class="lp-schedule__name">Operasi Plastik</div>
+                                <div class="lp-schedule__desc">Shift 1: 13:00â€“16:00 Â· Shift 2: 20:00â€“22:00</div>
                             </div>
                         </div>
-                        @endforeach
                     </div>
-
-                    @if($testimonials->count() > 1)
-                    <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-top:20px;">
-                        <button id="prevBtn" style="width:36px;height:36px;border-radius:50%;background:#f3f4f6;border:1px solid #e5e7eb;cursor:pointer;font-size:14px;display:grid;place-items:center;">â€¹</button>
-                        <div id="dotsContainer" style="display:flex;gap:6px;">
-                            @foreach($testimonials as $index => $item)
-                            <button class="testimonial-dot" data-index="{{ $index }}" style="width:8px;height:8px;border-radius:50%;background:#d1d5db;border:none;cursor:pointer;padding:0;transition:.2s;"></button>
-                            @endforeach
+                    <div class="lp-schedule__row">
+                        <div class="lp-schedule__info">
+                            <div class="lp-schedule__icon">ðŸ“‹</div>
+                            <div>
+                                <div class="lp-schedule__name">Surat-Suratan Medis</div>
+                                <div class="lp-schedule__desc">Shift 1: 13:00â€“17:00 Â· Shift 2: 19:00â€“22:00</div>
+                            </div>
                         </div>
-                        <button id="nextBtn" style="width:36px;height:36px;border-radius:50%;background:#f3f4f6;border:1px solid #e5e7eb;cursor:pointer;font-size:14px;display:grid;place-items:center;">â€º</button>
                     </div>
-                    @endif
+                    <div class="lp-schedule__row">
+                        <div class="lp-schedule__info">
+                            <div class="lp-schedule__icon lp-schedule__icon--green">ðŸ ¥</div>
+                            <div>
+                                <div class="lp-schedule__name">Layanan Farmasi</div>
+                                <div class="lp-schedule__desc">Pengambilan & pengobatan medis</div>
+                            </div>
+                        </div>
+                        <div class="lp-badge-green">
+                            <span class="lp-badge-dot"></span>
+                            BUKA 24 JAM
+                        </div>
+                    </div>
                 </div>
-            </section>
-            @endif
 
-            <!-- CTA -->
-            <section class="py-16 text-center">
-                <div class="text-xs uppercase tracking-[.15em] text-blue-600 font-bold">Ready when you are</div>
-                <h2 class="mt-4" style="font-family:'DM Sans',sans-serif;font-size:clamp(32px,4vw,52px);line-height:.95;letter-spacing:-.05em;font-weight:500;">
-                    Butuh layanan medis?
-                </h2>
-                <p style="max-width:480px;margin:16px auto 0;font-size:13px;line-height:1.8;color:#667085;">
-                    Akses layanan kesehatan iMe dengan mudah
-                    dan dapatkan bantuan dari tenaga medis kami.
-                </p>
-                <div style="display:flex;justify-content:center;gap:12px;margin-top:24px;flex-wrap:wrap;">
-                    <a href="#layanan" style="padding:12px 24px;border-radius:999px;background:#2563eb;color:white;font-size:12px;font-weight:700;text-decoration:none;transition:.2s;" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
-                        Lihat Layanan
-                    </a>
-                    <button onclick="showRegulationModal()" style="padding:12px 24px;border-radius:999px;background:white;border:1px solid #e5e7eb;color:#374151;font-size:12px;font-weight:700;cursor:pointer;transition:.2s;">
+                <!-- CTA card -->
+                <div class="lp-cta-card">
+                    <p class="lp-eyebrow lp-eyebrow--light">Ready when you are</p>
+                    <h3>Butuh layanan medis sekarang?</h3>
+                    <p>Akses layanan iMe dengan mudah dan dapatkan bantuan dari tenaga medis kami kapan saja.</p>
+                    <a href="#layanan" class="lp-btn lp-btn--white" style="margin-top:24px;display:inline-block;">Lihat Layanan</a>
+                    <button onclick="showRegulationModal()" class="lp-btn lp-btn--outline-light" style="margin-top:12px;">
                         Regulasi Pengobatan
                     </button>
                 </div>
-            </section>
 
+            </div>
         </div>
-    </main>
+    </section>
 
 @endsection
 
 @push('styles')
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
 <style>
-    /* ===================================================
-       RESET & TOKENS
-    =================================================== */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* ================================================
+   TOKENS
+================================================ */
+:root {
+  --lp-blue:   #2563EB;
+  --lp-blue2:  #1D4ED8;
+  --lp-dark:   #0F172A;
+  --lp-ink:    #111827;
+  --lp-muted:  #6B7280;
+  --lp-light:  #F8FAFC;
+  --lp-border: #E5E7EB;
+  --lp-white:  #FFFFFF;
+  --lp-radius: 16px;
+  font-family: 'Inter', sans-serif;
+}
 
-    :root {
-        --navy:   #07527A;
-        --blue:   #087EAE;
-        --cyan:   #22C7E8;
-        --ink:    #111827;
-        --muted:  #667085;
-        --border: #e5e7eb;
-        --white:  #ffffff;
-        --bg:     #f9fafb;
-        --card:   #ffffff;
-        --radius: 20px;
-        --ff-display: 'DM Sans', sans-serif;
-        --ff-body:    'Plus Jakarta Sans', sans-serif;
-    }
+/* ================================================
+   MODAL FIXES
+================================================ */
+.custom-scrollbar::-webkit-scrollbar { width:6px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background:#3b82f6; border-radius:99px; }
+@keyframes fadeInUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+.animate-fade-in-up { animation:fadeInUp .4s ease; }
 
-    body { font-family: var(--ff-body); background: var(--bg); color: var(--ink); }
+/* ================================================
+   SHARED
+================================================ */
+.lp-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+@media(max-width:640px){ .lp-container{padding:0 16px;} }
 
-    /* ===================================================
-       CUSTOM SCROLLBAR (MODAL)
-    =================================================== */
-    .custom-scrollbar::-webkit-scrollbar { width: 8px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: linear-gradient(135deg,#3b82f6,#1d4ed8); border-radius: 10px; }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg,#2563eb,#1e40af); }
+.lp-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--lp-blue);
+}
+.lp-eyebrow--light { color: rgba(255,255,255,.6); }
 
-    /* ===================================================
-       MODAL ANIMATION
-    =================================================== */
-    @keyframes fadeInUp {
-        from { opacity:0; transform:translateY(30px); }
-        to   { opacity:1; transform:translateY(0); }
-    }
-    .animate-fade-in-up { animation: fadeInUp 0.5s ease-out; }
+.lp-section-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(28px,4vw,44px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -.03em;
+  color: var(--lp-ink);
+}
 
-    /* ===================================================
-       HERO
-    =================================================== */
-    .hero-wrapper {
-        background: var(--navy);
-        overflow: hidden;
-    }
-    .hero {
-        max-width: 1280px;
-        margin: 0 auto;
-        padding: 80px 40px 0;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 64px;
-        align-items: center;
-        min-height: 100vh;
-    }
-    @media (max-width: 900px) {
-        .hero { grid-template-columns: 1fr; min-height: auto; padding: 60px 24px 0; }
-        .mockup-stage { display: none; }
-    }
+.lp-tag {
+  display: inline-block;
+  background: var(--lp-blue);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 6px;
+  vertical-align: middle;
+  margin-left: 6px;
+}
 
-    /* hero copy */
-    .hero-content { color: var(--white); }
-    .hero-eyebrow {
-        font-size: 11px;
-        letter-spacing: .18em;
-        text-transform: uppercase;
-        color: var(--cyan);
-        font-weight: 700;
-        margin-bottom: 20px;
-    }
-    .hero-title {
-        font-family: var(--ff-display);
-        font-size: clamp(72px, 10vw, 140px);
-        line-height: .9;
-        letter-spacing: -.04em;
-        font-weight: 500;
-        margin-bottom: 24px;
-    }
-    .hero-subtitle {
-        font-size: 15px;
-        line-height: 1.8;
-        color: rgba(255,255,255,.65);
-        max-width: 360px;
-        margin-bottom: 40px;
-    }
-    .hero-arrow {
-        font-size: 28px;
-        color: var(--cyan);
-        animation: arrowBob 2s ease-in-out infinite;
-    }
-    @keyframes arrowBob {
-        0%,100% { transform: translateY(0); }
-        50%      { transform: translateY(8px); }
-    }
+.lp-link {
+  color: var(--lp-blue);
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: none;
+}
+.lp-link:hover { text-decoration: underline; }
 
-    /* browser mockup */
-    .mockup-stage {
-        display: flex;
-        align-items: flex-end;
-        justify-content: center;
-        height: 100%;
-        padding-bottom: 0;
-    }
-    .browser {
-        width: 100%;
-        max-width: 560px;
-        background: var(--white);
-        border-radius: 16px 16px 0 0;
-        overflow: hidden;
-        box-shadow: 0 -24px 80px rgba(0,0,0,.4);
-    }
-    .browser-bar {
-        background: #f3f4f6;
-        padding: 12px 16px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        border-bottom: 1px solid var(--border);
-    }
-    .dot {
-        width: 10px; height: 10px;
-        border-radius: 50%;
-        background: #e5e7eb;
-    }
-    .browser-content {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        min-height: 340px;
-    }
-    .browser-left {
-        padding: 32px 24px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: 12px;
-    }
-    .browser-small {
-        font-size: 9px;
-        letter-spacing: .15em;
-        text-transform: uppercase;
-        color: var(--muted);
-        font-weight: 700;
-    }
-    .browser-heading {
-        font-family: var(--ff-display);
-        font-size: 22px;
-        line-height: 1.15;
-        letter-spacing: -.03em;
-        font-weight: 500;
-        color: var(--ink);
-    }
-    .browser-heading span { color: var(--blue); }
-    .browser-description {
-        font-size: 11px;
-        line-height: 1.7;
-        color: var(--muted);
-    }
-    .browser-button {
-        display: inline-block;
-        margin-top: 4px;
-        padding: 8px 16px;
-        border-radius: 999px;
-        background: var(--navy);
-        color: var(--white);
-        font-size: 11px;
-        font-weight: 700;
-        text-decoration: none;
-        width: fit-content;
-        transition: background .2s;
-    }
-    .browser-button:hover { background: var(--blue); }
-    .browser-right {
-        position: relative;
-        overflow: hidden;
-        background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
-    }
-    .doctor-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: top center;
-    }
-    .floating-label {
-        position: absolute;
-        background: white;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 5px 10px;
-        font-size: 10px;
-        font-weight: 700;
-        color: var(--ink);
-        box-shadow: 0 4px 12px rgba(0,0,0,.08);
-    }
-    .label-1 { top: 20px;  left: 16px;  animation: float 3s ease-in-out infinite; }
-    .label-2 { top: 20px;  right: 16px; animation: float 3.5s ease-in-out infinite .5s; }
-    .label-3 { bottom: 20px; left: 16px; animation: float 4s ease-in-out infinite 1s; }
-    @keyframes float {
-        0%,100% { transform: translateY(0); }
-        50%      { transform: translateY(-6px); }
-    }
+/* Buttons */
+.lp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 11px 22px;
+  border-radius: 50px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all .2s;
+  cursor: pointer;
+  border: none;
+}
+.lp-btn--white  { background: white; color: var(--lp-blue); }
+.lp-btn--white:hover { background: #f0f9ff; }
+.lp-btn--dark   { background: var(--lp-ink); color: white; }
+.lp-btn--dark:hover { background: #1e293b; }
+.lp-btn--outline { background: rgba(255,255,255,.15); color: white; border: 1px solid rgba(255,255,255,.4); }
+.lp-btn--outline:hover { background: rgba(255,255,255,.25); }
+.lp-btn--outline-light { background: transparent; color: white; border: 1px solid rgba(255,255,255,.4); width:100%; justify-content:center; }
+.lp-btn--outline-light:hover { background: rgba(255,255,255,.1); }
 
-    /* ===================================================
-       MAIN CONTENT
-    =================================================== */
-    .content-section { background: var(--bg); }
-    .section-container {
-        max-width: 1280px;
-        margin: 0 auto;
-        padding: 0 40px;
-    }
-    @media (max-width: 640px) {
-        .section-container { padding: 0 20px; }
-    }
+/* ================================================
+   HERO
+================================================ */
+.lp-hero {
+  background: var(--lp-blue);
+  overflow: hidden;
+  position: relative;
+}
+.lp-hero::before {
+  content: '';
+  position: absolute;
+  top: -100px; right: -100px;
+  width: 500px; height: 500px;
+  background: rgba(255,255,255,.05);
+  border-radius: 50%;
+}
 
-    /* intro */
-    .intro {
-        padding: 96px 0 64px;
-        border-bottom: 1px solid var(--border);
-        max-width: 680px;
-    }
-    .intro h2 {
-        font-family: var(--ff-display);
-        font-size: clamp(36px, 5vw, 64px);
-        line-height: .95;
-        letter-spacing: -.05em;
-        font-weight: 500;
-        margin-bottom: 20px;
-    }
-    .intro p {
-        font-size: 14px;
-        line-height: 1.8;
-        color: var(--muted);
-        max-width: 420px;
-    }
+.lp-hero__inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 64px 32px 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: flex-end;
+  min-height: 580px;
+}
+@media(max-width:900px){
+  .lp-hero__inner { grid-template-columns:1fr; min-height:auto; padding-bottom:40px; }
+  .lp-hero__visual { display:none; }
+}
 
-    /* about block */
-    .about-block {
-        padding: 64px 0;
-        border-bottom: 1px solid var(--border);
-    }
-    .about-content {
-        max-width: 600px;
-    }
-    .about-content h3 {
-        font-family: var(--ff-display);
-        font-size: clamp(32px, 4vw, 52px);
-        line-height: .95;
-        letter-spacing: -.05em;
-        font-weight: 500;
-        margin-bottom: 16px;
-    }
-    .about-content p {
-        font-size: 13px;
-        line-height: 1.8;
-        color: var(--muted);
-        margin-bottom: 32px;
-    }
-    .stats {
-        display: flex;
-        gap: 40px;
-        flex-wrap: wrap;
-    }
-    .stat strong {
-        display: block;
-        font-family: var(--ff-display);
-        font-size: 36px;
-        font-weight: 500;
-        letter-spacing: -.04em;
-        color: var(--ink);
-    }
-    .stat span {
-        font-size: 12px;
-        color: var(--muted);
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: .08em;
-    }
+/* copy */
+.lp-hero__copy { color: white; padding-bottom: 48px; }
+.lp-hero__eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.7);
+  margin-bottom: 16px;
+}
+.lp-hero__title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(48px,8vw,88px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -.04em;
+  color: white;
+  margin-bottom: 20px;
+}
+.lp-hero__title span { color: rgba(255,255,255,.6); font-weight: 400; }
+.lp-hero__sub {
+  font-size: 14px;
+  line-height: 1.7;
+  color: rgba(255,255,255,.7);
+  max-width: 380px;
+  margin-bottom: 28px;
+}
+.lp-hero__actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 36px; }
+.lp-hero__stats {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: rgba(255,255,255,.1);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 14px;
+  padding: 16px 24px;
+  width: fit-content;
+}
+.lp-stat { text-align: center; padding: 0 20px; }
+.lp-stat strong {
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -.03em;
+}
+.lp-stat span { font-size: 11px; color: rgba(255,255,255,.6); font-weight: 600; }
+.lp-stat-divider { width: 1px; height: 40px; background: rgba(255,255,255,.2); }
 
-    /* services */
-    .services-section {
-        padding: 64px 0;
-        border-bottom: 1px solid var(--border);
-    }
-    .section-header {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        gap: 32px;
-        margin-bottom: 48px;
-        flex-wrap: wrap;
-    }
-    .section-header h3 {
-        font-family: var(--ff-display);
-        font-size: clamp(28px, 4vw, 44px);
-        line-height: 1;
-        letter-spacing: -.04em;
-        font-weight: 500;
-        margin-top: 8px;
-    }
-    .section-header > p {
-        font-size: 13px;
-        line-height: 1.8;
-        color: var(--muted);
-        max-width: 240px;
-        margin-top: 32px;
-    }
-    .service-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 2px;
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        overflow: hidden;
-        background: var(--border);
-    }
-    @media (max-width: 900px) {
-        .service-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 480px) {
-        .service-grid { grid-template-columns: 1fr; }
-    }
-    .service-card {
-        background: var(--card);
-        padding: 32px 24px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        transition: background .2s;
-    }
-    .service-card:hover { background: #f0f9ff; }
-    .service-number {
-        font-family: var(--ff-display);
-        font-size: 11px;
-        font-weight: 700;
-        color: var(--muted);
-        letter-spacing: .08em;
-        margin-bottom: 8px;
-    }
-    .service-icon {
-        font-size: 24px;
-        color: var(--blue);
-        margin-bottom: 8px;
-    }
-    .service-card h4 {
-        font-size: 15px;
-        font-weight: 700;
-        letter-spacing: -.02em;
-        color: var(--ink);
-    }
-    .service-card p {
-        font-size: 12px;
-        line-height: 1.6;
-        color: var(--muted);
-        flex: 1;
-    }
-    .service-link {
-        font-size: 11px;
-        font-weight: 700;
-        color: var(--blue);
-        text-decoration: none;
-        letter-spacing: .02em;
-        transition: color .2s;
-    }
-    .service-link:hover { color: var(--navy); }
+/* visual right side */
+.lp-hero__visual {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: flex-end;
+}
+.lp-hero__img-wrap {
+  position: relative;
+  border-radius: 24px 24px 0 0;
+  overflow: hidden;
+  height: 440px;
+  background: rgba(255,255,255,.1);
+}
+.lp-hero__doctor {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  mix-blend-mode: luminosity;
+  opacity: .9;
+}
 
-    /* why us */
-    .why-section {
-        padding: 64px 0;
-        border-bottom: 1px solid var(--border);
-    }
-    .why-block {
-        background: var(--navy);
-        border-radius: var(--radius);
-        overflow: hidden;
-        display: grid;
-        grid-template-columns: 1fr 1.4fr;
-        min-height: 500px;
-    }
-    @media (max-width: 900px) {
-        .why-block { grid-template-columns: 1fr; }
-        .why-image { min-height: 300px; }
-    }
-    .why-copy {
-        padding: 64px 48px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: 16px;
-    }
-    .why-copy h3 {
-        font-family: var(--ff-display);
-        font-size: clamp(40px, 5vw, 72px);
-        line-height: .9;
-        letter-spacing: -.05em;
-        font-weight: 500;
-        color: var(--white);
-        margin-top: 12px;
-    }
-    .why-copy p {
-        font-size: 13px;
-        line-height: 1.8;
-        color: rgba(255,255,255,.6);
-        max-width: 280px;
-    }
-    .why-image {
-        position: relative;
-        overflow: hidden;
-    }
-    .why-image > img {
-        width: 100%; height: 100%;
-        object-fit: cover;
-        opacity: .45;
-    }
+/* floating chips */
+.lp-chip {
+  position: absolute;
+  background: white;
+  color: var(--lp-ink);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 50px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.15);
+}
+.lp-chip--1 { top: 24px; left: 16px; animation: chipFloat 3s ease-in-out infinite; }
+.lp-chip--2 { top: 24px; right: 16px; animation: chipFloat 3.5s ease-in-out infinite .5s; }
+.lp-chip--3 { bottom: 80px; left: 16px; animation: chipFloat 4s ease-in-out infinite 1s; }
+@keyframes chipFloat {
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-6px)}
+}
 
-    /* floating phone */
-    .phone {
-        position: absolute;
-        bottom: 32px;
-        right: 32px;
-        width: 148px;
-        background: var(--white);
-        border-radius: 20px;
-        overflow: hidden;
-        box-shadow: 0 24px 64px rgba(0,0,0,.3);
-        animation: float 4s ease-in-out infinite;
-    }
-    .phone-screen { padding: 16px; }
-    .phone-top {
-        font-size: 8px;
-        font-weight: 700;
-        color: var(--muted);
-        text-transform: uppercase;
-        letter-spacing: .1em;
-        margin-bottom: 8px;
-    }
-    .phone-screen h4 {
-        font-family: var(--ff-display);
-        font-size: 20px;
-        line-height: 1;
-        letter-spacing: -.04em;
-        font-weight: 500;
-        color: var(--ink);
-        margin-bottom: 10px;
-    }
-    .phone-screen > img {
-        width: 100%;
-        height: 64px;
-        object-fit: cover;
-        object-position: top;
-        border-radius: 10px;
-        margin-bottom: 10px;
-    }
-    .phone-button {
-        display: block;
-        background: var(--navy);
-        color: var(--white);
-        text-align: center;
-        padding: 7px;
-        border-radius: 8px;
-        font-size: 9px;
-        font-weight: 700;
-        text-decoration: none;
-        transition: background .2s;
-    }
-    .phone-button:hover { background: var(--blue); }
+/* mini card bottom */
+.lp-hero__mini-card {
+  position: absolute;
+  bottom: 16px; right: 16px;
+  background: white;
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.15);
+}
+.lp-hero__mini-card-img {
+  width: 40px; height: 40px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.lp-hero__mini-card-img img { width:100%;height:100%;object-fit:cover; }
+.lp-hero__mini-card-title { font-size: 12px; font-weight: 700; color: var(--lp-ink); }
+.lp-hero__mini-card-sub { font-size: 10px; color: var(--lp-muted); }
 
-    /* schedule table */
-    .schedule-table {
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        overflow: hidden;
-        background: var(--card);
-        max-width: 800px;
-        margin: 0 auto;
-    }
-    .notice-bar {
-        background: #fefce8;
-        border-bottom: 1px solid #fef08a;
-        padding: 12px 20px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 12px;
-        color: #713f12;
-    }
-    .schedule-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 20px 24px;
-        border-bottom: 1px solid var(--border);
-        gap: 16px;
-        flex-wrap: wrap;
-    }
-    .schedule-row:last-child { border-bottom: none; }
-    .schedule-info {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-    .schedule-icon {
-        width: 36px; height: 36px;
-        border-radius: 10px;
-        background: #dbeafe;
-        color: var(--blue);
-        display: grid;
-        place-items: center;
-        flex-shrink: 0;
-    }
-    .schedule-name {
-        font-size: 13px;
-        font-weight: 700;
-        color: var(--ink);
-    }
-    .schedule-desc {
-        font-size: 11px;
-        color: var(--muted);
-        margin-top: 2px;
-    }
-    .schedule-time {
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--blue);
-        white-space: nowrap;
-    }
-    .schedule-badge {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-size: 10px;
-        font-weight: 700;
-        color: #16a34a;
-        letter-spacing: .08em;
-        background: #dcfce7;
-        padding: 4px 10px;
-        border-radius: 999px;
-    }
-    .badge-dot {
-        width: 6px; height: 6px;
-        border-radius: 50%;
-        background: #16a34a;
-        animation: pulse 1.5s ease-in-out infinite;
-    }
-    @keyframes pulse {
-        0%,100% { opacity:1; transform:scale(1); }
-        50%      { opacity:.5; transform:scale(.8); }
-    }
+/* right text block */
+.lp-hero__right-text {
+  width: 140px;
+  padding-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.lp-hero__right-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: white;
+  line-height: 1.3;
+}
+.lp-hero__right-desc {
+  font-size: 11px;
+  line-height: 1.6;
+  color: rgba(255,255,255,.6);
+}
+
+/* ================================================
+   ABOUT
+================================================ */
+.lp-about {
+  background: white;
+  padding: 80px 0;
+  text-align: center;
+}
+.lp-about__text {
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(20px,3.5vw,36px);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -.02em;
+  color: var(--lp-ink);
+  max-width: 780px;
+  margin: 0 auto 16px;
+}
+.lp-about__text em { font-style: italic; color: var(--lp-blue); }
+.lp-icon-inline { font-size: 1em; vertical-align: middle; }
+.lp-about__sub {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--lp-muted);
+  max-width: 520px;
+  margin: 0 auto 28px;
+}
+
+/* ================================================
+   SERVICES
+================================================ */
+.lp-services { background: var(--lp-light); padding: 80px 0; }
+.lp-services__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+.lp-services__desc {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--lp-muted);
+  max-width: 260px;
+  margin-top: 8px;
+}
+.lp-services__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+@media(max-width:900px){ .lp-services__grid{grid-template-columns:repeat(2,1fr);} }
+@media(max-width:540px){ .lp-services__grid{grid-template-columns:1fr;} }
+
+/* service card */
+.lp-service-card {
+  background: white;
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius);
+  padding: 28px 24px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: box-shadow .2s, transform .2s;
+  min-height: 200px;
+}
+.lp-service-card:hover {
+  box-shadow: 0 8px 32px rgba(37,99,235,.12);
+  transform: translateY(-2px);
+}
+.lp-service-card__num {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--lp-muted);
+  letter-spacing: .08em;
+}
+.lp-service-card__icon { font-size: 22px; margin: 4px 0; }
+.lp-service-card__title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--lp-ink);
+  letter-spacing: -.02em;
+}
+.lp-service-card__desc {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--lp-muted);
+  flex: 1;
+}
+.lp-service-card__link {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--lp-blue);
+  text-decoration: none;
+}
+.lp-service-card__link:hover { text-decoration: underline; }
+.lp-service-card__tba {
+  position: absolute;
+  top: 20px; right: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--lp-muted);
+  background: var(--lp-light);
+  padding: 2px 8px;
+  border-radius: 50px;
+  border: 1px solid var(--lp-border);
+}
+
+/* featured blue card */
+.lp-service-card--featured {
+  background: var(--lp-blue);
+  border-color: var(--lp-blue);
+  overflow: hidden;
+  padding: 0;
+  min-height: 220px;
+}
+.lp-service-card--featured:hover { transform:translateY(-2px); }
+.lp-service-card__logo {
+  position: absolute;
+  top: 20px; left: 20px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+  line-height: 1.1;
+  z-index: 2;
+}
+.lp-service-card__logo span { font-weight: 400; opacity: .7; }
+.lp-service-card__bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: .35;
+}
+
+/* ================================================
+   WHY CHOOSE US
+================================================ */
+.lp-why {
+  background: var(--lp-dark);
+  padding: 80px 0;
+}
+.lp-why__inner {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+@media(max-width:900px){
+  .lp-why__inner{grid-template-columns:1fr;}
+  .lp-why__visual{order:2;}
+}
+
+/* visual */
+.lp-why__img-wrap {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  height: 420px;
+}
+.lp-why__img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+.lp-why__chip {
+  position: absolute;
+  background: white;
+  color: var(--lp-ink);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 50px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.15);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.lp-why__chip--1 { bottom: 100px; left: 16px; }
+.lp-why__chip--2 { bottom: 60px;  left: 16px; }
+.lp-why__chip--3 { bottom: 20px;  left: 16px; }
+.lp-why__chip-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--lp-blue);
+}
+
+/* copy */
+.lp-why__copy { color: white; }
+.lp-why__title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: clamp(36px,5vw,64px);
+  font-weight: 700;
+  line-height: .95;
+  letter-spacing: -.04em;
+  margin: 12px 0 16px;
+  color: white;
+}
+.lp-why__sub {
+  font-size: 13px;
+  line-height: 1.7;
+  color: rgba(255,255,255,.55);
+  margin-bottom: 40px;
+  max-width: 360px;
+}
+.lp-why__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.lp-why__stat strong {
+  display: block;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -.04em;
+  color: white;
+}
+.lp-why__stat span {
+  font-size: 12px;
+  color: rgba(255,255,255,.5);
+  font-weight: 500;
+}
+
+/* ================================================
+   SCHEDULE + CTA
+================================================ */
+.lp-schedule { background: white; padding: 80px 0; }
+.lp-schedule__inner {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 48px;
+  align-items: start;
+}
+@media(max-width:900px){ .lp-schedule__inner{grid-template-columns:1fr;} }
+
+.lp-schedule__notice {
+  background: #fefce8;
+  border: 1px solid #fef08a;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 12px;
+  color: #713f12;
+  margin-bottom: 16px;
+}
+.lp-schedule__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--lp-border);
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.lp-schedule__info { display: flex; align-items: center; gap: 12px; }
+.lp-schedule__icon {
+  width: 36px; height: 36px;
+  background: #dbeafe;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.lp-schedule__icon--green { background: #dcfce7; }
+.lp-schedule__name { font-size: 13px; font-weight: 700; color: var(--lp-ink); }
+.lp-schedule__desc { font-size: 11px; color: var(--lp-muted); margin-top: 2px; }
+.lp-badge-green {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #16a34a;
+  background: #dcfce7;
+  padding: 4px 10px;
+  border-radius: 50px;
+  letter-spacing: .06em;
+}
+.lp-badge-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #16a34a;
+  animation: badgePulse 1.5s ease-in-out infinite;
+}
+@keyframes badgePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+
+/* CTA card */
+.lp-cta-card {
+  background: var(--lp-blue);
+  border-radius: 20px;
+  padding: 36px 28px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+.lp-cta-card h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 8px 0 12px;
+}
+.lp-cta-card p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: rgba(255,255,255,.7);
+}
 </style>
 @endpush
 
 @push('scripts')
 <script>
-    // --- Regulation Modal ---
-    function showRegulationModal() {
-        const modal = document.getElementById('regulationModal');
-        if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+  function showRegulationModal(){
+    var m=document.getElementById('regulationModal');
+    if(m){m.style.display='flex';document.body.style.overflow='hidden';}
+  }
+  function closeRegulationModal(){
+    var m=document.getElementById('regulationModal');
+    if(m){m.style.display='none';document.body.style.overflow='auto';}
+  }
+  document.addEventListener('DOMContentLoaded',function(){
+    var m=document.getElementById('regulationModal');
+    if(m){
+      m.addEventListener('click',function(e){if(e.target===m)closeRegulationModal();});
+      document.addEventListener('keydown',function(e){if(e.key==='Escape')closeRegulationModal();});
     }
-    function closeRegulationModal() {
-        const modal = document.getElementById('regulationModal');
-        if (modal) { modal.style.display = 'none'; document.body.style.overflow = 'auto'; }
-    }
-    function handleModalClick(e) {
-        if (e.target === document.getElementById('regulationModal')) closeRegulationModal();
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const modal = document.getElementById('regulationModal');
-        if (modal) {
-            modal.addEventListener('click', handleModalClick);
-            document.addEventListener('keydown', e => { if (e.key === 'Escape') closeRegulationModal(); });
-        }
-
-        // --- Testimonial Carousel ---
-        const track  = document.getElementById('testimonialTrack');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-        const dots   = document.querySelectorAll('.testimonial-dot');
-        let idx = 0;
-
-        if (!track) return;
-
-        const total = track.children.length;
-        if (total === 0) return;
-
-        function go(n) {
-            idx = (n + total) % total;
-            track.style.transform = 'translateX(-' + (idx * 100) + '%)';
-            dots.forEach((d, i) => {
-                d.style.background  = i === idx ? '#2563eb' : '#d1d5db';
-                d.style.width       = i === idx ? '20px'   : '8px';
-            });
-        }
-
-        go(0);
-        if (prevBtn) prevBtn.addEventListener('click', () => go(idx - 1));
-        if (nextBtn) nextBtn.addEventListener('click', () => go(idx + 1));
-        dots.forEach((d, i) => d.addEventListener('click', () => go(i)));
-
-        setInterval(() => go(idx + 1), 6000);
-    });
+  });
 </script>
 @endpush
-
