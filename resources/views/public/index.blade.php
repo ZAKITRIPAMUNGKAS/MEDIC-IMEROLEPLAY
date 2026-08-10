@@ -125,8 +125,8 @@
                     <!-- HERO RIGHT PHOTO & BADGES -->
                     <div class="relative flex justify-center items-center">
                         <div class="relative w-full max-w-md h-[400px] rounded-[28px] overflow-hidden shadow-xl bg-gradient-to-b from-sky-400 to-blue-600 border-4 border-white">
-                            <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=900&q=85"
-                                 alt="Female Doctor"
+                            <img src="{{ asset('images/foto dokter.png') }}"
+                                 alt="Dokter iMe Medical"
                                  class="w-full h-full object-cover object-top">
 
                             <!-- Floating Badges -->
@@ -291,8 +291,8 @@
                         </div>
 
                         <div class="relative mt-4 rounded-2xl overflow-hidden shadow-md border-2 border-white/20">
-                            <img src="https://images.unsplash.com/photo-1551601651-2a8555f1a136?auto=format&fit=crop&w=800&q=85"
-                                 alt="Doctors Team"
+                            <img src="{{ asset('images/hero.png') }}"
+                                 alt="Tim Dokter iMe Medical"
                                  class="w-full h-44 object-cover object-top">
                         </div>
 
