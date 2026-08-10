@@ -757,913 +757,416 @@
         </div>
     </div>
     <!-- ================================================================
-         HERO &mdash; Innovation Clinic style
-    ================================================================ -->
-    <section class="lp-hero">
-        <div class="lp-hero__inner">
+     HERO SECTION - Ultra-Modern Glassmorphism Medical Portal
+================================================================ -->
+<div class="ime-hero-wrapper relative min-h-[90vh] flex items-center justify-center pt-24 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
+    <!-- Animated background glowing orbs -->
+    <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-gradient-to-r from-sky-600/20 via-cyan-500/20 to-blue-600/10 rounded-full blur-[120px] pointer-events-none animate-pulse"></div>
+    <div class="absolute bottom-10 right-10 w-[400px] h-[400px] bg-cyan-600/15 rounded-full blur-[100px] pointer-events-none"></div>
 
-            <!-- LEFT: copy -->
-            <div class="lp-hero__copy">
-                <p class="lp-hero__eyebrow">Los Santos Medical Services</p>
-                <h1 class="lp-hero__title">iMe<br><span>Medical</span></h1>
-                <p class="lp-hero__sub">
-                    We combine innovative technologies with a human approach
-                    to make every patient feel confident and calm.
-                </p>
-                <div class="lp-hero__actions">
-                    <a href="#layanan" class="lp-btn lp-btn--white">Lihat Layanan</a>
-                    <a href="{{ route('public.doctor-schedule') }}" class="lp-btn lp-btn--outline">Jadwal Dokter</a>
-                </div>
-                <!-- stats -->
-                <div class="lp-hero__stats">
-                    <div class="lp-stat">
-                        <strong>{{ number_format($stats['total_forms']) }}+</strong>
-                        <span>Pasien</span>
-                    </div>
-                    <div class="lp-stat-divider"></div>
-                    <div class="lp-stat">
-                        <strong>{{ $stats['total_staff'] }}+</strong>
-                        <span>Tenaga Medis</span>
-                    </div>
-                    <div class="lp-stat-divider"></div>
-                    <div class="lp-stat">
-                        <strong>100%</strong>
-                        <span>Digital</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- RIGHT: doctor image + floating chips -->
-            <div class="lp-hero__visual">
-                <div class="lp-hero__img-wrap">
-                    <img
-                        src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=900&q=85"
-                        alt="Doctor iMe Medical"
-                        class="lp-hero__doctor"
-                    >
-                    <!-- floating chips -->
-                    <div class="lp-chip lp-chip--1">Reliability</div>
-                    <div class="lp-chip lp-chip--2">Experience</div>
-                    <div class="lp-chip lp-chip--3">Professional</div>
-
-                    <!-- mini card bottom-right -->
-                    <div class="lp-hero__mini-card">
-                        <div class="lp-hero__mini-card-img">
-                            <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=400&q=80" alt="Hospital">
-                        </div>
-                        <div>
-                            <div class="lp-hero__mini-card-title">Alta Hospital</div>
-                            <div class="lp-hero__mini-card-sub">Alta Street, Los Santos</div>
-                        </div>
-                    </div>
+    <div class="max-w-7xl mx-auto w-full relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            <!-- LEFT: Hero Copy & Actions -->
+            <div class="lg:col-span-7 space-y-8 text-center lg:text-left">
+                
+                <!-- Live Status Badge -->
+                <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white shadow-xl">
+                    <span class="relative flex h-2.5 w-2.5">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                    </span>
+                    <span class="text-xs font-bold tracking-wide uppercase text-sky-200">Los Santos Medical Portal &bull; On Duty</span>
                 </div>
 
-                <!-- right-side text block -->
-                <div class="lp-hero__right-text">
-                    <p class="lp-hero__right-label">With Advanced Technologies</p>
-                    <p class="lp-hero__right-desc">
-                        Sistem digital terpadu, diagnostik modern &mdash; semua dalam
-                        satu portal khusus untuk komunitas RP.
+                <!-- Main Headline -->
+                <div class="space-y-4">
+                    <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-[1.08] font-sans">
+                        Portal Medis <br class="hidden sm:inline">
+                        <span class="bg-clip-text text-transparent bg-gradient-to-r from-sky-300 via-cyan-200 to-blue-400 drop-shadow-sm">
+                            Terpadu iMe
+                        </span>
+                    </h1>
+                    <p class="text-base sm:text-lg text-slate-200 max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed">
+                        Layanan kesehatan digital resmi untuk warga Los Santos. Akses konsultasi medis, operasi plastik, surat keterangan sehat, hingga dukungan darurat secara cepat dan profesional.
                     </p>
                 </div>
-            </div>
 
-        </div>
-    </section>
-
-    <!-- ================================================================
-         ABOUT &mdash; centered statement
-    ================================================================ -->
-    <section class="lp-about">
-        <div class="lp-container">
-            <p class="lp-about__text">
-                We combine innovative
-                <i class="fas fa-plus-circle text-sky-500"></i>
-                technologies with a human approach to make every patient
-                <i class="fas fa-user-md text-sky-500"></i>
-                feel <em>confident and calm.</em>
-            </p>
-            <p class="lp-about__sub">
-                iMe adalah platform yang menjadi space of trust, modern medicine and care, based
-                on many years of experience and love for people.
-            </p>
-            <a href="#tentang" class="lp-btn lp-btn--dark">More about us &rarr;</a>
-        </div>
-    </section>
-
-    <!-- ================================================================
-         SERVICES
-    ================================================================ -->
-    <section id="layanan" class="lp-services">
-        <div class="lp-container">
-
-            <div class="lp-services__header">
-                <div>
-                    <h2 class="lp-section-title">Our medical<br>services <span class="lp-tag">iMe</span></h2>
-                </div>
-                <p class="lp-services__desc">
-                    We provide a full range of medical services &mdash;
-                    from consultation to diagnosis and treatment.
-                    <a href="{{ route('public.doctor-schedule') }}" class="lp-link">See all services &rarr;</a>
-                </p>
-            </div>
-
-            <div class="lp-services__grid">
-
-                <!-- 01 -->
-                <a href="{{ route('public.cek-kesehatan') }}" class="lp-service-card">
-                    <div class="lp-service-card__num">01</div>
-                    <div class="lp-service-card__icon"><i class="fas fa-stethoscope text-sky-500"></i></div>
-                    <h3 class="lp-service-card__title">Konsultasi Medis</h3>
-                    <p class="lp-service-card__desc">Pemeriksaan umum, diagnosis, dan layanan kesehatan standar.</p>
-                    <span class="lp-service-card__link">Surat Kesehatan &rarr;</span>
-                </a>
-
-                <!-- Featured center card (blue) -->
-                <a href="{{ route('public.doctor-schedule') }}" class="lp-service-card lp-service-card--featured">
-                    <div class="lp-service-card__logo">iMe<br><span>Medical</span></div>
-                    <img
-                        src="https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?auto=format&fit=crop&w=600&q=80"
-                        alt="Medical"
-                        class="lp-service-card__bg-img"
-                    >
-                </a>
-
-                <!-- 02 -->
-                <a href="{{ route('public.operasi-plastik') }}" class="lp-service-card">
-                    <div class="lp-service-card__num">02</div>
-                    <div class="lp-service-card__icon"><i class="fas fa-user-nurse text-sky-500"></i></div>
-                    <h3 class="lp-service-card__title">Operasi Plastik</h3>
-                    <p class="lp-service-card__desc">Prosedur bedah estetika oleh tenaga profesional terlatih.</p>
-                    <span class="lp-service-card__link">Daftar Oplas &rarr;</span>
-                </a>
-
-                <!-- 03 -->
-                <a href="{{ route('public.surat-psikolog') }}" class="lp-service-card">
-                    <div class="lp-service-card__num">03</div>
-                    <div class="lp-service-card__icon"><i class="fas fa-brain text-sky-500"></i></div>
-                    <h3 class="lp-service-card__title">Psikologi</h3>
-                    <p class="lp-service-card__desc">Dukungan kesehatan mental untuk karakter Anda.</p>
-                    <span class="lp-service-card__link">Formulir Psikologi &rarr;</span>
-                </a>
-
-                <!-- 04 -->
-                <a href="{{ route('public.pendaftaran-karakter') }}" class="lp-service-card">
-                    <div class="lp-service-card__num">04</div>
-                    <div class="lp-service-card__icon"><i class="fas fa-heartbeat text-sky-500"></i></div>
-                    <h3 class="lp-service-card__title">Karakter Kill</h3>
-                    <p class="lp-service-card__desc">Layanan medis kritis untuk kebutuhan storyline roleplay.</p>
-                    <span class="lp-service-card__link">Daftar Sekarang &rarr;</span>
-                </a>
-
-                <!-- 05 -->
-                <a href="{{ route('public.cek-kesehatan') }}" class="lp-service-card">
-                    <div class="lp-service-card__num">05</div>
-                    <div class="lp-service-card__icon"><i class="fas fa-file-medical text-sky-500"></i></div>
-                    <h3 class="lp-service-card__title">Surat Medis</h3>
-                    <p class="lp-service-card__desc">Surat sehat, bebas narkoba, dan keterangan khusus.</p>
-                    <span class="lp-service-card__link">Buat Surat &rarr;</span>
-                </a>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- ================================================================
-         WHY CHOOSE US
-    ================================================================ -->
-    <section class="lp-why">
-        <div class="lp-container">
-            <div class="lp-why__inner">
-
-                <!-- left: image + chips -->
-                <div class="lp-why__visual">
-                    <div class="lp-why__img-wrap">
-                        <img
-                            src="https://images.unsplash.com/photo-1551601651-2a8555f1a136?auto=format&fit=crop&w=900&q=85"
-                            alt="Medical team"
-                            class="lp-why__img"
-                        >
-                        <div class="lp-why__chip lp-why__chip--1">
-                            <span class="lp-why__chip-dot"></span>
-                            Experienced Doctors
-                        </div>
-                        <div class="lp-why__chip lp-why__chip--2">
-                            <span class="lp-why__chip-dot"></span>
-                            Modern Equipment
-                        </div>
-                        <div class="lp-why__chip lp-why__chip--3">
-                            <span class="lp-why__chip-dot"></span>
-                            Certified Clinic
-                        </div>
-                    </div>
-                </div>
-
-                <!-- right: copy + stats -->
-                <div class="lp-why__copy">
-                    <p class="lp-eyebrow">Why choose us</p>
-                    <h2 class="lp-why__title">Why<br>choose us</h2>
-                    <p class="lp-why__sub">
-                        Kami adalah platform yang telah dipercaya komunitas roleplay
-                        Los Santos dengan standar medis yang konsisten dan profesional.
-                    </p>
-                    <div class="lp-why__stats">
-                        <div class="lp-why__stat">
-                            <strong>10+</strong>
-                            <span>Years of experience</span>
-                        </div>
-                        <div class="lp-why__stat">
-                            <strong>15</strong>
-                            <span>Areas of medicine</span>
-                        </div>
-                        <div class="lp-why__stat">
-                            <strong>95%</strong>
-                            <span>Satisfied patients</span>
-                        </div>
-                        <div class="lp-why__stat">
-                            <strong>98%</strong>
-                            <span>Diagnostics</span>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- ================================================================
-         SCHEDULE + CTA
-    ================================================================ -->
-    <section id="jadwal" class="lp-schedule">
-        <div class="lp-container">
-            <div class="lp-schedule__inner">
-
-                <!-- schedule table -->
-                <div class="lp-schedule__table">
-                    <h2 class="lp-section-title" style="margin-bottom:24px;">Jam Operasional</h2>
-                    <div class="lp-schedule__notice">
-                        <i class="fas fa-exclamation-triangle text-amber-500 mr-1"></i> <strong>Info:</strong> Pelayanan sesuai ketersediaan tenaga medis (On Duty).
-                    </div>
-                    <div class="lp-schedule__row">
-                        <div class="lp-schedule__info">
-                            <div class="lp-schedule__icon"><i class="fas fa-user-nurse"></i></div>
-                            <div>
-                                <div class="lp-schedule__name">Operasi Plastik</div>
-                                <div class="lp-schedule__desc">Shift 1: 13:00&ndash;16:00 &middot; Shift 2: 20:00&ndash;22:00</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="lp-schedule__row">
-                        <div class="lp-schedule__info">
-                            <div class="lp-schedule__icon"><i class="fas fa-file-medical"></i></div>
-                            <div>
-                                <div class="lp-schedule__name">Surat-Suratan Medis</div>
-                                <div class="lp-schedule__desc">Shift 1: 13:00&ndash;17:00 &middot; Shift 2: 19:00&ndash;22:00</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="lp-schedule__row">
-                        <div class="lp-schedule__info">
-                            <div class="lp-schedule__icon lp-schedule__icon--green"><i class="fas fa-pills"></i></div>
-                            <div>
-                                <div class="lp-schedule__name">Layanan Farmasi</div>
-                                <div class="lp-schedule__desc">Pengambilan & pengobatan medis</div>
-                            </div>
-                        </div>
-                        <div class="lp-badge-green">
-                            <span class="lp-badge-dot"></span>
-                            BUKA 24 JAM
-                        </div>
-                    </div>
-                </div>
-
-                <!-- CTA card -->
-                <div class="lp-cta-card">
-                    <p class="lp-eyebrow lp-eyebrow--light">Ready when you are</p>
-                    <h3>Butuh layanan medis sekarang?</h3>
-                    <p>Akses layanan iMe dengan mudah dan dapatkan bantuan dari tenaga medis kami kapan saja.</p>
-                    <a href="#layanan" class="lp-btn lp-btn--white" style="margin-top:24px;display:inline-block;">Lihat Layanan</a>
-                    <button onclick="showRegulationModal()" class="lp-btn lp-btn--outline-light" style="margin-top:12px;">
-                        Regulasi Pengobatan
+                <!-- Action Buttons -->
+                <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
+                    <a href="#layanan" class="group inline-flex items-center gap-3 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-400 hover:to-cyan-400 text-white font-bold text-sm shadow-lg shadow-sky-500/30 hover:shadow-cyan-500/50 hover:-translate-y-0.5 transition-all duration-300">
+                        <i class="fas fa-stethoscope text-base transition-transform group-hover:scale-110"></i>
+                        <span>Lihat Layanan Medis</span>
+                        <i class="fas fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                    <button onclick="showRegulationModal()" class="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm border border-white/20 backdrop-blur-md hover:-translate-y-0.5 transition-all duration-300">
+                        <i class="fas fa-file-invoice-dollar text-sky-300"></i>
+                        <span>Regulasi Pengobatan</span>
                     </button>
                 </div>
 
+                <!-- Stats Bar -->
+                <div class="pt-6 border-t border-white/10 grid grid-cols-3 gap-6 max-w-lg mx-auto lg:mx-0 text-white">
+                    <div>
+                        <div class="text-2xl sm:text-3xl font-extrabold text-sky-300">{{ number_format($stats['total_forms']) }}+</div>
+                        <div class="text-xs text-slate-300 font-medium mt-1">Pasien Terlayani</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl sm:text-3xl font-extrabold text-cyan-300">{{ $stats['total_staff'] }}+</div>
+                        <div class="text-xs text-slate-300 font-medium mt-1">Tenaga Medis</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl sm:text-3xl font-extrabold text-emerald-300">100%</div>
+                        <div class="text-xs text-slate-300 font-medium mt-1">Sistem Digital</div>
+                    </div>
+                </div>
+
             </div>
+
+            <!-- RIGHT: Visual Feature Card Stack -->
+            <div class="lg:col-span-5 relative">
+                <div class="relative mx-auto max-w-md lg:max-w-none">
+                    
+                    <!-- Main Card Showcase -->
+                    <div class="bg-slate-900/80 backdrop-blur-xl border border-white/15 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 relative overflow-hidden group">
+                        <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-sky-500/10 rounded-full blur-2xl group-hover:bg-sky-500/20 transition-all duration-500"></div>
+
+                        <!-- Hospital Badges Header -->
+                        <div class="flex items-center justify-between border-b border-white/10 pb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="flex items-center gap-2 bg-white/95 px-3 py-1.5 rounded-xl shadow-md">
+                                    <img src="{{ asset('images/motionlife-logo.png') }}" alt="Alta" class="h-6 w-6 object-contain">
+                                    <div class="h-4 w-px bg-slate-300"></div>
+                                    <img src="{{ asset('images/logo rhv2.png') }}" alt="Roxwood" class="h-6 w-6 object-contain">
+                                </div>
+                                <div>
+                                    <div class="text-xs font-bold text-white uppercase tracking-wider">iMe Health Center</div>
+                                    <div class="text-[10px] text-slate-400">Alta & Roxwood Hospital</div>
+                                </div>
+                            </div>
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">ACTIVE</span>
+                        </div>
+
+                        <!-- Hero Doctor Image Container -->
+                        <div class="relative h-56 rounded-2xl overflow-hidden group/img border border-white/10">
+                            <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=900&q=85" alt="Medical Team" class="w-full h-full object-cover object-top transition-transform duration-700 group-hover/img:scale-105">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
+                            
+                            <!-- Floating Info Tags -->
+                            <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs bg-slate-900/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/10">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas fa-hospital-alt text-sky-400"></i>
+                                    <span class="font-semibold">Alta Street, Los Santos</span>
+                                </div>
+                                <a href="{{ route('public.doctor-schedule') }}" class="text-sky-300 hover:text-white font-bold flex items-center gap-1 transition-colors">
+                                    Jadwal <i class="fas fa-chevron-right text-[10px]"></i>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Quick Action Grid Inside Card -->
+                        <div class="grid grid-cols-2 gap-3 pt-1">
+                            <a href="{{ route('public.cek-kesehatan') }}" class="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all text-white group/btn">
+                                <div class="w-9 h-9 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center flex-shrink-0 group-hover/btn:bg-sky-500 group-hover/btn:text-white transition-all">
+                                    <i class="fas fa-file-medical text-sm"></i>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-xs font-bold">Surat Sehat</div>
+                                    <div class="text-[10px] text-slate-400">Cek kesehatan</div>
+                                </div>
+                            </a>
+                            <a href="{{ route('public.operasi-plastik') }}" class="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all text-white group/btn">
+                                <div class="w-9 h-9 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center flex-shrink-0 group-hover/btn:bg-cyan-500 group-hover/btn:text-white transition-all">
+                                    <i class="fas fa-user-nurse text-sm"></i>
+                                </div>
+                                <div class="text-left">
+                                    <div class="text-xs font-bold">Bedah Oplas</div>
+                                    <div class="text-[10px] text-slate-400">Estetika wajah</div>
+                                </div>
+                            </a>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
         </div>
-    </section>
+    </div>
+</div>
+
+<!-- ================================================================
+     SERVICES SECTION - Sleek Modern Grid
+================================================================ -->
+<section id="layanan" class="py-20 bg-slate-900/60 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+        <!-- Section Header -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
+            <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-bold tracking-widest uppercase mb-3">
+                    <i class="fas fa-briefcase-medical"></i> Services
+                </div>
+                <h2 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+                    Layanan Medis Utama
+                </h2>
+            </div>
+            <p class="text-slate-400 text-sm max-w-md leading-relaxed">
+                Pilih kategori layanan yang Anda butuhkan. Setiap permohonan diproses oleh tim medis berizin dan profesional.
+            </p>
+        </div>
+
+        <!-- Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+            <!-- Card 01: Konsultasi Medis -->
+            <a href="{{ route('public.cek-kesehatan') }}" class="group relative bg-slate-800/50 hover:bg-slate-800/90 border border-white/10 hover:border-sky-500/50 rounded-3xl p-6 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-sky-500/10 flex flex-col justify-between overflow-hidden">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-sky-500/5 rounded-bl-full transition-all group-hover:bg-sky-500/15"></div>
+                <div>
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-12 h-12 rounded-2xl bg-sky-500/15 border border-sky-500/30 text-sky-400 flex items-center justify-center text-xl group-hover:scale-110 group-hover:bg-sky-500 group-hover:text-white transition-all duration-300">
+                            <i class="fas fa-stethoscope"></i>
+                        </div>
+                        <span class="text-xs font-black text-slate-500 tracking-wider">01</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-sky-300 transition-colors">
+                        Konsultasi Medis
+                    </h3>
+                    <p class="text-slate-400 text-xs leading-relaxed mb-6">
+                        Pemeriksaan kesehatan umum, diagnosis penyakit, serta penerbitan surat keterangan sehat resmi.
+                    </p>
+                </div>
+                <div class="inline-flex items-center gap-2 text-xs font-bold text-sky-400 group-hover:text-sky-300 transition-colors pt-4 border-t border-white/5">
+                    <span>Surat Kesehatan</span>
+                    <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1.5"></i>
+                </div>
+            </a>
+
+            <!-- Card 02: Operasi Plastik -->
+            <a href="{{ route('public.operasi-plastik') }}" class="group relative bg-slate-800/50 hover:bg-slate-800/90 border border-white/10 hover:border-cyan-500/50 rounded-3xl p-6 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-cyan-500/10 flex flex-col justify-between overflow-hidden">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-cyan-500/5 rounded-bl-full transition-all group-hover:bg-cyan-500/15"></div>
+                <div>
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-12 h-12 rounded-2xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 flex items-center justify-center text-xl group-hover:scale-110 group-hover:bg-cyan-500 group-hover:text-white transition-all duration-300">
+                            <i class="fas fa-user-nurse"></i>
+                        </div>
+                        <span class="text-xs font-black text-slate-500 tracking-wider">02</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors">
+                        Operasi Plastik
+                    </h3>
+                    <p class="text-slate-400 text-xs leading-relaxed mb-6">
+                        Prosedur bedah rekonstruksi & estetika oleh dokter spesialis bedah berpengalaman.
+                    </p>
+                </div>
+                <div class="inline-flex items-center gap-2 text-xs font-bold text-cyan-400 group-hover:text-cyan-300 transition-colors pt-4 border-t border-white/5">
+                    <span>Pendaftaran Oplas</span>
+                    <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1.5"></i>
+                </div>
+            </a>
+
+            <!-- Card 03: Konsultasi Psikologi -->
+            <a href="{{ route('public.surat-psikolog') }}" class="group relative bg-slate-800/50 hover:bg-slate-800/90 border border-white/10 hover:border-indigo-500/50 rounded-3xl p-6 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-indigo-500/10 flex flex-col justify-between overflow-hidden">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-bl-full transition-all group-hover:bg-indigo-500/15"></div>
+                <div>
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-12 h-12 rounded-2xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-400 flex items-center justify-center text-xl group-hover:scale-110 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <span class="text-xs font-black text-slate-500 tracking-wider">03</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-indigo-300 transition-colors">
+                        Konsultasi Psikologi
+                    </h3>
+                    <p class="text-slate-400 text-xs leading-relaxed mb-6">
+                        Layanan konsultasi kesehatan mental dan penerbitan Surat Keterangan Psikologi resmi.
+                    </p>
+                </div>
+                <div class="inline-flex items-center gap-2 text-xs font-bold text-indigo-400 group-hover:text-indigo-300 transition-colors pt-4 border-t border-white/5">
+                    <span>Formulir Psikologi</span>
+                    <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1.5"></i>
+                </div>
+            </a>
+
+            <!-- Card 04: Karakter Kill (CK) -->
+            <a href="{{ route('public.pendaftaran-karakter') }}" class="group relative bg-slate-800/50 hover:bg-slate-800/90 border border-white/10 hover:border-rose-500/50 rounded-3xl p-6 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-rose-500/10 flex flex-col justify-between overflow-hidden">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-rose-500/5 rounded-bl-full transition-all group-hover:bg-rose-500/15"></div>
+                <div>
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-12 h-12 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center text-xl group-hover:scale-110 group-hover:bg-rose-500 group-hover:text-white transition-all duration-300">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
+                        <span class="text-xs font-black text-slate-500 tracking-wider">04</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-rose-300 transition-colors">
+                        Karakter Kill (CK)
+                    </h3>
+                    <p class="text-slate-400 text-xs leading-relaxed mb-6">
+                        Penanganan tindakan medis khusus dan administrasi untuk kelengkapan storyline roleplay.
+                    </p>
+                </div>
+                <div class="inline-flex items-center gap-2 text-xs font-bold text-rose-400 group-hover:text-rose-300 transition-colors pt-4 border-t border-white/5">
+                    <span>Daftar Karakter Kill</span>
+                    <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1.5"></i>
+                </div>
+            </a>
+
+        </div>
+    </div>
+</section>
+
+<!-- ================================================================
+     JAM OPERASIONAL & CTA SECTION
+================================================================ -->
+<section id="jadwal" class="py-20 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+            
+            <!-- LEFT: Schedule Table Card (lg:col-span-7) -->
+            <div class="lg:col-span-7 bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-xl">
+                
+                <div>
+                    <!-- Header -->
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-lg">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-white">Jam Operasional</h3>
+                                <p class="text-xs text-slate-400">Jadwal pelayanan medis di rumah sakit</p>
+                            </div>
+                        </div>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-slate-300 border border-white/10">WIB</span>
+                    </div>
+
+                    <!-- Notice Bar -->
+                    <div class="mb-6 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center gap-3 text-xs text-amber-200">
+                        <i class="fas fa-exclamation-triangle text-amber-400 text-base flex-shrink-0"></i>
+                        <span><strong>Informasi:</strong> Pelayanan diberikan sesuai ketersediaan tenaga medis (On Duty).</span>
+                    </div>
+
+                    <!-- Schedule Items List -->
+                    <div class="space-y-4">
+                        
+                        <!-- Item 1: Operasi Plastik -->
+                        <div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 transition-all">
+                            <div class="flex items-center gap-3.5">
+                                <div class="w-9 h-9 rounded-xl bg-sky-500/15 text-sky-400 flex items-center justify-center">
+                                    <i class="fas fa-user-nurse"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-bold text-white">Operasi Plastik</div>
+                                    <div class="text-xs text-slate-400">Shift 1: 13:00&ndash;16:00 &bull; Shift 2: 20:00&ndash;22:00</div>
+                                </div>
+                            </div>
+                            <span class="text-xs font-semibold text-sky-300 bg-sky-500/10 px-2.5 py-1 rounded-lg">Shifted</span>
+                        </div>
+
+                        <!-- Item 2: Surat Medis -->
+                        <div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 transition-all">
+                            <div class="flex items-center gap-3.5">
+                                <div class="w-9 h-9 rounded-xl bg-indigo-500/15 text-indigo-400 flex items-center justify-center">
+                                    <i class="fas fa-file-medical"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-bold text-white">Surat-Suratan Medis</div>
+                                    <div class="text-xs text-slate-400">Shift 1: 13:00&ndash;17:00 &bull; Shift 2: 19:00&ndash;22:00</div>
+                                </div>
+                            </div>
+                            <span class="text-xs font-semibold text-indigo-300 bg-indigo-500/10 px-2.5 py-1 rounded-lg">Shifted</span>
+                        </div>
+
+                        <!-- Item 3: Layanan Farmasi -->
+                        <div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 transition-all">
+                            <div class="flex items-center gap-3.5">
+                                <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center">
+                                    <i class="fas fa-pills"></i>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-bold text-white">Layanan Farmasi & IGD</div>
+                                    <div class="text-xs text-slate-400">Pengambilan obat & penanganan pingsan</div>
+                                </div>
+                            </div>
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                BUKA 24 JAM
+                            </span>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="pt-6 mt-6 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
+                    <span>*Jadwal sewaktu-waktu dapat menyesuaikan situasi emergency roleplay</span>
+                    <a href="{{ route('public.doctor-schedule') }}" class="text-sky-400 font-bold hover:underline">Jadwal Staf &rarr;</a>
+                </div>
+
+            </div>
+
+            <!-- RIGHT: CTA Card (lg:col-span-5) -->
+            <div class="lg:col-span-5 bg-gradient-to-br from-sky-600 via-sky-700 to-blue-900 rounded-3xl p-6 sm:p-8 text-white flex flex-col justify-between shadow-2xl relative overflow-hidden group">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700"></div>
+
+                <div class="space-y-4 relative z-10">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-sky-200 text-xs font-bold tracking-wider uppercase border border-white/20">
+                        <i class="fas fa-headset"></i> Ready When You Are
+                    </div>
+                    <h3 class="text-2xl sm:text-3xl font-extrabold leading-tight">
+                        Butuh Layanan Medis Sekarang?
+                    </h3>
+                    <p class="text-sky-100 text-xs sm:text-sm leading-relaxed">
+                        Akses portal medis iMe dengan mudah dari mana saja. Isi formulir kesehatan, daftarkan janji temu, atau periksa regulasi biaya pengobatan.
+                    </p>
+                </div>
+
+                <div class="pt-8 space-y-3 relative z-10">
+                    <button onclick="showRegulationModal()" class="w-full py-3.5 px-6 rounded-2xl bg-white text-sky-900 hover:bg-sky-50 font-bold text-sm shadow-lg transition-all duration-300 flex items-center justify-center gap-2 group/btn">
+                        <i class="fas fa-file-alt text-sky-600"></i>
+                        <span>Cek Regulasi Pengobatan</span>
+                        <i class="fas fa-chevron-right text-xs transition-transform group-hover/btn:translate-x-1"></i>
+                    </button>
+                    <a href="#layanan" class="w-full py-3.5 px-6 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm border border-white/20 transition-all duration-300 flex items-center justify-center gap-2">
+                        <i class="fas fa-th-list"></i>
+                        <span>Semua Formulir Layanan</span>
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+</section>
 
 @endsection
 
 @push('styles')
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
 <style>
-/* ================================================
-   TOKENS
-================================================ */
-:root {
-  --lp-blue:   #0ea5e9; /* Sky 500 - Biru Medis Navbar */
-  --lp-blue2:  #0284c7; /* Sky 600 */
-  --lp-navy:   #0c4a6e; /* Sky 900 - Background Navbar */
-  --lp-dark:   #075985; /* Sky 800 */
-  --lp-ink:    #0f172a;
-  --lp-muted:  #64748b;
-  --lp-light:  #f0f9ff; /* Sky 50 */
-  --lp-border: #e0f2fe; /* Sky 100 */
-  --lp-white:  #ffffff;
-  --lp-radius: 16px;
-  font-family: 'Inter', sans-serif;
-}
-
-/* ================================================
-   MODAL FIXES
-================================================ */
-.custom-scrollbar::-webkit-scrollbar { width:6px; }
-.custom-scrollbar::-webkit-scrollbar-thumb { background:#3b82f6; border-radius:99px; }
-@keyframes fadeInUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-.animate-fade-in-up { animation:fadeInUp .4s ease; }
-
-/* ================================================
-   SHARED
-================================================ */
-.lp-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 32px;
-}
-@media(max-width:640px){ .lp-container{padding:0 16px;} }
-
-.lp-eyebrow {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .15em;
-  text-transform: uppercase;
-  color: var(--lp-blue);
-}
-.lp-eyebrow--light { color: rgba(255,255,255,.6); }
-
-.lp-section-title {
-  font-family: 'DM Sans', sans-serif;
-  font-size: clamp(28px,4vw,44px);
-  font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -.03em;
-  color: var(--lp-ink);
-}
-
-.lp-tag {
-  display: inline-block;
-  background: var(--lp-blue);
-  color: white;
-  font-size: 12px;
-  font-weight: 700;
-  padding: 2px 10px;
-  border-radius: 6px;
-  vertical-align: middle;
-  margin-left: 6px;
-}
-
-.lp-link {
-  color: var(--lp-blue);
-  font-weight: 600;
-  font-size: 13px;
-  text-decoration: none;
-}
-.lp-link:hover { text-decoration: underline; }
-
-/* Buttons */
-.lp-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 11px 22px;
-  border-radius: 50px;
-  font-size: 13px;
-  font-weight: 700;
-  text-decoration: none;
-  transition: all .2s;
-  cursor: pointer;
-  border: none;
-}
-.lp-btn--white  { background: white; color: var(--lp-blue); }
-.lp-btn--white:hover { background: #f0f9ff; }
-.lp-btn--dark   { background: var(--lp-ink); color: white; }
-.lp-btn--dark:hover { background: #1e293b; }
-.lp-btn--outline { background: rgba(255,255,255,.15); color: white; border: 1px solid rgba(255,255,255,.4); }
-.lp-btn--outline:hover { background: rgba(255,255,255,.25); }
-.lp-btn--outline-light { background: transparent; color: white; border: 1px solid rgba(255,255,255,.4); width:100%; justify-content:center; }
-.lp-btn--outline-light:hover { background: rgba(255,255,255,.1); }
-
-/* ================================================
-   HERO
-================================================ */
-.lp-hero {
-  background: linear-gradient(180deg, var(--lp-navy) 0%, var(--lp-dark) 100%);
-  padding-top: 40px;
-  overflow: hidden;
-  position: relative;
-}
-.lp-hero::before {
-  content: '';
-  position: absolute;
-  top: -100px; right: -100px;
-  width: 500px; height: 500px;
-  background: rgba(255,255,255,.05);
-  border-radius: 50%;
-}
-
-.lp-hero__inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 64px 32px 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 48px;
-  align-items: flex-end;
-  min-height: 580px;
-}
-@media(max-width:900px){
-  .lp-hero__inner { grid-template-columns:1fr; min-height:auto; padding-bottom:40px; }
-  .lp-hero__visual { display:none; }
-}
-
-/* copy */
-.lp-hero__copy { color: white; padding-bottom: 48px; }
-.lp-hero__eyebrow {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .15em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,.7);
-  margin-bottom: 16px;
-}
-.lp-hero__title {
-  font-family: 'DM Sans', sans-serif;
-  font-size: clamp(48px,8vw,88px);
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: -.04em;
-  color: white;
-  margin-bottom: 20px;
-}
-.lp-hero__title span { color: rgba(255,255,255,.6); font-weight: 400; }
-.lp-hero__sub {
-  font-size: 14px;
-  line-height: 1.7;
-  color: rgba(255,255,255,.7);
-  max-width: 380px;
-  margin-bottom: 28px;
-}
-.lp-hero__actions { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 36px; }
-.lp-hero__stats {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  background: rgba(255,255,255,.1);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,.2);
-  border-radius: 14px;
-  padding: 16px 24px;
-  width: fit-content;
-}
-.lp-stat { text-align: center; padding: 0 20px; }
-.lp-stat strong {
-  display: block;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 26px;
-  font-weight: 700;
-  color: white;
-  letter-spacing: -.03em;
-}
-.lp-stat span { font-size: 11px; color: rgba(255,255,255,.6); font-weight: 600; }
-.lp-stat-divider { width: 1px; height: 40px; background: rgba(255,255,255,.2); }
-
-/* visual right side */
-.lp-hero__visual {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 16px;
-  align-items: flex-end;
-}
-.lp-hero__img-wrap {
-  position: relative;
-  border-radius: 24px 24px 0 0;
-  overflow: hidden;
-  height: 440px;
-  background: rgba(255,255,255,.1);
-}
-.lp-hero__doctor {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top center;
-  mix-blend-mode: luminosity;
-  opacity: .9;
-}
-
-/* floating chips */
-.lp-chip {
-  position: absolute;
-  background: white;
-  color: var(--lp-ink);
-  font-size: 11px;
-  font-weight: 700;
-  padding: 6px 14px;
-  border-radius: 50px;
-  box-shadow: 0 4px 20px rgba(0,0,0,.15);
-}
-.lp-chip--1 { top: 24px; left: 16px; animation: chipFloat 3s ease-in-out infinite; }
-.lp-chip--2 { top: 24px; right: 16px; animation: chipFloat 3.5s ease-in-out infinite .5s; }
-.lp-chip--3 { bottom: 80px; left: 16px; animation: chipFloat 4s ease-in-out infinite 1s; }
-@keyframes chipFloat {
-  0%,100%{transform:translateY(0)}
-  50%{transform:translateY(-6px)}
-}
-
-/* mini card bottom */
-.lp-hero__mini-card {
-  position: absolute;
-  bottom: 16px; right: 16px;
-  background: white;
-  border-radius: 12px;
-  padding: 10px 14px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  box-shadow: 0 8px 24px rgba(0,0,0,.15);
-}
-.lp-hero__mini-card-img {
-  width: 40px; height: 40px;
-  border-radius: 8px;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-.lp-hero__mini-card-img img { width:100%;height:100%;object-fit:cover; }
-.lp-hero__mini-card-title { font-size: 12px; font-weight: 700; color: var(--lp-ink); }
-.lp-hero__mini-card-sub { font-size: 10px; color: var(--lp-muted); }
-
-/* right text block */
-.lp-hero__right-text {
-  width: 140px;
-  padding-bottom: 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.lp-hero__right-label {
-  font-size: 13px;
-  font-weight: 700;
-  color: white;
-  line-height: 1.3;
-}
-.lp-hero__right-desc {
-  font-size: 11px;
-  line-height: 1.6;
-  color: rgba(255,255,255,.6);
-}
-
-/* ================================================
-   ABOUT
-================================================ */
-.lp-about {
-  background: white;
-  padding: 80px 0;
-  text-align: center;
-}
-.lp-about__text {
-  font-family: 'DM Sans', sans-serif;
-  font-size: clamp(20px,3.5vw,36px);
-  font-weight: 700;
-  line-height: 1.3;
-  letter-spacing: -.02em;
-  color: var(--lp-ink);
-  max-width: 780px;
-  margin: 0 auto 16px;
-}
-.lp-about__text em { font-style: italic; color: var(--lp-blue); }
-.lp-icon-inline { font-size: 1em; vertical-align: middle; }
-.lp-about__sub {
-  font-size: 13px;
-  line-height: 1.7;
-  color: var(--lp-muted);
-  max-width: 520px;
-  margin: 0 auto 28px;
-}
-
-/* ================================================
-   SERVICES
-================================================ */
-.lp-services { background: var(--lp-light); padding: 80px 0; }
-.lp-services__header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 32px;
-  margin-bottom: 40px;
-  flex-wrap: wrap;
-}
-.lp-services__desc {
-  font-size: 13px;
-  line-height: 1.7;
-  color: var(--lp-muted);
-  max-width: 260px;
-  margin-top: 8px;
-}
-.lp-services__grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
-@media(max-width:900px){ .lp-services__grid{grid-template-columns:repeat(2,1fr);} }
-@media(max-width:540px){ .lp-services__grid{grid-template-columns:1fr;} }
-
-/* service card */
-.lp-service-card {
-  background: white;
-  border: 1px solid var(--lp-border);
-  border-radius: var(--lp-radius);
-  padding: 28px 24px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-  min-height: 200px;
-}
-.lp-service-card:hover {
-  box-shadow: 0 20px 40px -10px rgba(14, 165, 233, 0.22);
-  transform: translateY(-8px) scale(1.015);
-  border-color: #38bdf8;
-}
-.lp-service-card__num {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--lp-muted);
-  letter-spacing: .08em;
-}
-.lp-service-card__icon {
-  font-size: 24px;
-  margin: 4px 0;
-  display: inline-block;
-  transition: transform 0.3s ease;
-}
-.lp-service-card:hover .lp-service-card__icon {
-  transform: scale(1.25) rotate(4deg);
-}
-.lp-service-card__title {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--lp-ink);
-  letter-spacing: -.02em;
-  transition: color 0.25s ease;
-}
-.lp-service-card:hover .lp-service-card__title {
-  color: var(--lp-blue2);
-}
-.lp-service-card__desc {
-  font-size: 12px;
-  line-height: 1.6;
-  color: var(--lp-muted);
-  flex: 1;
-}
-.lp-service-card__link {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--lp-blue);
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 4px;
-  transition: all 0.25s ease;
-}
-.lp-service-card:hover .lp-service-card__link {
-  color: var(--lp-blue2);
-  transform: translateX(6px);
-}
-
-/* featured blue card */
-.lp-service-card--featured {
-  background: var(--lp-blue);
-  border-color: var(--lp-blue);
-  overflow: hidden;
-  padding: 0;
-  min-height: 220px;
-}
-.lp-service-card--featured:hover { transform:translateY(-2px); }
-.lp-service-card__logo {
-  position: absolute;
-  top: 20px; left: 20px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 18px;
-  font-weight: 700;
-  color: white;
-  line-height: 1.1;
-  z-index: 2;
-}
-.lp-service-card__logo span { font-weight: 400; opacity: .7; }
-.lp-service-card__bg-img {
-  position: absolute;
-  inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
-  opacity: .35;
-}
-
-/* ================================================
-   WHY CHOOSE US
-================================================ */
-.lp-why {
-  background: var(--lp-navy);
-  padding: 80px 0;
-}
-.lp-why__inner {
-  display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 64px;
-  align-items: center;
-}
-@media(max-width:900px){
-  .lp-why__inner{grid-template-columns:1fr;}
-  .lp-why__visual{order:2;}
-}
-
-/* visual */
-.lp-why__img-wrap {
-  position: relative;
-  border-radius: 20px;
-  overflow: hidden;
-  height: 420px;
-}
-.lp-why__img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  object-position: top center;
-}
-.lp-why__chip {
-  position: absolute;
-  background: white;
-  color: var(--lp-ink);
-  font-size: 11px;
-  font-weight: 700;
-  padding: 6px 14px;
-  border-radius: 50px;
-  box-shadow: 0 4px 16px rgba(0,0,0,.15);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.lp-why__chip--1 { bottom: 100px; left: 16px; }
-.lp-why__chip--2 { bottom: 60px;  left: 16px; }
-.lp-why__chip--3 { bottom: 20px;  left: 16px; }
-.lp-why__chip-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--lp-blue);
-}
-
-/* copy */
-.lp-why__copy { color: white; }
-.lp-why__title {
-  font-family: 'DM Sans', sans-serif;
-  font-size: clamp(36px,5vw,64px);
-  font-weight: 700;
-  line-height: .95;
-  letter-spacing: -.04em;
-  margin: 12px 0 16px;
-  color: white;
-}
-.lp-why__sub {
-  font-size: 13px;
-  line-height: 1.7;
-  color: rgba(255,255,255,.55);
-  margin-bottom: 40px;
-  max-width: 360px;
-}
-.lp-why__stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-}
-.lp-why__stat strong {
-  display: block;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 36px;
-  font-weight: 700;
-  letter-spacing: -.04em;
-  color: white;
-}
-.lp-why__stat span {
-  font-size: 12px;
-  color: rgba(255,255,255,.5);
-  font-weight: 500;
-}
-
-/* ================================================
-   SCHEDULE + CTA
-================================================ */
-.lp-schedule { background: white; padding: 80px 0; }
-.lp-schedule__inner {
-  display: grid;
-  grid-template-columns: 1fr 360px;
-  gap: 48px;
-  align-items: start;
-}
-@media(max-width:900px){ .lp-schedule__inner{grid-template-columns:1fr;} }
-
-.lp-schedule__notice {
-  background: #fefce8;
-  border: 1px solid #fef08a;
-  border-radius: 10px;
-  padding: 10px 16px;
-  font-size: 12px;
-  color: #713f12;
-  margin-bottom: 16px;
-}
-.lp-schedule__row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--lp-border);
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.lp-schedule__info { display: flex; align-items: center; gap: 12px; }
-.lp-schedule__icon {
-  width: 36px; height: 36px;
-  background: #dbeafe;
-  border-radius: 10px;
-  display: grid;
-  place-items: center;
-  font-size: 16px;
-  flex-shrink: 0;
-}
-.lp-schedule__icon--green { background: #dcfce7; }
-.lp-schedule__name { font-size: 13px; font-weight: 700; color: var(--lp-ink); }
-.lp-schedule__desc { font-size: 11px; color: var(--lp-muted); margin-top: 2px; }
-.lp-badge-green {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 10px;
-  font-weight: 700;
-  color: #16a34a;
-  background: #dcfce7;
-  padding: 4px 10px;
-  border-radius: 50px;
-  letter-spacing: .06em;
-}
-.lp-badge-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: #16a34a;
-  animation: badgePulse 1.5s ease-in-out infinite;
-}
-@keyframes badgePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
-
-/* CTA card */
-.lp-cta-card {
-  background: linear-gradient(135deg, var(--lp-navy) 0%, var(--lp-dark) 100%);
-  border-radius: 20px;
-  padding: 36px 28px;
-  color: white;
-  display: flex;
-  flex-direction: column;
-}
-.lp-cta-card h3 {
-  font-family: 'DM Sans', sans-serif;
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 1.2;
-  margin: 8px 0 12px;
-}
-.lp-cta-card p {
-  font-size: 13px;
-  line-height: 1.7;
-  color: rgba(255,255,255,.7);
-}
+    /* Sleek Custom Styles */
+    .ime-hero-wrapper {
+        background: radial-gradient(circle at 50% 0%, #0c4a6e 0%, #0f172a 100%);
+    }
 </style>
 @endpush
 
 @push('scripts')
 <script>
-  function showRegulationModal(){
-    var m=document.getElementById('regulationModal');
-    if(m){m.style.display='flex';document.body.style.overflow='hidden';}
-  }
-  function closeRegulationModal(){
-    var m=document.getElementById('regulationModal');
-    if(m){m.style.display='none';document.body.style.overflow='auto';}
-  }
-  document.addEventListener('DOMContentLoaded',function(){
-    var m=document.getElementById('regulationModal');
-    if(m){
-      m.addEventListener('click',function(e){if(e.target===m)closeRegulationModal();});
-      document.addEventListener('keydown',function(e){if(e.key==='Escape')closeRegulationModal();});
+    function showRegulationModal(){
+        var m=document.getElementById('regulationModal');
+        if(m){m.style.display='flex';document.body.style.overflow='hidden';}
     }
-  });
+    function closeRegulationModal(){
+        var m=document.getElementById('regulationModal');
+        if(m){m.style.display='none';document.body.style.overflow='auto';}
+    }
+    document.addEventListener('DOMContentLoaded',function(){
+        var m=document.getElementById('regulationModal');
+        if(m){
+            m.addEventListener('click',function(e){if(e.target===m)closeRegulationModal();});
+            document.addEventListener('keydown',function(e){if(e.key==='Escape')closeRegulationModal();});
+        }
+    });
 </script>
 @endpush
