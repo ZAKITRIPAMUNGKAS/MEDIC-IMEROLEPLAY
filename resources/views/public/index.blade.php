@@ -221,9 +221,9 @@
 
                     <!-- CARD 05: PHOTO CARD -->
                     <div class="bg-slate-900 rounded-[24px] overflow-hidden shadow-lg border border-slate-200 relative min-h-[200px] group">
-                        <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800&q=85"
-                             alt="Medical Team"
-                             class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500">
+                        <img src="{{ asset('images/gambar 2.png') }}"
+                             alt="Tim Medis Terpercaya Alta & Roxwood Hospital"
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent p-6 flex flex-col justify-end">
                             <span class="text-xs font-bold text-sky-400">Tim Medis Terpercaya</span>
                             <h4 class="text-sm font-bold text-white">Alta & Roxwood Hospital</h4>
