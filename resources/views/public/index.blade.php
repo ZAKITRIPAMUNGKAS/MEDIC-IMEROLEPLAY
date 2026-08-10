@@ -93,10 +93,10 @@
                                 <div
                                     class="flex items-center justify-between p-4 bg-blue-50 rounded-xl border border-blue-200">
                                     <div class="flex items-center space-x-3">
-                                        <i class="fas fa-hospital text-sky-500 text-xl"></i>
+                                        <i class="fas fa-hospital text-blue-600 text-xl"></i>
                                         <span class="font-semibold text-gray-800">TREATMENT RS</span>
                                     </div>
-                                    <span class="text-2xl font-bold text-sky-500">$200</span>
+                                    <span class="text-2xl font-bold text-blue-600">$200</span>
                                 </div>
                                 <div
                                     class="flex items-center justify-between p-4 bg-cyan-50 rounded-xl border border-cyan-200">
@@ -205,9 +205,9 @@
                             </div>
                             <div class="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-200">
                                 <div class="flex items-center justify-between mb-2">
-                                    <i class="fas fa-tooth text-sky-500 text-xl"></i>
+                                    <i class="fas fa-tooth text-blue-600 text-xl"></i>
                                     <div class="text-right">
-                                        <span class="text-xl font-bold text-sky-500">$1,300</span>
+                                        <span class="text-xl font-bold text-blue-600">$1,300</span>
                                         <span class="text-sm text-blue-500">- $1,900</span>
                                     </div>
                                 </div>
@@ -298,8 +298,8 @@
                             <div
                                 class="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-200 hover:shadow-md transition-all duration-300">
                                 <div class="flex items-center justify-between mb-2">
-                                    <i class="fas fa-bomb text-sky-500 text-xl"></i>
-                                    <span class="text-2xl font-bold text-sky-500">$500</span>
+                                    <i class="fas fa-bomb text-blue-600 text-xl"></i>
+                                    <span class="text-2xl font-bold text-blue-600">$500</span>
                                 </div>
                                 <h4 class="font-bold text-gray-800 text-sm">ZONA PERANG / PRA-SITUASI</h4>
                                 <p class="text-xs text-gray-600 mt-1">Area konflik</p>
@@ -400,11 +400,11 @@
                             <div class="bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-xl border border-blue-200">
                                 <div class="flex items-center justify-between mb-4">
                                     <div class="flex items-center space-x-3">
-                                        <i class="fas fa-user-graduate text-sky-500 text-2xl"></i>
+                                        <i class="fas fa-user-graduate text-blue-600 text-2xl"></i>
                                         <h4 class="font-bold text-gray-800">KONSULTASI SPESIALIS</h4>
                                     </div>
                                     <div class="text-right">
-                                        <span class="text-2xl font-bold text-sky-500">$5,000</span>
+                                        <span class="text-2xl font-bold text-blue-600">$5,000</span>
                                         <span class="text-lg text-blue-500">- $10,000</span>
                                     </div>
                                 </div>
@@ -494,9 +494,9 @@
                             </div>
                             <div
                                 class="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-200 text-center">
-                                <i class="fas fa-pills text-sky-500 text-3xl mb-3"></i>
+                                <i class="fas fa-pills text-blue-600 text-3xl mb-3"></i>
                                 <h4 class="font-bold text-gray-800 mb-2">PAINKILLER</h4>
-                                <div class="text-2xl font-bold text-sky-500 mb-1">$70</div>
+                                <div class="text-2xl font-bold text-blue-600 mb-1">$70</div>
                                 <p class="text-xs text-gray-600">MAX 6 PCS</p>
                             </div>
                         </div>
@@ -547,9 +547,9 @@
                             </div>
                             <div class="bg-gradient-to-br from-blue-50 to-sky-50 p-6 rounded-xl border border-blue-200">
                                 <div class="text-center mb-4">
-                                    <i class="fas fa-users text-sky-500 text-3xl mb-3"></i>
+                                    <i class="fas fa-users text-blue-600 text-3xl mb-3"></i>
                                     <h4 class="font-bold text-gray-800 mb-2">PAKET C. KELUARGA</h4>
-                                    <div class="text-3xl font-bold text-sky-500">$7,500</div>
+                                    <div class="text-3xl font-bold text-blue-600">$7,500</div>
                                 </div>
                                 <p class="text-sm text-gray-600 mb-2 font-semibold">CASH</p>
                                 <ul class="text-sm text-gray-600 space-y-1 list-disc list-inside">
@@ -756,417 +756,836 @@
             </div>
         </div>
     </div>
-    <!-- ================================================================
-     HERO SECTION - Ultra-Modern Glassmorphism Medical Portal
-================================================================ -->
-<div class="ime-hero-wrapper relative min-h-[90vh] flex items-center justify-center pt-24 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
-    <!-- Animated background glowing orbs -->
-    <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-gradient-to-r from-sky-600/20 via-cyan-500/20 to-blue-600/10 rounded-full blur-[120px] pointer-events-none animate-pulse"></div>
-    <div class="absolute bottom-10 right-10 w-[400px] h-[400px] bg-cyan-600/15 rounded-full blur-[100px] pointer-events-none"></div>
+    <!-- Hero Section - Premium Redesign -->
+    <div class="relative min-h-screen bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700 overflow-hidden">
+        <!-- Modern Background Layers -->
+        <div class="absolute inset-0">
+            <!-- Base Gradient -->
+            <div class="absolute inset-0 bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700"></div>
 
-    <div class="max-w-7xl mx-auto w-full relative z-10">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            
-            <!-- LEFT: Hero Copy & Actions -->
-            <div class="lg:col-span-7 space-y-8 text-center lg:text-left">
-                
-                <!-- Live Status Badge -->
-                <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white shadow-xl">
-                    <span class="relative flex h-2.5 w-2.5">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                    </span>
-                    <span class="text-xs font-bold tracking-wide uppercase text-sky-200">Los Santos Medical Portal &bull; On Duty</span>
+            <!-- Hero Image Background -->
+            <div class="absolute inset-0 opacity-40">
+                <img src="{{ asset('images/hero.png') }}" alt="Medical Background" class="w-full h-full object-cover object-[center_bottom]">
+            </div>
+
+            <!-- Blurred Medical Illustration Overlay -->
+            <div class="absolute inset-0 opacity-20">
+                <img src="{{ asset('images/hero.png') }}" alt="Medical Background"
+                    class="w-full h-full object-cover blur-2xl scale-110 object-[center_bottom]">
+            </div>
+
+            <!-- Animated Gradient Orbs -->
+            <div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-cyan-500/20 rounded-full blur-3xl animate-pulse">
+            </div>
+            <div class="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-sky-500/20 rounded-full blur-3xl animate-pulse"
+                style="animation-delay: 2s;"></div>
+            <div
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-sky-500/15 rounded-full blur-3xl">
+            </div>
+
+            <!-- Grid Pattern Overlay -->
+            <div class="absolute inset-0 opacity-5"
+                style="background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 60px 60px;">
+            </div>
+        </div>
+
+        <!-- Hero Content -->
+        <div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 lg:py-32">
+            <div class="text-center space-y-8 animate-fade-in-up">
+
+                <!-- Logo Section with Enhanced Effects -->
+                <div class="flex justify-center items-center gap-4 sm:gap-6 mb-8 flex-wrap">
+                    <!-- iMe Logo -->
+                    <div class="relative group">
+                        <div
+                            class="absolute inset-0 bg-cyan-500/30 rounded-full blur-2xl group-hover:opacity-75 transition-opacity duration-300">
+                        </div>
+                        <img src="{{ asset('images/logoime.webp') }}" alt="iMe Roleplay"
+                            class="relative h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 object-contain drop-shadow-2xl animate-float">
+                    </div>
+                    <!-- EMS Alta Logo -->
+                    <div class="relative group">
+                        <div
+                            class="absolute inset-0 bg-blue-500/30 rounded-full blur-2xl group-hover:opacity-75 transition-opacity duration-300">
+                        </div>
+                        <div
+                            class="relative h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 flex items-center justify-center bg-white/15 backdrop-blur-xl rounded-3xl border-2 border-white/30 shadow-2xl animate-float hover:bg-white/25 transition-all duration-300">
+                            <img src="{{ asset('images/motionlife-logo.png') }}" alt="EMS Alta"
+                                class="h-16 w-16 sm:h-20 sm:w-20 lg:h-24 lg:w-24 object-contain">
+                        </div>
+                    </div>
+                    <!-- Roxwood Hospital Logo -->
+                    <div class="relative group">
+                        <div
+                            class="absolute inset-0 bg-amber-500/30 rounded-full blur-2xl group-hover:opacity-75 transition-opacity duration-300">
+                        </div>
+                        <div
+                            class="relative h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 flex items-center justify-center bg-white/15 backdrop-blur-xl rounded-3xl border-2 border-white/30 shadow-2xl animate-float hover:bg-white/25 transition-all duration-300 p-2">
+                            <img src="{{ asset('images/logo rhv2.png') }}" alt="Roxwood Hospital"
+                                class="h-16 w-16 sm:h-20 sm:w-20 lg:h-24 lg:w-24 object-contain drop-shadow-lg">
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Main Headline -->
-                <div class="space-y-4">
-                    <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-[1.08] font-sans">
-                        Portal Medis <br class="hidden sm:inline">
-                        <span class="bg-clip-text text-transparent bg-gradient-to-r from-sky-300 via-cyan-200 to-blue-400 drop-shadow-sm">
-                            Terpadu iMe
-                        </span>
+                <!-- Title Section with Enhanced Typography -->
+                <div class="space-y-5">
+                    <h1
+                        class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-cyan-300 to-blue-300 leading-[0.9] tracking-tight drop-shadow-2xl">
+                        iMe
                     </h1>
-                    <p class="text-base sm:text-lg text-slate-200 max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed">
-                        Layanan kesehatan digital resmi untuk warga Los Santos. Akses konsultasi medis, operasi plastik, surat keterangan sehat, hingga dukungan darurat secara cepat dan profesional.
-                    </p>
+                    <h2
+                        class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-sky-100 leading-tight drop-shadow-lg">
+                        Portal Medis Terpadu
+                    </h2>
                 </div>
 
-                <!-- Action Buttons -->
-                <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
-                    <a href="#layanan" class="group inline-flex items-center gap-3 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-400 hover:to-cyan-400 text-white font-bold text-sm shadow-lg shadow-sky-500/30 hover:shadow-cyan-500/50 hover:-translate-y-0.5 transition-all duration-300">
-                        <i class="fas fa-stethoscope text-base transition-transform group-hover:scale-110"></i>
-                        <span>Lihat Layanan Medis</span>
-                        <i class="fas fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
+                <!-- Description with Better Readability -->
+                <p
+                    class="text-lg sm:text-xl lg:text-2xl text-sky-200/95 max-w-3xl mx-auto leading-relaxed font-light">
+                    Dapatkan layanan medis <span class="font-semibold text-cyan-300">in-character</span> yang realistis,
+                    profesional, dan cepat untuk segala kebutuhan kesehatan Anda.
+                </p>
+
+                <!-- CTA Buttons with Premium Grid Layout -->
+                <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4 max-w-3xl mx-auto pt-6">
+                    <!-- Primary Button (Layanan) -->
+                    <a href="#services"
+                        class="group relative inline-flex items-center justify-center gap-3 bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-600 text-white font-bold text-base px-6 py-4 rounded-xl shadow-2xl hover:shadow-cyan-500/50 hover:from-sky-500 hover:via-cyan-500 hover:to-blue-500 transition-all duration-300 transform hover:scale-[1.02] overflow-hidden">
+                        <div
+                            class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/25 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700">
+                        </div>
+                        <i class="fas fa-stethoscope relative z-10 text-lg"></i>
+                        <span class="relative z-10">Lihat Layanan</span>
                     </a>
-                    <button onclick="showRegulationModal()" class="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm border border-white/20 backdrop-blur-md hover:-translate-y-0.5 transition-all duration-300">
-                        <i class="fas fa-file-invoice-dollar text-sky-300"></i>
-                        <span>Regulasi Pengobatan</span>
+
+                    <!-- Jadwal Praktek Button -->
+                    <a href="{{ route('public.doctor-schedule') }}"
+                        class="relative z-10 group inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-xl border-2 border-white/25 text-white font-semibold text-base px-6 py-4 rounded-xl shadow-xl hover:bg-white/20 hover:border-white/40 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]">
+                        <i class="fas fa-calendar-check text-lg text-cyan-400"></i>
+                        <span>Jadwal Praktek</span>
+                    </a>
+
+                    <!-- Regulasi Button -->
+                    <button onclick="showRegulationModal()" type="button"
+                        class="relative z-10 group inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-xl border-2 border-white/25 text-white font-semibold text-base px-6 py-4 rounded-xl shadow-xl hover:bg-white/20 hover:border-white/40 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] cursor-pointer">
+                        <i class="fas fa-file-alt text-lg text-amber-400"></i>
+                        <span>Lihat Regulasi</span>
                     </button>
-                </div>
 
-                <!-- Stats Bar -->
-                <div class="pt-6 border-t border-white/10 grid grid-cols-3 gap-6 max-w-lg mx-auto lg:mx-0 text-white">
-                    <div>
-                        <div class="text-2xl sm:text-3xl font-extrabold text-sky-300">{{ number_format($stats['total_forms']) }}+</div>
-                        <div class="text-xs text-slate-300 font-medium mt-1">Pasien Terlayani</div>
-                    </div>
-                    <div>
-                        <div class="text-2xl sm:text-3xl font-extrabold text-cyan-300">{{ $stats['total_staff'] }}+</div>
-                        <div class="text-xs text-slate-300 font-medium mt-1">Tenaga Medis</div>
-                    </div>
-                    <div>
-                        <div class="text-2xl sm:text-3xl font-extrabold text-emerald-300">100%</div>
-                        <div class="text-xs text-slate-300 font-medium mt-1">Sistem Digital</div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- RIGHT: Visual Feature Card Stack -->
-            <div class="lg:col-span-5 relative">
-                <div class="relative mx-auto max-w-md lg:max-w-none">
-                    
-                    <!-- Main Card Showcase -->
-                    <div class="bg-slate-900/80 backdrop-blur-xl border border-white/15 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 relative overflow-hidden group">
-                        <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-sky-500/10 rounded-full blur-2xl group-hover:bg-sky-500/20 transition-all duration-500"></div>
-
-                        <!-- Hospital Badges Header -->
-                        <div class="flex items-center justify-between border-b border-white/10 pb-4">
-                            <div class="flex items-center gap-3">
-                                <div class="flex items-center gap-2 bg-white/95 px-3 py-1.5 rounded-xl shadow-md">
-                                    <img src="{{ asset('images/motionlife-logo.png') }}" alt="Alta" class="h-6 w-6 object-contain">
-                                    <div class="h-4 w-px bg-slate-300"></div>
-                                    <img src="{{ asset('images/logo rhv2.png') }}" alt="Roxwood" class="h-6 w-6 object-contain">
-                                </div>
-                                <div>
-                                    <div class="text-xs font-bold text-white uppercase tracking-wider">iMe Health Center</div>
-                                    <div class="text-[10px] text-slate-400">Alta & Roxwood Hospital</div>
-                                </div>
-                            </div>
-                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">ACTIVE</span>
-                        </div>
-
-                        <!-- Hero Doctor Image Container -->
-                        <div class="relative h-56 rounded-2xl overflow-hidden group/img border border-white/10">
-                            <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=900&q=85" alt="Medical Team" class="w-full h-full object-cover object-top transition-transform duration-700 group-hover/img:scale-105">
-                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent"></div>
-                            
-                            <!-- Floating Info Tags -->
-                            <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs bg-slate-900/80 backdrop-blur-md px-3.5 py-2 rounded-xl border border-white/10">
-                                <div class="flex items-center gap-2">
-                                    <i class="fas fa-hospital-alt text-sky-400"></i>
-                                    <span class="font-semibold">Alta Street, Los Santos</span>
-                                </div>
-                                <a href="{{ route('public.doctor-schedule') }}" class="text-sky-300 hover:text-white font-bold flex items-center gap-1 transition-colors">
-                                    Jadwal <i class="fas fa-chevron-right text-[10px]"></i>
-                                </a>
-                            </div>
-                        </div>
-
-                        <!-- Quick Action Grid Inside Card -->
-                        <div class="grid grid-cols-2 gap-3 pt-1">
-                            <a href="{{ route('public.cek-kesehatan') }}" class="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all text-white group/btn">
-                                <div class="w-9 h-9 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center flex-shrink-0 group-hover/btn:bg-sky-500 group-hover/btn:text-white transition-all">
-                                    <i class="fas fa-file-medical text-sm"></i>
-                                </div>
-                                <div class="text-left">
-                                    <div class="text-xs font-bold">Surat Sehat</div>
-                                    <div class="text-[10px] text-slate-400">Cek kesehatan</div>
-                                </div>
-                            </a>
-                            <a href="{{ route('public.operasi-plastik') }}" class="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all text-white group/btn">
-                                <div class="w-9 h-9 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center flex-shrink-0 group-hover/btn:bg-cyan-500 group-hover/btn:text-white transition-all">
-                                    <i class="fas fa-user-nurse text-sm"></i>
-                                </div>
-                                <div class="text-left">
-                                    <div class="text-xs font-bold">Bedah Oplas</div>
-                                    <div class="text-[10px] text-slate-400">Estetika wajah</div>
-                                </div>
-                            </a>
-                        </div>
-
-                    </div>
-
+                    <!-- Struktural EMS Button -->
+                    <a href="{{ route('public.struktural-ems') }}"
+                        class="relative z-10 group inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-xl border-2 border-white/25 text-white font-semibold text-base px-6 py-4 rounded-xl shadow-xl hover:bg-white/20 hover:border-white/40 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]">
+                        <i class="fas fa-sitemap text-lg text-blue-400"></i>
+                        <span>Struktural EMS</span>
+                    </a>
                 </div>
             </div>
-
         </div>
     </div>
-</div>
 
-<!-- ================================================================
-     SERVICES SECTION - Sleek Modern Grid
-================================================================ -->
-<section id="layanan" class="py-20 bg-slate-900/60 relative">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-
-        <!-- Section Header -->
-        <div class="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6">
-            <div>
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-bold tracking-widest uppercase mb-3">
-                    <i class="fas fa-briefcase-medical"></i> Services
-                </div>
-                <h2 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
-                    Layanan Medis Utama
-                </h2>
-            </div>
-            <p class="text-slate-400 text-sm max-w-md leading-relaxed">
-                Pilih kategori layanan yang Anda butuhkan. Setiap permohonan diproses oleh tim medis berizin dan profesional.
-            </p>
+    <!-- Stats Section - Dark Theme -->
+    <div class="relative py-20 sm:py-24 bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700 overflow-hidden">
+        <!-- Background Effects -->
+        <div class="absolute inset-0">
+            <div class="absolute top-0 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 left-1/4 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl"></div>
         </div>
 
-        <!-- Cards Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-4 drop-shadow-lg">Keunggulan Kami</h2>
+                <p class="text-sky-200/90 text-lg sm:text-xl font-medium">Bukti kualitas pelayanan medis terbaik</p>
+            </div>
 
-            <!-- Card 01: Konsultasi Medis -->
-            <a href="{{ route('public.cek-kesehatan') }}" class="group relative bg-slate-800/50 hover:bg-slate-800/90 border border-white/10 hover:border-sky-500/50 rounded-3xl p-6 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-sky-500/10 flex flex-col justify-between overflow-hidden">
-                <div class="absolute top-0 right-0 w-24 h-24 bg-sky-500/5 rounded-bl-full transition-all group-hover:bg-sky-500/15"></div>
-                <div>
-                    <div class="flex items-center justify-between mb-6">
-                        <div class="w-12 h-12 rounded-2xl bg-sky-500/15 border border-sky-500/30 text-sky-400 flex items-center justify-center text-xl group-hover:scale-110 group-hover:bg-sky-500 group-hover:text-white transition-all duration-300">
-                            <i class="fas fa-stethoscope"></i>
-                        </div>
-                        <span class="text-xs font-black text-slate-500 tracking-wider">01</span>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+                <div class="group animate-fade-in-up bg-white/10 backdrop-blur-xl rounded-2xl border-2 border-white/20 p-6 sm:p-8 hover:bg-white/15 hover:border-white/30 transition-all duration-300 transform hover:scale-105 flex flex-col items-center justify-center text-center h-full"
+                    style="animation-delay: 0.1s;">
+                    <div
+                        class="relative w-20 h-20 bg-gradient-to-br from-sky-400 to-cyan-400 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-xl group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-users text-white text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-sky-300 transition-colors">
-                        Konsultasi Medis
-                    </h3>
-                    <p class="text-slate-400 text-xs leading-relaxed mb-6">
-                        Pemeriksaan kesehatan umum, diagnosis penyakit, serta penerbitan surat keterangan sehat resmi.
-                    </p>
+                    <h4 class="text-4xl font-black text-cyan-300 mb-3 drop-shadow-lg leading-none">
+                        {{ number_format($stats['total_forms']) }}+
+                    </h4>
+                    <p class="text-sky-200 font-semibold text-base">Pasien Puas</p>
                 </div>
-                <div class="inline-flex items-center gap-2 text-xs font-bold text-sky-400 group-hover:text-sky-300 transition-colors pt-4 border-t border-white/5">
-                    <span>Surat Kesehatan</span>
-                    <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1.5"></i>
-                </div>
-            </a>
-
-            <!-- Card 02: Operasi Plastik -->
-            <a href="{{ route('public.operasi-plastik') }}" class="group relative bg-slate-800/50 hover:bg-slate-800/90 border border-white/10 hover:border-cyan-500/50 rounded-3xl p-6 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-cyan-500/10 flex flex-col justify-between overflow-hidden">
-                <div class="absolute top-0 right-0 w-24 h-24 bg-cyan-500/5 rounded-bl-full transition-all group-hover:bg-cyan-500/15"></div>
-                <div>
-                    <div class="flex items-center justify-between mb-6">
-                        <div class="w-12 h-12 rounded-2xl bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 flex items-center justify-center text-xl group-hover:scale-110 group-hover:bg-cyan-500 group-hover:text-white transition-all duration-300">
-                            <i class="fas fa-user-nurse"></i>
-                        </div>
-                        <span class="text-xs font-black text-slate-500 tracking-wider">02</span>
+                <div class="group animate-fade-in-up bg-white/10 backdrop-blur-xl rounded-2xl border-2 border-white/20 p-6 sm:p-8 hover:bg-white/15 hover:border-white/30 transition-all duration-300 transform hover:scale-105 flex flex-col items-center justify-center text-center h-full"
+                    style="animation-delay: 0.2s;">
+                    <div
+                        class="relative w-20 h-20 bg-gradient-to-br from-emerald-400 to-teal-400 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-xl group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-user-md text-white text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-cyan-300 transition-colors">
-                        Operasi Plastik
-                    </h3>
-                    <p class="text-slate-400 text-xs leading-relaxed mb-6">
-                        Prosedur bedah rekonstruksi & estetika oleh dokter spesialis bedah berpengalaman.
-                    </p>
+                    <h4 class="text-4xl font-black text-emerald-300 mb-3 drop-shadow-lg leading-none">
+                        {{ $stats['total_staff'] }}+
+                    </h4>
+                    <p class="text-sky-200 font-semibold text-base">Dokter Ahli</p>
                 </div>
-                <div class="inline-flex items-center gap-2 text-xs font-bold text-cyan-400 group-hover:text-cyan-300 transition-colors pt-4 border-t border-white/5">
-                    <span>Pendaftaran Oplas</span>
-                    <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1.5"></i>
-                </div>
-            </a>
-
-            <!-- Card 03: Konsultasi Psikologi -->
-            <a href="{{ route('public.surat-psikolog') }}" class="group relative bg-slate-800/50 hover:bg-slate-800/90 border border-white/10 hover:border-indigo-500/50 rounded-3xl p-6 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-indigo-500/10 flex flex-col justify-between overflow-hidden">
-                <div class="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-bl-full transition-all group-hover:bg-indigo-500/15"></div>
-                <div>
-                    <div class="flex items-center justify-between mb-6">
-                        <div class="w-12 h-12 rounded-2xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-400 flex items-center justify-center text-xl group-hover:scale-110 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300">
-                            <i class="fas fa-brain"></i>
-                        </div>
-                        <span class="text-xs font-black text-slate-500 tracking-wider">03</span>
+                <div class="group animate-fade-in-up bg-white/10 backdrop-blur-xl rounded-2xl border-2 border-white/20 p-6 sm:p-8 hover:bg-white/15 hover:border-white/30 transition-all duration-300 transform hover:scale-105 flex flex-col items-center justify-center text-center h-full"
+                    style="animation-delay: 0.3s;">
+                    <div
+                        class="relative w-20 h-20 bg-gradient-to-br from-cyan-400 to-blue-400 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-xl group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-check-circle text-white text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-indigo-300 transition-colors">
-                        Konsultasi Psikologi
-                    </h3>
-                    <p class="text-slate-400 text-xs leading-relaxed mb-6">
-                        Layanan konsultasi kesehatan mental dan penerbitan Surat Keterangan Psikologi resmi.
-                    </p>
+                    <h4 class="text-4xl font-black text-cyan-300 mb-3 drop-shadow-lg leading-none">98%</h4>
+                    <p class="text-sky-200 font-semibold text-base">Tingkat Keberhasilan</p>
                 </div>
-                <div class="inline-flex items-center gap-2 text-xs font-bold text-indigo-400 group-hover:text-indigo-300 transition-colors pt-4 border-t border-white/5">
-                    <span>Formulir Psikologi</span>
-                    <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1.5"></i>
-                </div>
-            </a>
-
-            <!-- Card 04: Karakter Kill (CK) -->
-            <a href="{{ route('public.pendaftaran-karakter') }}" class="group relative bg-slate-800/50 hover:bg-slate-800/90 border border-white/10 hover:border-rose-500/50 rounded-3xl p-6 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-rose-500/10 flex flex-col justify-between overflow-hidden">
-                <div class="absolute top-0 right-0 w-24 h-24 bg-rose-500/5 rounded-bl-full transition-all group-hover:bg-rose-500/15"></div>
-                <div>
-                    <div class="flex items-center justify-between mb-6">
-                        <div class="w-12 h-12 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-400 flex items-center justify-center text-xl group-hover:scale-110 group-hover:bg-rose-500 group-hover:text-white transition-all duration-300">
-                            <i class="fas fa-heartbeat"></i>
-                        </div>
-                        <span class="text-xs font-black text-slate-500 tracking-wider">04</span>
+                <div class="group animate-fade-in-up bg-white/10 backdrop-blur-xl rounded-2xl border-2 border-white/20 p-6 sm:p-8 hover:bg-white/15 hover:border-white/30 transition-all duration-300 transform hover:scale-105 flex flex-col items-center justify-center text-center h-full"
+                    style="animation-delay: 0.4s;">
+                    <div
+                        class="relative w-20 h-20 bg-gradient-to-br from-red-400 to-pink-400 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-xl group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-heartbeat text-white text-2xl"></i>
                     </div>
-                    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-rose-300 transition-colors">
-                        Karakter Kill (CK)
-                    </h3>
-                    <p class="text-slate-400 text-xs leading-relaxed mb-6">
-                        Penanganan tindakan medis khusus dan administrasi untuk kelengkapan storyline roleplay.
-                    </p>
+                    <h4 class="text-4xl font-black text-red-300 mb-3 drop-shadow-lg leading-none">24/7</h4>
+                    <p class="text-sky-200 font-semibold text-base">Gawat Darurat</p>
                 </div>
-                <div class="inline-flex items-center gap-2 text-xs font-bold text-rose-400 group-hover:text-rose-300 transition-colors pt-4 border-t border-white/5">
-                    <span>Daftar Karakter Kill</span>
-                    <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1.5"></i>
-                </div>
-            </a>
-
+            </div>
         </div>
     </div>
-</section>
 
-<!-- ================================================================
-     JAM OPERASIONAL & CTA SECTION
-================================================================ -->
-<section id="jadwal" class="py-20 relative">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <!-- Hospital Service Hours Section - Sky Blue Theme -->
+    <div class="relative py-16 sm:py-20 bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700 overflow-hidden">
+        <!-- Background Effects -->
+        <div class="absolute inset-0">
+            <div class="absolute top-0 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl"></div>
+        </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-            
-            <!-- LEFT: Schedule Table Card (lg:col-span-7) -->
-            <div class="lg:col-span-7 bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-3xl p-6 sm:p-8 flex flex-col justify-between shadow-xl">
-                
-                <div>
-                    <!-- Header -->
-                    <div class="flex items-center justify-between mb-6">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-sky-500/20 text-sky-400 flex items-center justify-center text-lg">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-2xl font-bold text-white">Jam Operasional</h3>
-                                <p class="text-xs text-slate-400">Jadwal pelayanan medis di rumah sakit</p>
-                            </div>
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Header with Clock Icon -->
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center justify-center gap-3 mb-6">
+                    <div
+                        class="w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center shadow-2xl animate-pulse">
+                        <i class="fas fa-clock text-white text-3xl"></i>
+                    </div>
+                    <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-white drop-shadow-lg">
+                        <i class="fas fa-clock mr-3 text-cyan-300"></i>
+                        LAYANAN RUMAH SAKIT
+                        <i class="fas fa-clock ml-3 text-cyan-300"></i>
+                    </h2>
+                </div>
+                <div
+                    class="max-w-4xl mx-auto bg-red-500/20 backdrop-blur-md border-2 border-red-400/40 rounded-2xl p-6 mb-8">
+                    <p class="text-xl sm:text-2xl font-bold text-white mb-3">
+                        <i class="fas fa-exclamation-triangle mr-2 text-yellow-300 animate-pulse"></i>
+                        MOHON DIBACA DENGAN SAKSAMA
+                    </p>
+                    <p class="text-base sm:text-lg text-amber-50 leading-relaxed">
+                        Pelayanan rumah sakit akan dilayani <span class="font-bold text-yellow-300">APABILA ADA TENAGA
+                            MEDIS</span> yang bersangkutan,
+                        <span class="font-bold text-yellow-300">BERSEDIA</span>, dan
+                        <span class="font-bold text-yellow-300">AVAILABLE (ON DUTY)</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Service Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+                <!-- OPLAS Card -->
+                <div
+                    class="group bg-white/10 backdrop-blur-xl rounded-3xl border-2 border-white/20 p-8 hover:bg-white/15 hover:border-amber-400/50 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-amber-500/30">
+                    <div class="text-center mb-6">
+                        <div
+                            class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl shadow-xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-user-md text-white text-3xl"></i>
                         </div>
-                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-white/10 text-slate-300 border border-white/10">WIB</span>
+                        <h3 class="text-2xl font-black text-white mb-2">JAM PELAYANAN OPLAS</h3>
+                        <div class="w-16 h-1 bg-gradient-to-r from-purple-400 to-pink-400 mx-auto rounded-full"></div>
                     </div>
-
-                    <!-- Notice Bar -->
-                    <div class="mb-6 p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center gap-3 text-xs text-amber-200">
-                        <i class="fas fa-exclamation-triangle text-amber-400 text-base flex-shrink-0"></i>
-                        <span><strong>Informasi:</strong> Pelayanan diberikan sesuai ketersediaan tenaga medis (On Duty).</span>
-                    </div>
-
-                    <!-- Schedule Items List -->
                     <div class="space-y-4">
-                        
-                        <!-- Item 1: Operasi Plastik -->
-                        <div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 transition-all">
-                            <div class="flex items-center gap-3.5">
-                                <div class="w-9 h-9 rounded-xl bg-sky-500/15 text-sky-400 flex items-center justify-center">
-                                    <i class="fas fa-user-nurse"></i>
-                                </div>
-                                <div>
-                                    <div class="text-sm font-bold text-white">Operasi Plastik</div>
-                                    <div class="text-xs text-slate-400">Shift 1: 13:00&ndash;16:00 &bull; Shift 2: 20:00&ndash;22:00</div>
-                                </div>
+                        <div
+                            class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-cyan-300 font-bold text-lg">Shift 1</span>
+                                <span
+                                    class="text-xs bg-purple-500/30 text-purple-200 px-3 py-1 rounded-full font-semibold">Siang</span>
                             </div>
-                            <span class="text-xs font-semibold text-sky-300 bg-sky-500/10 px-2.5 py-1 rounded-lg">Shifted</span>
+                            <p class="text-white text-xl font-black">13:00 - 16:00 WIB</p>
                         </div>
-
-                        <!-- Item 2: Surat Medis -->
-                        <div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 transition-all">
-                            <div class="flex items-center gap-3.5">
-                                <div class="w-9 h-9 rounded-xl bg-indigo-500/15 text-indigo-400 flex items-center justify-center">
-                                    <i class="fas fa-file-medical"></i>
-                                </div>
-                                <div>
-                                    <div class="text-sm font-bold text-white">Surat-Suratan Medis</div>
-                                    <div class="text-xs text-slate-400">Shift 1: 13:00&ndash;17:00 &bull; Shift 2: 19:00&ndash;22:00</div>
-                                </div>
+                        <div
+                            class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-cyan-300 font-bold text-lg">Shift 2</span>
+                                <span
+                                    class="text-xs bg-indigo-500/30 text-indigo-200 px-3 py-1 rounded-full font-semibold">Malam</span>
                             </div>
-                            <span class="text-xs font-semibold text-indigo-300 bg-indigo-500/10 px-2.5 py-1 rounded-lg">Shifted</span>
+                            <p class="text-white text-xl font-black">20:00 - 22:00 WIB</p>
                         </div>
-
-                        <!-- Item 3: Layanan Farmasi -->
-                        <div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 transition-all">
-                            <div class="flex items-center gap-3.5">
-                                <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center">
-                                    <i class="fas fa-pills"></i>
-                                </div>
-                                <div>
-                                    <div class="text-sm font-bold text-white">Layanan Farmasi & IGD</div>
-                                    <div class="text-xs text-slate-400">Pengambilan obat & penanganan pingsan</div>
-                                </div>
-                            </div>
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                                BUKA 24 JAM
-                            </span>
-                        </div>
-
                     </div>
                 </div>
 
-                <div class="pt-6 mt-6 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
-                    <span>*Jadwal sewaktu-waktu dapat menyesuaikan situasi emergency roleplay</span>
-                    <a href="{{ route('public.doctor-schedule') }}" class="text-sky-400 font-bold hover:underline">Jadwal Staf &rarr;</a>
+                <!-- SURAT-SURATAN Card -->
+                <div
+                    class="group bg-white/10 backdrop-blur-xl rounded-3xl border-2 border-white/20 p-8 hover:bg-white/15 hover:border-amber-400/50 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-amber-500/30">
+                    <div class="text-center mb-6">
+                        <div
+                            class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl shadow-xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-file-alt text-white text-3xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-black text-white mb-2">JAM PELAYANAN SURAT-SURATAN</h3>
+                        <div class="w-16 h-1 bg-gradient-to-r from-blue-400 to-cyan-400 mx-auto rounded-full"></div>
+                    </div>
+                    <div class="space-y-4">
+                        <div
+                            class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-cyan-300 font-bold text-lg">Shift 1</span>
+                                <span
+                                    class="text-xs bg-blue-500/30 text-blue-200 px-3 py-1 rounded-full font-semibold">Siang</span>
+                            </div>
+                            <p class="text-white text-xl font-black">13:00 - 17:00 WIB</p>
+                        </div>
+                        <div
+                            class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-cyan-300 font-bold text-lg">Shift 2</span>
+                                <span
+                                    class="text-xs bg-cyan-500/30 text-cyan-200 px-3 py-1 rounded-full font-semibold">Malam</span>
+                            </div>
+                            <p class="text-white text-xl font-black">19:00 - 22:00 WIB</p>
+                        </div>
+                    </div>
                 </div>
 
+                <!-- FARMASI Card -->
+                <div
+                    class="group bg-white/10 backdrop-blur-xl rounded-3xl border-2 border-white/20 p-8 hover:bg-white/15 hover:border-amber-400/50 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-amber-500/30">
+                    <div class="text-center mb-6">
+                        <div
+                            class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl shadow-xl mb-4 group-hover:scale-110 transition-transform duration-300">
+                            <i class="fas fa-pills text-white text-3xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-black text-white mb-2">JAM PELAYANAN FARMASI</h3>
+                        <div class="w-16 h-1 bg-gradient-to-r from-green-400 to-emerald-400 mx-auto rounded-full"></div>
+                    </div>
+                    <div
+                        class="bg-gradient-to-br from-green-500/20 to-emerald-500/20 backdrop-blur-sm rounded-2xl p-6 border-2 border-green-400/30 relative overflow-hidden">
+                        <!-- Animated glow -->
+                        <div
+                            class="absolute inset-0 bg-gradient-to-r from-green-400/0 via-green-400/20 to-green-400/0 animate-pulse">
+                        </div>
+
+                        <div class="relative z-10 text-center">
+                            <div class="flex items-center justify-center gap-3 mb-4">
+                                <i class="fas fa-check-circle text-green-300 text-4xl animate-bounce"></i>
+                                <h4 class="text-3xl font-black text-white">BUKA 24 JAM</h4>
+                            </div>
+                            <div class="space-y-2">
+                                <p class="text-green-100 text-base font-semibold leading-relaxed">
+                                    Farmasi membuka layanan
+                                </p>
+                                <p class="text-white text-xl font-black">
+                                    24 JAM NON-STOP
+                                </p>
+                                <div class="mt-4 pt-4 border-t border-green-400/30">
+                                    <p class="text-sm text-green-200/90 leading-relaxed">
+                                        <i class="fas fa-info-circle mr-2"></i>
+                                        Apabila ada tenaga medis yang bersedia menjaga secara bergantian
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Services Section - Dark Theme -->
+    <div class="relative py-20 sm:py-24 bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700 overflow-hidden"
+        id="services">
+        <!-- Background Effects -->
+        <div class="absolute inset-0">
+            <div class="absolute top-1/4 left-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-1/4 right-0 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 drop-shadow-lg">Layanan
+                    Medis Kami</h2>
+                <p class="text-lg sm:text-xl text-sky-200/90 max-w-3xl mx-auto leading-relaxed font-medium">Menyediakan
+                    perawatan komprehensif untuk semua kebutuhan kesehatan Anda dengan standar profesional tertinggi.</p>
             </div>
 
-            <!-- RIGHT: CTA Card (lg:col-span-5) -->
-            <div class="lg:col-span-5 bg-gradient-to-br from-sky-600 via-sky-700 to-blue-900 rounded-3xl p-6 sm:p-8 text-white flex flex-col justify-between shadow-2xl relative overflow-hidden group">
-                <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700"></div>
-
-                <div class="space-y-4 relative z-10">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-sky-200 text-xs font-bold tracking-wider uppercase border border-white/20">
-                        <i class="fas fa-headset"></i> Ready When You Are
+            <!-- Service Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+                <div class="group relative bg-white/10 backdrop-blur-xl rounded-2xl border-2 border-white/20 p-8 hover:bg-white/15 hover:border-white/30 transition-all duration-300 transform hover:-translate-y-2 animate-fade-in-up shadow-xl hover:shadow-2xl"
+                    style="animation-delay: 0.1s;">
+                    <div class="text-center mb-6">
+                        <div class="relative inline-block mb-4">
+                            <div
+                                class="absolute inset-0 bg-sky-400/40 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300">
+                            </div>
+                            <div
+                                class="relative w-20 h-20 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto shadow-xl group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-stethoscope text-white text-2xl"></i>
+                            </div>
+                        </div>
+                        <h4 class="text-2xl font-black text-white mb-3 drop-shadow-md">Konsultasi Medis</h4>
+                        <p class="text-sky-300 font-semibold text-sm sm:text-base">Pemeriksaan umum dan diagnosis</p>
                     </div>
-                    <h3 class="text-2xl sm:text-3xl font-extrabold leading-tight">
-                        Butuh Layanan Medis Sekarang?
-                    </h3>
-                    <p class="text-sky-100 text-xs sm:text-sm leading-relaxed">
-                        Akses portal medis iMe dengan mudah dari mana saja. Isi formulir kesehatan, daftarkan janji temu, atau periksa regulasi biaya pengobatan.
-                    </p>
+                    <p class="text-sky-200/90 mb-6 text-center text-sm sm:text-base leading-relaxed">Konsultasi menyeluruh
+                        dengan dokter berpengalaman untuk mendiagnosis dan menangani keluhan kesehatan Anda.</p>
+                    <div class="space-y-3">
+                        <a href="{{ route('public.cek-kesehatan') }}"
+                            class="block w-full bg-gradient-to-r from-sky-600 to-cyan-600 text-white font-bold text-base py-3.5 px-6 rounded-xl shadow-lg hover:shadow-xl hover:from-sky-500 hover:to-cyan-500 transition-all duration-300 transform hover:scale-[1.02] text-center">
+                            <i class="fas fa-file-medical mr-2"></i>Form Surat Kesehatan
+                        </a>
+                        <a href="{{ route('public.form', 'janji_temu') }}"
+                            class="block w-full bg-white/10 backdrop-blur-md border-2 border-white/30 text-white font-bold text-base py-3.5 px-6 rounded-xl hover:bg-white/20 hover:border-white/40 transition-all duration-300 transform hover:scale-[1.02] text-center">
+                            <i class="fas fa-calendar-check mr-2"></i>Form Janji Temu
+                        </a>
+                    </div>
                 </div>
 
-                <div class="pt-8 space-y-3 relative z-10">
-                    <button onclick="showRegulationModal()" class="w-full py-3.5 px-6 rounded-2xl bg-white text-sky-900 hover:bg-sky-50 font-bold text-sm shadow-lg transition-all duration-300 flex items-center justify-center gap-2 group/btn">
-                        <i class="fas fa-file-alt text-sky-600"></i>
-                        <span>Cek Regulasi Pengobatan</span>
-                        <i class="fas fa-chevron-right text-xs transition-transform group-hover/btn:translate-x-1"></i>
-                    </button>
-                    <a href="#layanan" class="w-full py-3.5 px-6 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-semibold text-sm border border-white/20 transition-all duration-300 flex items-center justify-center gap-2">
-                        <i class="fas fa-th-list"></i>
-                        <span>Semua Formulir Layanan</span>
+                <div class="group relative bg-white/10 backdrop-blur-xl rounded-2xl border-2 border-white/20 p-8 hover:bg-white/15 hover:border-white/30 transition-all duration-300 transform hover:-translate-y-2 animate-fade-in-up shadow-xl hover:shadow-2xl"
+                    style="animation-delay: 0.2s;">
+                    <div class="text-center mb-6">
+                        <div class="relative inline-block mb-4">
+                            <div
+                                class="absolute inset-0 bg-emerald-400/40 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300">
+                            </div>
+                            <div
+                                class="relative w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center mx-auto shadow-xl group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-cut text-white text-2xl"></i>
+                            </div>
+                        </div>
+                        <h4 class="text-2xl font-black text-white mb-3 drop-shadow-md">Operasi Plastik</h4>
+                        <p class="text-emerald-300 font-semibold text-sm sm:text-base">Layanan estetika profesional</p>
+                    </div>
+                    <p class="text-sky-200/90 mb-6 text-center text-sm sm:text-base leading-relaxed">Prosedur bedah kosmetik
+                        yang aman dan dilakukan oleh ahli bedah plastik bersertifikat untuk meningkatkan penampilan.</p>
+                    <a href="{{ route('public.operasi-plastik') }}"
+                        class="block w-full bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-base py-3.5 px-6 rounded-xl shadow-lg hover:shadow-xl hover:from-emerald-500 hover:to-teal-500 transition-all duration-300 transform hover:scale-[1.02] text-center">
+                        <i class="fas fa-user-md mr-2"></i>Form Operasi Plastik
                     </a>
                 </div>
 
-            </div>
+                <div class="group relative bg-white/10 backdrop-blur-xl rounded-2xl border-2 border-white/20 p-8 hover:bg-white/15 hover:border-white/30 transition-all duration-300 transform hover:-translate-y-2 animate-fade-in-up shadow-xl hover:shadow-2xl"
+                    style="animation-delay: 0.3s;">
+                    <div class="text-center mb-6">
+                        <div class="relative inline-block mb-4">
+                            <div
+                                class="absolute inset-0 bg-cyan-400/40 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300">
+                            </div>
+                            <div
+                                class="relative w-20 h-20 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto shadow-xl group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-brain text-white text-2xl"></i>
+                            </div>
+                        </div>
+                        <h4 class="text-2xl font-black text-white mb-3 drop-shadow-md">Konsultasi Psikologi</h4>
+                        <p class="text-cyan-300 font-semibold text-sm sm:text-base">Dukungan kesehatan mental</p>
+                    </div>
+                    <p class="text-sky-200/90 mb-6 text-center text-sm sm:text-base leading-relaxed">Sesi konseling dan
+                        terapi bersama psikolog profesional untuk membantu Anda mengatasi masalah kesehatan mental.</p>
+                    <div class="space-y-3">
+                        <a href="{{ route('public.surat-psikolog') }}"
+                            class="block w-full bg-gradient-to-r from-cyan-600 to-blue-600 text-white font-bold text-base py-3.5 px-6 rounded-xl shadow-lg hover:shadow-xl hover:from-cyan-500 hover:to-blue-500 transition-all duration-300 transform hover:scale-[1.02] text-center">
+                            <i class="fas fa-clipboard-check mr-2"></i>Formulir Psikologi
+                        </a>
+                    </div>
+                </div>
 
+                <!-- Pendaftaran Karakter Kill Card -->
+                <div class="group relative bg-white/10 backdrop-blur-xl rounded-2xl border-2 border-white/20 p-8 hover:bg-white/15 hover:border-white/30 transition-all duration-300 transform hover:-translate-y-2 animate-fade-in-up shadow-xl hover:shadow-2xl"
+                    style="animation-delay: 0.4s;">
+                    <div class="text-center mb-6">
+                        <div class="relative inline-block mb-4">
+                            <div
+                                class="absolute inset-0 bg-red-400/40 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300">
+                            </div>
+                            <div
+                                class="relative w-20 h-20 bg-gradient-to-br from-red-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto shadow-xl group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-exclamation-triangle text-white text-2xl"></i>
+                            </div>
+                        </div>
+                        <h4 class="text-2xl font-black text-white mb-3 drop-shadow-md">Karakter Kill</h4>
+                        <p class="text-red-300 font-semibold text-sm sm:text-base">Layanan medis khusus</p>
+                    </div>
+                    <p class="text-sky-200/90 mb-6 text-center text-sm sm:text-base leading-relaxed">Daftarkan karakter Anda
+                        untuk layanan medis khusus dan perawatan intensif dalam skenario kritis dengan tim medis
+                        berpengalaman.</p>
+                    <a href="{{ route('public.pendaftaran-karakter') }}"
+                        class="block w-full bg-gradient-to-r from-red-600 to-pink-600 text-white font-bold text-base py-3.5 px-6 rounded-xl shadow-lg hover:shadow-xl hover:from-red-500 hover:to-pink-500 transition-all duration-300 transform hover:scale-[1.02] text-center">
+                        <i class="fas fa-user-plus mr-2"></i>Daftar Sekarang
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Testimonial Section - Premium Dark Theme -->
+    <div class="relative py-24 sm:py-32 bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700 overflow-hidden">
+        <!-- Background Effects -->
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-cyan-500/20 rounded-full blur-[100px] animate-pulse">
+            </div>
+            <div class="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-sky-500/20 rounded-full blur-[100px]"
+                style="animation-delay: 2s;"></div>
+            <div
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 brightness-100 contrast-150">
+            </div>
         </div>
 
+        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="text-center mb-20 animate-fade-in-up">
+                <div
+                    class="inline-flex items-center justify-center p-1 rounded-full bg-gradient-to-r from-sky-500/20 to-cyan-500/20 border border-sky-500/30 backdrop-blur-md mb-6 shadow-[0_0_15px_rgba(14,165,233,0.3)]">
+                    <span class="px-5 py-2 text-sm font-bold text-sky-300 tracking-wide uppercase flex items-center gap-2">
+                        <i class="fas fa-heart text-sky-400 animate-pulse"></i> Testimonials
+                    </span>
+                </div>
+
+                <h2 class="text-5xl sm:text-6xl md:text-7xl font-black text-white mb-6 drop-shadow-2xl tracking-tight leading-tight"
+                    style="text-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+                    Apa Kata <span
+                        class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 via-cyan-300 to-blue-400 filter drop-shadow-[0_0_10px_rgba(14,165,233,0.5)]">Pasien
+                        Kami</span>
+                </h2>
+
+                <p class="text-lg sm:text-xl text-sky-100/90 max-w-2xl mx-auto leading-relaxed font-light mb-8">
+                    Kami bangga dapat memberikan pelayanan terbaik bagi komunitas dengan standar profesional tertinggi.
+                </p>
+
+                <!-- New Statistics Badge -->
+                <div
+                    class="inline-flex items-center gap-3 bg-white/5 backdrop-blur-md border border-white/10 rounded-full px-6 py-3 shadow-lg hover:bg-white/10 transition-colors cursor-default group">
+                    <div class="flex items-center gap-1">
+                        <i
+                            class="fas fa-star text-amber-400 text-lg drop-shadow-[0_0_5px_rgba(251,191,36,0.5)] group-hover:scale-110 transition-transform"></i>
+                        <span class="text-2xl font-bold text-white ml-1">4.9</span>
+                    </div>
+                    <div class="h-8 w-px bg-white/20"></div>
+                    <div class="text-left">
+                        <div class="text-[10px] text-sky-200 uppercase tracking-wider font-semibold">Rating Rata-rata</div>
+                        <div class="text-sm font-bold text-white">dari 1.200+ Ulasan Asli</div>
+                    </div>
+                </div>
+            </div>
+
+            @if(isset($testimonials) && $testimonials->count() > 0)
+                <!-- Single Testimonial Carousel -->
+                <div class="relative max-w-5xl mx-auto px-4">
+                    <!-- Testimonial Card Container -->
+                    <div class="overflow-hidden rounded-3xl">
+                        <div id="testimonialTrack" class="flex transition-transform duration-700 ease-in-out">
+                            @foreach($testimonials as $index => $testimoniItem)
+                                <div class="w-full flex-shrink-0">
+                                    <div
+                                        class="bg-white/10 backdrop-blur-xl border-2 border-white/20 rounded-3xl p-8 md:p-12 relative overflow-hidden">
+                                        <!-- Gradient overlay matching landing page -->
+                                        <div
+                                            class="absolute inset-0 bg-gradient-to-br from-sky-500/10 via-cyan-500/5 to-transparent pointer-events-none">
+                                        </div>
+
+                                        <!-- Quote Icon -->
+                                        <div class="absolute top-8 right-8 text-sky-400/20">
+                                            <i class="fas fa-quote-right text-7xl"></i>
+                                        </div>
+
+                                        <!-- Content -->
+                                        <div class="relative z-10">
+                                            <!-- Stars -->
+                                            <div class="flex items-center gap-1 mb-6">
+                                                @for($i = 1; $i <= 5; $i++)
+                                                    <i
+                                                        class="fas fa-star text-2xl {{ $i <= $testimoniItem->rating ? 'text-amber-400' : 'text-white/20' }}"></i>
+                                                @endfor
+                                            </div>
+
+                                            <!-- Testimonial Text -->
+                                            <blockquote
+                                                class="text-white text-xl md:text-2xl leading-relaxed mb-8 font-light italic">
+                                                "{{ $testimoniItem->testimoni }}"
+                                            </blockquote>
+
+                                            <!-- Author Info -->
+                                            <div class="flex items-center gap-4 pt-6 border-t border-white/20">
+                                                <div
+                                                    class="w-16 h-16 rounded-full bg-gradient-to-br from-sky-400 via-cyan-400 to-blue-400 p-0.5 shadow-lg shadow-sky-500/30">
+                                                    <div
+                                                        class="w-full h-full rounded-full bg-sky-900 flex items-center justify-center">
+                                                        <span class="text-2xl font-bold text-white">
+                                                            {{ strtoupper(substr($testimoniItem->character_name, 0, 1)) }}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <h4 class="text-white font-bold text-lg">{{ $testimoniItem->character_name }}
+                                                    </h4>
+                                                    <p class="text-sky-300 text-sm flex items-center gap-2">
+                                                        <i class="fas fa-check-circle text-xs"></i>
+                                                        Verified Patient
+                                                    </p>
+                                                    <p class="text-sky-200/60 text-xs mt-1">
+                                                        {{ $testimoniItem->created_at->diffForHumans() }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <!-- Navigation Arrows -->
+                    <button id="prevBtn"
+                        class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 w-14 h-14 bg-white/15 backdrop-blur-xl border-2 border-white/30 rounded-full flex items-center justify-center text-white hover:border-sky-400 hover:bg-sky-500/30 hover:scale-110 transition-all duration-300 shadow-xl">
+                        <i class="fas fa-chevron-left text-xl"></i>
+                    </button>
+                    <button id="nextBtn"
+                        class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 w-14 h-14 bg-white/15 backdrop-blur-xl border-2 border-white/30 rounded-full flex items-center justify-center text-white hover:border-sky-400 hover:bg-sky-500/30 hover:scale-110 transition-all duration-300 shadow-xl">
+                        <i class="fas fa-chevron-right text-xl"></i>
+                    </button>
+
+                    <!-- Dots Indicator -->
+                    <div id="dotsContainer" class="flex justify-center gap-3 mt-10">
+                        @foreach($testimonials as $index => $item)
+                            <button
+                                class="testimonial-dot w-2.5 h-2.5 rounded-full bg-white/40 hover:bg-sky-400 transition-all duration-300"
+                                data-index="{{ $index }}"></button>
+                        @endforeach
+                    </div>
+                </div>
+            @else
+                <div class="text-center text-sky-200/60 py-12 text-lg">Belum ada testimoni.</div>
+            @endif
+        </div>
     </div>
-</section>
+
+    </div>
 
 @endsection
 
 @push('styles')
-<style>
-    /* Sleek Custom Styles */
-    .ime-hero-wrapper {
-        background: radial-gradient(circle at 50% 0%, #0c4a6e 0%, #0f172a 100%);
-    }
-</style>
+    <style>
+        /* Custom Scrollbar untuk Pop-up */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+        }
+
+        /* Animasi fade in up untuk pop-up */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        /* Fade in from left animation */
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .animate-fade-in-left {
+            animation: fadeInLeft 0.6s ease-out;
+        }
+
+        /* Fade in from right animation */
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .animate-fade-in-right {
+            animation: fadeInRight 0.6s ease-out;
+        }
+
+        /* Animation delay untuk floating elements */
+        .delay-1000 {
+            animation-delay: 1s;
+        }
+
+        /* Style untuk select box di appointment form */
+        select#form_type {
+            color: #1e293b !important;
+            /* text-slate-800 */
+            font-weight: 700 !important;
+        }
+
+        select#form_type option {
+            color: #1e293b !important;
+            /* text-slate-800 */
+            font-weight: 700 !important;
+            background-color: #ffffff !important;
+        }
+
+        select#form_type option:checked {
+            color: #1e293b !important;
+            /* text-slate-800 */
+            font-weight: 700 !important;
+            background-color: #e0f2fe !important;
+            /* bg-blue-50 */
+        }
+
+        select#form_type:focus {
+            color: #1e293b !important;
+            /* text-slate-800 */
+            font-weight: 700 !important;
+        }
+
+        /* New Testimonial Animations */
+        .drop-shadow-glow {
+            filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.5));
+        }
+
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+
+        @keyframes spin-slow {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .animate-spin-slow {
+            animation: spin-slow 8s linear infinite;
+        }
+    </style>
 @endpush
 
 @push('scripts')
-<script>
-    function showRegulationModal(){
-        var m=document.getElementById('regulationModal');
-        if(m){m.style.display='flex';document.body.style.overflow='hidden';}
-    }
-    function closeRegulationModal(){
-        var m=document.getElementById('regulationModal');
-        if(m){m.style.display='none';document.body.style.overflow='auto';}
-    }
-    document.addEventListener('DOMContentLoaded',function(){
-        var m=document.getElementById('regulationModal');
-        if(m){
-            m.addEventListener('click',function(e){if(e.target===m)closeRegulationModal();});
-            document.addEventListener('keydown',function(e){if(e.key==='Escape')closeRegulationModal();});
+    <script>
+        // --- Regulation Modal Functions ---
+        function showRegulationModal() {
+            console.log('showRegulationModal called');
+            const modal = document.getElementById('regulationModal');
+            console.log('Modal element:', modal);
+            if (modal) {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+                console.log('Modal opened successfully');
+            } else {
+                console.error('Modal element not found!');
+            }
         }
-    });
+        function closeRegulationModal() { const modal = document.getElementById('regulationModal'); if (modal) { modal.style.display = 'none'; document.body.style.overflow = 'auto'; } }
+        function handleModalClick(event) { const modal = document.getElementById('regulationModal'); if (event.target === modal) { closeRegulationModal(); } }
+        function demoSuccess() { showNotification('Data berhasil disimpan!', 'success'); } function demoError() { showNotification('Terjadi kesalahan saat menyimpan data!', 'error'); } function demoWarning() { showNotification('Perhatian! Pastikan data yang diisi sudah benar.', 'warning'); } function demoInfo() { showNotification('Informasi: Form akan otomatis tersimpan setiap 30 detik.', 'info'); }
+        document.addEventListener('DOMContentLoaded', function () {         // Modal Listeners         const modal = document.getElementById('regulationModal');         if (modal) {             modal.addEventListener('click', handleModalClick);             document.addEventListener('keydown', function (event) {                 if (event.key === 'Escape') closeRegulationModal();             });         }
+
+
+
+            // --- Testimonial Carousel ---
+            var carouselTrack = document.getElementById('testimonialTrack');
+            var carouselPrevBtn = document.getElementById('prevBtn');
+            var carouselNextBtn = document.getElementById('nextBtn');
+            var carouselDots = document.querySelectorAll('.testimonial-dot');
+            var carouselIndex = 0;
+            var carouselTotal = 0;
+
+            if (carouselTrack) {
+                carouselTotal = carouselTrack.children.length;
+
+                if (carouselTotal > 0) {
+                    // Initial state
+                    if (carouselDots.length > 0) {
+                        carouselDots[0].classList.add('!w-8', '!bg-sky-400', '!shadow-lg', '!shadow-sky-400/50');
+                    }
+
+                    // Functions
+                    function updateCarousel() {
+                        var offset = carouselIndex * -100;
+                        carouselTrack.style.transform = 'translateX(' + offset + '%)';
+
+                        for (var i = 0; i < carouselDots.length; i++) {
+                            if (i === carouselIndex) {
+                                carouselDots[i].classList.add('!w-8', '!bg-sky-400', '!shadow-lg', '!shadow-sky-400/50');
+                            } else {
+                                carouselDots[i].classList.remove('!w-8', '!bg-sky-400', '!shadow-lg', '!shadow-sky-400/50');
+                            }
+                        }
+                    }
+
+                    function nextSlide() {
+                        carouselIndex = (carouselIndex + 1) % carouselTotal;
+                        updateCarousel();
+                    }
+
+                    function prevSlide() {
+                        carouselIndex = (carouselIndex - 1 + carouselTotal) % carouselTotal;
+                        updateCarousel();
+                    }
+
+                    function goToSlide(index) {
+                        carouselIndex = index;
+                        updateCarousel();
+                    }
+
+                    // Event listeners
+                    if (carouselPrevBtn) {
+                        carouselPrevBtn.addEventListener('click', prevSlide);
+                    }
+                    if (carouselNextBtn) {
+                        carouselNextBtn.addEventListener('click', nextSlide);
+                    }
+                    for (var i = 0; i < carouselDots.length; i++) {
+                        (function (idx) {
+                            carouselDots[idx].addEventListener('click', function () {
+                                goToSlide(idx);
+                            });
+                        })(i);
+                    }
+
+                    // Auto-play
+                    setInterval(nextSlide, 6000);
+                }
+            }
+
+        }); // Close DOMContentLoaded
+
+        // --- REDESIGNED TESTIMONIAL CAROUSEL ENGINE ---
+        // (Removed: Switched to Grid Layout for better visibility of 10+ reviews)
+    </script>
 </script>
 @endpush
