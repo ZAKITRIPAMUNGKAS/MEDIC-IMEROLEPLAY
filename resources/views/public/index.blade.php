@@ -790,236 +790,81 @@
         </div>
 
         <!-- Hero Content -->
-        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 lg:py-32">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24 lg:py-32">
+            <div class="text-center space-y-8 animate-fade-in-up">
 
-                <!-- Left Column: Main Content -->
-                <div class="text-center lg:text-left space-y-8 animate-fade-in-left">
-
-                    <!-- Logo Section with Enhanced Effects -->
-                    <div class="flex justify-center lg:justify-start items-center gap-5 mb-8">
-                        <div class="relative group">
-                            <div
-                                class="absolute inset-0 bg-cyan-500/30 rounded-full blur-2xl group-hover:opacity-75 transition-opacity duration-300">
-                            </div>
-                            <img src="{{ asset('images/logoime.webp') }}" alt="MOTIONLIFE"
-                                class="relative h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 object-contain drop-shadow-2xl animate-float">
+                <!-- Logo Section with Enhanced Effects -->
+                <div class="flex justify-center items-center gap-5 mb-8">
+                    <div class="relative group">
+                        <div
+                            class="absolute inset-0 bg-cyan-500/30 rounded-full blur-2xl group-hover:opacity-75 transition-opacity duration-300">
                         </div>
-                        <div class="relative group">
-                            <div
-                                class="absolute inset-0 bg-blue-500/30 rounded-full blur-2xl group-hover:opacity-75 transition-opacity duration-300">
-                            </div>
-                            <div
-                                class="relative h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 flex items-center justify-center bg-white/15 backdrop-blur-xl rounded-3xl border-2 border-white/30 shadow-2xl animate-float hover:bg-white/25 transition-all duration-300">
-                                <img src="{{ asset('images/motionlife-logo.png') }}" alt="EMS"
-                                    class="h-16 w-16 sm:h-20 sm:w-20 lg:h-24 lg:w-24 object-contain">
-                            </div>
+                        <img src="{{ asset('images/logoime.webp') }}" alt="MOTIONLIFE"
+                            class="relative h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 object-contain drop-shadow-2xl animate-float">
+                    </div>
+                    <div class="relative group">
+                        <div
+                            class="absolute inset-0 bg-blue-500/30 rounded-full blur-2xl group-hover:opacity-75 transition-opacity duration-300">
                         </div>
-                    </div>
-
-                    <!-- Title Section with Enhanced Typography -->
-                    <div class="space-y-5">
-                        <h1
-                            class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-cyan-300 to-blue-300 leading-[0.9] tracking-tight drop-shadow-2xl">
-                            iMe
-                        </h1>
-                        <h2
-                            class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-sky-100 leading-tight drop-shadow-lg">
-                            Portal Medis Terpadu
-                        </h2>
-                    </div>
-
-                    <!-- Description with Better Readability -->
-                    <p
-                        class="text-lg sm:text-xl lg:text-2xl text-sky-200/95 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-light">
-                        Dapatkan layanan medis <span class="font-semibold text-cyan-300">in-character</span> yang realistis,
-                        profesional, dan cepat untuk segala kebutuhan kesehatan Anda.
-                    </p>
-
-                    <!-- CTA Buttons with Premium 2x2 Grid Layout -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 max-w-2xl mx-auto lg:mx-0 pt-6">
-                        <!-- Primary Button (Layanan) -->
-                        <a href="#services"
-                            class="group relative inline-flex items-center justify-center gap-3 bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-600 text-white font-bold text-base px-6 py-4 rounded-xl shadow-2xl hover:shadow-cyan-500/50 hover:from-sky-500 hover:via-cyan-500 hover:to-blue-500 transition-all duration-300 transform hover:scale-[1.02] overflow-hidden">
-                            <div
-                                class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/25 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700">
-                            </div>
-                            <i class="fas fa-stethoscope relative z-10 text-lg"></i>
-                            <span class="relative z-10">Lihat Layanan</span>
-                        </a>
-
-                        <!-- Jadwal Praktek Button -->
-                        <a href="{{ route('public.doctor-schedule') }}"
-                            class="relative z-10 group inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-xl border-2 border-white/25 text-white font-semibold text-base px-6 py-4 rounded-xl shadow-xl hover:bg-white/20 hover:border-white/40 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]">
-                            <i class="fas fa-calendar-check text-lg text-cyan-400"></i>
-                            <span>Jadwal Praktek</span>
-                        </a>
-
-                        <!-- Regulasi Button -->
-                        <button onclick="showRegulationModal()" type="button"
-                            class="relative z-10 group inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-xl border-2 border-white/25 text-white font-semibold text-base px-6 py-4 rounded-xl shadow-xl hover:bg-white/20 hover:border-white/40 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] cursor-pointer">
-                            <i class="fas fa-file-alt text-lg text-amber-400"></i>
-                            <span>Lihat Regulasi</span>
-                        </button>
-
-                        <!-- Struktural EMS Button -->
-                        <a href="{{ route('public.struktural-ems') }}"
-                            class="relative z-10 group inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-xl border-2 border-white/25 text-white font-semibold text-base px-6 py-4 rounded-xl shadow-xl hover:bg-white/20 hover:border-white/40 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]">
-                            <i class="fas fa-sitemap text-lg text-blue-400"></i>
-                            <span>Struktural EMS</span>
-                        </a>
+                        <div
+                            class="relative h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 flex items-center justify-center bg-white/15 backdrop-blur-xl rounded-3xl border-2 border-white/30 shadow-2xl animate-float hover:bg-white/25 transition-all duration-300">
+                            <img src="{{ asset('images/motionlife-logo.png') }}" alt="EMS"
+                                class="h-16 w-16 sm:h-20 sm:w-20 lg:h-24 lg:w-24 object-contain">
+                        </div>
                     </div>
                 </div>
 
-                <!-- Right Column: Staff On Duty Card with Premium Glassmorphism -->
-                <div class="animate-fade-in-right">
-                    <div
-                        class="bg-white/10 backdrop-blur-2xl rounded-3xl border-2 border-white/25 shadow-2xl p-8 sm:p-10 max-w-lg mx-auto lg:mx-0 relative overflow-hidden group hover:shadow-cyan-500/30 hover:border-white/40 transition-all duration-500">
+                <!-- Title Section with Enhanced Typography -->
+                <div class="space-y-5">
+                    <h1
+                        class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-cyan-300 to-blue-300 leading-[0.9] tracking-tight drop-shadow-2xl">
+                        iMe
+                    </h1>
+                    <h2
+                        class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-sky-100 leading-tight drop-shadow-lg">
+                        Portal Medis Terpadu
+                    </h2>
+                </div>
 
-                        <!-- Animated Background Glow -->
+                <!-- Description with Better Readability -->
+                <p
+                    class="text-lg sm:text-xl lg:text-2xl text-sky-200/95 max-w-3xl mx-auto leading-relaxed font-light">
+                    Dapatkan layanan medis <span class="font-semibold text-cyan-300">in-character</span> yang realistis,
+                    profesional, dan cepat untuk segala kebutuhan kesehatan Anda.
+                </p>
+
+                <!-- CTA Buttons with Premium Grid Layout -->
+                <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4 max-w-3xl mx-auto pt-6">
+                    <!-- Primary Button (Layanan) -->
+                    <a href="#services"
+                        class="group relative inline-flex items-center justify-center gap-3 bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-600 text-white font-bold text-base px-6 py-4 rounded-xl shadow-2xl hover:shadow-cyan-500/50 hover:from-sky-500 hover:via-cyan-500 hover:to-blue-500 transition-all duration-300 transform hover:scale-[1.02] overflow-hidden">
                         <div
-                            class="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-indigo-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/25 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700">
                         </div>
+                        <i class="fas fa-stethoscope relative z-10 text-lg"></i>
+                        <span class="relative z-10">Lihat Layanan</span>
+                    </a>
 
-                        <!-- Subtle Animated Orbs -->
-                        <div class="absolute top-6 right-6 w-24 h-24 bg-cyan-400/20 rounded-full blur-2xl animate-pulse">
-                        </div>
-                        <div
-                            class="absolute bottom-6 left-6 w-20 h-20 bg-blue-400/20 rounded-full blur-2xl animate-pulse delay-1000">
-                        </div>
+                    <!-- Jadwal Praktek Button -->
+                    <a href="{{ route('public.doctor-schedule') }}"
+                        class="relative z-10 group inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-xl border-2 border-white/25 text-white font-semibold text-base px-6 py-4 rounded-xl shadow-xl hover:bg-white/20 hover:border-white/40 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]">
+                        <i class="fas fa-calendar-check text-lg text-cyan-400"></i>
+                        <span>Jadwal Praktek</span>
+                    </a>
 
-                        <!-- Shine Effect -->
-                        <div
-                            class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000">
-                        </div>
+                    <!-- Regulasi Button -->
+                    <button onclick="showRegulationModal()" type="button"
+                        class="relative z-10 group inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-xl border-2 border-white/25 text-white font-semibold text-base px-6 py-4 rounded-xl shadow-xl hover:bg-white/20 hover:border-white/40 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] cursor-pointer">
+                        <i class="fas fa-file-alt text-lg text-amber-400"></i>
+                        <span>Lihat Regulasi</span>
+                    </button>
 
-                        <!-- Header -->
-                        <div class="relative z-10 text-center mb-8">
-                            <div class="relative inline-block mb-5">
-                                <div
-                                    class="absolute inset-0 bg-gradient-to-br from-sky-400 to-cyan-400 rounded-2xl blur-xl opacity-60 group-hover:opacity-80 transition-opacity duration-300">
-                                </div>
-                                <div
-                                    class="relative w-20 h-20 bg-gradient-to-br from-sky-500 via-cyan-500 to-blue-500 rounded-2xl flex items-center justify-center shadow-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
-                                    <i class="fas fa-user-md text-white text-3xl"></i>
-                                </div>
-                            </div>
-                            <h3 class="text-2xl sm:text-3xl font-black text-white mb-2 drop-shadow-lg">Staff On Duty</h3>
-                            <p class="text-sm text-sky-200/90 font-medium">Tim medis yang siap melayani Anda</p>
-                        </div>
-
-                        <!-- Stats Cards with Enhanced Design -->
-                        <div class="relative z-10 space-y-5">
-                            <!-- Alta Hospital -->
-                            <div
-                                class="bg-white/15 backdrop-blur-md rounded-2xl p-6 border-2 border-white/20 hover:border-cyan-400/50 hover:bg-white/20 transition-all duration-300 group/item relative overflow-hidden">
-                                <div
-                                    class="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-cyan-500/10 to-cyan-500/0 translate-x-[-100%] group-hover/item:translate-x-[100%] transition-transform duration-1000">
-                                </div>
-                                <div class="relative z-10">
-                                    <div class="flex items-center gap-4 mb-4">
-                                        <div class="relative">
-                                            <div
-                                                class="absolute inset-0 bg-cyan-400/40 rounded-xl blur-lg group-hover/item:opacity-75 transition-opacity duration-300">
-                                            </div>
-                                            <div
-                                                class="relative w-16 h-16 bg-gradient-to-br from-blue-500 via-cyan-500 to-sky-500 rounded-xl flex items-center justify-center shadow-xl group-hover/item:scale-110 group-hover/item:rotate-6 transition-all duration-300">
-                                                <i class="fas fa-hospital text-white text-xl"></i>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <p class="text-sm font-bold text-white uppercase tracking-wide drop-shadow-md">
-                                                Alta Hospital</p>
-                                            <p class="text-xs text-sky-300/80 mt-1 font-medium">Emergency Medical Services
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="grid grid-cols-2 gap-3">
-                                        <div
-                                            class="bg-gradient-to-br from-green-500/20 to-emerald-500/20 backdrop-blur-sm rounded-xl p-4 border border-green-400/30">
-                                            <div class="flex items-center gap-2 mb-2">
-                                                <i class="fas fa-briefcase-medical text-green-300 text-sm"></i>
-                                                <p class="text-xs font-bold text-green-200 uppercase">Kerja</p>
-                                            </div>
-                                            <p class="text-4xl font-black text-green-300 leading-none drop-shadow-lg">
-                                                {{ $staffStatusStats['ems_working'] ?? 0 }}
-                                            </p>
-                                            <p class="text-xs text-green-200/80 mt-1">Staff</p>
-                                        </div>
-                                        <div
-                                            class="bg-gradient-to-br from-purple-500/20 to-pink-500/20 backdrop-blur-sm rounded-xl p-4 border border-purple-400/30">
-                                            <div class="flex items-center gap-2 mb-2">
-                                                <i class="fas fa-users text-purple-300 text-sm"></i>
-                                                <p class="text-xs font-bold text-purple-200 uppercase">Meeting</p>
-                                            </div>
-                                            <p class="text-4xl font-black text-purple-300 leading-none drop-shadow-lg">
-                                                {{ $staffStatusStats['ems_meeting'] ?? 0 }}
-                                            </p>
-                                            <p class="text-xs text-purple-200/80 mt-1">Staff</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Roxwood Hospital -->
-                            <div
-                                class="bg-white/15 backdrop-blur-md rounded-2xl p-6 border-2 border-white/20 hover:border-amber-400/50 hover:bg-white/20 transition-all duration-300 group/item relative overflow-hidden">
-                                <div
-                                    class="absolute inset-0 bg-gradient-to-r from-amber-500/0 via-amber-500/10 to-amber-500/0 translate-x-[-100%] group-hover/item:translate-x-[100%] transition-transform duration-1000">
-                                </div>
-                                <div class="relative z-10">
-                                    <div class="flex items-center gap-3 mb-3">
-                                        <div class="relative">
-                                            <div
-                                                class="absolute inset-0 bg-amber-400/40 rounded-xl blur-lg group-hover/item:opacity-75 transition-opacity duration-300">
-                                            </div>
-                                            <div
-                                                class="relative w-12 h-12 bg-gradient-to-br from-amber-500 via-orange-500 to-yellow-500 rounded-xl flex items-center justify-center shadow-xl group-hover/item:scale-110 group-hover/item:rotate-6 transition-all duration-300">
-                                                <i class="fas fa-hospital text-white text-base"></i>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <p class="text-xs font-bold text-white uppercase tracking-wide drop-shadow-md">
-                                                Roxwood Hospital</p>
-                                            <p class="text-[10px] text-sky-300/80 font-medium"> Medical Care</p>
-                                        </div>
-                                    </div>
-                                    <div class="grid grid-cols-2 gap-2">
-                                        <div
-                                            class="bg-gradient-to-br from-green-500/20 to-emerald-500/20 backdrop-blur-sm rounded-lg p-3 border border-green-400/30">
-                                            <div class="flex items-center gap-1.5 mb-1">
-                                                <i class="fas fa-briefcase-medical text-green-300 text-xs"></i>
-                                                <p class="text-[10px] font-bold text-green-200 uppercase">Kerja</p>
-                                            </div>
-                                            <p class="text-3xl font-black text-green-300 leading-none drop-shadow-lg">
-                                                {{ $staffStatusStats['roxwood_working'] ?? 0 }}
-                                            </p>
-                                            <p class="text-[10px] text-green-200/80 mt-0.5">Staff</p>
-                                        </div>
-                                        <div
-                                            class="bg-gradient-to-br from-purple-500/20 to-pink-500/20 backdrop-blur-sm rounded-lg p-3 border border-purple-400/30">
-                                            <div class="flex items-center gap-1.5 mb-1">
-                                                <i class="fas fa-users text-purple-300 text-xs"></i>
-                                                <p class="text-[10px] font-bold text-purple-200 uppercase">Meeting</p>
-                                            </div>
-                                            <p class="text-3xl font-black text-purple-300 leading-none drop-shadow-lg">
-                                                {{ $staffStatusStats['roxwood_meeting'] ?? 0 }}
-                                            </p>
-                                            <p class="text-[10px] text-purple-200/80 mt-0.5">Staff</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Footer -->
-                        <div class="relative z-10 mt-8 pt-6 border-t border-white/20">
-                            <div class="flex items-center justify-center gap-2 text-sky-300/80">
-                                <i class="fas fa-info-circle text-sm"></i>
-                                <p class="text-xs font-medium">Data diperbarui secara real-time</p>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Struktural EMS Button -->
+                    <a href="{{ route('public.struktural-ems') }}"
+                        class="relative z-10 group inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-xl border-2 border-white/25 text-white font-semibold text-base px-6 py-4 rounded-xl shadow-xl hover:bg-white/20 hover:border-white/40 hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]">
+                        <i class="fas fa-sitemap text-lg text-blue-400"></i>
+                        <span>Struktural EMS</span>
+                    </a>
                 </div>
             </div>
         </div>
