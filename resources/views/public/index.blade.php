@@ -5,66 +5,22 @@
 @section('meta_description', 'Portal Medis iMe Roleplay - Menyediakan perawatan komprehensif untuk semua kebutuhan kesehatan Anda dengan standar profesional tertinggi.')
 
 @section('content')
-    <!-- Pop-up Informasi Kenaikan Regulasi -->
+    <!-- Pop-up Gambar Regulasi Pengobatan -->
     <div id="regulationModal"
-        class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4"
+        class="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-[99999] p-3 sm:p-6"
         style="display: none;">
-        <div
-            class="bg-white rounded-3xl shadow-2xl max-w-5xl w-full max-h-[95vh] overflow-hidden animate-fade-in-up flex flex-col">
-            <!-- Header -->
-            <div
-                class="bg-gradient-to-r from-red-500 via-red-600 to-pink-600 text-white p-6 sm:p-8 relative overflow-hidden">
-                <div class="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div class="flex items-center space-x-3 sm:space-x-6">
-                        <div
-                            class="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 backdrop-blur-sm rounded-2xl sm:rounded-3xl flex items-center justify-center shadow-lg animate-pulse flex-shrink-0">
-                            <i class="fas fa-exclamation-triangle text-2xl sm:text-3xl"></i>
-                        </div>
-                        <div>
-                            <h2 class="text-xl sm:text-3xl font-black mb-1 sm:mb-2">UPDATE REGULASI</h2>
-                            <div class="flex flex-wrap items-center mt-2 sm:mt-3 gap-2 sm:space-x-4">
-                                <i class="fas fa-calendar-alt text-xs sm:text-sm"></i>
-                                <span class="text-xs sm:text-sm font-semibold">07 Januari 2026</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <button onclick="closeRegulationModal()"
-                    class="absolute top-4 right-4 w-10 h-10 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl flex items-center justify-center transition-all duration-300">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
+        <div class="relative bg-slate-900 rounded-3xl shadow-2xl max-w-4xl w-full max-h-[92vh] overflow-hidden flex flex-col border border-white/20 animate-fade-in-up">
+            <!-- Floating Close Button -->
+            <button onclick="closeRegulationModal()"
+                class="absolute top-4 right-4 z-20 w-10 h-10 bg-black/60 hover:bg-black/90 text-white rounded-full flex items-center justify-center backdrop-blur-md border border-white/20 transition-all duration-300 hover:scale-110 shadow-lg">
+                <i class="fas fa-times text-lg"></i>
+            </button>
 
-            <!-- Content -->
-            <div class="flex-1 p-6 sm:p-8 space-y-6 bg-slate-50 overflow-y-auto custom-scrollbar">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <div class="bg-gradient-to-r from-blue-500 to-cyan-500 text-white p-4 rounded-2xl text-center">
-                        <i class="fas fa-cash-register text-2xl mb-2"></i>
-                        <h4 class="font-bold text-lg">Cash Payment</h4>
-                        <p class="text-sm opacity-90">Pembayaran Tunai</p>
-                    </div>
-                    <div class="bg-gradient-to-r from-green-500 to-emerald-500 text-white p-4 rounded-2xl text-center">
-                        <i class="fas fa-file-invoice text-2xl mb-2"></i>
-                        <h4 class="font-bold text-lg">Invoice Payment</h4>
-                        <p class="text-sm opacity-90">Pembayaran Tagihan</p>
-                    </div>
-                    <div class="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-4 rounded-2xl text-center">
-                        <i class="fas fa-chart-line text-2xl mb-2"></i>
-                        <h4 class="font-bold text-lg">Price Update</h4>
-                        <p class="text-sm opacity-90">Update Harga</p>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
-                    <h3 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                        <i class="fas fa-pills text-sky-500"></i> Regulasi Pengobatan Cash & Invoice
-                    </h3>
-                    <p class="text-sm text-slate-600 mb-4">Treatment RS: <strong>$200</strong> | Treatment Luar RS: <strong>$220</strong> | Surat Sehat: <strong>$2,000</strong> | Surat Psikologi: <strong>$3,000</strong></p>
-                </div>
-            </div>
-
-            <div class="p-4 bg-white border-t border-slate-200 flex justify-end gap-3">
-                <button onclick="closeRegulationModal()" class="px-6 py-2.5 bg-slate-600 text-white font-bold rounded-xl text-sm hover:bg-slate-700 transition-all">Tutup</button>
+            <!-- Image Container -->
+            <div class="flex-1 overflow-auto custom-scrollbar p-2 sm:p-4 flex items-center justify-center bg-slate-950">
+                <img src="{{ asset('images/REGULASI_IME_MEDICAL_CENTER.jpg') }}"
+                     alt="Regulasi iMe Medical Center"
+                     class="max-w-full h-auto object-contain rounded-2xl shadow-xl">
             </div>
         </div>
     </div>
