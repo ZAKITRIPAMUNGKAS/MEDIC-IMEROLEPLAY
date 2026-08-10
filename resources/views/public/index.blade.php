@@ -80,9 +80,9 @@
                     <!-- HERO RIGHT PHOTO & BADGES -->
                     <div class="relative flex justify-center items-center">
                         <div class="relative w-full max-w-md h-[400px] rounded-[28px] overflow-hidden shadow-xl bg-gradient-to-b from-sky-400 to-blue-600 border-4 border-white">
-                            <img src="{{ asset('images/foto dokter.png') }}"
-                                 alt="Dokter iMe Medical"
-                                 class="w-full h-full object-cover object-top">
+                            <img src="{{ asset('images/foto_dokter.jpg') }}"
+                                 alt="Dokter iMe Medical Center"
+                                 class="w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-700">
 
                             <!-- Floating Badges -->
                             <div class="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md border border-slate-100 flex items-center gap-2 animate-float-1">
