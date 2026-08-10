@@ -400,19 +400,19 @@
     .custom-scrollbar::-webkit-scrollbar-thumb { background:#0ea5e9; border-radius:99px; }
 
     /* Floating Badges */
-    @keyframes float1 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
-    @keyframes float2 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-    @keyframes float3 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    @keyframes float1 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+    @keyframes float2 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+    @keyframes float3 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 
-    .animate-float-1 { animation: float1 4s ease-in-out infinite; }
-    .animate-float-2 { animation: float2 4.5s ease-in-out infinite 0.5s; }
-    .animate-float-3 { animation: float3 3.8s ease-in-out infinite 1s; }
+    .animate-float-1 { animation: float1 3s ease-in-out infinite; }
+    .animate-float-2 { animation: float2 3.5s ease-in-out infinite 0.3s; }
+    .animate-float-3 { animation: float3 2.8s ease-in-out infinite 0.6s; }
 
-    /* Scroll Reveal Motion */
+    /* Fast & Snappy Scroll Reveal Motion */
     .reveal-on-scroll {
         opacity: 0;
-        transform: translateY(24px);
-        transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+        transform: translateY(10px);
+        transition: opacity 0.25s ease-out, transform 0.25s ease-out;
         will-change: opacity, transform;
     }
     .reveal-on-scroll.is-visible {
@@ -420,7 +420,7 @@
         transform: translateY(0);
     }
 
-    /* Subtle Card Shimmer Glow */
+    /* Fast Card Shimmer Glow */
     .shimmer-card {
         position: relative;
         overflow: hidden;
@@ -439,7 +439,7 @@
             transparent
         );
         transform: skewX(-20deg);
-        transition: left 0.75s ease-in-out;
+        transition: left 0.35s ease-out;
         pointer-events: none;
         z-index: 20;
     }
@@ -466,8 +466,8 @@
             document.addEventListener('keydown', e => { if (e.key === 'Escape') closeRegulationModal(); });
         }
 
-        // IntersectionObserver for Scroll Reveal Animations
-        const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -40px 0px' };
+        // Fast pre-triggering IntersectionObserver
+        const observerOptions = { threshold: 0.01, rootMargin: '0px 0px 150px 0px' };
         const scrollObserver = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
