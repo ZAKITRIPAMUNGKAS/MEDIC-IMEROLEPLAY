@@ -77,8 +77,43 @@
                             </button>
                         </div>
 
+                        <!-- ANIMATED HOSPITAL LOGOS (iMe, Alta Hospital, Roxwood Hospital) -->
+                        <div class="pt-4 pb-2 border-t border-slate-800/80">
+                            <p class="text-[10px] uppercase font-bold text-slate-400 tracking-widest mb-3 flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span> Jaringan Rumah Sakit Terpadu
+                            </p>
+                            <div class="flex items-center gap-3 sm:gap-4 overflow-x-auto custom-scrollbar pb-1">
+                                <!-- Logo iMe Roleplay -->
+                                <div class="flex items-center gap-2.5 bg-slate-800/90 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/10 shadow-md hover:border-red-500/50 transition-all hover:scale-105 group shrink-0 animate-float-1">
+                                    <img src="{{ asset('images/logoime.webp') }}" alt="iMe Roleplay Logo" class="w-7 h-7 object-contain group-hover:rotate-12 transition-transform duration-300 drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]">
+                                    <div class="leading-tight">
+                                        <span class="text-xs font-bold text-white block">iMe Network</span>
+                                        <span class="text-[9px] text-red-400 font-medium">Roleplay Community</span>
+                                    </div>
+                                </div>
+
+                                <!-- Logo Alta Medical Center / EMS -->
+                                <div class="flex items-center gap-2.5 bg-slate-800/90 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/10 shadow-md hover:border-sky-500/50 transition-all hover:scale-105 group shrink-0 animate-float-2">
+                                    <img src="{{ asset('images/logo_ems.webp') }}" alt="Alta Medical Center" class="w-7 h-7 object-contain group-hover:scale-110 transition-transform duration-300 drop-shadow-[0_0_8px_rgba(14,165,233,0.5)]">
+                                    <div class="leading-tight">
+                                        <span class="text-xs font-bold text-white block">Alta Hospital</span>
+                                        <span class="text-[9px] text-sky-400 font-medium">Medical Center</span>
+                                    </div>
+                                </div>
+
+                                <!-- Logo Roxwood Hospital -->
+                                <div class="flex items-center gap-2.5 bg-slate-800/90 backdrop-blur-md px-3.5 py-2 rounded-2xl border border-white/10 shadow-md hover:border-purple-500/50 transition-all hover:scale-105 group shrink-0 animate-float-3">
+                                    <img src="{{ asset('images/logo rhv2.png') }}" alt="Roxwood Hospital" class="w-7 h-7 object-contain group-hover:rotate-[-12deg] transition-transform duration-300 drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]">
+                                    <div class="leading-tight">
+                                        <span class="text-xs font-bold text-white block">Roxwood Hospital</span>
+                                        <span class="text-[9px] text-purple-400 font-medium">Medical Services</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- STATS BOX -->
-                        <div class="pt-6 border-t border-slate-800 flex items-center justify-between max-w-sm">
+                        <div class="pt-4 border-t border-slate-800 flex items-center justify-between max-w-sm">
                             <div>
                                 <div class="text-2xl font-black text-white">{{ number_format($stats['total_forms']) }}+</div>
                                 <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Pasien</div>
