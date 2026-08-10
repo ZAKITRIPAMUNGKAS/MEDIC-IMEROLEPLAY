@@ -85,17 +85,17 @@
                                  class="w-full h-full object-cover object-top">
 
                             <!-- Floating Badges -->
-                            <div class="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md border border-slate-100 flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            <div class="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md border border-slate-100 flex items-center gap-2 animate-float-1">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping opacity-75"></span>
                                 <span class="text-xs font-bold text-slate-800">Reliability</span>
                             </div>
 
-                            <div class="absolute top-12 right-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md border border-slate-100 flex items-center gap-2">
+                            <div class="absolute top-12 right-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md border border-slate-100 flex items-center gap-2 animate-float-2">
                                 <i class="fas fa-award text-amber-500 text-xs"></i>
                                 <span class="text-xs font-bold text-slate-800">Experience</span>
                             </div>
 
-                            <div class="absolute bottom-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md border border-slate-100 flex items-center gap-2">
+                            <div class="absolute bottom-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md border border-slate-100 flex items-center gap-2 animate-float-3">
                                 <i class="fas fa-user-md text-sky-500 text-xs"></i>
                                 <span class="text-xs font-bold text-slate-800">Professional</span>
                             </div>
@@ -137,7 +137,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
                     <!-- CARD 01: Konsultasi Medis -->
-                    <a href="{{ route('public.cek-kesehatan') }}" class="group bg-slate-50 hover:bg-white rounded-[24px] p-6 border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-sky-300 transition-all duration-300 flex flex-col justify-between min-h-[200px]">
+                    <a href="{{ route('public.cek-kesehatan') }}" class="group reveal-on-scroll shimmer-card bg-slate-50 hover:bg-white rounded-[24px] p-6 border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-sky-300 transition-all duration-300 flex flex-col justify-between min-h-[200px] hover:-translate-y-1">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold text-slate-400 group-hover:text-sky-500 transition-colors">01</span>
                             <div class="w-10 h-10 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center text-base group-hover:bg-sky-500 group-hover:text-white transition-all">
@@ -154,7 +154,7 @@
                     </a>
 
                     <!-- FEATURED CENTER CARD -->
-                    <a href="{{ route('public.doctor-schedule') }}" class="group bg-gradient-to-br from-sky-500 to-blue-700 rounded-[24px] p-6 shadow-lg text-white flex flex-col justify-between min-h-[200px] relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                    <a href="{{ route('public.doctor-schedule') }}" class="group reveal-on-scroll shimmer-card bg-gradient-to-br from-sky-500 to-blue-700 rounded-[24px] p-6 shadow-lg text-white flex flex-col justify-between min-h-[200px] relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
                         <div class="z-10">
                             <div class="text-lg font-black tracking-tight leading-tight">iMe<br><span class="font-normal opacity-80 text-xs">Medical Center</span></div>
                         </div>
@@ -168,7 +168,7 @@
                     </a>
 
                     <!-- CARD 02: Operasi Plastik -->
-                    <a href="{{ route('public.operasi-plastik') }}" class="group bg-slate-50 hover:bg-white rounded-[24px] p-6 border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-sky-300 transition-all duration-300 flex flex-col justify-between min-h-[200px]">
+                    <a href="{{ route('public.operasi-plastik') }}" class="group reveal-on-scroll shimmer-card bg-slate-50 hover:bg-white rounded-[24px] p-6 border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-sky-300 transition-all duration-300 flex flex-col justify-between min-h-[200px] hover:-translate-y-1">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold text-slate-400 group-hover:text-sky-500 transition-colors">02</span>
                             <div class="w-10 h-10 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center text-base group-hover:bg-sky-500 group-hover:text-white transition-all">
@@ -185,7 +185,7 @@
                     </a>
 
                     <!-- CARD 03: Konsultasi Psikologi -->
-                    <a href="{{ route('public.surat-psikolog') }}" class="group bg-slate-50 hover:bg-white rounded-[24px] p-6 border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-sky-300 transition-all duration-300 flex flex-col justify-between min-h-[200px]">
+                    <a href="{{ route('public.surat-psikolog') }}" class="group reveal-on-scroll shimmer-card bg-slate-50 hover:bg-white rounded-[24px] p-6 border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-sky-300 transition-all duration-300 flex flex-col justify-between min-h-[200px] hover:-translate-y-1">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold text-slate-400 group-hover:text-sky-500 transition-colors">03</span>
                             <div class="w-10 h-10 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center text-base group-hover:bg-sky-500 group-hover:text-white transition-all">
@@ -202,7 +202,7 @@
                     </a>
 
                     <!-- CARD 04: Karakter Kill -->
-                    <a href="{{ route('public.pendaftaran-karakter') }}" class="group bg-slate-50 hover:bg-white rounded-[24px] p-6 border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-sky-300 transition-all duration-300 flex flex-col justify-between min-h-[200px]">
+                    <a href="{{ route('public.pendaftaran-karakter') }}" class="group reveal-on-scroll shimmer-card bg-slate-50 hover:bg-white rounded-[24px] p-6 border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-sky-300 transition-all duration-300 flex flex-col justify-between min-h-[200px] hover:-translate-y-1">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold text-slate-400 group-hover:text-sky-500 transition-colors">04</span>
                             <div class="w-10 h-10 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center text-base group-hover:bg-sky-500 group-hover:text-white transition-all">
@@ -219,7 +219,7 @@
                     </a>
 
                     <!-- CARD 05: PHOTO CARD -->
-                    <div class="bg-slate-900 rounded-[24px] overflow-hidden shadow-lg border border-slate-200 relative min-h-[200px] group">
+                    <div class="bg-slate-900 reveal-on-scroll rounded-[24px] overflow-hidden shadow-lg border border-slate-200 relative min-h-[200px] group">
                         <img src="{{ asset('images/gambar 2.png') }}"
                              alt="Tim Medis Terpercaya Alta & Roxwood Hospital"
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
@@ -239,7 +239,7 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
 
                     <!-- LEFT: BLUE FEATURED CARD -->
-                    <div class="bg-gradient-to-br from-blue-600 to-sky-500 rounded-[28px] p-6 text-white min-h-[360px] relative overflow-hidden shadow-xl flex flex-col justify-between">
+                    <div class="bg-gradient-to-br from-blue-600 to-sky-500 reveal-on-scroll rounded-[28px] p-6 text-white min-h-[360px] relative overflow-hidden shadow-xl flex flex-col justify-between">
                         <div>
                             <span class="text-xs font-bold text-sky-200 uppercase tracking-wider">iMe Portal</span>
                             <h3 class="text-3xl font-black mt-1">Why<br>choose us</h3>
@@ -262,7 +262,7 @@
                     </div>
 
                     <!-- RIGHT: ADVANTAGES & STATS GRID -->
-                    <div class="space-y-6">
+                    <div class="space-y-6 reveal-on-scroll">
                         <div>
                             <span class="text-xs font-bold text-sky-500 uppercase tracking-wider">Keunggulan Kami</span>
                             <h3 class="text-3xl font-black text-slate-900 mt-1 tracking-tight">Standar Medis Terbaik</h3>
@@ -305,7 +305,7 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
 
                     <!-- LEFT: JAM OPERASIONAL TABLE -->
-                    <div class="bg-slate-50 rounded-[28px] p-6 sm:p-8 border border-slate-200/80 shadow-sm flex flex-col justify-between space-y-6">
+                    <div class="bg-slate-50 reveal-on-scroll rounded-[28px] p-6 sm:p-8 border border-slate-200/80 shadow-sm flex flex-col justify-between space-y-6">
                         <div>
                             <div class="flex items-center justify-between gap-4 border-b border-slate-200/80 pb-4 mb-4">
                                 <div>
@@ -368,7 +368,7 @@
                     </div>
 
                     <!-- RIGHT: CTA CARD -->
-                    <div class="bg-gradient-to-br from-sky-500 via-blue-600 to-blue-700 rounded-[28px] p-8 text-white shadow-xl flex flex-col justify-between space-y-6 relative overflow-hidden">
+                    <div class="bg-gradient-to-br from-sky-500 via-blue-600 to-blue-700 reveal-on-scroll rounded-[28px] p-8 text-white shadow-xl flex flex-col justify-between space-y-6 relative overflow-hidden">
                         <div class="space-y-4 z-10">
                             <span class="text-xs font-bold uppercase tracking-widest text-sky-200">Ready when you are</span>
                             <h3 class="text-2xl sm:text-3xl font-black text-white leading-tight">Butuh layanan medis sekarang?</h3>
@@ -398,6 +398,54 @@
 <style>
     .custom-scrollbar::-webkit-scrollbar { width:6px; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background:#0ea5e9; border-radius:99px; }
+
+    /* Floating Badges */
+    @keyframes float1 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+    @keyframes float2 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+    @keyframes float3 { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+    .animate-float-1 { animation: float1 4s ease-in-out infinite; }
+    .animate-float-2 { animation: float2 4.5s ease-in-out infinite 0.5s; }
+    .animate-float-3 { animation: float3 3.8s ease-in-out infinite 1s; }
+
+    /* Scroll Reveal Motion */
+    .reveal-on-scroll {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+        will-change: opacity, transform;
+    }
+    .reveal-on-scroll.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    /* Subtle Card Shimmer Glow */
+    .shimmer-card {
+        position: relative;
+        overflow: hidden;
+    }
+    .shimmer-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 60%;
+        height: 100%;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.25),
+            transparent
+        );
+        transform: skewX(-20deg);
+        transition: left 0.75s ease-in-out;
+        pointer-events: none;
+        z-index: 20;
+    }
+    .shimmer-card:hover::before {
+        left: 140%;
+    }
 </style>
 @endpush
 
@@ -417,6 +465,19 @@
             modal.addEventListener('click', e => { if (e.target === modal) closeRegulationModal(); });
             document.addEventListener('keydown', e => { if (e.key === 'Escape') closeRegulationModal(); });
         }
+
+        // IntersectionObserver for Scroll Reveal Animations
+        const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -40px 0px' };
+        const scrollObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    scrollObserver.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal-on-scroll').forEach(el => scrollObserver.observe(el));
     });
 </script>
 @endpush
