@@ -757,7 +757,7 @@
         </div>
     </div>
     <!-- ================================================================
-         HERO â€” Innovation Clinic style
+         HERO &mdash; Innovation Clinic style
     ================================================================ -->
     <section class="lp-hero">
         <div class="lp-hero__inner">
@@ -822,7 +822,7 @@
                 <div class="lp-hero__right-text">
                     <p class="lp-hero__right-label">With Advanced Technologies</p>
                     <p class="lp-hero__right-desc">
-                        Sistem digital terpadu, diagnostik modern â€” semua dalam
+                        Sistem digital terpadu, diagnostik modern &mdash; semua dalam
                         satu portal khusus untuk komunitas RP.
                     </p>
                 </div>
@@ -832,22 +832,22 @@
     </section>
 
     <!-- ================================================================
-         ABOUT â€” centered statement
+         ABOUT &mdash; centered statement
     ================================================================ -->
     <section class="lp-about">
         <div class="lp-container">
             <p class="lp-about__text">
                 We combine innovative
-                <span class="lp-icon-inline">âœš</span>
+                <i class="fas fa-plus-circle text-blue-600"></i>
                 technologies with a human approach to make every patient
-                <span class="lp-icon-inline">ðŸ‘¨â€âš•ï¸</span>
+                <i class="fas fa-user-md text-blue-600"></i>
                 feel <em>confident and calm.</em>
             </p>
             <p class="lp-about__sub">
                 iMe adalah platform yang menjadi space of trust, modern medicine and care, based
                 on many years of experience and love for people.
             </p>
-            <a href="#tentang" class="lp-btn lp-btn--dark">More about us â†’</a>
+            <a href="#tentang" class="lp-btn lp-btn--dark">More about us &rarr;</a>
         </div>
     </section>
 
@@ -862,9 +862,9 @@
                     <h2 class="lp-section-title">Our medical<br>services <span class="lp-tag">iMe</span></h2>
                 </div>
                 <p class="lp-services__desc">
-                    We provide a full range of medical services â€”
+                    We provide a full range of medical services &mdash;
                     from consultation to diagnosis and treatment.
-                    <a href="{{ route('public.doctor-schedule') }}" class="lp-link">See all services â†’</a>
+                    <a href="{{ route('public.doctor-schedule') }}" class="lp-link">See all services &rarr;</a>
                 </p>
             </div>
 
@@ -873,7 +873,7 @@
                 <!-- 01 -->
                 <article class="lp-service-card">
                     <div class="lp-service-card__num">01</div>
-                    <div class="lp-service-card__icon">âœš</div>
+                    <div class="lp-service-card__icon"><i class="fas fa-stethoscope text-blue-600"></i></div>
                     <h3 class="lp-service-card__title">Konsultasi Medis</h3>
                     <p class="lp-service-card__desc">Pemeriksaan umum, diagnosis, dan layanan kesehatan standar.</p>
                     <a href="{{ route('public.cek-kesehatan') }}" class="lp-service-card__link">Surat Kesehatan</a>
@@ -893,7 +893,7 @@
                 <!-- 02 -->
                 <article class="lp-service-card">
                     <div class="lp-service-card__num">02</div>
-                    <div class="lp-service-card__icon">ðŸ¥</div>
+                    <div class="lp-service-card__icon"><i class="fas fa-user-nurse text-blue-600"></i></div>
                     <h3 class="lp-service-card__title">Operasi Plastik</h3>
                     <p class="lp-service-card__desc">Prosedur bedah estetika oleh tenaga profesional terlatih.</p>
                     <a href="{{ route('public.operasi-plastik') }}" class="lp-service-card__link">Daftar Oplas</a>
@@ -903,7 +903,7 @@
                 <!-- 03 -->
                 <article class="lp-service-card">
                     <div class="lp-service-card__num">03</div>
-                    <div class="lp-service-card__icon">ðŸ§ </div>
+                    <div class="lp-service-card__icon"><i class="fas fa-brain text-blue-600"></i></div>
                     <h3 class="lp-service-card__title">Psikologi</h3>
                     <p class="lp-service-card__desc">Dukungan kesehatan mental untuk karakter Anda.</p>
                     <a href="{{ route('public.surat-psikolog') }}" class="lp-service-card__link">Formulir Psikologi</a>
@@ -913,7 +913,7 @@
                 <!-- 04 -->
                 <article class="lp-service-card">
                     <div class="lp-service-card__num">04</div>
-                    <div class="lp-service-card__icon">â™¡</div>
+                    <div class="lp-service-card__icon"><i class="fas fa-heartbeat text-blue-600"></i></div>
                     <h3 class="lp-service-card__title">Karakter Kill</h3>
                     <p class="lp-service-card__desc">Layanan medis kritis untuk kebutuhan storyline roleplay.</p>
                     <a href="{{ route('public.pendaftaran-karakter') }}" class="lp-service-card__link">Daftar Sekarang</a>
@@ -923,7 +923,7 @@
                 <!-- 05 -->
                 <article class="lp-service-card">
                     <div class="lp-service-card__num">05</div>
-                    <div class="lp-service-card__icon">ðŸ“‹</div>
+                    <div class="lp-service-card__icon"><i class="fas fa-file-medical text-blue-600"></i></div>
                     <h3 class="lp-service-card__title">Surat Medis</h3>
                     <p class="lp-service-card__desc">Surat sehat, bebas narkoba, dan keterangan khusus.</p>
                     <a href="{{ route('public.cek-kesehatan') }}" class="lp-service-card__link">Buat Surat</a>
@@ -1007,29 +1007,29 @@
                 <div class="lp-schedule__table">
                     <h2 class="lp-section-title" style="margin-bottom:24px;">Jam Operasional</h2>
                     <div class="lp-schedule__notice">
-                        âš ï¸ <strong>Info:</strong> Pelayanan sesuai ketersediaan tenaga medis (On Duty).
+                        <i class="fas fa-exclamation-triangle text-amber-500 mr-1"></i> <strong>Info:</strong> Pelayanan sesuai ketersediaan tenaga medis (On Duty).
                     </div>
                     <div class="lp-schedule__row">
                         <div class="lp-schedule__info">
-                            <div class="lp-schedule__icon">âœš</div>
+                            <div class="lp-schedule__icon"><i class="fas fa-user-nurse"></i></div>
                             <div>
                                 <div class="lp-schedule__name">Operasi Plastik</div>
-                                <div class="lp-schedule__desc">Shift 1: 13:00â€“16:00 Â· Shift 2: 20:00â€“22:00</div>
+                                <div class="lp-schedule__desc">Shift 1: 13:00&ndash;16:00 &middot; Shift 2: 20:00&ndash;22:00</div>
                             </div>
                         </div>
                     </div>
                     <div class="lp-schedule__row">
                         <div class="lp-schedule__info">
-                            <div class="lp-schedule__icon">ðŸ“‹</div>
+                            <div class="lp-schedule__icon"><i class="fas fa-file-medical"></i></div>
                             <div>
                                 <div class="lp-schedule__name">Surat-Suratan Medis</div>
-                                <div class="lp-schedule__desc">Shift 1: 13:00â€“17:00 Â· Shift 2: 19:00â€“22:00</div>
+                                <div class="lp-schedule__desc">Shift 1: 13:00&ndash;17:00 &middot; Shift 2: 19:00&ndash;22:00</div>
                             </div>
                         </div>
                     </div>
                     <div class="lp-schedule__row">
                         <div class="lp-schedule__info">
-                            <div class="lp-schedule__icon lp-schedule__icon--green">ðŸ¥</div>
+                            <div class="lp-schedule__icon lp-schedule__icon--green"><i class="fas fa-pills"></i></div>
                             <div>
                                 <div class="lp-schedule__name">Layanan Farmasi</div>
                                 <div class="lp-schedule__desc">Pengambilan & pengobatan medis</div>
@@ -1057,9 +1057,9 @@
                     <h2 class="lp-section-title">Our medical<br>services <span class="lp-tag">iMe</span></h2>
                 </div>
                 <p class="lp-services__desc">
-                    We provide a full range of medical services â€”
+                    We provide a full range of medical services &mdash;
                     from consultation to diagnosis and treatment.
-                    <a href="{{ route('public.doctor-schedule') }}" class="lp-link">See all services â†’</a>
+                    <a href="{{ route('public.doctor-schedule') }}" class="lp-link">See all services &rarr;</a>
                 </p>
             </div>
 
@@ -1068,7 +1068,7 @@
                 <!-- 01 -->
                 <article class="lp-service-card">
                     <div class="lp-service-card__num">01</div>
-                    <div class="lp-service-card__icon">âœš</div>
+                    <div class="lp-service-card__icon"><i class="fas fa-stethoscope text-blue-600"></i></div>
                     <h3 class="lp-service-card__title">Konsultasi Medis</h3>
                     <p class="lp-service-card__desc">Pemeriksaan umum, diagnosis, dan layanan kesehatan standar.</p>
                     <a href="{{ route('public.cek-kesehatan') }}" class="lp-service-card__link">Surat Kesehatan</a>
@@ -1088,7 +1088,7 @@
                 <!-- 02 -->
                 <article class="lp-service-card">
                     <div class="lp-service-card__num">02</div>
-                    <div class="lp-service-card__icon">ðŸ ¥</div>
+                    <div class="lp-service-card__icon"><i class="fas fa-user-nurse text-blue-600"></i></div>
                     <h3 class="lp-service-card__title">Operasi Plastik</h3>
                     <p class="lp-service-card__desc">Prosedur bedah estetika oleh tenaga profesional terlatih.</p>
                     <a href="{{ route('public.operasi-plastik') }}" class="lp-service-card__link">Daftar Oplas</a>
@@ -1098,7 +1098,7 @@
                 <!-- 03 -->
                 <article class="lp-service-card">
                     <div class="lp-service-card__num">03</div>
-                    <div class="lp-service-card__icon">ðŸ§ </div>
+                    <div class="lp-service-card__icon"><i class="fas fa-brain text-blue-600"></i></div>
                     <h3 class="lp-service-card__title">Psikologi</h3>
                     <p class="lp-service-card__desc">Dukungan kesehatan mental untuk karakter Anda.</p>
                     <a href="{{ route('public.surat-psikolog') }}" class="lp-service-card__link">Formulir Psikologi</a>
@@ -1108,7 +1108,7 @@
                 <!-- 04 -->
                 <article class="lp-service-card">
                     <div class="lp-service-card__num">04</div>
-                    <div class="lp-service-card__icon">â™¡</div>
+                    <div class="lp-service-card__icon"><i class="fas fa-heartbeat text-blue-600"></i></div>
                     <h3 class="lp-service-card__title">Karakter Kill</h3>
                     <p class="lp-service-card__desc">Layanan medis kritis untuk kebutuhan storyline roleplay.</p>
                     <a href="{{ route('public.pendaftaran-karakter') }}" class="lp-service-card__link">Daftar Sekarang</a>
@@ -1118,7 +1118,7 @@
                 <!-- 05 -->
                 <article class="lp-service-card">
                     <div class="lp-service-card__num">05</div>
-                    <div class="lp-service-card__icon">ðŸ“‹</div>
+                    <div class="lp-service-card__icon"><i class="fas fa-file-medical text-blue-600"></i></div>
                     <h3 class="lp-service-card__title">Surat Medis</h3>
                     <p class="lp-service-card__desc">Surat sehat, bebas narkoba, dan keterangan khusus.</p>
                     <a href="{{ route('public.cek-kesehatan') }}" class="lp-service-card__link">Buat Surat</a>
@@ -1202,29 +1202,29 @@
                 <div class="lp-schedule__table">
                     <h2 class="lp-section-title" style="margin-bottom:24px;">Jam Operasional</h2>
                     <div class="lp-schedule__notice">
-                        âš ï¸  <strong>Info:</strong> Pelayanan sesuai ketersediaan tenaga medis (On Duty).
+                        <i class="fas fa-exclamation-triangle text-amber-500 mr-1"></i> <strong>Info:</strong> Pelayanan sesuai ketersediaan tenaga medis (On Duty).
                     </div>
                     <div class="lp-schedule__row">
                         <div class="lp-schedule__info">
-                            <div class="lp-schedule__icon">âœš</div>
+                            <div class="lp-schedule__icon"><i class="fas fa-user-nurse"></i></div>
                             <div>
                                 <div class="lp-schedule__name">Operasi Plastik</div>
-                                <div class="lp-schedule__desc">Shift 1: 13:00â€“16:00 Â· Shift 2: 20:00â€“22:00</div>
+                                <div class="lp-schedule__desc">Shift 1: 13:00&ndash;16:00 &middot; Shift 2: 20:00&ndash;22:00</div>
                             </div>
                         </div>
                     </div>
                     <div class="lp-schedule__row">
                         <div class="lp-schedule__info">
-                            <div class="lp-schedule__icon">ðŸ“‹</div>
+                            <div class="lp-schedule__icon"><i class="fas fa-file-medical"></i></div>
                             <div>
                                 <div class="lp-schedule__name">Surat-Suratan Medis</div>
-                                <div class="lp-schedule__desc">Shift 1: 13:00â€“17:00 Â· Shift 2: 19:00â€“22:00</div>
+                                <div class="lp-schedule__desc">Shift 1: 13:00&ndash;17:00 &middot; Shift 2: 19:00&ndash;22:00</div>
                             </div>
                         </div>
                     </div>
                     <div class="lp-schedule__row">
                         <div class="lp-schedule__info">
-                            <div class="lp-schedule__icon lp-schedule__icon--green">ðŸ ¥</div>
+                            <div class="lp-schedule__icon lp-schedule__icon--green"><i class="fas fa-pills"></i></div>
                             <div>
                                 <div class="lp-schedule__name">Layanan Farmasi</div>
                                 <div class="lp-schedule__desc">Pengambilan & pengobatan medis</div>
