@@ -44,53 +44,53 @@
     </div>
 
     <!-- MAIN PAGE CONTAINER -->
-    <div class="min-h-screen bg-slate-100 pt-8 pb-16 px-3 sm:px-6 lg:px-8 font-sans">
-        <div class="max-w-[1240px] mx-auto bg-white rounded-[32px] shadow-2xl border border-slate-200 overflow-hidden divide-y divide-slate-100">
+    <div class="min-h-screen bg-slate-950 pt-8 pb-16 px-3 sm:px-6 lg:px-8 font-sans">
+        <div class="max-w-[1240px] mx-auto bg-slate-900/90 backdrop-blur-2xl rounded-[32px] shadow-2xl border border-white/10 overflow-hidden divide-y divide-slate-800 text-white">
 
             <!-- =========================================================
                  1. HERO SECTION
             ========================================================= -->
-            <div class="p-6 sm:p-10 lg:p-12 bg-gradient-to-b from-red-50/40 via-slate-50 to-white relative overflow-hidden">
+            <div class="p-6 sm:p-10 lg:p-12 bg-gradient-to-b from-red-950/40 via-slate-900 to-slate-900/95 relative overflow-hidden">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
 
                     <!-- HERO LEFT COPY -->
                     <div class="space-y-6">
-                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-red-500/10 to-amber-500/10 border border-red-200/80 text-xs font-bold text-red-700 shadow-sm">
-                            <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping"></span> 🇮🇩 Edisi Khusus Hari Kemerdekaan RI Ke-81
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-500/10 border border-red-500/30 text-xs font-bold text-red-400 shadow-sm">
+                            <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span> 🇮🇩 Edisi Khusus Hari Kemerdekaan RI Ke-81
                         </div>
 
-                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.05]">
+                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.05]">
                             iMe<br>
-                            <span class="text-slate-900">Medical Center</span><span class="text-red-600">.</span>
+                            <span class="text-white">Medical Center</span><span class="text-red-500">.</span>
                         </h1>
 
-                        <p class="text-sm text-slate-500 leading-relaxed max-w-md">
+                        <p class="text-sm text-slate-300/90 leading-relaxed max-w-md">
                             Pusat pelayanan medis terpadu dan profesional untuk seluruh warga Los Santos dengan standar pelayanan terbaik 24/7 dan semangat pengabdian Kemerdekaan.
                         </p>
 
                         <div class="flex flex-wrap items-center gap-3 pt-2">
-                            <a href="#layanan" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white text-sm font-bold shadow-lg shadow-red-500/25 transition-all hover:scale-105">
+                            <a href="#layanan" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white text-sm font-bold shadow-lg shadow-red-500/30 transition-all hover:scale-105">
                                 Lihat Layanan <i class="fas fa-arrow-right text-xs"></i>
                             </a>
-                            <button onclick="showRegulationModal()" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold transition-all">
-                                Regulasi Pengobatan <i class="fas fa-file-alt text-xs text-slate-400"></i>
+                            <button onclick="showRegulationModal()" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/20 text-sm font-semibold transition-all backdrop-blur-md">
+                                Regulasi Pengobatan <i class="fas fa-file-alt text-xs text-slate-300"></i>
                             </button>
                         </div>
 
                         <!-- STATS BOX -->
-                        <div class="pt-6 border-t border-slate-100 flex items-center justify-between max-w-sm">
+                        <div class="pt-6 border-t border-slate-800 flex items-center justify-between max-w-sm">
                             <div>
-                                <div class="text-2xl font-black text-slate-900">{{ number_format($stats['total_forms']) }}+</div>
+                                <div class="text-2xl font-black text-white">{{ number_format($stats['total_forms']) }}+</div>
                                 <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Pasien</div>
                             </div>
-                            <div class="h-8 w-px bg-slate-200"></div>
+                            <div class="h-8 w-px bg-slate-800"></div>
                             <div>
-                                <div class="text-2xl font-black text-slate-900">{{ $stats['total_staff'] }}+</div>
+                                <div class="text-2xl font-black text-white">{{ $stats['total_staff'] }}+</div>
                                 <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Tenaga Medis</div>
                             </div>
-                            <div class="h-8 w-px bg-slate-200"></div>
+                            <div class="h-8 w-px bg-slate-800"></div>
                             <div>
-                                <div class="text-2xl font-black text-red-600">100%</div>
+                                <div class="text-2xl font-black text-red-500">100%</div>
                                 <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Digital</div>
                             </div>
                         </div>
@@ -98,25 +98,25 @@
 
                     <!-- HERO RIGHT PHOTO & BADGES -->
                     <div class="relative flex justify-center items-center">
-                        <div class="relative w-full max-w-md h-[400px] rounded-[28px] overflow-hidden shadow-xl bg-gradient-to-b from-red-600 via-rose-700 to-slate-900 border-4 border-white">
+                        <div class="relative w-full max-w-md h-[400px] rounded-[28px] overflow-hidden shadow-2xl bg-gradient-to-b from-red-600 via-rose-700 to-slate-950 border-4 border-white/20">
                             <img src="{{ asset('images/foto_dokter.jpg') }}"
                                  alt="Dokter iMe Medical Center - HUT RI Ke-81"
                                  class="w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-700">
 
                             <!-- Floating Badges (Themes) -->
-                            <div class="absolute top-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md border border-red-100 flex items-center gap-2 animate-float-1">
+                            <div class="absolute top-4 left-4 bg-slate-900/90 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-lg border border-white/20 flex items-center gap-2 animate-float-1">
                                 <span class="text-sm">🇮🇩</span>
-                                <span class="text-xs font-bold text-slate-800">Merdeka 81th</span>
+                                <span class="text-xs font-bold text-white">Merdeka 81th</span>
                             </div>
 
-                            <div class="absolute top-12 right-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md border border-amber-100 flex items-center gap-2 animate-float-2">
+                            <div class="absolute top-12 right-4 bg-slate-900/90 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-lg border border-amber-500/40 flex items-center gap-2 animate-float-2">
                                 <i class="fas fa-fire-alt text-amber-500 text-xs animate-pulse"></i>
-                                <span class="text-xs font-bold text-slate-800">Semangat 45</span>
+                                <span class="text-xs font-bold text-amber-300">Semangat 45</span>
                             </div>
 
-                            <div class="absolute bottom-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-md border border-red-100 flex items-center gap-2 animate-float-3">
-                                <i class="fas fa-heartbeat text-red-600 text-xs"></i>
-                                <span class="text-xs font-bold text-slate-800">Indonesia Sehat</span>
+                            <div class="absolute bottom-4 left-4 bg-slate-900/90 backdrop-blur-md px-3.5 py-1.5 rounded-full shadow-lg border border-red-500/40 flex items-center gap-2 animate-float-3">
+                                <i class="fas fa-heartbeat text-red-500 text-xs"></i>
+                                <span class="text-xs font-bold text-red-300">Indonesia Sehat</span>
                             </div>
                         </div>
                     </div>
@@ -127,12 +127,12 @@
             <!-- =========================================================
                  2. ABOUT STATEMENT SECTION
             ========================================================= -->
-            <div class="p-8 sm:p-12 text-center bg-slate-50/50 space-y-4">
-                <p class="text-2xl sm:text-3xl font-extrabold text-slate-900 max-w-3xl mx-auto leading-snug tracking-tight">
+            <div class="p-8 sm:p-12 text-center bg-slate-950/60 space-y-4">
+                <p class="text-2xl sm:text-3xl font-extrabold text-white max-w-3xl mx-auto leading-snug tracking-tight">
                     Kami menggabungkan teknologi
-                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-sky-100 text-sky-600 text-sm mx-1 align-middle"><i class="fas fa-stethoscope"></i></span>
+                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-500/20 border border-red-500/30 text-red-400 text-sm mx-1 align-middle"><i class="fas fa-stethoscope"></i></span>
                     medis modern dengan pendekatan personal untuk membuat setiap pasien merasa
-                    <span class="text-sky-500 underline decoration-sky-300 underline-offset-4">aman dan percaya diri.</span>
+                    <span class="text-red-400 underline decoration-red-500/50 underline-offset-4">aman dan percaya diri.</span>
                 </p>
                 <p class="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto">
                     Portal iMe adalah ruang kepercayaan dan perawatan medis profesional bagi seluruh warga Los Santos.
@@ -142,13 +142,13 @@
             <!-- =========================================================
                  3. OUR MEDICAL SERVICES (GRID OF 6 CARDS)
             ========================================================= -->
-            <div id="layanan" class="p-6 sm:p-10 lg:p-12 space-y-8">
+            <div id="layanan" class="p-6 sm:p-10 lg:p-12 space-y-8 bg-slate-900/80">
                 <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                     <div>
-                        <span class="text-xs font-bold uppercase tracking-wider text-sky-500">Layanan Spesialis</span>
-                        <h2 class="text-3xl font-black text-slate-900 tracking-tight">Our medical services</h2>
+                        <span class="text-xs font-bold uppercase tracking-wider text-red-500">Layanan Spesialis</span>
+                        <h2 class="text-3xl font-black text-white tracking-tight">Our medical services</h2>
                     </div>
-                    <p class="text-xs text-slate-500 max-w-xs">
+                    <p class="text-xs text-slate-400 max-w-xs">
                         Layanan medis komprehensif mulai dari konsultasi umum hingga penanganan khusus.
                     </p>
                 </div>
@@ -156,24 +156,24 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
                     <!-- CARD 01: Konsultasi Medis -->
-                    <a href="{{ route('public.cek-kesehatan') }}" class="group reveal-on-scroll shimmer-card bg-slate-50 hover:bg-white rounded-[24px] p-6 border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-sky-300 transition-all duration-300 flex flex-col justify-between min-h-[200px] hover:-translate-y-1">
+                    <a href="{{ route('public.cek-kesehatan') }}" class="group reveal-on-scroll shimmer-card bg-slate-800/80 hover:bg-slate-800 rounded-[24px] p-6 border border-white/10 shadow-md hover:shadow-2xl hover:border-red-500/50 transition-all duration-300 flex flex-col justify-between min-h-[200px] hover:-translate-y-1">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-slate-400 group-hover:text-sky-500 transition-colors">01</span>
-                            <div class="w-10 h-10 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center text-base group-hover:bg-sky-500 group-hover:text-white transition-all">
+                            <span class="text-xs font-bold text-slate-500 group-hover:text-red-400 transition-colors">01</span>
+                            <div class="w-10 h-10 rounded-2xl bg-red-500/20 text-red-400 border border-red-500/30 flex items-center justify-center text-base group-hover:bg-red-600 group-hover:text-white transition-all">
                                 <i class="fas fa-stethoscope"></i>
                             </div>
                         </div>
                         <div class="my-3 space-y-1">
-                            <h3 class="text-base font-bold text-slate-900 group-hover:text-sky-600 transition-colors">Konsultasi Medis</h3>
-                            <p class="text-xs text-slate-500 leading-relaxed">Pemeriksaan umum, diagnosis penyakit, dan penanganan kesehatan rutin.</p>
+                            <h3 class="text-base font-bold text-white group-hover:text-red-400 transition-colors">Konsultasi Medis</h3>
+                            <p class="text-xs text-slate-400 leading-relaxed">Pemeriksaan umum, diagnosis penyakit, dan penanganan kesehatan rutin.</p>
                         </div>
-                        <div class="flex items-center gap-2 text-xs font-bold text-sky-500 group-hover:translate-x-1 transition-transform">
+                        <div class="flex items-center gap-2 text-xs font-bold text-red-400 group-hover:translate-x-1 transition-transform">
                             Surat Kesehatan <i class="fas fa-arrow-right text-[10px]"></i>
                         </div>
                     </a>
 
                     <!-- FEATURED CENTER CARD -->
-                    <a href="{{ route('public.doctor-schedule') }}" class="group reveal-on-scroll shimmer-card bg-gradient-to-br from-sky-500 to-blue-700 rounded-[24px] p-6 shadow-lg text-white flex flex-col justify-between min-h-[200px] relative overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                    <a href="{{ route('public.doctor-schedule') }}" class="group reveal-on-scroll shimmer-card bg-gradient-to-br from-red-600 via-rose-700 to-red-900 rounded-[24px] p-6 shadow-xl border border-red-500/40 text-white flex flex-col justify-between min-h-[200px] relative overflow-hidden transition-all duration-300 hover:shadow-red-900/50 hover:-translate-y-1">
                         <div class="z-10">
                             <div class="text-lg font-black tracking-tight leading-tight">iMe<br><span class="font-normal opacity-80 text-xs">Medical Center</span></div>
                         </div>
@@ -187,63 +187,63 @@
                     </a>
 
                     <!-- CARD 02: Operasi Plastik -->
-                    <a href="{{ route('public.operasi-plastik') }}" class="group reveal-on-scroll shimmer-card bg-slate-50 hover:bg-white rounded-[24px] p-6 border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-sky-300 transition-all duration-300 flex flex-col justify-between min-h-[200px] hover:-translate-y-1">
+                    <a href="{{ route('public.operasi-plastik') }}" class="group reveal-on-scroll shimmer-card bg-slate-800/80 hover:bg-slate-800 rounded-[24px] p-6 border border-white/10 shadow-md hover:shadow-2xl hover:border-red-500/50 transition-all duration-300 flex flex-col justify-between min-h-[200px] hover:-translate-y-1">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-slate-400 group-hover:text-sky-500 transition-colors">02</span>
-                            <div class="w-10 h-10 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center text-base group-hover:bg-sky-500 group-hover:text-white transition-all">
+                            <span class="text-xs font-bold text-slate-500 group-hover:text-red-400 transition-colors">02</span>
+                            <div class="w-10 h-10 rounded-2xl bg-red-500/20 text-red-400 border border-red-500/30 flex items-center justify-center text-base group-hover:bg-red-600 group-hover:text-white transition-all">
                                 <i class="fas fa-user-nurse"></i>
                             </div>
                         </div>
                         <div class="my-3 space-y-1">
-                            <h3 class="text-base font-bold text-slate-900 group-hover:text-sky-600 transition-colors">Operasi Plastik</h3>
-                            <p class="text-xs text-slate-500 leading-relaxed">Prosedur bedah estetika oleh tim dokter spesialis berpengalaman.</p>
+                            <h3 class="text-base font-bold text-white group-hover:text-red-400 transition-colors">Operasi Plastik</h3>
+                            <p class="text-xs text-slate-400 leading-relaxed">Prosedur bedah estetika oleh tim dokter spesialis berpengalaman.</p>
                         </div>
-                        <div class="flex items-center gap-2 text-xs font-bold text-sky-500 group-hover:translate-x-1 transition-transform">
+                        <div class="flex items-center gap-2 text-xs font-bold text-red-400 group-hover:translate-x-1 transition-transform">
                             Daftar Oplas <i class="fas fa-arrow-right text-[10px]"></i>
                         </div>
                     </a>
 
                     <!-- CARD 03: Konsultasi Psikologi -->
-                    <a href="{{ route('public.surat-psikolog') }}" class="group reveal-on-scroll shimmer-card bg-slate-50 hover:bg-white rounded-[24px] p-6 border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-sky-300 transition-all duration-300 flex flex-col justify-between min-h-[200px] hover:-translate-y-1">
+                    <a href="{{ route('public.surat-psikolog') }}" class="group reveal-on-scroll shimmer-card bg-slate-800/80 hover:bg-slate-800 rounded-[24px] p-6 border border-white/10 shadow-md hover:shadow-2xl hover:border-red-500/50 transition-all duration-300 flex flex-col justify-between min-h-[200px] hover:-translate-y-1">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-slate-400 group-hover:text-sky-500 transition-colors">03</span>
-                            <div class="w-10 h-10 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center text-base group-hover:bg-sky-500 group-hover:text-white transition-all">
+                            <span class="text-xs font-bold text-slate-500 group-hover:text-red-400 transition-colors">03</span>
+                            <div class="w-10 h-10 rounded-2xl bg-red-500/20 text-red-400 border border-red-500/30 flex items-center justify-center text-base group-hover:bg-red-600 group-hover:text-white transition-all">
                                 <i class="fas fa-brain"></i>
                             </div>
                         </div>
                         <div class="my-3 space-y-1">
-                            <h3 class="text-base font-bold text-slate-900 group-hover:text-sky-600 transition-colors">Konsultasi Psikologi</h3>
-                            <p class="text-xs text-slate-500 leading-relaxed">Dukungan & konseling kesehatan mental komprehensif.</p>
+                            <h3 class="text-base font-bold text-white group-hover:text-red-400 transition-colors">Konsultasi Psikologi</h3>
+                            <p class="text-xs text-slate-400 leading-relaxed">Dukungan & konseling kesehatan mental komprehensif.</p>
                         </div>
-                        <div class="flex items-center gap-2 text-xs font-bold text-sky-500 group-hover:translate-x-1 transition-transform">
+                        <div class="flex items-center gap-2 text-xs font-bold text-red-400 group-hover:translate-x-1 transition-transform">
                             Formulir Psikologi <i class="fas fa-arrow-right text-[10px]"></i>
                         </div>
                     </a>
 
                     <!-- CARD 04: Karakter Kill -->
-                    <a href="{{ route('public.pendaftaran-karakter') }}" class="group reveal-on-scroll shimmer-card bg-slate-50 hover:bg-white rounded-[24px] p-6 border border-slate-200/80 shadow-sm hover:shadow-xl hover:border-sky-300 transition-all duration-300 flex flex-col justify-between min-h-[200px] hover:-translate-y-1">
+                    <a href="{{ route('public.pendaftaran-karakter') }}" class="group reveal-on-scroll shimmer-card bg-slate-800/80 hover:bg-slate-800 rounded-[24px] p-6 border border-white/10 shadow-md hover:shadow-2xl hover:border-red-500/50 transition-all duration-300 flex flex-col justify-between min-h-[200px] hover:-translate-y-1">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-slate-400 group-hover:text-sky-500 transition-colors">04</span>
-                            <div class="w-10 h-10 rounded-2xl bg-sky-100 text-sky-600 flex items-center justify-center text-base group-hover:bg-sky-500 group-hover:text-white transition-all">
+                            <span class="text-xs font-bold text-slate-500 group-hover:text-red-400 transition-colors">04</span>
+                            <div class="w-10 h-10 rounded-2xl bg-red-500/20 text-red-400 border border-red-500/30 flex items-center justify-center text-base group-hover:bg-red-600 group-hover:text-white transition-all">
                                 <i class="fas fa-heartbeat"></i>
                             </div>
                         </div>
                         <div class="my-3 space-y-1">
-                            <h3 class="text-base font-bold text-slate-900 group-hover:text-sky-600 transition-colors">Karakter Kill</h3>
-                            <p class="text-xs text-slate-500 leading-relaxed">Layanan penanganan medis khusus untuk storyline roleplay.</p>
+                            <h3 class="text-base font-bold text-white group-hover:text-red-400 transition-colors">Karakter Kill</h3>
+                            <p class="text-xs text-slate-400 leading-relaxed">Layanan penanganan medis khusus untuk storyline roleplay.</p>
                         </div>
-                        <div class="flex items-center gap-2 text-xs font-bold text-sky-500 group-hover:translate-x-1 transition-transform">
+                        <div class="flex items-center gap-2 text-xs font-bold text-red-400 group-hover:translate-x-1 transition-transform">
                             Daftar Sekarang <i class="fas fa-arrow-right text-[10px]"></i>
                         </div>
                     </a>
 
                     <!-- CARD 05: PHOTO CARD -->
-                    <div class="bg-slate-900 reveal-on-scroll rounded-[24px] overflow-hidden shadow-lg border border-slate-200 relative min-h-[200px] group">
+                    <div class="bg-slate-950 reveal-on-scroll rounded-[24px] overflow-hidden shadow-lg border border-white/10 relative min-h-[200px] group">
                         <img src="{{ asset('images/gambar 2.png') }}"
                              alt="Tim Medis Terpercaya Alta & Roxwood Hospital"
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent p-6 flex flex-col justify-end">
-                            <span class="text-xs font-bold text-sky-400">Tim Medis Terpercaya</span>
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent p-6 flex flex-col justify-end">
+                            <span class="text-xs font-bold text-red-400">Tim Medis Terpercaya</span>
                             <h4 class="text-sm font-bold text-white">Alta & Roxwood Hospital</h4>
                         </div>
                     </div>
@@ -254,13 +254,13 @@
             <!-- =========================================================
                  4. WHY CHOOSE US (SIDE-BY-SIDE 2 COLUMNS)
             ========================================================= -->
-            <div class="p-6 sm:p-10 lg:p-12 bg-slate-50/50">
+            <div class="p-6 sm:p-10 lg:p-12 bg-slate-950/60">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
 
-                    <!-- LEFT: BLUE FEATURED CARD -->
-                    <div class="bg-gradient-to-br from-blue-600 to-sky-500 reveal-on-scroll rounded-[28px] p-6 text-white min-h-[360px] relative overflow-hidden shadow-xl flex flex-col justify-between">
+                    <!-- LEFT: RED FEATURED CARD -->
+                    <div class="bg-gradient-to-br from-red-700 via-rose-800 to-slate-900 reveal-on-scroll rounded-[28px] p-6 text-white min-h-[360px] relative overflow-hidden shadow-xl border border-red-500/30 flex flex-col justify-between">
                         <div>
-                            <span class="text-xs font-bold text-sky-200 uppercase tracking-wider">iMe Portal</span>
+                            <span class="text-xs font-bold text-amber-200 uppercase tracking-wider">iMe Portal</span>
                             <h3 class="text-3xl font-black mt-1">Why<br>choose us</h3>
                         </div>
 
@@ -271,11 +271,11 @@
                         </div>
 
                         <div class="flex items-center gap-2 mt-4">
-                            <span class="bg-white/95 text-slate-800 text-[11px] font-bold px-3 py-1 rounded-full shadow-md flex items-center gap-1.5">
-                                <span class="w-2 h-2 rounded-full bg-sky-500"></span> Experienced Doctors
+                            <span class="bg-slate-900/90 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-md border border-white/10 flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-red-500"></span> Experienced Doctors
                             </span>
-                            <span class="bg-white/95 text-slate-800 text-[11px] font-bold px-3 py-1 rounded-full shadow-md flex items-center gap-1.5">
-                                <i class="fas fa-microscope text-sky-500 text-[10px]"></i> Modern Equipment
+                            <span class="bg-slate-900/90 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-full shadow-md border border-white/10 flex items-center gap-1.5">
+                                <i class="fas fa-microscope text-red-400 text-[10px]"></i> Modern Equipment
                             </span>
                         </div>
                     </div>
@@ -283,32 +283,32 @@
                     <!-- RIGHT: ADVANTAGES & STATS GRID -->
                     <div class="space-y-6 reveal-on-scroll">
                         <div>
-                            <span class="text-xs font-bold text-sky-500 uppercase tracking-wider">Keunggulan Kami</span>
-                            <h3 class="text-3xl font-black text-slate-900 mt-1 tracking-tight">Standar Medis Terbaik</h3>
-                            <p class="text-xs text-slate-500 mt-2 leading-relaxed">
+                            <span class="text-xs font-bold text-red-500 uppercase tracking-wider">Keunggulan Kami</span>
+                            <h3 class="text-3xl font-black text-white mt-1 tracking-tight">Standar Medis Terbaik</h3>
+                            <p class="text-xs text-slate-400 mt-2 leading-relaxed">
                                 Kami berkomitmen memberikan pelayanan kesehatan berkualitas dengan pencatatan digital otomatis bagi seluruh pasien.
                             </p>
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
-                            <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
-                                <div class="text-2xl font-black text-slate-900">10+</div>
-                                <div class="text-xs font-bold text-slate-700 mt-1">Tahun Pengalaman</div>
+                            <div class="p-4 rounded-2xl bg-slate-800/80 border border-white/10 shadow-sm">
+                                <div class="text-2xl font-black text-white">10+</div>
+                                <div class="text-xs font-bold text-slate-200 mt-1">Tahun Pengalaman</div>
                                 <div class="text-[10px] text-slate-400 mt-0.5">Pelayanan roleplay medis</div>
                             </div>
-                            <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
-                                <div class="text-2xl font-black text-slate-900">15</div>
-                                <div class="text-xs font-bold text-slate-700 mt-1">Bidang Layanan</div>
+                            <div class="p-4 rounded-2xl bg-slate-800/80 border border-white/10 shadow-sm">
+                                <div class="text-2xl font-black text-white">15</div>
+                                <div class="text-xs font-bold text-slate-200 mt-1">Bidang Layanan</div>
                                 <div class="text-[10px] text-slate-400 mt-0.5">Spesialisasi kesehatan</div>
                             </div>
-                            <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
-                                <div class="text-2xl font-black text-sky-500">95%</div>
-                                <div class="text-xs font-bold text-slate-700 mt-1">Kepuasan Pasien</div>
+                            <div class="p-4 rounded-2xl bg-slate-800/80 border border-white/10 shadow-sm">
+                                <div class="text-2xl font-black text-red-400">95%</div>
+                                <div class="text-xs font-bold text-slate-200 mt-1">Kepuasan Pasien</div>
                                 <div class="text-[10px] text-slate-400 mt-0.5">Ulasan positif warganet</div>
                             </div>
-                            <div class="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
-                                <div class="text-2xl font-black text-emerald-500">98%</div>
-                                <div class="text-xs font-bold text-slate-700 mt-1">Akurasi Diagnostik</div>
+                            <div class="p-4 rounded-2xl bg-slate-800/80 border border-white/10 shadow-sm">
+                                <div class="text-2xl font-black text-amber-400">98%</div>
+                                <div class="text-xs font-bold text-slate-200 mt-1">Akurasi Diagnostik</div>
                                 <div class="text-[10px] text-slate-400 mt-0.5">Penanganan tepat cepat</div>
                             </div>
                         </div>
@@ -320,21 +320,21 @@
             <!-- =========================================================
                  5. JAM OPERASIONAL & CTA CARD (SIDE-BY-SIDE 2 COLUMNS)
             ========================================================= -->
-            <div id="jadwal" class="p-6 sm:p-10 lg:p-12">
+            <div id="jadwal" class="p-6 sm:p-10 lg:p-12 bg-slate-900">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
 
                     <!-- LEFT: JAM OPERASIONAL TABLE -->
-                    <div class="bg-slate-50 reveal-on-scroll rounded-[28px] p-6 sm:p-8 border border-slate-200/80 shadow-sm flex flex-col justify-between space-y-6">
+                    <div class="bg-slate-800/80 reveal-on-scroll rounded-[28px] p-6 sm:p-8 border border-white/10 shadow-sm flex flex-col justify-between space-y-6">
                         <div>
-                            <div class="flex items-center justify-between gap-4 border-b border-slate-200/80 pb-4 mb-4">
+                            <div class="flex items-center justify-between gap-4 border-b border-white/10 pb-4 mb-4">
                                 <div>
-                                    <span class="text-xs font-bold text-sky-500 uppercase tracking-wider">Jadwal Shift</span>
-                                    <h3 class="text-2xl font-black text-slate-900 tracking-tight">Jam Operasional</h3>
+                                    <span class="text-xs font-bold text-red-400 uppercase tracking-wider">Jadwal Shift</span>
+                                    <h3 class="text-2xl font-black text-white tracking-tight">Jam Operasional</h3>
                                 </div>
                             </div>
 
-                            <div class="px-4 py-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-medium flex items-start gap-2.5 mb-6">
-                                <i class="fas fa-exclamation-triangle text-amber-500 text-sm mt-0.5"></i>
+                            <div class="px-4 py-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-medium flex items-start gap-2.5 mb-6">
+                                <i class="fas fa-exclamation-triangle text-amber-400 text-sm mt-0.5"></i>
                                 <div>
                                     <strong class="font-bold">Info:</strong> Pelayanan sesuai ketersediaan tenaga medis (On Duty).
                                 </div>
@@ -342,40 +342,40 @@
 
                             <div class="space-y-3">
                                 <!-- Row 1: Operasi Plastik -->
-                                <div class="flex items-center justify-between p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
+                                <div class="flex items-center justify-between p-3.5 rounded-2xl bg-slate-900/90 border border-white/10 shadow-sm">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-9 h-9 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center text-sm flex-shrink-0">
+                                        <div class="w-9 h-9 rounded-xl bg-red-500/20 text-red-400 border border-red-500/30 flex items-center justify-center text-sm flex-shrink-0">
                                             <i class="fas fa-user-nurse"></i>
                                         </div>
                                         <div>
-                                            <h4 class="font-bold text-slate-800 text-sm">Operasi Plastik</h4>
-                                            <p class="text-xs text-slate-500">Shift 1: 13:00&ndash;16:00 &middot; Shift 2: 20:00&ndash;22:00 WIB</p>
+                                            <h4 class="font-bold text-white text-sm">Operasi Plastik</h4>
+                                            <p class="text-xs text-slate-400">Shift 1: 13:00&ndash;16:00 &middot; Shift 2: 20:00&ndash;22:00 WIB</p>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Row 2: Surat-Suratan Medis -->
-                                <div class="flex items-center justify-between p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-sm">
+                                <div class="flex items-center justify-between p-3.5 rounded-2xl bg-slate-900/90 border border-white/10 shadow-sm">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-9 h-9 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center text-sm flex-shrink-0">
+                                        <div class="w-9 h-9 rounded-xl bg-red-500/20 text-red-400 border border-red-500/30 flex items-center justify-center text-sm flex-shrink-0">
                                             <i class="fas fa-file-medical"></i>
                                         </div>
                                         <div>
-                                            <h4 class="font-bold text-slate-800 text-sm">Surat-Suratan Medis</h4>
-                                            <p class="text-xs text-slate-500">Shift 1: 13:00&ndash;17:00 &middot; Shift 2: 19:00&ndash;22:00 WIB</p>
+                                            <h4 class="font-bold text-white text-sm">Surat-Suratan Medis</h4>
+                                            <p class="text-xs text-slate-400">Shift 1: 13:00&ndash;17:00 &middot; Shift 2: 19:00&ndash;22:00 WIB</p>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Row 3: Layanan Farmasi -->
-                                <div class="flex items-center justify-between p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 shadow-sm">
+                                <div class="flex items-center justify-between p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 shadow-sm">
                                     <div class="flex items-center gap-3">
                                         <div class="w-9 h-9 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-sm flex-shrink-0">
                                             <i class="fas fa-pills"></i>
                                         </div>
                                         <div>
-                                            <h4 class="font-bold text-slate-800 text-sm">Layanan Farmasi</h4>
-                                            <p class="text-xs text-emerald-700 font-medium">Pengambilan & pengobatan medis</p>
+                                            <h4 class="font-bold text-white text-sm">Layanan Farmasi</h4>
+                                            <p class="text-xs text-emerald-400 font-medium">Pengambilan & pengobatan medis</p>
                                         </div>
                                     </div>
                                     <span class="px-3 py-1 rounded-full bg-emerald-500 text-white text-[10px] font-bold flex items-center gap-1">
@@ -387,9 +387,9 @@
                     </div>
 
                     <!-- RIGHT: CTA CARD -->
-                    <div class="bg-gradient-to-br from-sky-500 via-blue-600 to-blue-700 reveal-on-scroll rounded-[28px] p-8 text-white shadow-xl flex flex-col justify-between space-y-6 relative overflow-hidden">
+                    <div class="bg-gradient-to-br from-red-700 via-rose-800 to-slate-950 reveal-on-scroll rounded-[28px] p-8 text-white shadow-xl border border-red-500/30 flex flex-col justify-between space-y-6 relative overflow-hidden">
                         <div class="space-y-4 z-10">
-                            <span class="text-xs font-bold uppercase tracking-widest text-sky-200">Ready when you are</span>
+                            <span class="text-xs font-bold uppercase tracking-widest text-amber-200">Ready when you are</span>
                             <h3 class="text-2xl sm:text-3xl font-black text-white leading-tight">Butuh layanan medis sekarang?</h3>
                             <p class="text-xs text-white/80 leading-relaxed">
                                 Akses layanan iMe dengan mudah dan dapatkan bantuan dari tenaga medis kami kapan saja.
@@ -397,7 +397,7 @@
                         </div>
 
                         <div class="space-y-3 z-10 pt-4 border-t border-white/15">
-                            <a href="#layanan" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-white hover:bg-sky-50 text-sky-600 text-sm font-bold shadow-lg transition-all hover:scale-[1.02]">
+                            <a href="#layanan" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-white hover:bg-slate-100 text-red-700 text-sm font-bold shadow-lg transition-all hover:scale-[1.02]">
                                 Lihat Layanan <i class="fas fa-arrow-right text-xs"></i>
                             </a>
                             <button onclick="showRegulationModal()" class="w-full inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-white/15 hover:bg-white/25 text-white border border-white/30 text-sm font-bold backdrop-blur-md transition-all">
