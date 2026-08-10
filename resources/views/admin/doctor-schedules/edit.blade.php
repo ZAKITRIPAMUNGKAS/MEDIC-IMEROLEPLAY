@@ -39,18 +39,26 @@
                 <!-- Doctor Name -->
                 <div>
                     <label for="doctor_name" class="block text-sm font-semibold text-gray-300 mb-2">Nama Dokter</label>
-                    <select name="doctor_name" id="doctor_name" required
-                            class="w-full bg-white/10 text-white border border-white/20 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 appearance-none text-sm cursor-pointer">
-                        <option value="">Pilih Dokter</option>
-                        @foreach($doctors as $doctor)
-                            <option value="{{ $doctor->name }}" 
-                                    data-hospital="{{ $doctor->isRoxwood() ? 'roxwood' : 'alta' }}"
-                                    @selected(old('doctor_name', $doctorSchedule->doctor_name) == $doctor->name) 
-                                    class="bg-slate-800 text-slate-100">
-                                {{ $doctor->name }} ({{ $doctor->role->display_name ?? $doctor->role->name }})
-                            </option>
-                        @endforeach
-                    </select>
+                    <div class="relative">
+                        <i class="fas fa-user-md absolute left-4 top-1/2 -translate-y-1/2 text-sky-400 pointer-events-none text-sm"></i>
+                        <input type="text"
+                               name="doctor_name"
+                               id="doctor_name"
+                               list="doctor_suggestions"
+                               value="{{ old('doctor_name', $doctorSchedule->doctor_name) }}"
+                               placeholder="Ketik nama dokter..."
+                               autocomplete="off"
+                               required
+                               class="w-full bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded-lg pl-12 pr-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 text-sm transition-all">
+                        <datalist id="doctor_suggestions">
+                            @foreach($doctors as $doctor)
+                                <option value="{{ $doctor->name }}" data-hospital="{{ $doctor->isRoxwood() ? 'roxwood' : 'alta' }}">
+                                    {{ $doctor->name }} ({{ $doctor->role->display_name ?? $doctor->role->name }})
+                                </option>
+                            @endforeach
+                        </datalist>
+                    </div>
+                    <p class="text-[11px] text-sky-400/70 mt-1.5"><i class="fas fa-info-circle mr-1"></i>Ketik nama dokter untuk mencari dari daftar.</p>
                 </div>
 
                 <!-- Poliklinik -->
