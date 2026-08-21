@@ -103,9 +103,23 @@ class ManagerEvaluationController extends Controller
             return view('staff.evaluations.index', compact('managers', 'altaManagers', 'roxwoodManagers', 'selectedManager', 'selectedManagerId', 'reviews', 'categories', 'canSeeAll'));
         }
 
-        $managers = User::where('is_active', true)
-            ->whereIn('role_id', $managerRoleIds)
-            ->with(['role'])
+        $search = trim($request->input('search', ''));
+
+        $query = User::where('is_active', true)
+            ->whereIn('role_id', $managerRoleIds);
+
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('staff_id', 'like', "%{$search}%")
+                  ->orWhereHas('role', function ($qr) use ($search) {
+                      $qr->where('name', 'like', "%{$search}%")
+                         ->orWhere('display_name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $managers = $query->with(['role'])
             ->withCount('evaluationsReceived as reviews_count')
             ->withAvg('evaluationsReceived as avg_rating', 'rating')
             ->orderBy('name', 'asc')
@@ -115,24 +129,33 @@ class ManagerEvaluationController extends Controller
         $rhUserIds = User::where('is_active', true)
             ->where(function ($query) {
                 $query->where('hospital', 'roxwood')
-                    ->orWhereRaw('LOWER(name) LIKE ?', ['%rh%'])
-                    ->orWhereRaw('LOWER(name) LIKE ?', ['%roxwood%'])
-                    ->orWhereRaw('LOWER(name) LIKE ?', ['%rh -%'])
-                    ->orWhereRaw('LOWER(name) LIKE ?', ['%rh-%'])
-                    ->orWhere(function ($q) {
-                        $q->whereNotNull('staff_id')
-                            ->where(function ($sq) {
-                                $sq->whereRaw('LOWER(staff_id) LIKE ?', ['%rh%'])
-                                    ->orWhereRaw('LOWER(staff_id) LIKE ?', ['%rh -%'])
-                                    ->orWhereRaw('LOWER(staff_id) LIKE ?', ['%rh-%']);
-                            });
+                    ->orWhere(function ($sq) {
+                        $sq->whereRaw('LOWER(staff_id) LIKE ?', ['%rh%'])
+                            ->orWhereRaw('LOWER(staff_id) LIKE ?', ['%rh -%'])
+                            ->orWhereRaw('LOWER(staff_id) LIKE ?', ['%rh-%']);
                     });
             })
             ->pluck('id')
             ->toArray();
 
-        $allAlta = $managers->reject(fn($u) => in_array($u->id, $rhUserIds) || $u->hospital === 'roxwood');
-        $allRoxwood = $managers->filter(fn($u) => in_array($u->id, $rhUserIds) || $u->hospital === 'roxwood');
+        // Helper to check if manager is Administrator / Executive (Appears in BOTH hospitals)
+        $isAdminOrBoth = function ($u) {
+            return $u->isAdmin() 
+                || strtolower($u->role?->name ?? '') === 'admin' 
+                || strtolower($u->role?->name ?? '') === 'executive' 
+                || ($u->role?->level ?? 0) >= 7
+                || in_array(strtolower($u->hospital ?? ''), ['all', 'both']);
+        };
+
+        $allAlta = $managers->filter(function($u) use ($rhUserIds, $isAdminOrBoth) {
+            if ($isAdminOrBoth($u)) return true;
+            return !in_array($u->id, $rhUserIds) && $u->hospital !== 'roxwood';
+        });
+
+        $allRoxwood = $managers->filter(function($u) use ($rhUserIds, $isAdminOrBoth) {
+            if ($isAdminOrBoth($u)) return true;
+            return in_array($u->id, $rhUserIds) || $u->hospital === 'roxwood';
+        });
 
         // Hospital Scoping Enforcement
         if ($canSeeAll) {
@@ -165,9 +188,9 @@ class ManagerEvaluationController extends Controller
             $reviewsQuery->where('manager_id', $selectedManagerId);
         }
 
-        $reviews = $reviewsQuery->paginate(12);
+        $reviews = $reviewsQuery->paginate(12)->withQueryString();
 
-        return view('staff.evaluations.index', compact('managers', 'altaManagers', 'roxwoodManagers', 'selectedManager', 'selectedManagerId', 'reviews', 'categories', 'canSeeAll'));
+        return view('staff.evaluations.index', compact('managers', 'altaManagers', 'roxwoodManagers', 'selectedManager', 'selectedManagerId', 'reviews', 'categories', 'canSeeAll', 'search'));
     }
 
     /**

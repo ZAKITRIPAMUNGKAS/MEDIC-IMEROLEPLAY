@@ -61,6 +61,32 @@
             </div>
         </div>
 
+        <!-- SEARCH BAR FORM -->
+        <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-2xl border border-white border-opacity-20 p-4 sm:p-5">
+            <form action="{{ route('staff.manager-evaluations.index') }}" method="GET" class="flex flex-col sm:flex-row items-center gap-3">
+                <div class="relative flex-1 w-full">
+                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-sky-300/70 text-sm"></i>
+                    <input type="text" 
+                           name="search" 
+                           value="{{ $search ?? '' }}" 
+                           placeholder="Cari manajer berdasarkan Nama, Staff ID, atau Jabatan..." 
+                           class="w-full pl-11 pr-4 py-3 rounded-xl bg-slate-950/60 border border-white/20 text-white placeholder-sky-200/50 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all">
+                </div>
+
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <button type="submit" class="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white text-xs font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                        <i class="fas fa-search"></i> Cari Manajer
+                    </button>
+
+                    @if(!empty($search))
+                        <a href="{{ route('staff.manager-evaluations.index') }}" class="px-4 py-3 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold rounded-xl border border-white/20 transition-all flex items-center gap-1.5 whitespace-nowrap">
+                            <i class="fas fa-times"></i> Reset
+                        </a>
+                    @endif
+                </div>
+            </form>
+        </div>
+
         <!-- SECTION 1: ALTA HOSPITAL MANAGERS -->
         @if($altaManagers->count() > 0 || ($canSeeAll || auth()->user()->isAlta()))
         <div class="space-y-4">
