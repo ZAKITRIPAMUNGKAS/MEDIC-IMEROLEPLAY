@@ -184,27 +184,28 @@
     <style>
         /* Cache busting: {{ time() }} */
         :root {
-            /* Nuansa Kemerdekaan Merah-Putih Soft */
-            --ml-bg-start: #450a0a;   /* Deep Soft Rose Red */
-            --ml-bg-mid: #701a2b;     /* Soft Crimson Red */
-            --ml-bg-end: #881337;     /* Ruby Red */
+            /* Nuansa Kemerdekaan Merah Terang - Putih RI */
+            --ml-bg-start: #991b1b;   /* Bright Red 800 */
+            --ml-bg-mid: #dc2626;     /* Bright Red 600 */
+            --ml-bg-end: #ef4444;     /* Vibrant Red 500 */
 
-            --ml-primary: #e11d48;    /* Soft Crimson Red */
-            --ml-primary-700: #be123c;
+            --ml-primary: #ef4444;    /* Bright Independence Red */
+            --ml-primary-700: #dc2626;
             --ml-secondary: #ffffff;  /* Pure White */
-            --ml-accent: #fb7185;     /* Soft Rose Accent */
+            --ml-accent: #fca5a5;     /* Light Red-White Accent */
             --ml-success: #10b981;
             --ml-warning: #f59e0b;
-            --ml-danger: #f43f5e;
-            --ml-muted: #fda4af;
-            --ml-surface: rgba(76, 12, 30, 0.92);
-            --ml-border: rgba(244, 63, 94, 0.35);
+            --ml-danger: #ff2233;
+            --ml-muted: #fecdd3;
+            --ml-surface: rgba(185, 28, 28, 0.92);
+            --ml-border: rgba(254, 205, 211, 0.4);
         }
 
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(180deg, var(--ml-bg-start) 0%, var(--ml-bg-mid) 50%, var(--ml-bg-end) 100%);
             min-height: 100vh;
+            color: #ffffff;
         }
 
         .glass-effect {
