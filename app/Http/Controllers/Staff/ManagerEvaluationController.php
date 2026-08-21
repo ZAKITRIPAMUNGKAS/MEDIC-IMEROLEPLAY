@@ -35,11 +35,31 @@ class ManagerEvaluationController extends Controller
                 ->with(['role'])
                 ->orderBy('name', 'asc')
                 ->get();
+
+            $rhUserIds = User::where('is_active', true)
+                ->where(function ($query) {
+                    $query->where('hospital', 'roxwood')
+                        ->orWhereRaw('LOWER(name) LIKE ?', ['%rh%'])
+                        ->orWhereRaw('LOWER(name) LIKE ?', ['%roxwood%'])
+                        ->orWhereRaw('LOWER(name) LIKE ?', ['%rh -%'])
+                        ->orWhereRaw('LOWER(name) LIKE ?', ['%rh-%']);
+                })
+                ->pluck('id')
+                ->toArray();
+
+            $altaManagers = $managers->reject(function ($user) use ($rhUserIds) {
+                return in_array($user->id, $rhUserIds) || $user->hospital === 'roxwood';
+            });
+
+            $roxwoodManagers = $managers->filter(function ($user) use ($rhUserIds) {
+                return in_array($user->id, $rhUserIds) || $user->hospital === 'roxwood';
+            });
+
             $reviews = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 12);
             $selectedManager = null;
             $selectedManagerId = null;
 
-            return view('staff.evaluations.index', compact('managers', 'selectedManager', 'selectedManagerId', 'reviews', 'categories'))
+            return view('staff.evaluations.index', compact('managers', 'altaManagers', 'roxwoodManagers', 'selectedManager', 'selectedManagerId', 'reviews', 'categories'))
                 ->with('error', 'Tabel evaluasi manajer belum dibuat di database cPanel hosting. Harap jalankan perintah "php artisan migrate" di cPanel Terminal.');
         }
 
