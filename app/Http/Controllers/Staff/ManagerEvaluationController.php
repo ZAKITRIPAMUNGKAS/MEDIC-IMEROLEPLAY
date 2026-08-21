@@ -153,14 +153,11 @@ class ManagerEvaluationController extends Controller
         $request->validate([
             'manager_id' => 'required|exists:users,id',
             'rating'     => 'required|integer|min:1|max:5',
-            'kategori'   => 'required|array|min:1',
-            'kategori.*' => 'string|max:255',
+            'kategori'   => 'nullable',
             'komentar'   => 'required|string|min:5|max:2000',
         ], [
             'manager_id.required' => 'Harap pilih Manajer yang ingin Anda beri penilaian.',
             'rating.required'     => 'Harap berikan nilai bintang (1 - 5 bintang).',
-            'kategori.required'   => 'Harap pilih minimal 1 kategori penilaian.',
-            'kategori.min'        => 'Harap pilih minimal 1 kategori penilaian.',
             'komentar.required'   => 'Harap isi komentar evaluasi Anda.',
             'komentar.min'        => 'Komentar minimal 5 karakter.',
         ]);
@@ -191,7 +188,16 @@ class ManagerEvaluationController extends Controller
             }
         }
 
-        $kategoriFormatted = is_array($request->kategori) ? implode(', ', $request->kategori) : $request->kategori;
+        $kategoriInput = $request->input('kategori');
+        if (is_array($kategoriInput)) {
+            $kategoriFormatted = implode(', ', array_filter($kategoriInput));
+        } else {
+            $kategoriFormatted = trim((string) $kategoriInput);
+        }
+
+        if (empty($kategoriFormatted)) {
+            $kategoriFormatted = 'General / Kepemimpinan';
+        }
 
         ManagerEvaluation::create([
             'evaluator_id' => $evaluatorId,

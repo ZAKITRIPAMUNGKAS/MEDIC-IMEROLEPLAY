@@ -131,11 +131,11 @@
 
                         <!-- Action Buttons -->
                         <div class="flex items-center gap-2 pt-1">
-                            <button onclick="openEvaluationModal({{ $manager->id }}, '{{ addslashes($manager->name) }}')" class="w-full py-2.5 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white font-bold rounded-xl text-xs transition-all text-center flex items-center justify-center gap-1.5 shadow">
+                            <button onclick="openEvaluationModal({{ $manager->id }}, '{{ addslashes($manager->name) }}', '{{ addslashes($manager->role?->name ?? "Manajer") }}', 'alta')" class="w-full py-2.5 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white font-bold rounded-xl text-xs transition-all text-center flex items-center justify-center gap-1.5 shadow">
                                 <i class="fas fa-pen text-amber-300"></i> Beri Penilaian
                             </button>
-                            <a href="{{ route('staff.manager-evaluations.index', ['manager_id' => $manager->id]) }}" class="px-3.5 py-2.5 bg-white bg-opacity-10 hover:bg-opacity-20 text-white font-semibold rounded-xl text-xs border border-white border-opacity-20 transition-all" title="Lihat Ulasan">
-                                <i class="fas fa-comments"></i>
+                            <a href="{{ route('staff.members.show', $manager->id) }}" class="px-3.5 py-2.5 bg-white bg-opacity-10 hover:bg-opacity-20 text-white font-semibold rounded-xl text-xs border border-white border-opacity-20 transition-all" title="Lihat Profil">
+                                <i class="fas fa-user-circle"></i>
                             </a>
                         </div>
                     </div>
@@ -219,11 +219,11 @@
 
                         <!-- Action Buttons -->
                         <div class="flex items-center gap-2 pt-1">
-                            <button onclick="openEvaluationModal({{ $manager->id }}, '{{ addslashes($manager->name) }}')" class="w-full py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-xl text-xs transition-all text-center flex items-center justify-center gap-1.5 shadow">
+                            <button onclick="openEvaluationModal({{ $manager->id }}, '{{ addslashes($manager->name) }}', '{{ addslashes($manager->role?->name ?? "Manajer") }}', 'roxwood')" class="w-full py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold rounded-xl text-xs transition-all text-center flex items-center justify-center gap-1.5 shadow">
                                 <i class="fas fa-pen text-amber-300"></i> Beri Penilaian
                             </button>
-                            <a href="{{ route('staff.manager-evaluations.index', ['manager_id' => $manager->id]) }}" class="px-3.5 py-2.5 bg-white bg-opacity-10 hover:bg-opacity-20 text-white font-semibold rounded-xl text-xs border border-white border-opacity-20 transition-all" title="Lihat Ulasan">
-                                <i class="fas fa-comments"></i>
+                            <a href="{{ route('staff.members.show', $manager->id) }}" class="px-3.5 py-2.5 bg-white bg-opacity-10 hover:bg-opacity-20 text-white font-semibold rounded-xl text-xs border border-white border-opacity-20 transition-all" title="Lihat Profil">
+                                <i class="fas fa-user-circle"></i>
                             </a>
                         </div>
                     </div>
@@ -237,109 +237,12 @@
         </div>
         @endif
 
-        <!-- REVIEWS & COMMENTS FEED SECTION -->
-        <div class="space-y-4 pt-8">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white border-opacity-20 pb-3">
-                <div>
-                    <h2 class="text-xl font-bold text-white flex items-center gap-2">
-                        <i class="fas fa-comments text-sky-400"></i> Ulasan & Evaluasi Anonim Staf
-                    </h2>
-                    @if($selectedManager)
-                        <p class="text-xs text-sky-300">Menampilkan ulasan evaluasi untuk: <strong>{{ $selectedManager->name }}</strong></p>
-                    @endif
-                </div>
-
-                @if($selectedManagerId)
-                    <a href="{{ route('staff.manager-evaluations.index') }}" class="text-xs font-bold text-sky-300 hover:underline flex items-center gap-1 bg-white bg-opacity-10 px-3 py-1.5 rounded-lg border border-white border-opacity-20">
-                        <i class="fas fa-filter"></i> Tampilkan Semua Ulasan
-                    </a>
-                @endif
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                @forelse($reviews as $review)
-                    <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-2xl p-6 border border-white border-opacity-20 space-y-3 relative overflow-hidden">
-                        <!-- Top Row: Anonymous Avatar & Manager Target -->
-                        <div class="flex items-start justify-between gap-3 border-b border-white border-opacity-10 pb-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-sky-500 to-cyan-600 text-white flex items-center justify-center text-sm shadow-md font-bold shrink-0 border border-white border-opacity-20">
-                                    <i class="fas fa-user-secret"></i>
-                                </div>
-                                <div>
-                                    <span class="text-xs font-extrabold text-amber-300 block flex items-center gap-1.5">
-                                        🎭 Staf Medis (Anonim)
-                                        @if($canSeeAll)
-                                            <span class="px-1.5 py-0.5 rounded bg-amber-500 bg-opacity-20 border border-amber-400 border-opacity-40 text-amber-200 text-[9px] font-bold">
-                                                <i class="fas fa-eye mr-0.5"></i> Admin View
-                                            </span>
-                                        @endif
-                                    </span>
-
-                                    @if($canSeeAll && $review->evaluator)
-                                        <div class="my-1.5 p-2 rounded-xl bg-amber-500 bg-opacity-10 border border-amber-400 border-opacity-30 text-[11px] text-amber-200 space-y-0.5">
-                                            <div class="font-bold flex items-center gap-1 text-white">
-                                                <i class="fas fa-id-card text-amber-400"></i> Nama Penilai: {{ $review->evaluator->name }}
-                                            </div>
-                                            <div class="text-[10px] text-amber-200 opacity-90">
-                                                Jabatan: {{ $review->evaluator->role?->name ?? '-' }} &middot; ID: {{ $review->evaluator->staff_id ?? '-' }} &middot; {{ ucfirst($review->evaluator->hospital ?? 'alta') }}
-                                            </div>
-                                        </div>
-                                    @endif
-
-                                    <span class="text-[11px] text-sky-200 block">
-                                        Menilai: <strong class="text-white">{{ $review->manager?->name ?? 'Manajer' }}</strong>
-                                        <span class="text-[10px] text-sky-300">({{ $review->manager?->role?->name ?? 'Manajer' }})</span>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <span class="px-2.5 py-1 bg-white bg-opacity-5 border border-white border-opacity-10 rounded-lg text-[10px] font-semibold text-slate-300">
-                                {{ $review->created_at->diffForHumans() }}
-                            </span>
-                        </div>
-
-                        <!-- Rating Stars & Category -->
-                        <div class="flex items-center justify-between text-xs">
-                            <div class="flex items-center gap-1 text-amber-400">
-                                @for($s = 1; $s <= 5; $s++)
-                                    @if($s <= $review->rating)
-                                        <i class="fas fa-star text-sm"></i>
-                                    @else
-                                        <i class="far fa-star text-slate-600 text-sm"></i>
-                                    @endif
-                                @endfor
-                                <span class="ml-1 text-white font-bold">{{ number_format($review->rating, 1) }}</span>
-                            </div>
-
-                            <span class="px-3 py-1 rounded-full bg-sky-500 bg-opacity-20 border border-sky-400 border-opacity-30 text-sky-200 font-semibold text-[10px]">
-                                {{ $review->kategori }}
-                            </span>
-                        </div>
-
-                        <!-- Comment Content -->
-                        <div class="text-xs text-slate-200 leading-relaxed bg-black bg-opacity-20 p-4 rounded-xl border border-white border-opacity-10">
-                            "{!! nl2br(e($review->komentar)) !!}"
-                        </div>
-                    </div>
-                @empty
-                    <div class="col-span-full bg-white bg-opacity-5 rounded-2xl p-8 text-center text-slate-400 border border-white border-opacity-10">
-                        <i class="fas fa-comment-slash text-3xl text-slate-600 mb-2"></i>
-                        <p>Belum ada masukan evaluasi anonim yang dikirimkan.</p>
-                    </div>
-                @endforelse
-            </div>
-
-            <div class="pt-2">
-                {{ $reviews->links() }}
-            </div>
-        </div>
-
     </div>
 </div>
 
-<!-- EVALUATION SUBMISSION MODAL -->
+<!-- EVALUATION SUBMISSION MODAL (CLEANED UP & NEAT) -->
 <div id="evaluationModal" class="fixed inset-0 z-[99999] hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-white border-opacity-20 rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl relative text-white">
+    <div class="bg-slate-900 border border-white border-opacity-20 rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-5 shadow-2xl relative text-white">
         
         <!-- Modal Header -->
         <div class="flex items-center justify-between border-b border-white border-opacity-10 pb-4">
@@ -363,10 +266,24 @@
         <form action="{{ route('staff.manager-evaluations.store') }}" method="POST" class="space-y-4">
             @csrf
 
-            <!-- Target Manager Selection -->
-            <div>
+            <!-- Hidden Target Manager ID -->
+            <input type="hidden" name="manager_id" id="modalManagerId" required>
+
+            <!-- Target Manager Info Card (Replaces Select Dropdown) -->
+            <div id="modalTargetManagerBox" class="p-3.5 bg-sky-500/10 border border-sky-400/30 rounded-2xl flex items-center gap-3.5">
+                <div class="w-10 h-10 rounded-xl bg-slate-800 border border-sky-400/40 flex items-center justify-center text-sky-300 font-bold text-base shrink-0">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                    <span class="text-[10px] uppercase font-bold text-sky-300 tracking-wider block" id="modalTargetRole">Staff Manager</span>
+                    <h4 class="text-sm sm:text-base font-bold text-white truncate" id="modalTargetName">Nama Manajer</h4>
+                </div>
+            </div>
+
+            <!-- Fallback Select Container (Only shown if opened without target) -->
+            <div id="modalManagerSelectContainer" class="hidden">
                 <label class="block text-xs font-semibold text-sky-200 mb-1.5">Pilih Manajer / Staff Manajer <span class="text-red-400">*</span></label>
-                <select name="manager_id" id="modalManagerId" class="w-full px-4 py-3 rounded-xl bg-white bg-opacity-10 border border-white border-opacity-20 text-sm text-white focus:outline-none focus:border-sky-400 transition-all font-medium" required>
+                <select id="modalManagerSelect" class="w-full px-4 py-3 rounded-xl bg-white bg-opacity-10 border border-white border-opacity-20 text-sm text-white focus:outline-none focus:border-sky-400 transition-all font-medium" onchange="document.getElementById('modalManagerId').value = this.value">
                     <option value="" class="bg-slate-900 text-white">-- Pilih Manajer --</option>
                     @if($altaManagers->count() > 0)
                         <optgroup label="🏥 Alta Hospital" class="bg-slate-900 text-cyan-300 font-bold">
@@ -402,7 +319,7 @@
             <!-- Multi Category Selection Checkboxes -->
             <div>
                 <label class="block text-xs font-semibold text-sky-200 mb-2">
-                    Kategori Penilaian <span class="text-xs text-amber-300 font-normal">(Bisa pilih lebih dari 1)</span> <span class="text-red-400">*</span>
+                    Kategori Penilaian <span class="text-xs text-amber-300 font-normal">(Bisa pilih lebih dari 1)</span>
                 </label>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-white bg-opacity-5 p-3 rounded-xl border border-white border-opacity-10 max-h-48 overflow-y-auto">
                     @foreach($categories as $index => $cat)
@@ -414,10 +331,10 @@
                 </div>
             </div>
 
-            <!-- Comment -->
+            <!-- Comment Input Textarea (Refined & Tidy) -->
             <div>
                 <label class="block text-xs font-semibold text-sky-200 mb-1.5">Komentar & Masukan Evaluasi <span class="text-red-400">*</span></label>
-                <textarea name="komentar" rows="4" class="w-full px-4 py-3 rounded-xl bg-white bg-opacity-10 border border-white border-opacity-20 text-sm text-white placeholder-sky-300/50 focus:outline-none focus:border-sky-400 transition-all font-medium" placeholder="Tuliskan masukan konstruktif, pujian, maupun saran perbaikan untuk manajer bersangkutan..." required></textarea>
+                <textarea name="komentar" rows="3" class="w-full px-4 py-3 rounded-xl bg-slate-950/60 border border-white/20 text-sm text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all font-medium" placeholder="Tuliskan masukan konstruktif, pujian, maupun saran perbaikan..." required></textarea>
             </div>
 
             <!-- Notice -->
@@ -452,10 +369,31 @@ const ratingLabels = {
     5: '5.0 / 5.0 (Sangat Baik)'
 };
 
-function openEvaluationModal(managerId = null, managerName = '') {
+function openEvaluationModal(managerId = null, managerName = '', managerRole = '', managerHospital = '') {
+    const hiddenIdInput = document.getElementById('modalManagerId');
+    const targetBox = document.getElementById('modalTargetManagerBox');
+    const selectBox = document.getElementById('modalManagerSelectContainer');
+    
     if (managerId) {
-        document.getElementById('modalManagerId').value = managerId;
+        hiddenIdInput.value = managerId;
+        if (targetBox) {
+            targetBox.classList.remove('hidden');
+            document.getElementById('modalTargetName').textContent = managerName;
+            document.getElementById('modalTargetRole').textContent = managerRole + ' · ' + (managerHospital === 'roxwood' ? 'Roxwood Hospital' : 'Alta Hospital');
+        }
+        if (selectBox) selectBox.classList.add('hidden');
+    } else {
+        if (selectBox) {
+            selectBox.classList.remove('hidden');
+            const selEl = document.getElementById('modalManagerSelect');
+            if (selEl && selEl.options.length > 1) {
+                selEl.selectedIndex = 1;
+                hiddenIdInput.value = selEl.value;
+            }
+        }
+        if (targetBox) targetBox.classList.add('hidden');
     }
+
     setStarRating(5);
     document.getElementById('evaluationModal').classList.remove('hidden');
 }
