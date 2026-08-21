@@ -541,6 +541,16 @@ let userAnswers = {};
 let patientData = { name: '', id: '', timerEnabled: true };
 let timerInterval = null;
 let timeLeft = 10;
+let shuffledOptionsMap = {};
+
+function shuffleArray(array) {
+    const arr = [...array];
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+}
 
 function startColorBlindTest() {
     const nameInput = document.getElementById('patientName').value.trim();
@@ -553,6 +563,12 @@ function startColorBlindTest() {
     patientData.name = nameInput;
     patientData.id = document.getElementById('patientId').value.trim() || 'NON-ID';
     patientData.timerEnabled = document.getElementById('enableTimer').checked;
+
+    // Shuffle option choices for all 20 plates so correct answer position is randomized
+    shuffledOptionsMap = {};
+    EXPERT_ISHIHARA_PLATES.forEach(plate => {
+        shuffledOptionsMap[plate.id] = shuffleArray(plate.options);
+    });
 
     document.getElementById('preTestCard').classList.add('hidden');
     document.getElementById('testQuizCard').classList.remove('hidden');
@@ -579,11 +595,13 @@ function renderQuestion(stepIndex) {
     // Draw Advanced Dot Matrix Canvas
     drawAdvancedIshiharaPlate('ishiharaCanvas', plate);
 
-    // Render Option Buttons
+    // Render Option Buttons (Shuffled Randomly)
     const optionsContainer = document.getElementById('optionsContainer');
     optionsContainer.innerHTML = '';
 
-    plate.options.forEach(opt => {
+    const optionsToRender = shuffledOptionsMap[plate.id] || plate.options;
+
+    optionsToRender.forEach(opt => {
         const isSelected = (userAnswers[plate.id] === opt);
         const btn = document.createElement('button');
         btn.className = `p-4 rounded-2xl font-extrabold text-sm border transition-all duration-200 flex items-center justify-between ${
