@@ -182,36 +182,23 @@
     </script>
 
     <style>
-        /* Cache busting: {{ time() }}
-        */ :root {
-            --ml-bg-start: #0c4a6e;
-            /* sky-900 - biru gelap medis */
-            --ml-bg-mid: #075985;
-            /* sky-800 */
-            --ml-bg-end: #0369a1;
-            /* sky-700 */
-        }
-
-        /* CSS Variables */
+        /* Cache busting: {{ time() }} */
         :root {
-            --ml-primary: #0ea5e9;
-            /* sky-500 - biru medis */
-            --ml-primary-700: #0284c7;
-            /* sky-600 */
-            --ml-secondary: #059669;
-            /* emerald-600 - hijau medis */
-            --ml-accent: #06b6d4;
-            /* cyan-500 - cyan medis */
+            /* Nuansa Kemerdekaan Merah-Putih Soft */
+            --ml-bg-start: #450a0a;   /* Deep Soft Rose Red */
+            --ml-bg-mid: #701a2b;     /* Soft Crimson Red */
+            --ml-bg-end: #881337;     /* Ruby Red */
+
+            --ml-primary: #e11d48;    /* Soft Crimson Red */
+            --ml-primary-700: #be123c;
+            --ml-secondary: #ffffff;  /* Pure White */
+            --ml-accent: #fb7185;     /* Soft Rose Accent */
             --ml-success: #10b981;
-            /* emerald-500 */
             --ml-warning: #f59e0b;
-            /* amber-500 */
-            --ml-danger: #ef4444;
-            /* red-500 */
-            --ml-muted: #94a3b8;
-            /* slate-400 */
-            --ml-surface: rgba(12, 74, 110, 0.9);
-            --ml-border: rgba(14, 165, 233, 0.3);
+            --ml-danger: #f43f5e;
+            --ml-muted: #fda4af;
+            --ml-surface: rgba(76, 12, 30, 0.92);
+            --ml-border: rgba(244, 63, 94, 0.35);
         }
 
         body {
