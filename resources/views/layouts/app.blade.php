@@ -222,14 +222,22 @@
             border-bottom: 1px solid rgba(14, 165, 233, 0.35) !important;
         }
 
+        footer.footer-default-theme,
         footer {
-            background: #0f172a !important;
-            border-top: 1px solid rgba(14, 165, 233, 0.25) !important;
-            color: #94a3b8 !important;
+            background: #0c4a6e !important;
+            border-top: 1px solid rgba(14, 165, 233, 0.4) !important;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.3) !important;
+            color: #f1f5f9 !important;
+        }
+
+        footer.footer-default-theme p,
+        footer.footer-default-theme span,
+        footer.footer-default-theme div {
+            color: #e2e8f0 !important;
         }
 
         footer a {
-            color: #cbd5e1 !important;
+            color: #bae6fd !important;
         }
 
         footer a:hover {
@@ -1621,7 +1629,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="glass-effect mt-16">
+    <footer class="footer-default-theme mt-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="text-center">
                 <div class="flex justify-center items-center gap-2.5 mb-4">
