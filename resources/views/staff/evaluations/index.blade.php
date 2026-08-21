@@ -399,14 +399,19 @@
                 </div>
             </div>
 
-            <!-- Category -->
+            <!-- Multi Category Selection Checkboxes -->
             <div>
-                <label class="block text-xs font-semibold text-sky-200 mb-1.5">Kategori Penilaian <span class="text-red-400">*</span></label>
-                <select name="kategori" class="w-full px-4 py-3 rounded-xl bg-white bg-opacity-10 border border-white border-opacity-20 text-sm text-white focus:outline-none focus:border-sky-400 transition-all font-medium" required>
-                    @foreach($categories as $cat)
-                        <option value="{{ $cat }}" class="bg-slate-900 text-white">{{ $cat }}</option>
+                <label class="block text-xs font-semibold text-sky-200 mb-2">
+                    Kategori Penilaian <span class="text-xs text-amber-300 font-normal">(Bisa pilih lebih dari 1)</span> <span class="text-red-400">*</span>
+                </label>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-white bg-opacity-5 p-3 rounded-xl border border-white border-opacity-10 max-h-48 overflow-y-auto">
+                    @foreach($categories as $index => $cat)
+                        <label class="flex items-center gap-2.5 p-2 rounded-lg bg-white bg-opacity-5 hover:bg-opacity-10 border border-white border-opacity-10 cursor-pointer transition-all text-xs text-sky-100 font-medium">
+                            <input type="checkbox" name="kategori[]" value="{{ $cat }}" class="w-4 h-4 rounded text-sky-500 focus:ring-sky-400 bg-slate-900 border-white/20" {{ $index === 0 ? 'checked' : '' }}>
+                            <span>{{ $cat }}</span>
+                        </label>
                     @endforeach
-                </select>
+                </div>
             </div>
 
             <!-- Comment -->
