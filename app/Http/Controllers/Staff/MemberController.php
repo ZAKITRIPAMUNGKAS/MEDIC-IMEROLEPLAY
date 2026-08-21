@@ -157,10 +157,14 @@ class MemberController extends Controller
             ->values();
 
         // Fetch Anonymous Manager Evaluations for this member
-        $managerEvaluations = \App\Models\ManagerEvaluation::with(['evaluator.role'])
-            ->where('manager_id', $user->id)
-            ->orderBy('created_at', 'desc')
-            ->get();
+        if (\Illuminate\Support\Facades\Schema::hasTable('manager_evaluations')) {
+            $managerEvaluations = \App\Models\ManagerEvaluation::with(['evaluator.role'])
+                ->where('manager_id', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+        } else {
+            $managerEvaluations = collect([]);
+        }
 
         $evaluationsAvg = round($managerEvaluations->avg('rating') ?? 0, 1);
         $evaluationsCount = $managerEvaluations->count();

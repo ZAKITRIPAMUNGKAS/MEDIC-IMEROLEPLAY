@@ -20,10 +20,14 @@ class StaffController extends Controller
             $q->where('user_id', $user->id);
         })->orderBy('tanggal_waktu', 'desc')->get();
 
-        $managerEvaluations = \App\Models\ManagerEvaluation::with(['evaluator.role'])
-            ->where('manager_id', $user->id)
-            ->orderBy('created_at', 'desc')
-            ->get();
+        if (\Illuminate\Support\Facades\Schema::hasTable('manager_evaluations')) {
+            $managerEvaluations = \App\Models\ManagerEvaluation::with(['evaluator.role'])
+                ->where('manager_id', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+        } else {
+            $managerEvaluations = collect([]);
+        }
 
         $evaluationsAvg = round($managerEvaluations->avg('rating') ?? 0, 1);
         $evaluationsCount = $managerEvaluations->count();

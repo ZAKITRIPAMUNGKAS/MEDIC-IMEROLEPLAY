@@ -3,6 +3,13 @@
 @section('title', 'Profil Staf - Portal Medis')
 
 @section('content')
+@php
+    $operations = $operations ?? collect([]);
+    $managerEvaluations = $managerEvaluations ?? collect([]);
+    $evaluationsAvg = $evaluationsAvg ?? 0;
+    $evaluationsCount = $evaluationsCount ?? 0;
+    $canSeeAll = $canSeeAll ?? false;
+@endphp
     <div class="min-h-screen bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700 relative overflow-hidden">
         <div class="absolute inset-0 bg-black/20"></div>
         <div class="absolute inset-0"

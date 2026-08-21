@@ -3,6 +3,12 @@
 @section('title', $user->name . ' - Profil Anggota Portal Medis')
 
 @section('content')
+@php
+    $managerEvaluations = $managerEvaluations ?? collect([]);
+    $evaluationsAvg = $evaluationsAvg ?? 0;
+    $evaluationsCount = $evaluationsCount ?? 0;
+    $canSeeAll = $canSeeAll ?? false;
+@endphp
 <div class="min-h-screen py-12 px-4 sm:px-6 lg:px-8" x-data="{ activeTab: null }">
     <div class="max-w-6xl mx-auto space-y-8">
         
