@@ -132,7 +132,7 @@ class ManagerEvaluationController extends Controller
         }
 
         // Get reviews for allowed managers
-        $reviewsQuery = ManagerEvaluation::with(['manager.role'])
+        $reviewsQuery = ManagerEvaluation::with(['manager.role', 'evaluator.role'])
             ->whereIn('manager_id', $allowedManagerIds)
             ->orderBy('created_at', 'desc');
 

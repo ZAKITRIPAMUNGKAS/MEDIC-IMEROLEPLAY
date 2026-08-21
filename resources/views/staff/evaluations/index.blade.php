@@ -266,9 +266,26 @@
                                     <i class="fas fa-user-secret"></i>
                                 </div>
                                 <div>
-                                    <span class="text-xs font-extrabold text-amber-300 block flex items-center gap-1">
+                                    <span class="text-xs font-extrabold text-amber-300 block flex items-center gap-1.5">
                                         🎭 Staf Medis (Anonim)
+                                        @if($canSeeAll)
+                                            <span class="px-1.5 py-0.5 rounded bg-amber-500 bg-opacity-20 border border-amber-400 border-opacity-40 text-amber-200 text-[9px] font-bold">
+                                                <i class="fas fa-eye mr-0.5"></i> Admin View
+                                            </span>
+                                        @endif
                                     </span>
+
+                                    @if($canSeeAll && $review->evaluator)
+                                        <div class="my-1.5 p-2 rounded-xl bg-amber-500 bg-opacity-10 border border-amber-400 border-opacity-30 text-[11px] text-amber-200 space-y-0.5">
+                                            <div class="font-bold flex items-center gap-1 text-white">
+                                                <i class="fas fa-id-card text-amber-400"></i> Nama Penilai: {{ $review->evaluator->name }}
+                                            </div>
+                                            <div class="text-[10px] text-amber-200 opacity-90">
+                                                Jabatan: {{ $review->evaluator->role?->name ?? '-' }} &middot; ID: {{ $review->evaluator->staff_id ?? '-' }} &middot; {{ ucfirst($review->evaluator->hospital ?? 'alta') }}
+                                            </div>
+                                        </div>
+                                    @endif
+
                                     <span class="text-[11px] text-sky-200 block">
                                         Menilai: <strong class="text-white">{{ $review->manager?->name ?? 'Manajer' }}</strong>
                                         <span class="text-[10px] text-sky-300">({{ $review->manager?->role?->name ?? 'Manajer' }})</span>
