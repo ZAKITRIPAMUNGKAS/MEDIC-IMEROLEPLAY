@@ -537,6 +537,8 @@ Route::post('/form/testimoni/{id}', [PublicController::class, 'submitTestimoni']
 Route::get('/struktural-ems', [PublicController::class, 'strukturalEmsDb'])->name('public.struktural-ems');
 // Doctor Practice Schedule route
 Route::get('/jadwal-praktek', [PublicController::class, 'doctorSchedule'])->name('public.doctor-schedule');
+// WHO Ishihara Color Blindness Test route
+Route::get('/tes-buta-warna', [PublicController::class, 'tesButaWarna'])->name('public.tes-buta-warna');
 // Shortcut named routes for popular forms
 Route::get('/cek-kesehatan', function () {
     return redirect()->route('public.form', ['type' => 'surat_kesehatan']);

@@ -272,7 +272,24 @@
                         </div>
                     </a>
 
-                    <!-- CARD 05: PHOTO CARD -->
+                    <!-- CARD 05: Tes Buta Warna WHO -->
+                    <a href="{{ route('public.tes-buta-warna') }}" class="group reveal-on-scroll shimmer-card bg-slate-50/80 hover:bg-red-50/40 rounded-[24px] p-6 border border-slate-200 shadow-sm hover:shadow-xl hover:border-red-400 transition-all duration-300 flex flex-col justify-between min-h-[200px] hover:-translate-y-1">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold text-slate-400 group-hover:text-red-600 transition-colors">05</span>
+                            <div class="w-10 h-10 rounded-2xl bg-red-100 text-red-600 border border-red-200 flex items-center justify-center text-base group-hover:bg-red-600 group-hover:text-white transition-all">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                        </div>
+                        <div class="my-3 space-y-1">
+                            <h3 class="text-base font-bold text-slate-900 group-hover:text-red-600 transition-colors">Tes Buta Warna (WHO)</h3>
+                            <p class="text-xs text-slate-500 leading-relaxed">Uji penglihatan warna interaktif metode Ishihara standar medis WHO.</p>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs font-bold text-red-600 group-hover:translate-x-1 transition-transform">
+                            Mulai Tes Online <i class="fas fa-arrow-right text-[10px]"></i>
+                        </div>
+                    </a>
+
+                    <!-- CARD 06: PHOTO CARD -->
                     <div class="bg-slate-900 reveal-on-scroll rounded-[24px] overflow-hidden shadow-lg border border-slate-200 relative min-h-[200px] group">
                         <img src="{{ asset('images/gambar 2.png') }}"
                              alt="Tim Medis Terpercaya Alta & Roxwood Hospital"

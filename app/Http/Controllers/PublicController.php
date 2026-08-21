@@ -24,6 +24,11 @@ class PublicController extends Controller
         return view('public.doctor-schedule', compact('schedules', 'poliList'));
     }
 
+    public function tesButaWarna()
+    {
+        return view('public.tes-buta-warna');
+    }
+
     public function index()
     {
         // Hitung statistik untuk section "Keunggulan Kami"

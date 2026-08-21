@@ -1331,10 +1331,10 @@
 
                 {{-- Desktop Menu --}}
                 <div class="hidden sm:flex items-center gap-1.5" id="desktop-menu">
-                    <!-- PWA Install Application Button -->
-                    <button onclick="triggerPwaInstall()" class="pwa-install-trigger inline-flex items-center gap-1.5 h-9 px-3 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-950 text-xs font-bold rounded-lg border border-amber-300/60 shadow-md shadow-amber-500/20 transition-all duration-200 whitespace-nowrap">
-                        <i class="fas fa-download text-sm"></i><span>Install App</span>
-                    </button>
+                    <!-- Tes Buta Warna WHO Button -->
+                    <a href="{{ route('public.tes-buta-warna') }}" class="inline-flex items-center gap-1.5 h-9 px-3 bg-red-500/30 hover:bg-red-500/50 text-white text-xs font-bold rounded-lg border border-red-400/50 transition-all duration-200 whitespace-nowrap shadow-sm">
+                        <i class="fas fa-eye text-sm text-red-200"></i><span>Tes Buta Warna</span>
+                    </a>
 
                     @guest
                         <button onclick="openRecruitmentModal()" class="inline-flex items-center gap-1.5 h-9 px-3 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-lg border border-white/20 transition-all duration-200 whitespace-nowrap">
