@@ -1331,6 +1331,12 @@
 
                 {{-- Desktop Menu --}}
                 <div class="hidden sm:flex items-center gap-1.5" id="desktop-menu">
+                    <!-- PWA Install Button -->
+                    <button type="button" onclick="triggerPwaInstall()" class="pwa-install-trigger inline-flex items-center gap-1.5 h-9 px-3 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white text-xs font-bold rounded-lg border border-sky-400/40 transition-all duration-200 whitespace-nowrap shadow-md">
+                        <i class="fas fa-download text-xs text-amber-300"></i>
+                        <span>Instal Aplikasi</span>
+                    </button>
+
                     @guest
                         <button onclick="openRecruitmentModal()" class="inline-flex items-center gap-1.5 h-9 px-3 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-lg border border-white/20 transition-all duration-200 whitespace-nowrap">
                             <i class="fas fa-user-plus text-sm"></i><span>Recruitment</span>
@@ -1390,6 +1396,9 @@
                                     <a href="{{ route('staff.manager-evaluations.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
                                         <i class="fas fa-star w-4 text-amber-500 text-sm"></i> Penilaian Manajer
                                     </a>
+                                    <button type="button" onclick="triggerPwaInstall()" class="pwa-install-trigger w-full text-left flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                                        <i class="fas fa-download w-4 text-sky-500 text-sm"></i> Instal Aplikasi
+                                    </button>
                                     @if(auth()->user()->isAdmin() || strtolower(trim(auth()->user()->role?->name ?? '')) !== 'trainee')
                                         <a href="{{ route('staff.operations.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
                                             <i class="fas fa-procedures w-4 text-emerald-500 text-sm"></i> Rekam Operasi
@@ -1484,7 +1493,12 @@
 
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="sm:hidden hidden">
-            <div class="px-2 pt-2 pb-3 space-y-1">
+                <!-- PWA Install Mobile Button -->
+                <button type="button" onclick="triggerPwaInstall()"
+                    class="pwa-install-trigger w-full text-left text-sky-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-download w-6 mr-2 text-amber-300"></i>Instal Aplikasi PWA
+                </button>
+
                 @guest
                     <!-- Show Recruitment button only when not logged in -->
                     <button onclick="openRecruitmentModal()"
