@@ -1392,6 +1392,9 @@
                                     <a href="{{ route('staff.voting.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
                                         <i class="fas fa-vote-yea w-4 text-indigo-500 text-sm"></i> Voting & Poll
                                     </a>
+                                    <a href="{{ route('staff.manager-evaluations.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                                        <i class="fas fa-star w-4 text-amber-500 text-sm"></i> Penilaian Manajer
+                                    </a>
                                     @if(auth()->user()->isAdmin() || strtolower(trim(auth()->user()->role?->name ?? '')) !== 'trainee')
                                         <a href="{{ route('staff.operations.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
                                             <i class="fas fa-procedures w-4 text-emerald-500 text-sm"></i> Rekam Operasi

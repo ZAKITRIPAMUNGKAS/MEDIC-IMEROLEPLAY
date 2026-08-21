@@ -580,6 +580,10 @@ Route::middleware(['auth', 'staff'])->group(function () {
     Route::post('/staff/profile', [StaffController::class, 'updateProfile'])->name('staff.profile.update');
     Route::post('/staff/profile/update-email', [StaffController::class, 'updateEmail'])->name('staff.profile.update-email');
 
+    // Penilaian & Evaluasi Manajer (Anonim)
+    Route::get('/staff/manager-evaluations', [\App\Http\Controllers\Staff\ManagerEvaluationController::class, 'index'])->name('staff.manager-evaluations.index');
+    Route::post('/staff/manager-evaluations', [\App\Http\Controllers\Staff\ManagerEvaluationController::class, 'store'])->name('staff.manager-evaluations.store');
+
     // Forms routes (list, detail, approve, reject)
     Route::get('/staff/forms', [DashboardController::class, 'forms'])->name('staff.forms');
     Route::get('/staff/forms/{id}', [DashboardController::class, 'formDetail'])->name('staff.forms.show');

@@ -104,6 +104,16 @@ class User extends Authenticatable
         return $this->hasMany(SalaryReimbursement::class, 'reimbursed_by');
     }
 
+    public function evaluationsGiven()
+    {
+        return $this->hasMany(ManagerEvaluation::class, 'evaluator_id');
+    }
+
+    public function evaluationsReceived()
+    {
+        return $this->hasMany(ManagerEvaluation::class, 'manager_id');
+    }
+
     public function isStaff()
     {
         return !is_null($this->role_id);
