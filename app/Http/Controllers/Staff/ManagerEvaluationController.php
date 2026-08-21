@@ -138,12 +138,15 @@ class ManagerEvaluationController extends Controller
             ->pluck('id')
             ->toArray();
 
-        // Helper to check if manager is Administrator / Executive (Appears in BOTH hospitals)
+        // Helper to check if manager is strictly Administrator (Appears in BOTH hospitals)
         $isAdminOrBoth = function ($u) {
+            $roleName = strtolower($u->role?->name ?? '');
+            $roleDisplayName = strtolower($u->role?->display_name ?? '');
+
             return $u->isAdmin() 
-                || strtolower($u->role?->name ?? '') === 'admin' 
-                || strtolower($u->role?->name ?? '') === 'executive' 
-                || ($u->role?->level ?? 0) >= 7
+                || $roleName === 'admin' 
+                || $roleName === 'administrator' 
+                || str_contains($roleDisplayName, 'administrator')
                 || in_array(strtolower($u->hospital ?? ''), ['all', 'both']);
         };
 
