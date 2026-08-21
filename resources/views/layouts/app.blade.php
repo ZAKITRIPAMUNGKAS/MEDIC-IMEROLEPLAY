@@ -213,6 +213,29 @@
             border: 1px solid var(--ml-border);
         }
 
+        /* HEADER & FOOTER DEFAULT DARK SKY BLUE THEME OVERRIDES */
+        nav.glass-effect,
+        header {
+            background: rgba(12, 74, 110, 0.96) !important;
+            backdrop-filter: blur(16px) !important;
+            -webkit-backdrop-filter: blur(16px) !important;
+            border-bottom: 1px solid rgba(14, 165, 233, 0.35) !important;
+        }
+
+        footer {
+            background: #0f172a !important;
+            border-top: 1px solid rgba(14, 165, 233, 0.25) !important;
+            color: #94a3b8 !important;
+        }
+
+        footer a {
+            color: #cbd5e1 !important;
+        }
+
+        footer a:hover {
+            color: #38bdf8 !important;
+        }
+
         .gradient-text {
             background: linear-gradient(135deg, var(--ml-primary), var(--ml-accent));
             -webkit-background-clip: text;
