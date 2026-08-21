@@ -364,9 +364,16 @@
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sky-200 text-sm font-semibold mb-2">
-                            <i class="fas fa-comment-medical mr-1.5 text-sky-400"></i>Anamnesis Utama <span class="text-red-400">*</span>
+                            <i class="fas fa-comment-medical mr-1.5 text-sky-400"></i>Anamnesis / Keluhan Utama Pasien
                         </label>
-                        <textarea name="diagnosa" rows="3" class="form-input-dark" placeholder="Keluhan utama dan keluhan penyerta pasien..." required>{{ old('diagnosa') }}</textarea>
+                        <textarea name="medical_details[anamnesis][anamnesis_keluhan]" rows="3" class="form-input-dark" placeholder="Keluhan utama pasien, kronologi kejadian, dan keluhan penyerta...">{{ old('medical_details.anamnesis.anamnesis_keluhan') }}</textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sky-200 text-sm font-semibold mb-2">
+                            <i class="fas fa-diagnoses mr-1.5 text-sky-400"></i>Diagnosa Medis / Diagnosa Utama <span class="text-red-400">*</span>
+                        </label>
+                        <textarea name="diagnosa" rows="2" class="form-input-dark" placeholder="Diagnosa medis dokter (contoh: Vulnus Laceratum, Laryngeal Web, Fraktur Femur...)" required>{{ old('diagnosa') }}</textarea>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
@@ -511,12 +518,12 @@
 
                     <div>
                         <label class="block text-sky-200 text-sm font-semibold mb-2">Langkah-Langkah Tindakan Operasi</label>
-                        <textarea name="medical_details[tindakan][langkah_tindakan]" rows="4" class="form-input-dark" placeholder="- Pasien diposisikan supine&#10;- Desinfeksi lapangan operasi&#10;- Insisi kulit dan eksplorasi..."></textarea>
+                        <textarea name="medical_details[tindakan][langkah_tindakan]" rows="6" class="form-input-dark" placeholder="1. Pasien diposisikan supine&#10;2. Desinfeksi lapangan operasi&#10;3. Insisi kulit dan eksplorasi..."></textarea>
                     </div>
 
                     <div>
                         <label class="block text-sky-200 text-sm font-semibold mb-2">Hasil Operasi & Intraperatif</label>
-                        <textarea name="hasil_operasi" rows="2" class="form-input-dark" placeholder="Operasi berjalan lancar, perdarahan minimal..."></textarea>
+                        <textarea name="hasil_operasi" rows="4" class="form-input-dark" placeholder="Operasi berjalan lancar, perdarahan minimal..."></textarea>
                     </div>
                 </div>
             </div>

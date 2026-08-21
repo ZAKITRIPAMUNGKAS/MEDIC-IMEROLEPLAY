@@ -40,7 +40,7 @@ class MemberController extends Controller
         }
 
         $members = $query->join('staff_roles', 'users.role_id', '=', 'staff_roles.id')
-            ->where('staff_roles.level', '>=', 3)
+            ->where('staff_roles.level', '>=', 0)
             ->select('users.*')
             ->orderByDesc('staff_roles.level')
             ->orderBy('users.name', 'asc')

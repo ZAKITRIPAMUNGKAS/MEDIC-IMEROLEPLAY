@@ -644,11 +644,11 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/staff/{user}/reset-password', [\App\Http\Controllers\Admin\StaffManagementController::class, 'resetPassword'])
         ->middleware('permission:manage_users')->name('staff.reset-password');
 
-    // Doctor Schedule management
+    // Doctor Schedule management (Dokter Spesialis & level >= 4 ke atas)
     Route::resource('doctor-schedules', \App\Http\Controllers\Admin\DoctorScheduleController::class)
-        ->middleware('permission:manage_users');
+        ->middleware('permission:manage_doctor_schedules|manage_users');
     Route::post('/doctor-schedules/{doctor_schedule}/toggle-active', [\App\Http\Controllers\Admin\DoctorScheduleController::class, 'toggleActive'])
-        ->middleware('permission:manage_users')->name('doctor-schedules.toggle-active');
+        ->middleware('permission:manage_doctor_schedules|manage_users')->name('doctor-schedules.toggle-active');
 
     // Admin Operations deletion
     Route::delete('/operations/{id}', [\App\Http\Controllers\Admin\OperationRecordController::class, 'destroy'])

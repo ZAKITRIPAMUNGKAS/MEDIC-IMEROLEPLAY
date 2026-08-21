@@ -123,9 +123,21 @@ class User extends Authenticatable
      */
     public function hasPermission(string $permission): bool
     {
+        // Admin always has all permissions
+        if ($this->isAdmin()) {
+            return true;
+        }
+
         // Check custom user permissions first
         if (!empty($this->custom_permissions) && in_array($permission, $this->custom_permissions)) {
             return true;
+        }
+
+        // Dokter Spesialis ke atas (level >= 4) dapat mengelola Jadwal Dokter
+        if ($permission === 'manage_doctor_schedules') {
+            if ($this->role && $this->role->level >= 4) {
+                return true;
+            }
         }
 
         // Check role permissions

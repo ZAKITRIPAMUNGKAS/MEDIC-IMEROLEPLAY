@@ -184,21 +184,21 @@
     <style>
         /* Cache busting: {{ time() }} */
         :root {
-            /* Nuansa Kemerdekaan Merah Terang - Putih RI */
-            --ml-bg-start: #991b1b;   /* Bright Red 800 */
-            --ml-bg-mid: #dc2626;     /* Bright Red 600 */
-            --ml-bg-end: #ef4444;     /* Vibrant Red 500 */
+            /* Theme Default Dark Sky Blue Medis */
+            --ml-bg-start: #0c4a6e;   /* sky-900 */
+            --ml-bg-mid: #075985;     /* sky-800 */
+            --ml-bg-end: #0369a1;     /* sky-700 */
 
-            --ml-primary: #ef4444;    /* Bright Independence Red */
-            --ml-primary-700: #dc2626;
-            --ml-secondary: #ffffff;  /* Pure White */
-            --ml-accent: #fca5a5;     /* Light Red-White Accent */
-            --ml-success: #10b981;
-            --ml-warning: #f59e0b;
-            --ml-danger: #ff2233;
-            --ml-muted: #fecdd3;
-            --ml-surface: rgba(185, 28, 28, 0.92);
-            --ml-border: rgba(254, 205, 211, 0.4);
+            --ml-primary: #0ea5e9;    /* sky-500 */
+            --ml-primary-700: #0284c7;/* sky-600 */
+            --ml-secondary: #059669;  /* emerald-600 */
+            --ml-accent: #06b6d4;     /* cyan-500 */
+            --ml-success: #10b981;    /* emerald-500 */
+            --ml-warning: #f59e0b;    /* amber-500 */
+            --ml-danger: #ef4444;     /* red-500 */
+            --ml-muted: #94a3b8;      /* slate-400 */
+            --ml-surface: rgba(12, 74, 110, 0.92);
+            --ml-border: rgba(14, 165, 233, 0.35);
         }
 
         body {
@@ -214,35 +214,34 @@
             border: 1px solid var(--ml-border);
         }
 
-        /* HEADER & FOOTER DEFAULT DARK SKY BLUE THEME OVERRIDES */
         nav.glass-effect,
         header {
-            background: rgba(12, 74, 110, 0.96) !important;
-            backdrop-filter: blur(16px) !important;
-            -webkit-backdrop-filter: blur(16px) !important;
-            border-bottom: 1px solid rgba(14, 165, 233, 0.35) !important;
+            background: rgba(12, 74, 110, 0.96);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(14, 165, 233, 0.35);
         }
 
         footer.footer-default-theme,
         footer {
-            background: #0c4a6e !important;
-            border-top: 1px solid rgba(14, 165, 233, 0.4) !important;
-            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.3) !important;
-            color: #f1f5f9 !important;
+            background: #0c4a6e;
+            border-top: 1px solid rgba(14, 165, 233, 0.4);
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.3);
+            color: #f1f5f9;
         }
 
         footer.footer-default-theme p,
         footer.footer-default-theme span,
         footer.footer-default-theme div {
-            color: #e2e8f0 !important;
+            color: #e2e8f0;
         }
 
         footer a {
-            color: #bae6fd !important;
+            color: #bae6fd;
         }
 
         footer a:hover {
-            color: #38bdf8 !important;
+            color: #38bdf8;
         }
 
         .gradient-text {
@@ -1403,7 +1402,7 @@
                         </div>
 
                         {{-- Admin Dropdown --}}
-                        @if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('view_attendance_reports') || auth()->user()->hasPermission('access_live_chat') || auth()->user()->hasPermission('access_feedback'))
+                        @if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('manage_doctor_schedules') || auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('view_attendance_reports') || auth()->user()->hasPermission('access_live_chat') || auth()->user()->hasPermission('access_feedback'))
                         <div class="relative group">
                             <button class="inline-flex items-center gap-1.5 h-9 px-3 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-lg border border-white/20 transition-all duration-200 whitespace-nowrap">
                                 <i class="fas fa-user-shield text-sm text-amber-300"></i>
@@ -1415,7 +1414,11 @@
                                 <div class="py-1">
                                     @if(auth()->user()->hasPermission('manage_users'))
                                         <a href="{{ route('admin.staff.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-users-cog w-4 text-slate-500 text-sm"></i> Manajemen Staf</a>
+                                    @endif
+                                    @if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('manage_doctor_schedules'))
                                         <a href="{{ route('admin.doctor-schedules.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-calendar-alt w-4 text-blue-500 text-sm"></i> Jadwal Dokter</a>
+                                    @endif
+                                    @if(auth()->user()->hasPermission('manage_users'))
                                         <a href="{{ route('admin.voting.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-poll-h w-4 text-indigo-500 text-sm"></i> Kelola Voting</a>
                                     @endif
                                     @if(auth()->user()->hasPermission('access_live_chat'))
@@ -1530,23 +1533,19 @@
                         <a href="{{ route('admin.staff.index') }}"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-users-cog w-6 mr-2"></i>Staf</a>
+                    @endif
+                    @if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('manage_doctor_schedules'))
                         <a href="{{ route('admin.doctor-schedules.index') }}"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-calendar-alt w-6 mr-2"></i>Jadwal Dokter</a>
+                    @endif
+                    @if(auth()->user()->hasPermission('manage_users'))
                         <a href="{{ route('admin.organizational-structure.index') }}"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-sitemap w-6 mr-2"></i>Struktural EMS</a>
                         <a href="{{ route('admin.roles.permissions') }}"
                             class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                                 class="fas fa-shield-alt w-6 mr-2"></i>Role Permissions</a>
-                        @if(auth()->user()->isAdmin())
-                            <a href="{{ route('admin.meeting-requests.index') }}"
-                                class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
-                                    class="fas fa-clipboard-check w-6 mr-2"></i>Meeting Requests</a>
-                            <a href="{{ route('admin.duty-tracking.index') }}"
-                                class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
-                                    class="fas fa-trophy w-6 mr-2"></i>Duty Tracking</a>
-                        @endif
                     @endif
                     @if(auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('view_attendance_reports'))
                         <a href="{{ route('admin.attendance-reports.index') }}"

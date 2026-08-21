@@ -318,8 +318,17 @@
                         </h2>
                     </div>
                     <div class="p-5 space-y-4">
+                        @if(!empty($med['anamnesis']['anamnesis_keluhan']))
                         <div>
-                            <span class="text-xs text-sky-300 font-bold uppercase tracking-wider block mb-1">Anamnesis / Diagnosa Utama</span>
+                            <span class="text-xs text-sky-300 font-bold uppercase tracking-wider block mb-1"><i class="fas fa-comment-medical mr-1"></i> Anamnesis / Keluhan Utama Pasien</span>
+                            <div class="bg-white/5 p-3.5 rounded-xl text-white text-sm leading-relaxed border border-white/10">
+                                {!! nl2br(e($med['anamnesis']['anamnesis_keluhan'])) !!}
+                            </div>
+                        </div>
+                        @endif
+
+                        <div>
+                            <span class="text-xs text-sky-300 font-bold uppercase tracking-wider block mb-1"><i class="fas fa-diagnoses mr-1"></i> Diagnosa Medis / Diagnosa Utama</span>
                             <div class="bg-white/5 p-3.5 rounded-xl text-white text-sm leading-relaxed border border-white/10">
                                 {!! nl2br(e($operation->diagnosa)) !!}
                             </div>
@@ -448,19 +457,30 @@
                             </div>
                         </div>
 
+                        @php
+                            if (!function_exists('formatNumberedTextList')) {
+                                function formatNumberedTextList($text) {
+                                    if (empty($text)) return '-';
+                                    // Separate numbered points like "1. ... 2. ... 3. ..." or "1) ... 2) ..." into individual lines
+                                    $formatted = preg_replace('/(?<=\S)\s+(?=\d+[\.\)]\s+)/', "\n", $text);
+                                    return nl2br(e(trim($formatted)));
+                                }
+                            }
+                        @endphp
+
                         @if(!empty($med['tindakan']['langkah_tindakan']))
                         <div>
                             <span class="text-xs text-sky-300 font-bold uppercase tracking-wider block mb-1">Langkah-Langkah Tindakan</span>
-                            <div class="bg-white/5 p-3.5 rounded-xl text-white leading-relaxed font-mono text-xs border border-white/10 whitespace-pre-line">
-                                {{ $med['tindakan']['langkah_tindakan'] }}
+                            <div class="bg-white/5 p-4 rounded-xl text-white leading-relaxed text-xs border border-white/10">
+                                {!! formatNumberedTextList($med['tindakan']['langkah_tindakan']) !!}
                             </div>
                         </div>
                         @endif
 
                         <div>
                             <span class="text-xs text-sky-300 font-bold uppercase tracking-wider block mb-1">Hasil Operasi</span>
-                            <div class="bg-white/5 p-3.5 rounded-xl text-white leading-relaxed border border-white/10">
-                                {!! nl2br(e($operation->hasil_operasi)) !!}
+                            <div class="bg-white/5 p-4 rounded-xl text-white leading-relaxed text-xs border border-white/10">
+                                {!! formatNumberedTextList($operation->hasil_operasi) !!}
                             </div>
                         </div>
                     </div>
