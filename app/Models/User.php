@@ -319,17 +319,20 @@ class User extends Authenticatable
      */
     public function isRoxwood(): bool
     {
-        return $this->hospital === 'roxwood';
+        if ($this->hospital === 'roxwood') {
+            return true;
+        }
+        if ($this->hospital === 'alta') {
+            return false;
+        }
+        $name = strtolower($this->name ?? '');
+        $staffId = strtolower($this->staff_id ?? '');
+        return str_contains($name, 'rh') || str_contains($name, 'roxwood') || str_contains($staffId, 'rh');
     }
 
-    /**
-     * Check if user belongs to Alta Hospital
-     *
-     * @return bool
-     */
     public function isAlta(): bool
     {
-        return $this->hospital === 'alta' || $this->hospital === null;
+        return !$this->isRoxwood();
     }
 
     /**

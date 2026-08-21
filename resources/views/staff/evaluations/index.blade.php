@@ -13,7 +13,14 @@
             </div>
             <div class="relative z-10 space-y-3">
                 <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/25 text-sky-200 text-xs font-bold uppercase tracking-wider shadow-sm">
-                    <i class="fas fa-user-secret text-amber-300"></i> 100% Rahasia & Anonim &middot; Tema Default Medis
+                    <i class="fas fa-user-secret text-amber-300"></i> 100% Rahasia & Anonim &middot; 
+                    @if($canSeeAll)
+                        <span class="text-amber-300"><i class="fas fa-crown"></i> Akses Administrator (Semua Instansi)</span>
+                    @elseif(auth()->user()->isRoxwood())
+                        <span class="text-purple-300"><i class="fas fa-clinic-medical"></i> Instansi: Roxwood Hospital (RH)</span>
+                    @else
+                        <span class="text-sky-300"><i class="fas fa-hospital"></i> Instansi: EMS Alta Hospital</span>
+                    @endif
                 </div>
                 <h1 class="text-2xl sm:text-4xl font-black text-white tracking-tight">
                     Penilaian & Evaluasi Manajer
@@ -52,6 +59,7 @@
         </div>
 
         <!-- SECTION 1: EMS ALTA HOSPITAL MANAGERS -->
+        @if($altaManagers->count() > 0 || ($canSeeAll || auth()->user()->isAlta()))
         <div class="space-y-4">
             <div class="flex items-center justify-between border-b border-white/15 pb-3">
                 <div class="flex items-center gap-3">
@@ -136,8 +144,10 @@
                 @endforelse
             </div>
         </div>
+        @endif
 
         <!-- SECTION 2: ROXWOOD HOSPITAL (RH) MANAGERS -->
+        @if($roxwoodManagers->count() > 0 || ($canSeeAll || auth()->user()->isRoxwood()))
         <div class="space-y-4 pt-6">
             <div class="flex items-center justify-between border-b border-white/15 pb-3">
                 <div class="flex items-center gap-3">
@@ -222,6 +232,7 @@
                 @endforelse
             </div>
         </div>
+        @endif
 
         <!-- REVIEWS & COMMENTS FEED SECTION -->
         <div class="space-y-4 pt-8">
@@ -337,16 +348,20 @@
                 <label class="block text-xs font-semibold text-sky-200 mb-1.5">Pilih Manajer / Staff Manajer <span class="text-red-400">*</span></label>
                 <select name="manager_id" id="modalManagerId" class="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/15 text-sm text-white focus:outline-none focus:border-sky-400 transition-all font-medium" required>
                     <option value="" class="bg-slate-900 text-white">-- Pilih Manajer --</option>
-                    <optgroup label="🏥 EMS Alta Hospital" class="bg-slate-900 text-sky-300 font-bold">
-                        @foreach($altaManagers as $m)
-                            <option value="{{ $m->id }}" class="bg-slate-900 text-white">{{ $m->name }} ({{ $m->role?->name ?? 'Manajer' }})</option>
-                        @endforeach
-                    </optgroup>
-                    <optgroup label="🏩 Roxwood Hospital (RH)" class="bg-slate-900 text-purple-300 font-bold">
-                        @foreach($roxwoodManagers as $m)
-                            <option value="{{ $m->id }}" class="bg-slate-900 text-white">{{ $m->name }} ({{ $m->role?->name ?? 'Manajer RH' }})</option>
-                        @endforeach
-                    </optgroup>
+                    @if($altaManagers->count() > 0)
+                        <optgroup label="🏥 EMS Alta Hospital" class="bg-slate-900 text-sky-300 font-bold">
+                            @foreach($altaManagers as $m)
+                                <option value="{{ $m->id }}" class="bg-slate-900 text-white">{{ $m->name }} ({{ $m->role?->name ?? 'Manajer' }})</option>
+                            @endforeach
+                        </optgroup>
+                    @endif
+                    @if($roxwoodManagers->count() > 0)
+                        <optgroup label="MD Roxwood Hospital (RH)" class="bg-slate-900 text-purple-300 font-bold">
+                            @foreach($roxwoodManagers as $m)
+                                <option value="{{ $m->id }}" class="bg-slate-900 text-white">{{ $m->name }} ({{ $m->role?->name ?? 'Manajer RH' }})</option>
+                            @endforeach
+                        </optgroup>
+                    @endif
                 </select>
             </div>
 
