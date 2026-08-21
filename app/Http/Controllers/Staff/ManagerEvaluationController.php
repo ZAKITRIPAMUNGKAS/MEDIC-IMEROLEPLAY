@@ -55,7 +55,7 @@ class ManagerEvaluationController extends Controller
             'Lainnya / General',
         ];
 
-        return view('staff.evaluations.index', compact('managers', 'selectedManager', 'reviews', 'categories'));
+        return view('staff.evaluations.index', compact('managers', 'selectedManager', 'selectedManagerId', 'reviews', 'categories'));
     }
 
     /**
