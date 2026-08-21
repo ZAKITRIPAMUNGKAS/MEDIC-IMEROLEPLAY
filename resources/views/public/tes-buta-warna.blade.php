@@ -118,7 +118,10 @@
                     <!-- PLATE CANVAS DISPLAY -->
                     <div class="flex flex-col items-center justify-center p-6 bg-slate-50 rounded-2xl border border-slate-200 shadow-inner relative">
                         <canvas id="ishiharaCanvas" width="340" height="340" class="rounded-full shadow-xl border-4 border-white bg-white"></canvas>
-                        <span id="plateTag" class="mt-3 text-[11px] font-bold px-3 py-1 bg-slate-200 text-slate-700 rounded-full">Lempeng #1 (Demonstrasi)</span>
+                        <div class="flex items-center gap-2 mt-3">
+                            <span id="levelBadge" class="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border bg-emerald-100 text-emerald-800 border-emerald-300">Level 1: Easy</span>
+                            <span id="plateTag" class="text-[11px] font-bold px-3 py-0.5 bg-slate-200 text-slate-700 rounded-full">Lempeng #1 (Demonstrasi)</span>
+                        </div>
                     </div>
 
                     <!-- OPTIONS FORM -->
@@ -294,14 +297,17 @@
 // CLINICAL 20-PLATE ISHIHARA ENGINE (ADVANCED DOT MATRIX & SUBTYPE SPECTRUM)
 // =========================================================
 const EXPERT_ISHIHARA_PLATES = [
+    // --- LEVEL 1: EASY (Plates 1 - 5) ---
     {
         id: 1,
         numberStr: '12',
         normalVal: '12',
         protanVal: '12',
         deuteranVal: '12',
-        tag: 'Plat 1: Demonstrasi Kalibrasi',
-        indication: 'Demonstrasi (Semua membaca 12)',
+        level: 'Level 1: Sangat Mudah',
+        levelBadge: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+        tag: 'Plat 1: Demonstrasi Kalibrasi Mata',
+        indication: 'Demonstrasi Kalibrasi (Semua membaca 12)',
         bgPalette: ['#7ba05b', '#8eb36d', '#6e914f', '#82a862'],
         numPalette: ['#d9534f', '#e56b6f', '#c94245', '#ea8c55'],
         options: ['12', '15', '21', 'Tidak Ada Angka']
@@ -312,7 +318,9 @@ const EXPERT_ISHIHARA_PLATES = [
         normalVal: '8',
         protanVal: '3',
         deuteranVal: '3',
-        tag: 'Plat 2: Transformasi Angka (Protan/Deuteran)',
+        level: 'Level 1: Easy',
+        levelBadge: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+        tag: 'Plat 2: Kontras Tinggi (Protan/Deuteran)',
         indication: 'Defisiensi Merah-Hijau membaca 3',
         bgPalette: ['#d4a373', '#e9c46a', '#cca010', '#b5838d'],
         numPalette: ['#2a9d8f', '#264653', '#1b4332', '#40916c'],
@@ -324,7 +332,9 @@ const EXPERT_ISHIHARA_PLATES = [
         normalVal: '29',
         protanVal: '70',
         deuteranVal: '70',
-        tag: 'Plat 3: Transformasi Angka (Protan/Deuteran)',
+        level: 'Level 1: Easy',
+        levelBadge: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+        tag: 'Plat 3: Angka Ganda Kontras Jelas',
         indication: 'Defisiensi Merah-Hijau membaca 70',
         bgPalette: ['#a8dadc', '#90e0ef', '#8ecae6', '#72efdd'],
         numPalette: ['#e63946', '#d62828', '#f72585', '#b5179e'],
@@ -336,7 +346,9 @@ const EXPERT_ISHIHARA_PLATES = [
         normalVal: '5',
         protanVal: '2',
         deuteranVal: '2',
-        tag: 'Plat 4: Transformasi Angka',
+        level: 'Level 1: Easy',
+        levelBadge: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+        tag: 'Plat 4: Angka Tunggal',
         indication: 'Defisiensi Merah-Hijau membaca 2',
         bgPalette: ['#ee9b00', '#ca6702', '#bb3e03', '#d97706'],
         numPalette: ['#005f73', '#0a9396', '#94d2bd', '#008000'],
@@ -348,19 +360,25 @@ const EXPERT_ISHIHARA_PLATES = [
         normalVal: '3',
         protanVal: '5',
         deuteranVal: '5',
-        tag: 'Plat 5: Transformasi Angka',
+        level: 'Level 1: Easy',
+        levelBadge: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+        tag: 'Plat 5: Pola Merah-Hijau Dasar',
         indication: 'Defisiensi Merah-Hijau membaca 5',
         bgPalette: ['#95d5b2', '#74c69d', '#52b788', '#40916c'],
         numPalette: ['#d90429', '#ef233c', '#d62828', '#b7094c'],
         options: ['3', '5', '8', 'Tidak Ada Angka']
     },
+
+    // --- LEVEL 2: MEDIUM (Plates 6 - 10) ---
     {
         id: 6,
         numberStr: '15',
         normalVal: '15',
         protanVal: '17',
         deuteranVal: '17',
-        tag: 'Plat 6: Transformasi Angka',
+        level: 'Level 2: Sedang',
+        levelBadge: 'bg-sky-100 text-sky-800 border-sky-300',
+        tag: 'Plat 6: Transformasi Angka Sedang',
         indication: 'Defisiensi Merah-Hijau membaca 17',
         bgPalette: ['#f4a261', '#e76f51', '#e9c46a', '#ee9b00'],
         numPalette: ['#2a9d8f', '#264653', '#1d3557', '#457b9d'],
@@ -372,7 +390,9 @@ const EXPERT_ISHIHARA_PLATES = [
         normalVal: '74',
         protanVal: '21',
         deuteranVal: '21',
-        tag: 'Plat 7: Transformasi Angka',
+        level: 'Level 2: Sedang',
+        levelBadge: 'bg-sky-100 text-sky-800 border-sky-300',
+        tag: 'Plat 7: Transformasi Angka Cyan-Pink',
         indication: 'Defisiensi Merah-Hijau membaca 21',
         bgPalette: ['#00b4d8', '#0077b6', '#03045e', '#48cae4'],
         numPalette: ['#ff4d6d', '#c9184a', '#a4133c', '#ff758f'],
@@ -384,7 +404,9 @@ const EXPERT_ISHIHARA_PLATES = [
         normalVal: '6',
         protanVal: 'Tidak Ada Angka',
         deuteranVal: 'Tidak Ada Angka',
-        tag: 'Plat 8: Vanishing Plate (Samar)',
+        level: 'Level 2: Sedang',
+        levelBadge: 'bg-sky-100 text-sky-800 border-sky-300',
+        tag: 'Plat 8: Vanishing Plate (Lempeng Samar)',
         indication: 'Normal membaca 6, Buta Warna tidak tampak',
         bgPalette: ['#ddb892', '#b08968', '#7f5539', '#9c6644'],
         numPalette: ['#2d6a4f', '#40916c', '#52b788', '#1b4332'],
@@ -396,7 +418,9 @@ const EXPERT_ISHIHARA_PLATES = [
         normalVal: '45',
         protanVal: 'Tidak Ada Angka',
         deuteranVal: 'Tidak Ada Angka',
-        tag: 'Plat 9: Vanishing Plate (Samar)',
+        level: 'Level 2: Sedang',
+        levelBadge: 'bg-sky-100 text-sky-800 border-sky-300',
+        tag: 'Plat 9: Vanishing Plate Samar',
         indication: 'Normal membaca 45, Buta Warna tidak tampak',
         bgPalette: ['#94d2bd', '#e9d8a6', '#ee9b00', '#d97706'],
         numPalette: ['#ae2012', '#9b2226', '#c9184a', '#800f2f'],
@@ -408,19 +432,25 @@ const EXPERT_ISHIHARA_PLATES = [
         normalVal: '7',
         protanVal: '1',
         deuteranVal: '1',
-        tag: 'Plat 10: Transformasi Angka',
+        level: 'Level 2: Sedang',
+        levelBadge: 'bg-sky-100 text-sky-800 border-sky-300',
+        tag: 'Plat 10: Transformasi Violet',
         indication: 'Normal membaca 7, Buta Warna membaca 1',
         bgPalette: ['#b8c0ff', '#c8b6ff', '#e7c6ff', '#ffd6ff'],
         numPalette: ['#d90429', '#ef233c', '#d62828', '#c9184a'],
         options: ['7', '1', '4', 'Tidak Ada Angka']
     },
+
+    // --- LEVEL 3: HARD (Plates 11 - 15) ---
     {
         id: 11,
         numberStr: '16',
         normalVal: '16',
         protanVal: '19',
         deuteranVal: '19',
-        tag: 'Plat 11: Transformasi Angka Klinis',
+        level: 'Level 3: Sulit',
+        levelBadge: 'bg-amber-100 text-amber-800 border-amber-300',
+        tag: 'Plat 11: Transformasi Klinis Sulit',
         indication: 'Normal membaca 16, Buta Warna membaca 19',
         bgPalette: ['#e29578', '#ffddd2', '#83c5be', '#006d77'],
         numPalette: ['#d00000', '#dc2f02', '#e85d04', '#f48c06'],
@@ -432,7 +462,9 @@ const EXPERT_ISHIHARA_PLATES = [
         normalVal: '73',
         protanVal: '28',
         deuteranVal: '28',
-        tag: 'Plat 12: Transformasi Angka Klinis',
+        level: 'Level 3: Sulit',
+        levelBadge: 'bg-amber-100 text-amber-800 border-amber-300',
+        tag: 'Plat 12: Complex Magenta-Blue',
         indication: 'Normal membaca 73, Buta Warna membaca 28',
         bgPalette: ['#7209b7', '#3f37c9', '#4361ee', '#4895ef'],
         numPalette: ['#f72585', '#7209b7', '#b5179e', '#f72585'],
@@ -444,6 +476,8 @@ const EXPERT_ISHIHARA_PLATES = [
         normalVal: '26',
         protanVal: '6',
         deuteranVal: '2',
+        level: 'Level 3: Sulit',
+        levelBadge: 'bg-amber-100 text-amber-800 border-amber-300',
         tag: 'Plat 13: Diagnostik Protan vs Deuteran (26)',
         indication: 'Protan (Merah) membaca 6, Deuteran (Hijau) membaca 2',
         bgPalette: ['#dda15e', '#bc6c25', '#fefae0', '#606c38'],
@@ -456,6 +490,8 @@ const EXPERT_ISHIHARA_PLATES = [
         normalVal: '42',
         protanVal: '2',
         deuteranVal: '4',
+        level: 'Level 3: Sulit',
+        levelBadge: 'bg-amber-100 text-amber-800 border-amber-300',
         tag: 'Plat 14: Diagnostik Protan vs Deuteran (42)',
         indication: 'Protan (Merah) membaca 2, Deuteran (Hijau) membaca 4',
         bgPalette: ['#b7b7a4', '#a5a58d', '#6b705c', '#3f4238'],
@@ -468,19 +504,25 @@ const EXPERT_ISHIHARA_PLATES = [
         normalVal: 'Tidak Ada Angka',
         protanVal: '35',
         deuteranVal: '35',
+        level: 'Level 3: Sulit',
+        levelBadge: 'bg-amber-100 text-amber-800 border-amber-300',
         tag: 'Plat 15: Hidden Digit Plate (Reverse)',
         indication: 'Normal melihat acak, Buta Warna membaca 35',
         bgPalette: ['#a2d2ff', '#bde0fe', '#ffafcc', '#ffc8dd'],
         numPalette: ['#cdb4db', '#ffc8dd', '#ffafcc', '#bde0fe'],
         options: ['35', '38', '53', 'Tidak Ada Angka']
     },
+
+    // --- LEVEL 4: EXPERT / CLINICAL (Plates 16 - 20) ---
     {
         id: 16,
         numberStr: '96',
         normalVal: '96',
         protanVal: '69',
         deuteranVal: '69',
-        tag: 'Plat 16: Transformasi Angka Ganda',
+        level: 'Level 4: Expert Clinical',
+        levelBadge: 'bg-red-100 text-red-800 border-red-300',
+        tag: 'Plat 16: Expert Micro-Camouflage',
         indication: 'Normal membaca 96, Buta Warna membaca 69',
         bgPalette: ['#2a9d8f', '#e9c46a', '#f4a261', '#e76f51'],
         numPalette: ['#264653', '#2a9d8f', '#e76f51', '#1d3557'],
@@ -492,7 +534,9 @@ const EXPERT_ISHIHARA_PLATES = [
         normalVal: '10',
         protanVal: 'Tidak Ada Angka',
         deuteranVal: 'Tidak Ada Angka',
-        tag: 'Plat 17: Vanishing Plate Presisi Tinggi',
+        level: 'Level 4: Expert Clinical',
+        levelBadge: 'bg-red-100 text-red-800 border-red-300',
+        tag: 'Plat 17: Expert Vanishing Threshold',
         indication: 'Normal membaca 10, Buta Warna tidak tampak',
         bgPalette: ['#e76f51', '#f4a261', '#e9c46a', '#2a9d8f'],
         numPalette: ['#1d3557', '#457b9d', '#0077b6', '#023e8a'],
@@ -504,7 +548,9 @@ const EXPERT_ISHIHARA_PLATES = [
         normalVal: '4',
         protanVal: '1',
         deuteranVal: '1',
-        tag: 'Plat 18: Uji Kontras Biru-Kuning (Tritan)',
+        level: 'Level 4: Expert Clinical',
+        levelBadge: 'bg-red-100 text-red-800 border-red-300',
+        tag: 'Plat 18: Expert Tritan Blue-Yellow',
         indication: 'Uji Defisiensi Tritan / Monokromasi',
         bgPalette: ['#ffb703', '#fb8500', '#023e8a', '#0077b6'],
         numPalette: ['#8ecae6', '#219ebc', '#023e8a', '#0077b6'],
@@ -516,7 +562,9 @@ const EXPERT_ISHIHARA_PLATES = [
         normalVal: '9',
         protanVal: '5',
         deuteranVal: '5',
-        tag: 'Plat 19: Transformasi Angka Klinis',
+        level: 'Level 4: Expert Clinical',
+        levelBadge: 'bg-red-100 text-red-800 border-red-300',
+        tag: 'Plat 19: Expert Micro-Contrast',
         indication: 'Normal membaca 9, Buta Warna membaca 5',
         bgPalette: ['#d94e34', '#f28e2b', '#e15759', '#76b7b2'],
         numPalette: ['#59a14f', '#edc948', '#b07aa1', '#ff9da7'],
@@ -528,7 +576,9 @@ const EXPERT_ISHIHARA_PLATES = [
         normalVal: '82',
         protanVal: '32',
         deuteranVal: '32',
-        tag: 'Plat 20: Evaluasi Akhir Klinis',
+        level: 'Level 4: Expert Clinical',
+        levelBadge: 'bg-red-100 text-red-800 border-red-300',
+        tag: 'Plat 20: Evaluasi Final Klinis WHO',
         indication: 'Normal membaca 82, Buta Warna membaca 32',
         bgPalette: ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2'],
         numPalette: ['#59a14f', '#edc948', '#b07aa1', '#9c755f'],
@@ -590,6 +640,11 @@ function renderQuestion(stepIndex) {
 
     document.getElementById('questionNumTitle').textContent = stepIndex + 1;
     document.getElementById('plateTag').textContent = plate.tag;
+
+    const lvlEl = document.getElementById('levelBadge');
+    lvlEl.textContent = plate.level;
+    lvlEl.className = `text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full border ${plate.levelBadge}`;
+
     document.getElementById('btnPrev').disabled = (stepIndex === 0);
 
     // Draw Advanced Dot Matrix Canvas
