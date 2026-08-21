@@ -35,8 +35,15 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/motionlife-logo.png') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/motionlife-logo.png') }}">
     <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('images/motionlife-logo.png') }}">
-    <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('images/motionlife-logo.png') }}">
     <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+
+    <!-- PWA Manifest & Web App Meta -->
+    <link rel="manifest" href="{{ asset('manifest.json') }}?v={{ time() }}">
+    <meta name="theme-color" content="#0284c7">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="iMe Medis">
 
     <!-- Inline Image Error Handler - Must load early to prevent 404 errors -->
     @stack('styles')
@@ -1306,6 +1313,11 @@
 
                 {{-- Desktop Menu --}}
                 <div class="hidden sm:flex items-center gap-1.5" id="desktop-menu">
+                    <!-- PWA Install Application Button -->
+                    <button onclick="triggerPwaInstall()" class="pwa-install-trigger inline-flex items-center gap-1.5 h-9 px-3 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-950 text-xs font-bold rounded-lg border border-amber-300/60 shadow-md shadow-amber-500/20 transition-all duration-200 whitespace-nowrap">
+                        <i class="fas fa-download text-sm"></i><span>Install App</span>
+                    </button>
+
                     @guest
                         <button onclick="openRecruitmentModal()" class="inline-flex items-center gap-1.5 h-9 px-3 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-lg border border-white/20 transition-all duration-200 whitespace-nowrap">
                             <i class="fas fa-user-plus text-sm"></i><span>Recruitment</span>
@@ -2820,6 +2832,87 @@
     })();
     </script>
     @endauth
+
+    <!-- PWA Installation Guide Modal -->
+    <div id="pwaInstallGuideModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[9999] hidden items-center justify-center p-4">
+        <div class="bg-slate-900 border border-sky-500/40 rounded-2xl p-6 max-w-lg w-full text-white shadow-2xl relative">
+            <div class="flex items-center justify-between border-b border-sky-500/20 pb-3 mb-4">
+                <h3 class="text-lg font-bold text-sky-400 flex items-center gap-2">
+                    <i class="fas fa-desktop text-xl"></i> Install iMe Portal Medis
+                </h3>
+                <button type="button" onclick="document.getElementById('pwaInstallGuideModal').classList.remove('flex'); document.getElementById('pwaInstallGuideModal').classList.add('hidden');" class="text-slate-400 hover:text-white text-xl">&times;</button>
+            </div>
+            <ol class="space-y-3 text-sm text-slate-300 mb-6">
+                <li class="flex items-start gap-2">
+                    <span class="bg-sky-500 text-slate-950 font-bold rounded-full w-5 h-5 flex items-center justify-center text-xs shrink-0 mt-0.5">1</span>
+                    <span>Klik ikon <strong>[⋮] (Titik Tiga)</strong> atau <strong>[⊕]</strong> di sudut kanan atas browser Google Chrome / Microsoft Edge Anda.</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="bg-sky-500 text-slate-950 font-bold rounded-full w-5 h-5 flex items-center justify-center text-xs shrink-0 mt-0.5">2</span>
+                    <span>Pilih menu <strong>"Simpan dan Bagikan"</strong> ➔ <strong>"Buat Pintasan..."</strong> (atau <em>"Install iMe Portal Medis"</em>).</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="bg-sky-500 text-slate-950 font-bold rounded-full w-5 h-5 flex items-center justify-center text-xs shrink-0 mt-0.5">3</span>
+                    <span>Centang <strong>"Buka sebagai jendela"</strong> lalu klik <strong>Install</strong>.</span>
+                </li>
+            </ol>
+            <div class="flex justify-end">
+                <button type="button" onclick="document.getElementById('pwaInstallGuideModal').classList.remove('flex'); document.getElementById('pwaInstallGuideModal').classList.add('hidden');" class="px-5 py-2 bg-sky-600 hover:bg-sky-500 text-white font-semibold rounded-lg text-sm shadow-md transition-all">Paham, Mengerti</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PWA Service Worker & Install Script -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register("{{ asset('sw.js') }}?v={{ time() }}")
+                    .then(reg => console.log('PWA ServiceWorker registered:', reg.scope))
+                    .catch(err => console.error('PWA ServiceWorker error:', err));
+            });
+        }
+
+        let deferredPwaPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPwaPrompt = e;
+            const pwaTriggers = document.querySelectorAll('.pwa-install-trigger');
+            pwaTriggers.forEach(btn => btn.style.display = 'inline-flex');
+        });
+
+        function triggerPwaInstall() {
+            if (deferredPwaPrompt) {
+                deferredPwaPrompt.prompt();
+                deferredPwaPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('PWA installed successfully');
+                    }
+                    deferredPwaPrompt = null;
+                });
+            } else {
+                const modal = document.getElementById('pwaInstallGuideModal');
+                if (modal) {
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                }
+            }
+        }
+
+        function checkPwaInstalled() {
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                                 window.navigator.standalone === true;
+            if (isStandalone) {
+                const pwaTriggers = document.querySelectorAll('.pwa-install-trigger');
+                pwaTriggers.forEach(btn => btn.style.display = 'none');
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', checkPwaInstalled);
+        window.addEventListener('appinstalled', () => {
+            const pwaTriggers = document.querySelectorAll('.pwa-install-trigger');
+            pwaTriggers.forEach(btn => btn.style.display = 'none');
+        });
+    </script>
 </body>
 
 </html>
