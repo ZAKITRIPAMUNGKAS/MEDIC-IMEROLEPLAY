@@ -287,6 +287,102 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Hasil Ulasan & Evaluasi Anonim Staf Card -->
+            <div class="card backdrop-blur-xl border-2 border-sky-400/60 rounded-3xl shadow-2xl mt-8"
+                style="background-color: rgba(7, 89, 133, 0.9);">
+                <div class="p-6 sm:p-8 space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-sky-500/30 pb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="h-12 w-12 bg-gradient-to-br from-amber-500 to-orange-500 rounded-xl flex items-center justify-center shadow-lg">
+                                <i class="fas fa-star text-white text-xl"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-2xl font-bold text-white">Hasil Ulasan & Evaluasi Staf</h2>
+                                <p class="text-sky-200 text-sm">Daftar ulasan evaluasi anonim dari staf medis untuk Anda</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3 bg-white/10 px-4 py-2 rounded-2xl border border-white/20">
+                            <div class="text-right">
+                                <span class="text-xs text-sky-200 block font-medium">Rating Rata-rata</span>
+                                <span class="text-lg font-black text-amber-300">
+                                    {{ $evaluationsAvg > 0 ? number_format($evaluationsAvg, 1) : '0.0' }} / 5.0 ⭐
+                                </span>
+                            </div>
+                            <span class="px-2.5 py-1 bg-amber-500/20 text-amber-300 text-xs font-bold rounded-lg border border-amber-400/30">
+                                {{ $evaluationsCount }} Ulasan
+                            </span>
+                        </div>
+                    </div>
+
+                    @if(count($managerEvaluations) > 0)
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            @foreach($managerEvaluations as $review)
+                                <div class="bg-black/20 border border-white/10 rounded-2xl p-5 space-y-3">
+                                    <div class="flex items-start justify-between gap-3 border-b border-white/10 pb-3">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-sky-500 to-cyan-600 text-white flex items-center justify-center text-xs shadow font-bold shrink-0 border border-white/20">
+                                                <i class="fas fa-user-secret"></i>
+                                            </div>
+                                            <div>
+                                                <span class="text-xs font-extrabold text-amber-300 block flex items-center gap-1.5">
+                                                    🎭 Staf Medis (Anonim)
+                                                    @if(isset($canSeeAll) && $canSeeAll)
+                                                        <span class="px-1.5 py-0.5 rounded bg-amber-500/20 border border-amber-400/40 text-amber-200 text-[9px] font-bold">
+                                                            <i class="fas fa-eye mr-0.5"></i> Admin View
+                                                        </span>
+                                                    @endif
+                                                </span>
+
+                                                @if(isset($canSeeAll) && $canSeeAll && $review->evaluator)
+                                                    <div class="my-1 p-2 rounded-lg bg-amber-500/10 border border-amber-400/30 text-[11px] text-amber-200 space-y-0.5">
+                                                        <div class="font-bold text-white flex items-center gap-1">
+                                                            <i class="fas fa-id-card text-amber-400"></i> Nama Penilai: {{ $review->evaluator->name }}
+                                                        </div>
+                                                        <div class="text-[10px] text-amber-200 opacity-90">
+                                                            Jabatan: {{ $review->evaluator->role?->name ?? '-' }} &middot; ID: {{ $review->evaluator->staff_id ?? '-' }}
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        <span class="text-[10px] text-slate-300 font-medium bg-white/10 px-2 py-1 rounded-md">
+                                            {{ $review->created_at->diffForHumans() }}
+                                        </span>
+                                    </div>
+
+                                    <div class="flex items-center justify-between text-xs">
+                                        <div class="flex items-center gap-1 text-amber-400">
+                                            @for($s = 1; $s <= 5; $s++)
+                                                @if($s <= $review->rating)
+                                                    <i class="fas fa-star text-sm"></i>
+                                                @else
+                                                    <i class="far fa-star text-slate-600 text-sm"></i>
+                                                @endif
+                                            @endfor
+                                            <span class="ml-1 text-white font-bold">{{ number_format($review->rating, 1) }}</span>
+                                        </div>
+
+                                        <span class="px-2.5 py-0.5 rounded-full bg-sky-500/20 border border-sky-400/30 text-sky-200 font-semibold text-[10px]">
+                                            {{ $review->kategori }}
+                                        </span>
+                                    </div>
+
+                                    <div class="text-xs text-sky-100 leading-relaxed bg-white/5 p-3.5 rounded-xl border border-white/5">
+                                        "{!! nl2br(e($review->komentar)) !!}"
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="py-10 text-center text-sky-200 border border-dashed border-white/20 rounded-2xl">
+                            <i class="fas fa-comment-slash text-3xl mb-2 block text-sky-300"></i>
+                            <p class="text-sm font-medium">Belum ada ulasan evaluasi anonim yang diberikan untuk Anda.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
 @endsection

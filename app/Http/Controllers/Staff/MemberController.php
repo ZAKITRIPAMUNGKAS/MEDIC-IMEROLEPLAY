@@ -156,9 +156,25 @@ class MemberController extends Controller
             ->sortByDesc('timestamp')
             ->values();
 
+        // Fetch Anonymous Manager Evaluations for this member
+        $managerEvaluations = \App\Models\ManagerEvaluation::with(['evaluator.role'])
+            ->where('manager_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $evaluationsAvg = round($managerEvaluations->avg('rating') ?? 0, 1);
+        $evaluationsCount = $managerEvaluations->count();
+
+        $stats['evaluations_avg'] = $evaluationsAvg;
+        $stats['evaluations_count'] = $evaluationsCount;
+
         // 3. Access control check for sensitive data
         $canViewMedical = auth()->user()->isAdmin() || auth()->user()->hasPermission('view_medical_records');
+        $canSeeAll = auth()->user()->isAdmin() 
+            || strtolower(auth()->user()->role?->name ?? '') === 'admin' 
+            || strtolower(auth()->user()->role?->name ?? '') === 'executive' 
+            || (auth()->user()->role?->level ?? 0) >= 7;
 
-        return view('staff.members.show', compact('user', 'stats', 'timeline', 'canViewMedical', 'operations', 'forms'));
+        return view('staff.members.show', compact('user', 'stats', 'timeline', 'canViewMedical', 'canSeeAll', 'operations', 'forms', 'managerEvaluations', 'evaluationsAvg', 'evaluationsCount'));
     }
 }

@@ -19,8 +19,20 @@ class StaffController extends Controller
         $operations = \App\Models\OperationRecord::whereHas('members', function($q) use ($user) {
             $q->where('user_id', $user->id);
         })->orderBy('tanggal_waktu', 'desc')->get();
+
+        $managerEvaluations = \App\Models\ManagerEvaluation::with(['evaluator.role'])
+            ->where('manager_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $evaluationsAvg = round($managerEvaluations->avg('rating') ?? 0, 1);
+        $evaluationsCount = $managerEvaluations->count();
+        $canSeeAll = $user->isAdmin() 
+            || strtolower($user->role?->name ?? '') === 'admin' 
+            || strtolower($user->role?->name ?? '') === 'executive' 
+            || ($user->role?->level ?? 0) >= 7;
         
-        return view('staff.profile', compact('operations'));
+        return view('staff.profile', compact('operations', 'managerEvaluations', 'evaluationsAvg', 'evaluationsCount', 'canSeeAll'));
     }
     public function showLoginForm()
     {

@@ -91,8 +91,8 @@
             </div>
         </div>
 
-        <!-- Work Statistics & Interactive Cards (3 Widgets Grid) -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <!-- Work Statistics & Interactive Cards (4 Widgets Grid) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             
             <!-- Widget 1: Duty Hours (Info Card) -->
             <div class="bg-white bg-opacity-10 backdrop-blur-md border border-white border-opacity-20 rounded-2xl p-5 shadow-xl flex items-center gap-4">
@@ -101,7 +101,7 @@
                 </div>
                 <div>
                     <span class="text-xs text-sky-200 block font-medium">Jam Duty (Akumulasi)</span>
-                    <span class="text-lg font-bold text-white tracking-wide mt-0.5 block">
+                    <span class="text-base font-bold text-white tracking-wide mt-0.5 block">
                         {{ $stats['total_duty_formatted'] ?: '0 detik' }}
                     </span>
                 </div>
@@ -113,13 +113,13 @@
                     :class="activeTab === 'operations' ? 'bg-white bg-opacity-20 border-emerald-400 ring-2 ring-emerald-400/30' : 'bg-white bg-opacity-10 border-white/20 hover:border-emerald-400/50'"
                     class="w-full text-left rounded-2xl p-5 shadow-xl border backdrop-blur-md transition-all duration-300 group cursor-pointer relative overflow-hidden">
                 <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-emerald-500 bg-opacity-20 border border-emerald-400 border-opacity-30 text-emerald-300 group-hover:scale-110 transition-transform rounded-xl flex items-center justify-center text-xl shrink-0">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 bg-emerald-500 bg-opacity-20 border border-emerald-400 border-opacity-30 text-emerald-300 group-hover:scale-110 transition-transform rounded-xl flex items-center justify-center text-lg shrink-0">
                             <i class="fas fa-procedures"></i>
                         </div>
                         <div>
                             <span class="text-xs text-sky-200 block font-medium">Tindakan Operasi</span>
-                            <span class="text-lg font-bold text-white tracking-wide mt-0.5 block">
+                            <span class="text-base font-bold text-white tracking-wide mt-0.5 block">
                                 {{ $stats['total_operations'] }} Rekam Medis
                             </span>
                         </div>
@@ -127,14 +127,10 @@
                     
                     <div class="text-sky-300 group-hover:text-emerald-300 transition-colors">
                         <template x-if="activeTab === 'operations'">
-                            <span class="text-xs font-semibold flex items-center gap-1 text-emerald-300">
-                                Tutup <i class="fas fa-chevron-up text-xs"></i>
-                            </span>
+                            <i class="fas fa-chevron-up text-xs text-emerald-300"></i>
                         </template>
                         <template x-if="activeTab !== 'operations'">
-                            <span class="text-xs font-semibold flex items-center gap-1">
-                                Detail <i class="fas fa-chevron-down text-xs"></i>
-                            </span>
+                            <i class="fas fa-chevron-down text-xs"></i>
                         </template>
                     </div>
                 </div>
@@ -146,13 +142,13 @@
                     :class="activeTab === 'forms' ? 'bg-white bg-opacity-20 border-indigo-400 ring-2 ring-indigo-400/30' : 'bg-white bg-opacity-10 border-white/20 hover:border-indigo-400/50'"
                     class="w-full text-left rounded-2xl p-5 shadow-xl border backdrop-blur-md transition-all duration-300 group cursor-pointer relative overflow-hidden">
                 <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-indigo-500 bg-opacity-20 border border-indigo-400 border-opacity-30 text-indigo-300 group-hover:scale-110 transition-transform rounded-xl flex items-center justify-center text-xl shrink-0">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 bg-indigo-500 bg-opacity-20 border border-indigo-400 border-opacity-30 text-indigo-300 group-hover:scale-110 transition-transform rounded-xl flex items-center justify-center text-lg shrink-0">
                             <i class="fas fa-file-signature"></i>
                         </div>
                         <div>
                             <span class="text-xs text-sky-200 block font-medium">Surat/Form Ditangani</span>
-                            <span class="text-lg font-bold text-white tracking-wide mt-0.5 block">
+                            <span class="text-base font-bold text-white tracking-wide mt-0.5 block">
                                 {{ $stats['total_forms_processed'] }} Dokumen
                             </span>
                         </div>
@@ -160,14 +156,40 @@
 
                     <div class="text-sky-300 group-hover:text-indigo-300 transition-colors">
                         <template x-if="activeTab === 'forms'">
-                            <span class="text-xs font-semibold flex items-center gap-1 text-indigo-300">
-                                Tutup <i class="fas fa-chevron-up text-xs"></i>
-                            </span>
+                            <i class="fas fa-chevron-up text-xs text-indigo-300"></i>
                         </template>
                         <template x-if="activeTab !== 'forms'">
-                            <span class="text-xs font-semibold flex items-center gap-1">
-                                Detail <i class="fas fa-chevron-down text-xs"></i>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </template>
+                    </div>
+                </div>
+            </button>
+
+            <!-- Widget 4: Anonymous Manager Evaluations (Clickable Card) -->
+            <button type="button" 
+                    @click="activeTab = (activeTab === 'evaluations' ? null : 'evaluations')"
+                    :class="activeTab === 'evaluations' ? 'bg-white bg-opacity-20 border-amber-400 ring-2 ring-amber-400/30' : 'bg-white bg-opacity-10 border-white/20 hover:border-amber-400/50'"
+                    class="w-full text-left rounded-2xl p-5 shadow-xl border backdrop-blur-md transition-all duration-300 group cursor-pointer relative overflow-hidden">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 bg-amber-500 bg-opacity-20 border border-amber-400 border-opacity-30 text-amber-300 group-hover:scale-110 transition-transform rounded-xl flex items-center justify-center text-lg shrink-0">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs text-sky-200 block font-medium">Evaluasi Staf (Anonim)</span>
+                            <span class="text-base font-bold text-white tracking-wide mt-0.5 block">
+                                {{ $evaluationsAvg > 0 ? number_format($evaluationsAvg, 1) . ' ⭐' : '0.0 ⭐' }}
+                                <span class="text-xs text-amber-300 font-normal">({{ $evaluationsCount }})</span>
                             </span>
+                        </div>
+                    </div>
+
+                    <div class="text-sky-300 group-hover:text-amber-300 transition-colors">
+                        <template x-if="activeTab === 'evaluations'">
+                            <i class="fas fa-chevron-up text-xs text-amber-300"></i>
+                        </template>
+                        <template x-if="activeTab !== 'evaluations'">
+                            <i class="fas fa-chevron-down text-xs"></i>
                         </template>
                     </div>
                 </div>
@@ -352,6 +374,97 @@
                 <div class="py-12 text-center text-sky-200 border border-dashed border-white/20 rounded-xl">
                     <i class="fas fa-file-signature text-3xl mb-3 block text-sky-400"></i>
                     <p class="text-sm font-medium">Belum ada surat atau form medis yang diproses oleh anggota ini.</p>
+                </div>
+            @endif
+        </div>
+
+        <!-- Detail Section 3: Hasil Ulasan & Evaluasi Anonim Staf -->
+        <div x-show="activeTab === 'evaluations'" 
+             x-transition:enter="transition ease-out duration-300 transform"
+             x-transition:enter-start="opacity-0 -translate-y-2 scale-98"
+             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+             class="bg-white bg-opacity-10 backdrop-blur-md border border-white border-opacity-20 rounded-2xl p-6 shadow-2xl space-y-6">
+            
+            <div class="flex items-center justify-between border-b border-white border-opacity-20 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500 bg-opacity-20 border border-amber-400 border-opacity-30 text-amber-300 flex items-center justify-center">
+                        <i class="fas fa-star text-lg"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-white">Hasil Ulasan & Evaluasi Anonim Staf</h2>
+                        <p class="text-xs text-sky-200">Daftar ulasan & penilaian rating bintang dari anggota staf untuk {{ $user->name }}</p>
+                    </div>
+                </div>
+                
+                <button type="button" @click="activeTab = null" class="px-3 py-1.5 rounded-xl bg-white bg-opacity-10 hover:bg-opacity-20 text-white text-xs font-semibold transition-all border border-white/20 flex items-center gap-1.5">
+                    <i class="fas fa-times"></i> Tutup
+                </button>
+            </div>
+
+            @if(count($managerEvaluations) > 0)
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    @foreach($managerEvaluations as $review)
+                        <div class="bg-black bg-opacity-20 border border-white border-opacity-10 rounded-xl p-5 space-y-3">
+                            <div class="flex items-start justify-between gap-3 border-b border-white border-opacity-10 pb-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-sky-500 to-cyan-600 text-white flex items-center justify-center text-xs shadow font-bold shrink-0 border border-white border-opacity-20">
+                                        <i class="fas fa-user-secret"></i>
+                                    </div>
+                                    <div>
+                                        <span class="text-xs font-extrabold text-amber-300 block flex items-center gap-1.5">
+                                            🎭 Staf Medis (Anonim)
+                                            @if($canSeeAll)
+                                                <span class="px-1.5 py-0.5 rounded bg-amber-500 bg-opacity-20 border border-amber-400 border-opacity-40 text-amber-200 text-[9px] font-bold">
+                                                    <i class="fas fa-eye mr-0.5"></i> Admin View
+                                                </span>
+                                            @endif
+                                        </span>
+
+                                        @if($canSeeAll && $review->evaluator)
+                                            <div class="my-1 p-2 rounded-lg bg-amber-500 bg-opacity-10 border border-amber-400 border-opacity-30 text-[11px] text-amber-200 space-y-0.5">
+                                                <div class="font-bold text-white flex items-center gap-1">
+                                                    <i class="fas fa-id-card text-amber-400"></i> Nama Penilai: {{ $review->evaluator->name }}
+                                                </div>
+                                                <div class="text-[10px] text-amber-200 opacity-90">
+                                                    Jabatan: {{ $review->evaluator->role?->name ?? '-' }} &middot; ID: {{ $review->evaluator->staff_id ?? '-' }}
+                                                </div>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <span class="text-[10px] text-slate-300 font-medium bg-white bg-opacity-5 px-2 py-1 rounded-md">
+                                    {{ $review->created_at->diffForHumans() }}
+                                </span>
+                            </div>
+
+                            <div class="flex items-center justify-between text-xs">
+                                <div class="flex items-center gap-1 text-amber-400">
+                                    @for($s = 1; $s <= 5; $s++)
+                                        @if($s <= $review->rating)
+                                            <i class="fas fa-star text-sm"></i>
+                                        @else
+                                            <i class="far fa-star text-slate-600 text-sm"></i>
+                                        @endif
+                                    @endfor
+                                    <span class="ml-1 text-white font-bold">{{ number_format($review->rating, 1) }}</span>
+                                </div>
+
+                                <span class="px-2.5 py-0.5 rounded-full bg-sky-500 bg-opacity-20 border border-sky-400 border-opacity-30 text-sky-200 font-semibold text-[10px]">
+                                    {{ $review->kategori }}
+                                </span>
+                            </div>
+
+                            <div class="text-xs text-slate-200 leading-relaxed bg-white bg-opacity-5 p-3.5 rounded-lg border border-white border-opacity-5">
+                                "{!! nl2br(e($review->komentar)) !!}"
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="py-12 text-center text-sky-200 border border-dashed border-white/20 rounded-xl">
+                    <i class="fas fa-comment-slash text-3xl mb-3 block text-sky-400"></i>
+                    <p class="text-sm font-medium">Belum ada ulasan evaluasi anonim untuk anggota ini.</p>
                 </div>
             @endif
         </div>
