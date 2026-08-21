@@ -13,10 +13,35 @@ use Illuminate\Support\Facades\Schema;
 class ManagerEvaluationController extends Controller
 {
     /**
+     * Helper to auto-create manager_evaluations table if missing on cPanel.
+     */
+    private function ensureTableExists()
+    {
+        if (!Schema::hasTable('manager_evaluations')) {
+            try {
+                Schema::create('manager_evaluations', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->id();
+                    $table->foreignId('evaluator_id')->constrained('users')->onDelete('cascade');
+                    $table->foreignId('manager_id')->constrained('users')->onDelete('cascade');
+                    $table->unsignedTinyInteger('rating');
+                    $table->string('kategori')->default('Kepemimpinan & Kinerja');
+                    $table->text('komentar');
+                    $table->boolean('is_anonymous')->default(true);
+                    $table->timestamps();
+                });
+            } catch (\Throwable $e) {
+                // Silently continue if DDL permission is missing
+            }
+        }
+    }
+
+    /**
      * Display manager evaluation dashboard & submission form.
      */
     public function index(Request $request)
     {
+        $this->ensureTableExists();
+
         $currentUser = Auth::user();
         
         // Administrator/Executive role level >= 7 or role name admin/executive can view BOTH hospitals
@@ -48,10 +73,11 @@ class ManagerEvaluationController extends Controller
             $rhUserIds = User::where('is_active', true)
                 ->where(function ($query) {
                     $query->where('hospital', 'roxwood')
-                        ->orWhereRaw('LOWER(name) LIKE ?', ['%rh%'])
-                        ->orWhereRaw('LOWER(name) LIKE ?', ['%roxwood%'])
-                        ->orWhereRaw('LOWER(name) LIKE ?', ['%rh -%'])
-                        ->orWhereRaw('LOWER(name) LIKE ?', ['%rh-%']);
+                        ->orWhere(function ($sq) {
+                            $sq->whereRaw('LOWER(staff_id) LIKE ?', ['%rh%'])
+                                ->orWhereRaw('LOWER(staff_id) LIKE ?', ['%rh -%'])
+                                ->orWhereRaw('LOWER(staff_id) LIKE ?', ['%rh-%']);
+                        });
                 })
                 ->pluck('id')
                 ->toArray();
@@ -70,12 +96,11 @@ class ManagerEvaluationController extends Controller
                 $roxwoodManagers = collect([]);
             }
 
-            $reviews = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 12);
-            $selectedManager = null;
             $selectedManagerId = null;
+            $selectedManager = null;
+            $reviews = collect([]);
 
-            return view('staff.evaluations.index', compact('managers', 'altaManagers', 'roxwoodManagers', 'selectedManager', 'selectedManagerId', 'reviews', 'categories', 'canSeeAll'))
-                ->with('error', 'Tabel evaluasi manajer belum dibuat di database cPanel hosting. Harap jalankan perintah "php artisan migrate" di cPanel Terminal.');
+            return view('staff.evaluations.index', compact('managers', 'altaManagers', 'roxwoodManagers', 'selectedManager', 'selectedManagerId', 'reviews', 'categories', 'canSeeAll'));
         }
 
         $managers = User::where('is_active', true)
@@ -150,6 +175,12 @@ class ManagerEvaluationController extends Controller
      */
     public function store(Request $request)
     {
+        $this->ensureTableExists();
+
+        if (!Schema::hasTable('manager_evaluations')) {
+            return back()->with('error', 'Tabel evaluasi manajer di database cPanel belum tersedia. Harap hubungi Admin.');
+        }
+
         $request->validate([
             'manager_id' => 'required|exists:users,id',
             'rating'     => 'required|integer|min:1|max:5',
@@ -199,14 +230,18 @@ class ManagerEvaluationController extends Controller
             $kategoriFormatted = 'General / Kepemimpinan';
         }
 
-        ManagerEvaluation::create([
-            'evaluator_id' => $evaluatorId,
-            'manager_id'   => $request->manager_id,
-            'rating'       => $request->rating,
-            'kategori'     => $kategoriFormatted,
-            'komentar'     => $request->komentar,
-            'is_anonymous' => true,
-        ]);
+        try {
+            ManagerEvaluation::create([
+                'evaluator_id' => $evaluatorId,
+                'manager_id'   => $request->manager_id,
+                'rating'       => $request->rating,
+                'kategori'     => $kategoriFormatted,
+                'komentar'     => $request->komentar,
+                'is_anonymous' => true,
+            ]);
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Gagal menyimpan ulasan evaluasi: ' . $e->getMessage());
+        }
 
         return back()->with('success', 'Penilaian dan evaluasi manajer berhasil dikirim secara ANONIM! Identitas Anda terjamin rahasia.');
     }
