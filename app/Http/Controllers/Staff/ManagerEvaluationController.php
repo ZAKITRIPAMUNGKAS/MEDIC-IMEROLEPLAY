@@ -17,8 +17,31 @@ class ManagerEvaluationController extends Controller
     public function index(Request $request)
     {
         // Manager roles are level >= 5 (Staff Manager, Manajer, Executive, Admin)
-        // Retrieve users with manager roles
         $managerRoleIds = StaffRole::where('level', '>=', 5)->pluck('id');
+
+        $categories = [
+            'Kepemimpinan & Komunikasi',
+            'Sikap & Etika',
+            'Keadilan & Pengayoman Staf',
+            'Respon & Penyelesaian Masalah',
+            'Kinerja & Profesionalisme',
+            'Lainnya / General',
+        ];
+
+        // Defensive check: If database table has not been migrated yet on production cPanel
+        if (!\Illuminate\Support\Facades\Schema::hasTable('manager_evaluations')) {
+            $managers = User::where('is_active', true)
+                ->whereIn('role_id', $managerRoleIds)
+                ->with(['role'])
+                ->orderBy('name', 'asc')
+                ->get();
+            $reviews = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 12);
+            $selectedManager = null;
+            $selectedManagerId = null;
+
+            return view('staff.evaluations.index', compact('managers', 'selectedManager', 'selectedManagerId', 'reviews', 'categories'))
+                ->with('error', 'Tabel evaluasi manajer belum dibuat di database cPanel hosting. Harap jalankan perintah "php artisan migrate" di cPanel Terminal.');
+        }
 
         $managers = User::where('is_active', true)
             ->whereIn('role_id', $managerRoleIds)
