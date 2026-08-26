@@ -32,6 +32,7 @@ Attendance::create([
     'clock_out'              => now(),
     'scheduled_duty_minutes' => $targetMinutes,
     'session_duration'       => $targetSeconds,
+    'session_type'           => 'custom', // 'custom' dikecualikan dari generate gaji (payroll hanya menghitung 'work' & 'meeting')
     'auto_checked_out'       => true,
 ]);
 
@@ -42,6 +43,7 @@ echo "User ID: " . $user->id . "\n";
 echo "Nama: " . $user->name . "\n";
 echo "Citizen ID: " . $user->citizen_id . "\n";
 echo "Staff ID: " . $user->staff_id . "\n";
+echo "Session Type: custom (Aman dari perhitungan Payroll/Gaji)\n";
 echo "Total Jam Duty: " . $user->fresh()->getTotalDutyHoursFormatted() . "\n";
 echo "Total Detik: " . number_format($user->fresh()->getTotalDutySeconds(), 0, ',', '.') . " detik\n";
 echo "========================================\n";
