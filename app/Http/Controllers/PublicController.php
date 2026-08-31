@@ -178,6 +178,7 @@ class PublicController extends Controller
             'konsultasi_medis' => 'Konsultasi Medis',
             'laporan_kecelakaan' => 'Laporan Kecelakaan',
             'permintaan_ambulans' => 'Permintaan Ambulans',
+            'poli_umum' => 'Pemeriksaan Poli Umum',
             'penyakit_dalam' => 'Poli Penyakit Dalam',
             'spesialis_anak' => 'Poli Spesialis Anak',
             'spesialis_bedah' => 'Poli Spesialis Bedah',
@@ -232,7 +233,7 @@ class PublicController extends Controller
         // Validasi untuk janji temu langsung
         $validator = Validator::make($request->all(), [
             'character_name' => 'required|string|max:255',
-            'form_type' => 'required|string|in:penyakit_dalam,spesialis_anak,spesialis_bedah,spesialis_mata,spesialis_saraf,spesialis_urologi,spesialis_tht,spesialis_ortopedi',
+            'form_type' => 'required|string|in:poli_umum,penyakit_dalam,spesialis_anak,spesialis_bedah,spesialis_mata,spesialis_saraf,spesialis_urologi,spesialis_tht,spesialis_ortopedi',
             'hospital' => 'required|string|in:alta,roxwood',
             'appointment_date' => 'required|date|after_or_equal:today',
             'phone_number' => 'required|string|max:20',
@@ -248,6 +249,7 @@ class PublicController extends Controller
 
         // Mapping form type ke nama yang lebih user-friendly
         $formTypeNames = [
+            'poli_umum' => 'Poli Umum',
             'penyakit_dalam' => 'Poli Penyakit Dalam',
             'spesialis_anak' => 'Poli Spesialis Anak',
             'spesialis_bedah' => 'Poli Spesialis Bedah',
@@ -350,6 +352,7 @@ class PublicController extends Controller
             'konsultasi_medis',
             'laporan_kecelakaan',
             'permintaan_ambulans',
+            'poli_umum',
             'penyakit_dalam',
             'spesialis_anak',
             'spesialis_bedah',

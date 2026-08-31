@@ -695,6 +695,58 @@
                                 </div>
 
 
+                            @elseif($type === 'poli_umum')
+                                <div>
+                                    <label for="purpose_pu"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">Keperluan Pemeriksaan <span class="text-red-400">*</span></label>
+                                    <select id="purpose_pu" name="form_data[purpose]" class="form-select">
+                                        <option value="Pemeriksaan Kesehatan Umum" class="bg-slate-900 text-white font-bold">Pemeriksaan Kesehatan Umum</option>
+                                        <option value="Keluhan Sakit / Gejala Ringan (Flu, Demam, Batuk, Pusing)" class="bg-slate-900 text-white font-bold">Keluhan Sakit / Gejala Ringan (Flu, Demam, Batuk, Pusing)</option>
+                                        <option value="Pemeriksaan Tekanan Darah & Fisik Rutin" class="bg-slate-900 text-white font-bold">Pemeriksaan Tekanan Darah & Fisik Rutin</option>
+                                        <option value="Konsultasi Obat & Resep" class="bg-slate-900 text-white font-bold">Konsultasi Obat & Resep</option>
+                                        <option value="Konsultasi Kesehatan Lainnya" class="bg-slate-900 text-white font-bold">Konsultasi Kesehatan Lainnya</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="doctor_name_pu"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Pilih Dokter / Tenaga Medis <span class="text-red-400">*</span>
+                                    </label>
+                                    <select id="doctor_name_pu" name="form_data[doctor_name]"
+                                        class="form-select @error('form_data.doctor_name') border-red-500 @enderror" required>
+                                        <option value="">-- Pilih Dokter Umum / Tenaga Medis --</option>
+                                        @foreach($doctors as $doctor)
+                                            <option value="{{ $doctor->name }}"
+                                                data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
+                                                @if(old('form_data.doctor_name', request('doctor')) == $doctor->name) selected @endif
+                                                class="bg-slate-900 text-white font-bold">
+                                                {{ $doctor->name }} ({{ $doctor->role->display_name ?? 'Dokter' }}) - {{ ($doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta')) === 'roxwood' ? 'Roxwood' : 'Alta' }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('form_data.doctor_name') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+                                <div>
+                                    <label for="symptoms_pu"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Keluhan & Gejala yang Dirasakan <span class="text-red-400">*</span>
+                                    </label>
+                                    <textarea id="symptoms_pu" name="form_data[symptoms]" rows="3"
+                                        placeholder="Contoh: Demam sejak 2 hari yang lalu, sakit kepala, nyeri tenggorokan, batuk kering..."
+                                        class="form-input @error('form_data.symptoms') border-red-500 @enderror" required>{{ old('form_data.symptoms') }}</textarea>
+                                    @error('form_data.symptoms') <p class="form-error">{{ $message }}</p> @enderror
+                                </div>
+                                <div>
+                                    <label for="allergies_pu"
+                                        class="block text-sm font-medium text-white mb-2 font-bold text-lg">
+                                        Riwayat Alergi Obat / Makanan
+                                    </label>
+                                    <input type="text" id="allergies_pu" name="form_data[allergies]"
+                                        value="{{ old('form_data.allergies') }}"
+                                        placeholder="Contoh: Alergi Penisilin / Seafood (Kosongkan atau tulis 'Tidak ada' jika tidak memiliki riwayat)"
+                                        class="form-input @error('form_data.allergies') border-red-500 @enderror">
+                                </div>
+
                             @elseif($type === 'penyakit_dalam')
                                 <div>
                                     <label for="purpose_pd"

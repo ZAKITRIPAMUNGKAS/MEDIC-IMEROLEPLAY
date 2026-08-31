@@ -103,11 +103,19 @@
                                     </div>
 
                                     <div class="mt-8 pt-6 border-t border-white/10 flex items-center justify-between">
-                                        <a href="{{ route('public.form', ['type' => 'janji_temu']) }}?hospital={{ $doctor->hospital }}&poli={{ urlencode($doctor->poli) }}" 
-                                           class="inline-flex items-center text-sm font-bold text-white hover:text-cyan-400 transition-colors group/link">
-                                            Buat Janji Temu
-                                            <i class="fas fa-arrow-right ml-2 transform group-hover/link:translate-x-1 transition-transform"></i>
-                                        </a>
+                                        @if(str_contains(strtolower($doctor->poli), 'umum'))
+                                            <a href="{{ route('public.form', ['type' => 'poli_umum']) }}?hospital={{ $doctor->hospital }}&doctor={{ urlencode($doctor->doctor_name) }}" 
+                                               class="inline-flex items-center text-sm font-bold text-white hover:text-cyan-400 transition-colors group/link">
+                                                Daftar Poli Umum
+                                                <i class="fas fa-arrow-right ml-2 transform group-hover/link:translate-x-1 transition-transform"></i>
+                                            </a>
+                                        @else
+                                            <a href="{{ route('public.form', ['type' => 'janji_temu']) }}?hospital={{ $doctor->hospital }}&poli={{ urlencode($doctor->poli) }}&doctor={{ urlencode($doctor->doctor_name) }}" 
+                                               class="inline-flex items-center text-sm font-bold text-white hover:text-cyan-400 transition-colors group/link">
+                                                Buat Janji Temu
+                                                <i class="fas fa-arrow-right ml-2 transform group-hover/link:translate-x-1 transition-transform"></i>
+                                            </a>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

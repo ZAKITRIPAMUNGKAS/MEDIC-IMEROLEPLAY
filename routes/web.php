@@ -609,6 +609,9 @@ Route::get('/tes-psikologi', function () {
 Route::get('/surat-psikolog', function () {
     return redirect()->route('public.form', 'surat_psikolog');
 })->name('public.surat-psikolog');
+Route::get('/poli-umum', function () {
+    return redirect()->route('public.form', ['type' => 'poli_umum']);
+})->name('public.poli-umum');
 Route::get('/pendaftaran-karakter', function () {
     return redirect()->route('public.form', ['type' => 'pendaftaran_karakter']);
 })->name('public.pendaftaran-karakter');
