@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 class DoctorScheduleController extends Controller
 {
     public const POLI_LIST = [
+        '🩺 Poli Umum',
         '🩺 Spesialis Anestesiologi',
         '🩺 Spesialis Bedah',
         '🩺 Spesialis Bedah Mulut',
