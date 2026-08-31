@@ -1266,7 +1266,6 @@
                 font-size: 1rem;
             }
         }
-        }
 
         /* Notification Container Position - Adjusted to be below navbar */
         .notification-container {
@@ -1493,263 +1492,263 @@
             </div>
         </div>
 
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="sm:hidden hidden border-t border-sky-500/20 bg-slate-950/95 backdrop-blur-2xl px-4 py-4 max-h-[85vh] overflow-y-auto space-y-3 shadow-2xl transition-all duration-300">
-            
-            <!-- Quick Action PWA & Recruitment / Login -->
-            <div class="grid grid-cols-2 gap-2 pb-2 border-b border-white/10">
-                <button type="button" onclick="triggerPwaInstall()"
-                    class="pwa-install-trigger flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-500 text-white text-xs font-bold shadow-md shadow-sky-500/20">
-                    <i class="fas fa-download text-amber-300 text-xs"></i>
-                    <span>Instal App</span>
-                </button>
-                @guest
-                    <a href="{{ route('staff.login') }}"
-                        class="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-sky-500/30 text-white text-xs font-bold border border-sky-400/40 hover:bg-sky-500/50 transition-all">
-                        <i class="fas fa-user-md text-xs"></i>
-                        <span>Login Staf</span>
-                    </a>
-                @else
-                    <a href="{{ route('staff.dashboard') }}"
-                        class="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-emerald-500/30 text-white text-xs font-bold border border-emerald-400/40 hover:bg-emerald-500/50 transition-all">
-                        <i class="fas fa-tachometer-alt text-xs text-emerald-300"></i>
-                        <span>Dashboard</span>
-                    </a>
-                @endguest
-            </div>
-
-            @auth
-                <!-- User Profile Card in Mobile Menu -->
-                <div class="bg-white/5 rounded-2xl p-3 border border-white/10">
-                    <a href="{{ route('staff.members.show', auth()->id()) }}" 
-                       class="flex items-center justify-between text-white hover:text-sky-200 transition-colors">
-                        <div class="flex items-center gap-2.5 min-w-0">
-                            <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-400 to-cyan-500 flex items-center justify-center text-white text-sm font-bold shrink-0 shadow-sm">
-                                <i class="fas fa-user-md"></i>
-                            </div>
-                            <div class="min-w-0">
-                                <div class="text-xs font-bold text-white truncate">{{ auth()->user()->name }}</div>
-                                <div class="text-[10px] text-sky-300 font-medium truncate">{{ auth()->user()->role?->display_name ?? 'Staf Medis' }}</div>
-                            </div>
-                        </div>
-                        <span class="text-[10px] text-sky-300 bg-sky-500/20 px-2 py-0.5 rounded-full border border-sky-400/30 font-semibold shrink-0">Profil &rarr;</span>
-                    </a>
-                </div>
-
-                <!-- Section: Navigasi Staf -->
-                <div class="space-y-1">
-                    <div class="px-2 pt-1 text-[10px] font-black tracking-widest uppercase text-sky-300/70">Akses Staf Medis</div>
-                    
-                    <a href="{{ route('staff.dashboard') }}"
-                        class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                        <i class="fas fa-tachometer-alt w-5 text-sky-400 text-sm"></i>
-                        <span>Dashboard Utama</span>
-                    </a>
-                    
-                    <a href="{{ route('staff.profile') }}"
-                        class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                        <i class="fas fa-user-cog w-5 text-slate-400 text-sm"></i>
-                        <span>Pengaturan Akun & Profil</span>
-                    </a>
-
-                    @if(auth()->user()->isAdmin() || strtolower(trim(auth()->user()->role?->name ?? '')) !== 'trainee')
-                        <a href="{{ route('staff.operations.index') }}"
-                            class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                            <i class="fas fa-file-medical w-5 text-emerald-400 text-sm"></i>
-                            <span>Rekam Medis Pasien</span>
-                        </a>
-                    @endif
-
-                    <a href="{{ route('staff.members.index') }}"
-                        class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                        <i class="fas fa-users w-5 text-cyan-400 text-sm"></i>
-                        <span>Daftar Anggota Staf</span>
-                    </a>
-
-                    @php
-                        try { $unreadMessagesCount = \App\Models\MemberMessage::where('receiver_id', auth()->id())->where('is_read', false)->count(); }
-                        catch (\Throwable $e) { $unreadMessagesCount = 0; }
-                    @endphp
-                    <a href="{{ route('staff.messages.index') }}"
-                        class="flex items-center justify-between text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                        <div class="flex items-center gap-3">
-                            <i class="fas fa-envelope w-5 text-indigo-400 text-sm"></i>
-                            <span>Pesan Internal</span>
-                        </div>
-                        @if($unreadMessagesCount > 0)
-                            <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse">{{ $unreadMessagesCount }}</span>
-                        @endif
-                    </a>
-
-                    <a href="{{ route('staff.voting.index') }}"
-                        class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                        <i class="fas fa-vote-yea w-5 text-purple-400 text-sm"></i>
-                        <span>Voting & Poll</span>
-                    </a>
-
-                    <a href="{{ route('staff.manager-evaluations.index') }}"
-                        class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                        <i class="fas fa-star w-5 text-amber-400 text-sm"></i>
-                        <span>Penilaian Manajer</span>
-                    </a>
-
-                    @if(auth()->user()->hasPermission('manage_payroll'))
-                        <a href="{{ route('admin.payroll.index') }}"
-                            class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                            <i class="fas fa-list w-5 text-emerald-400 text-sm"></i>
-                            <span>Kelola Penggajian</span>
+        <!-- Mobile Menu Drawer (Fixed Full-Height Under Navbar, 100% Scrollable) -->
+        <div id="mobile-menu" class="sm:hidden hidden fixed top-16 left-0 right-0 bottom-0 w-full bg-slate-950/98 backdrop-blur-3xl px-4 pt-4 pb-28 overflow-y-auto overscroll-contain shadow-2xl z-[99999] border-t border-sky-500/30" style="-webkit-overflow-scrolling: touch; touch-action: pan-y; height: calc(100dvh - 4rem); max-height: calc(100dvh - 4rem);">
+            <div class="space-y-3.5 pb-20">
+                
+                <!-- Quick Action PWA & Recruitment / Login -->
+                <div class="grid grid-cols-2 gap-2 pb-2 border-b border-white/10">
+                    <button type="button" onclick="triggerPwaInstall()"
+                        class="pwa-install-trigger flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-cyan-500 text-white text-xs font-bold shadow-md shadow-sky-500/20">
+                        <i class="fas fa-download text-amber-300 text-xs"></i>
+                        <span>Instal App</span>
+                    </button>
+                    @guest
+                        <a href="{{ route('staff.login') }}"
+                            class="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-sky-500/30 text-white text-xs font-bold border border-sky-400/40 hover:bg-sky-500/50 transition-all">
+                            <i class="fas fa-user-md text-xs"></i>
+                            <span>Login Staf</span>
                         </a>
                     @else
-                        <a href="{{ route('staff.payroll.index') }}"
-                            class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                            <i class="fas fa-money-bill-wave w-5 text-emerald-400 text-sm"></i>
-                            <span>Gaji Saya</span>
+                        <a href="{{ route('staff.dashboard') }}"
+                            class="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-emerald-500/30 text-white text-xs font-bold border border-emerald-400/40 hover:bg-emerald-500/50 transition-all">
+                            <i class="fas fa-tachometer-alt text-xs text-emerald-300"></i>
+                            <span>Dashboard</span>
                         </a>
-                    @endif
+                    @endguest
                 </div>
 
-                <!-- Section: Admin Panel (if permitted) -->
-                @if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('manage_doctor_schedules') || auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('view_attendance_reports') || auth()->user()->hasPermission('access_live_chat') || auth()->user()->hasPermission('access_feedback'))
-                    <div class="space-y-1 pt-2 border-t border-white/10">
-                        <div class="px-2 pt-1 text-[10px] font-black tracking-widest uppercase text-amber-300/80">Menu Administrator</div>
+                @auth
+                    <!-- User Profile Card in Mobile Menu -->
+                    <div class="bg-white/5 rounded-2xl p-3 border border-white/10">
+                        <a href="{{ route('staff.members.show', auth()->id()) }}" 
+                           class="flex items-center justify-between text-white hover:text-sky-200 transition-colors">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-sky-400 to-cyan-500 flex items-center justify-center text-white text-sm font-bold shrink-0 shadow-sm">
+                                    <i class="fas fa-user-md"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="text-xs font-bold text-white truncate">{{ auth()->user()->name }}</div>
+                                    <div class="text-[10px] text-sky-300 font-medium truncate">{{ auth()->user()->role?->display_name ?? 'Staf Medis' }}</div>
+                                </div>
+                            </div>
+                            <span class="text-[10px] text-sky-300 bg-sky-500/20 px-2 py-0.5 rounded-full border border-sky-400/30 font-semibold shrink-0">Profil &rarr;</span>
+                        </a>
+                    </div>
+
+                    <!-- Section: Navigasi Staf -->
+                    <div class="space-y-1">
+                        <div class="px-2 pt-1 text-[10px] font-black tracking-widest uppercase text-sky-300/70">Akses Staf Medis</div>
                         
-                        @if(auth()->user()->hasPermission('manage_users'))
-                            <a href="{{ route('admin.staff.index') }}"
+                        <a href="{{ route('staff.dashboard') }}"
+                            class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                            <i class="fas fa-tachometer-alt w-5 text-sky-400 text-sm"></i>
+                            <span>Dashboard Utama</span>
+                        </a>
+                        
+                        <a href="{{ route('staff.profile') }}"
+                            class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                            <i class="fas fa-user-cog w-5 text-slate-400 text-sm"></i>
+                            <span>Pengaturan Akun & Profil</span>
+                        </a>
+
+                        @if(auth()->user()->isAdmin() || strtolower(trim(auth()->user()->role?->name ?? '')) !== 'trainee')
+                            <a href="{{ route('staff.operations.index') }}"
                                 class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                                <i class="fas fa-users-cog w-5 text-amber-400 text-sm"></i>
-                                <span>Manajemen Staf</span>
+                                <i class="fas fa-file-medical w-5 text-emerald-400 text-sm"></i>
+                                <span>Rekam Medis Pasien</span>
                             </a>
                         @endif
 
-                        @if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('manage_doctor_schedules'))
-                            <a href="{{ route('admin.doctor-schedules.index') }}"
-                                class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                                <i class="fas fa-calendar-alt w-5 text-blue-400 text-sm"></i>
-                                <span>Kelola Jadwal Dokter</span>
-                            </a>
-                        @endif
+                        <a href="{{ route('staff.members.index') }}"
+                            class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                            <i class="fas fa-users w-5 text-cyan-400 text-sm"></i>
+                            <span>Daftar Anggota Staf</span>
+                        </a>
 
-                        @if(auth()->user()->hasPermission('access_live_chat'))
-                            <a href="{{ route('admin.chat.index') }}"
-                                class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                                <i class="fas fa-comments w-5 text-green-400 text-sm"></i>
-                                <span>Live Chat Pasien</span>
-                            </a>
-                        @endif
+                        @php
+                            try { $unreadMessagesCount = \App\Models\MemberMessage::where('receiver_id', auth()->id())->where('is_read', false)->count(); }
+                            catch (\Throwable $e) { $unreadMessagesCount = 0; }
+                        @endphp
+                        <a href="{{ route('staff.messages.index') }}"
+                            class="flex items-center justify-between text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-envelope w-5 text-indigo-400 text-sm"></i>
+                                <span>Pesan Internal</span>
+                            </div>
+                            @if($unreadMessagesCount > 0)
+                                <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse">{{ $unreadMessagesCount }}</span>
+                            @endif
+                        </a>
 
-                        @if(auth()->user()->hasPermission('access_feedback'))
-                            <a href="{{ route('admin.feedback.index') }}"
-                                class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                                <i class="fas fa-comment-dots w-5 text-orange-400 text-sm"></i>
-                                <span>Laporan & Feedback</span>
-                            </a>
-                        @endif
+                        <a href="{{ route('staff.voting.index') }}"
+                            class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                            <i class="fas fa-vote-yea w-5 text-purple-400 text-sm"></i>
+                            <span>Voting & Poll</span>
+                        </a>
 
-                        @if(auth()->user()->isAdmin())
-                            <a href="{{ route('admin.organizational-structure.index') }}"
-                                class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                                <i class="fas fa-sitemap w-5 text-teal-400 text-sm"></i>
-                                <span>Struktural EMS</span>
-                            </a>
-                            <a href="{{ route('admin.roles.permissions') }}"
-                                class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                                <i class="fas fa-shield-alt w-5 text-violet-400 text-sm"></i>
-                                <span>Role & Permissions</span>
-                            </a>
-                        @endif
+                        <a href="{{ route('staff.manager-evaluations.index') }}"
+                            class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                            <i class="fas fa-star w-5 text-amber-400 text-sm"></i>
+                            <span>Penilaian Manajer</span>
+                        </a>
 
-                        @if(auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('view_attendance_reports'))
-                            <a href="{{ route('admin.attendance-reports.index') }}"
+                        @if(auth()->user()->hasPermission('manage_payroll'))
+                            <a href="{{ route('admin.payroll.index') }}"
                                 class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                                <i class="fas fa-chart-bar w-5 text-sky-400 text-sm"></i>
-                                <span>Laporan Absensi</span>
+                                <i class="fas fa-list w-5 text-emerald-400 text-sm"></i>
+                                <span>Kelola Penggajian</span>
+                            </a>
+                        @else
+                            <a href="{{ route('staff.payroll.index') }}"
+                                class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                <i class="fas fa-money-bill-wave w-5 text-emerald-400 text-sm"></i>
+                                <span>Gaji Saya</span>
                             </a>
                         @endif
                     </div>
-                @endif
-            @endauth
 
-            <!-- Section: Layanan Publik & Pasien (Visible to both guest & auth) -->
-            <div class="space-y-1 pt-2 border-t border-white/10">
-                <div class="px-2 pt-1 text-[10px] font-black tracking-widest uppercase text-sky-300/70">Layanan Pasien & Warga</div>
-                
-                <a href="{{ route('public.index') }}"
-                    class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                    <i class="fas fa-home w-5 text-sky-400 text-sm"></i>
-                    <span>Beranda Utama</span>
-                </a>
+                    <!-- Section: Admin Panel (if permitted) -->
+                    @if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('manage_doctor_schedules') || auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('view_attendance_reports') || auth()->user()->hasPermission('access_live_chat') || auth()->user()->hasPermission('access_feedback'))
+                        <div class="space-y-1 pt-2 border-t border-white/10">
+                            <div class="px-2 pt-1 text-[10px] font-black tracking-widest uppercase text-amber-300/80">Menu Administrator</div>
+                            
+                            @if(auth()->user()->hasPermission('manage_users'))
+                                <a href="{{ route('admin.staff.index') }}"
+                                    class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                    <i class="fas fa-users-cog w-5 text-amber-400 text-sm"></i>
+                                    <span>Manajemen Staf</span>
+                                </a>
+                            @endif
 
-                <a href="{{ route('public.poli-umum') }}"
-                    class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                    <i class="fas fa-user-md w-5 text-cyan-400 text-sm"></i>
-                    <span>Form Dokter Poli Umum</span>
-                </a>
+                            @if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('manage_doctor_schedules'))
+                                <a href="{{ route('admin.doctor-schedules.index') }}"
+                                    class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                    <i class="fas fa-calendar-alt w-5 text-blue-400 text-sm"></i>
+                                    <span>Kelola Jadwal Dokter</span>
+                                </a>
+                            @endif
 
-                <a href="{{ route('public.cek-kesehatan') }}"
-                    class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                    <i class="fas fa-file-medical w-5 text-emerald-400 text-sm"></i>
-                    <span>Surat Keterangan Sehat</span>
-                </a>
+                            @if(auth()->user()->hasPermission('access_live_chat'))
+                                <a href="{{ route('admin.chat.index') }}"
+                                    class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                    <i class="fas fa-comments w-5 text-green-400 text-sm"></i>
+                                    <span>Live Chat Pasien</span>
+                                </a>
+                            @endif
 
-                <a href="{{ route('public.doctor-schedule') }}"
-                    class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                    <i class="fas fa-calendar-alt w-5 text-blue-400 text-sm"></i>
-                    <span>Jadwal Praktek Dokter</span>
-                </a>
+                            @if(auth()->user()->hasPermission('access_feedback'))
+                                <a href="{{ route('admin.feedback.index') }}"
+                                    class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                    <i class="fas fa-comment-dots w-5 text-orange-400 text-sm"></i>
+                                    <span>Laporan & Feedback</span>
+                                </a>
+                            @endif
 
-                <a href="{{ route('public.operasi-plastik') }}"
-                    class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                    <i class="fas fa-user-nurse w-5 text-rose-400 text-sm"></i>
-                    <span>Pendaftaran Operasi Plastik</span>
-                </a>
+                            @if(auth()->user()->isAdmin())
+                                <a href="{{ route('admin.organizational-structure.index') }}"
+                                    class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                    <i class="fas fa-sitemap w-5 text-teal-400 text-sm"></i>
+                                    <span>Struktural EMS</span>
+                                </a>
+                                <a href="{{ route('admin.roles.permissions') }}"
+                                    class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                    <i class="fas fa-shield-alt w-5 text-violet-400 text-sm"></i>
+                                    <span>Role & Permissions</span>
+                                </a>
+                            @endif
 
-                <a href="{{ route('public.surat-psikolog') }}"
-                    class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                    <i class="fas fa-brain w-5 text-purple-400 text-sm"></i>
-                    <span>Surat & Tes Psikologi</span>
-                </a>
+                            @if(auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('view_attendance_reports'))
+                                <a href="{{ route('admin.attendance-reports.index') }}"
+                                    class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                    <i class="fas fa-chart-bar w-5 text-sky-400 text-sm"></i>
+                                    <span>Laporan Absensi</span>
+                                </a>
+                            @endif
+                        </div>
+                    @endif
+                @endauth
 
-                <a href="{{ route('public.pendaftaran-karakter') }}"
-                    class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                    <i class="fas fa-heartbeat w-5 text-red-400 text-sm"></i>
-                    <span>Pendaftaran Karakter Kill</span>
-                </a>
+                <!-- Section: Layanan Publik & Pasien (Visible to both guest & auth) -->
+                <div class="space-y-1 pt-2 border-t border-white/10">
+                    <div class="px-2 pt-1 text-[10px] font-black tracking-widest uppercase text-sky-300/70">Layanan Pasien & Warga</div>
+                    
+                    <a href="{{ route('public.index') }}"
+                        class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                        <i class="fas fa-home w-5 text-sky-400 text-sm"></i>
+                        <span>Beranda Utama</span>
+                    </a>
 
-                <a href="{{ route('public.tes-buta-warna') }}"
-                    class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                    <i class="fas fa-eye w-5 text-amber-400 text-sm"></i>
-                    <span>Tes Buta Warna Online (WHO)</span>
-                </a>
+                    <a href="{{ route('public.poli-umum') }}"
+                        class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                        <i class="fas fa-user-md w-5 text-cyan-400 text-sm"></i>
+                        <span>Form Dokter Poli Umum</span>
+                    </a>
 
-                <a href="{{ route('public.index') }}#keluhan-warga"
-                    class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                    <i class="fas fa-bullhorn w-5 text-orange-400 text-sm"></i>
-                    <span>Form Keluhan & Pengaduan</span>
-                </a>
+                    <a href="{{ route('public.cek-kesehatan') }}"
+                        class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                        <i class="fas fa-file-medical w-5 text-emerald-400 text-sm"></i>
+                        <span>Surat Keterangan Sehat</span>
+                    </a>
 
-                @guest
-                    <button onclick="openRecruitmentModal()"
-                        class="w-full flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors text-left">
-                        <i class="fas fa-user-plus w-5 text-emerald-400 text-sm"></i>
-                        <span>Recruitment Calon Medis</span>
-                    </button>
-                @endguest
-            </div>
+                    <a href="{{ route('public.doctor-schedule') }}"
+                        class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                        <i class="fas fa-calendar-alt w-5 text-blue-400 text-sm"></i>
+                        <span>Jadwal Praktek Dokter</span>
+                    </a>
 
-            @auth
-                <!-- Logout Button -->
-                <div class="pt-2 border-t border-white/10">
-                    <form method="POST" action="{{ route('staff.logout') }}">
-                        @csrf
-                        <button type="submit"
-                            class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-red-500/20 hover:bg-red-500/30 text-red-300 hover:text-white text-xs font-bold border border-red-500/30 transition-all">
-                            <i class="fas fa-sign-out-alt"></i>
-                            <span>Keluar dari Akun</span>
+                    <a href="{{ route('public.operasi-plastik') }}"
+                        class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                        <i class="fas fa-user-nurse w-5 text-rose-400 text-sm"></i>
+                        <span>Pendaftaran Operasi Plastik</span>
+                    </a>
+
+                    <a href="{{ route('public.surat-psikolog') }}"
+                        class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                        <i class="fas fa-brain w-5 text-purple-400 text-sm"></i>
+                        <span>Surat & Tes Psikologi</span>
+                    </a>
+
+                    <a href="{{ route('public.pendaftaran-karakter') }}"
+                        class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                        <i class="fas fa-heartbeat w-5 text-red-400 text-sm"></i>
+                        <span>Pendaftaran Karakter Kill</span>
+                    </a>
+
+                    <a href="{{ route('public.tes-buta-warna') }}"
+                        class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                        <i class="fas fa-eye w-5 text-amber-400 text-sm"></i>
+                        <span>Tes Buta Warna Online (WHO)</span>
+                    </a>
+
+                    <a href="{{ route('public.index') }}#keluhan-warga"
+                        class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                        <i class="fas fa-bullhorn w-5 text-orange-400 text-sm"></i>
+                        <span>Form Keluhan & Pengaduan</span>
+                    </a>
+
+                    @guest
+                        <button onclick="openRecruitmentModal()"
+                            class="w-full flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors text-left">
+                            <i class="fas fa-user-plus w-5 text-emerald-400 text-sm"></i>
+                            <span>Recruitment Calon Medis</span>
                         </button>
-                    </form>
+                    @endguest
                 </div>
-            @endauth
-        </div>
+
+                @auth
+                    <!-- Logout Button -->
+                    <div class="pt-3 pb-8 border-t border-white/10">
+                        <form method="POST" action="{{ route('staff.logout') }}">
+                            @csrf
+                            <button type="submit"
+                                class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-red-500/25 hover:bg-red-500/40 text-red-200 hover:text-white text-sm font-bold border border-red-500/40 shadow-lg transition-all">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Keluar dari Akun (Logout)</span>
+                            </button>
+                        </form>
+                    </div>
+                @endauth
             </div>
         </div>
     </nav>
@@ -1949,8 +1948,17 @@
             const mobileMenu = document.getElementById('mobile-menu');
 
             if (mobileMenuButton && mobileMenu) {
-                mobileMenuButton.addEventListener('click', function () {
-                    mobileMenu.classList.toggle('hidden');
+                mobileMenuButton.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    const isHidden = mobileMenu.classList.contains('hidden');
+                    if (isHidden) {
+                        mobileMenu.classList.remove('hidden');
+                        document.body.style.overflow = 'hidden';
+                    } else {
+                        mobileMenu.classList.add('hidden');
+                        document.body.style.overflow = '';
+                    }
+
                     const icon = mobileMenuButton.querySelector('i');
                     if (icon) {
                         if (mobileMenu.classList.contains('hidden')) {
@@ -1961,6 +1969,19 @@
                             icon.classList.add('fa-times');
                         }
                     }
+                });
+
+                // Auto-close menu when clicking on any link inside
+                mobileMenu.querySelectorAll('a, button:not(.pwa-install-trigger)').forEach(el => {
+                    el.addEventListener('click', function () {
+                        mobileMenu.classList.add('hidden');
+                        document.body.style.overflow = '';
+                        const icon = mobileMenuButton.querySelector('i');
+                        if (icon) {
+                            icon.classList.remove('fa-times');
+                            icon.classList.add('fa-bars');
+                        }
+                    });
                 });
             }
         });
