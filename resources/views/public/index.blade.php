@@ -75,6 +75,9 @@
                             <button onclick="showRegulationModal()" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 text-sm font-semibold transition-all shadow-sm">
                                 Regulasi Pengobatan <i class="fas fa-file-alt text-xs text-red-600"></i>
                             </button>
+                            <a href="#keluhan-warga" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-sm font-bold transition-all shadow-sm hover:scale-105">
+                                <i class="fas fa-bullhorn text-xs text-red-600"></i> Form Keluhan Warga
+                            </a>
                         </div>
 
                         <!-- ANIMATED HOSPITAL LOGOS (iMe, Alta Hospital, Roxwood Hospital) -->
@@ -304,7 +307,203 @@
             </div>
 
             <!-- =========================================================
-                 4. WHY CHOOSE US (SIDE-BY-SIDE 2 COLUMNS)
+                 4. FORM KELUHAN & PENGADUAN WARGA (KOTAK ASPIRASI)
+            ========================================================= -->
+            <div id="keluhan-warga" class="p-6 sm:p-10 lg:p-12 bg-gradient-to-b from-slate-50/90 via-white to-red-50/40 relative overflow-hidden">
+                <div class="max-w-4xl mx-auto space-y-8">
+                    
+                    <!-- SECTION HEADER -->
+                    <div class="text-center space-y-3">
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-100/90 border border-red-200 text-xs font-bold text-red-700 shadow-sm">
+                            <i class="fas fa-bullhorn text-red-600 animate-pulse"></i>
+                            <span>LAYANAN PENGADUAN & KELUHAN WARGA</span>
+                        </div>
+                        <h2 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+                            Kotak Keluhan & Aspirasi Warga
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-600 max-w-xl mx-auto leading-relaxed">
+                            Punya keluhan terkait pelayanan, fasilitas rumah sakit, atau perilaku tenaga medis? Sampaikan di sini. Anda bisa mengirimkannya secara <strong>Anonim</strong> atau mencantumkan nama Anda.
+                        </p>
+                    </div>
+
+                    <!-- FLASH MESSAGE SUCCESS -->
+                    @if(session('feedback_success'))
+                        <div class="p-4 sm:p-5 rounded-2xl bg-emerald-50 border-2 border-emerald-300 text-emerald-900 shadow-lg flex items-start gap-3.5 animate-fade-in-up">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-lg shrink-0 shadow-md">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="flex-1 text-xs sm:text-sm">
+                                <strong class="font-black text-emerald-950 block text-sm mb-0.5">Pengaduan Berhasil Dikirim!</strong>
+                                <span>{{ session('feedback_success') }}</span>
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- FLASH MESSAGE ERRORS -->
+                    @if($errors->any())
+                        <div class="p-4 sm:p-5 rounded-2xl bg-rose-50 border-2 border-rose-300 text-rose-900 shadow-lg flex items-start gap-3.5 animate-fade-in-up">
+                            <div class="w-10 h-10 rounded-xl bg-rose-500 text-white flex items-center justify-center text-lg shrink-0 shadow-md">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="flex-1 text-xs sm:text-sm">
+                                <strong class="font-black text-rose-950 block text-sm mb-1">Mohon Lengkapi Formulir:</strong>
+                                <ul class="list-disc list-inside space-y-0.5 text-rose-800">
+                                    @foreach($errors->all() as $err)
+                                        <li>{{ $err }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- MAIN COMPLAINT FORM CARD -->
+                    <div class="bg-white rounded-3xl p-6 sm:p-8 lg:p-10 border border-slate-200/90 shadow-xl space-y-6">
+                        <form action="{{ route('feedback.submit') }}" method="POST" enctype="multipart/form-data" id="publicFeedbackForm" class="space-y-6">
+                            @csrf
+                            <input type="hidden" name="from_home" value="1">
+
+                            <!-- 1. PILIH JENIS PENGADUAN (RADIO TABS) -->
+                            <div class="space-y-2">
+                                <label class="block text-xs font-black uppercase tracking-wider text-slate-700">
+                                    Jenis Pengaduan <span class="text-red-500">*</span>
+                                </label>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <!-- Option: Laporan / Keluhan -->
+                                    <label class="relative flex items-center gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 has-[:checked]:border-red-500 has-[:checked]:bg-red-50/60 border-slate-200 hover:border-slate-300">
+                                        <input type="radio" name="type" value="laporan" class="w-4 h-4 text-red-600 focus:ring-red-500 border-slate-300" {{ old('type', 'laporan') === 'laporan' ? 'checked' : '' }}>
+                                        <div class="flex items-center gap-2.5">
+                                            <div class="w-8 h-8 rounded-xl bg-red-100 text-red-600 flex items-center justify-center text-sm font-bold">
+                                                <i class="fas fa-exclamation-triangle"></i>
+                                            </div>
+                                            <div>
+                                                <span class="text-xs sm:text-sm font-bold text-slate-900 block">Laporan / Keluhan</span>
+                                                <span class="text-[10px] text-slate-500 block">Komplain pelayanan, antrean, atau perilaku staf</span>
+                                            </div>
+                                        </div>
+                                    </label>
+
+                                    <!-- Option: Masukan / Saran -->
+                                    <label class="relative flex items-center gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50/60 border-slate-200 hover:border-slate-300">
+                                        <input type="radio" name="type" value="masukan" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500 border-slate-300" {{ old('type') === 'masukan' ? 'checked' : '' }}>
+                                        <div class="flex items-center gap-2.5">
+                                            <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm font-bold">
+                                                <i class="fas fa-lightbulb"></i>
+                                            </div>
+                                            <div>
+                                                <span class="text-xs sm:text-sm font-bold text-slate-900 block">Masukan / Saran</span>
+                                                <span class="text-[10px] text-slate-500 block">Ide perbaikan fasilitas atau sistem RS</span>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- 2. NAMA PENGIRIM & SUBJEK KELUHAN -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <!-- Nama Pengirim (Opsional) -->
+                                <div>
+                                    <div class="flex items-center justify-between mb-1.5">
+                                        <label for="feedback_name" class="text-xs font-black uppercase tracking-wider text-slate-700">
+                                            Nama Warga / Pelapor
+                                        </label>
+                                        <span class="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Opsional</span>
+                                    </div>
+                                    <div class="relative">
+                                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                            <i class="fas fa-user text-xs"></i>
+                                        </span>
+                                        <input type="text" id="feedback_name" name="name" value="{{ old('name') }}"
+                                            placeholder="Contoh: John Doe (Kosongkan jika Anonim)"
+                                            class="w-full pl-9 pr-3.5 py-3 rounded-2xl bg-slate-50 border border-slate-300 text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none transition-all">
+                                    </div>
+                                    <p class="text-[10px] text-slate-500 mt-1">Jika dikosongkan, laporan akan tercatat otomatis sebagai <strong>Warga Anonim</strong>.</p>
+                                </div>
+
+                                <!-- Subjek Keluhan -->
+                                <div>
+                                    <label for="feedback_subject" class="block text-xs font-black uppercase tracking-wider text-slate-700 mb-1.5">
+                                        Subjek / Topik Keluhan <span class="text-red-500">*</span>
+                                    </label>
+                                    <div class="relative">
+                                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                            <i class="fas fa-tag text-xs"></i>
+                                        </span>
+                                        <input type="text" id="feedback_subject" name="subject" value="{{ old('subject') }}"
+                                            list="subjectSuggestions"
+                                            required
+                                            placeholder="Contoh: Pelayanan lambat di Alta Hospital"
+                                            class="w-full pl-9 pr-3.5 py-3 rounded-2xl bg-slate-50 border border-slate-300 text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none transition-all">
+                                        <datalist id="subjectSuggestions">
+                                            <option value="Keluhan Pelayanan Antrean Alta Hospital">
+                                            <option value="Keluhan Pelayanan Roxwood Hospital">
+                                            <option value="Sikap / Perilaku Tenaga Medis">
+                                            <option value="Ketersediaan Dokter Spesialis & On-Duty">
+                                            <option value="Kendala Formulir Medis / Surat Kesehatan">
+                                            <option value="Masukan Fasilitas & Pelayanan Rumah Sakit">
+                                        </datalist>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 3. DETAIL KELUHAN (TEXTAREA) -->
+                            <div class="space-y-1.5">
+                                <label for="feedback_message" class="block text-xs font-black uppercase tracking-wider text-slate-700">
+                                    Detail Kronologi / Isi Keluhan <span class="text-red-500">*</span>
+                                </label>
+                                <textarea id="feedback_message" name="message" rows="4" required
+                                    placeholder="Jelaskan secara rinci kronologi keluhan, waktu kejadian, lokasi rumah sakit, serta nama staf terkait (jika ada)..."
+                                    class="w-full p-4 rounded-2xl bg-slate-50 border border-slate-300 text-xs sm:text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none transition-all leading-relaxed">{{ old('message') }}</textarea>
+                                <p class="text-[10px] text-slate-500">Mohon berikan informasi yang jelas dan santun agar dapat segera ditindaklanjuti oleh staf.</p>
+                            </div>
+
+                            <!-- 4. LAMPIRAN BUKTI GAMBAR (OPSIONAL) -->
+                            <div class="p-4 rounded-2xl bg-slate-50 border border-dashed border-slate-300 space-y-3">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                    <div>
+                                        <label for="feedback_image" class="text-xs font-bold text-slate-800 flex items-center gap-1.5 cursor-pointer">
+                                            <i class="fas fa-camera text-red-600"></i>
+                                            <span>Lampiran Bukti Foto / Screenshot</span>
+                                            <span class="text-[10px] font-normal text-slate-400">(Opsional)</span>
+                                        </label>
+                                        <span class="text-[10px] text-slate-500 block">Format: JPG, PNG, GIF (Maks. 5MB)</span>
+                                    </div>
+                                    <input type="file" id="feedback_image" name="image" accept="image/*"
+                                        onchange="previewFeedbackImage(this)"
+                                        class="text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-red-100 file:text-red-700 hover:file:bg-red-200 file:cursor-pointer cursor-pointer">
+                                </div>
+
+                                <!-- Image Preview Container -->
+                                <div id="feedbackImagePreview" class="hidden pt-2">
+                                    <div class="relative inline-block border border-slate-200 rounded-2xl overflow-hidden shadow-sm bg-white p-1">
+                                        <img id="feedbackPreviewImg" src="" alt="Preview Bukti" class="max-h-40 rounded-xl object-contain">
+                                        <button type="button" onclick="removeFeedbackImage()" class="absolute top-2 right-2 w-7 h-7 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow-md transition-all">
+                                            <i class="fas fa-times text-xs"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 5. SUBMIT BUTTON -->
+                            <div class="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
+                                <div class="flex items-center gap-2 text-xs text-slate-500">
+                                    <i class="fas fa-shield-alt text-emerald-600 text-sm"></i>
+                                    <span>Laporan Anda terenkripsi aman & rahasia.</span>
+                                </div>
+                                <button type="submit" id="submitFeedbackBtn"
+                                    class="w-full sm:w-auto px-8 py-3.5 rounded-full bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-700 hover:to-rose-800 text-white text-sm font-black shadow-lg shadow-red-600/30 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+                                    <i class="fas fa-paper-plane text-xs"></i>
+                                    <span>Kirim Pengaduan Sekarang</span>
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- =========================================================
+                 5. WHY CHOOSE US (SIDE-BY-SIDE 2 COLUMNS)
             ========================================================= -->
             <div class="p-6 sm:p-10 lg:p-12 bg-slate-50/80">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
@@ -549,6 +748,51 @@
         }, observerOptions);
 
         document.querySelectorAll('.reveal-on-scroll').forEach(el => scrollObserver.observe(el));
+
+        // Auto scroll to feedback section if there are errors or success
+        @if(session('feedback_success') || $errors->any())
+            const keluhanSec = document.getElementById('keluhan-warga');
+            if (keluhanSec) {
+                setTimeout(() => {
+                    keluhanSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 300);
+            }
+        @endif
+
+        // Handle feedback form submit loading state
+        const publicFeedbackForm = document.getElementById('publicFeedbackForm');
+        if (publicFeedbackForm) {
+            publicFeedbackForm.addEventListener('submit', function (e) {
+                const btn = document.getElementById('submitFeedbackBtn');
+                if (btn) {
+                    btn.disabled = true;
+                    btn.classList.add('opacity-75', 'cursor-not-allowed');
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Mengirim Laporan...</span>';
+                }
+            });
+        }
     });
+
+    function previewFeedbackImage(input) {
+        const previewImg = document.getElementById('feedbackPreviewImg');
+        const previewContainer = document.getElementById('feedbackImagePreview');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                if (previewImg) previewImg.src = e.target.result;
+                if (previewContainer) previewContainer.classList.remove('hidden');
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function removeFeedbackImage() {
+        const input = document.getElementById('feedback_image');
+        const previewImg = document.getElementById('feedbackPreviewImg');
+        const previewContainer = document.getElementById('feedbackImagePreview');
+        if (input) input.value = '';
+        if (previewImg) previewImg.src = '';
+        if (previewContainer) previewContainer.classList.add('hidden');
+    }
 </script>
 @endpush

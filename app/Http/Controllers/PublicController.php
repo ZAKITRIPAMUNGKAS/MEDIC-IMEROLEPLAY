@@ -1584,6 +1584,14 @@ class PublicController extends Controller
     }
 
     /**
+     * Show feedback success page
+     */
+    public function feedbackSuccess()
+    {
+        return view('feedback.success');
+    }
+
+    /**
      * Submit feedback
      */
     public function submitFeedback(Request $request)
@@ -1595,19 +1603,25 @@ class PublicController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120', // 5MB max
             'name' => 'nullable|string|max:100',
         ], [
-            'type.required' => 'Silakan pilih jenis laporan atau masukan.',
+            'type.required' => 'Silakan pilih jenis pengaduan (Laporan / Keluhan atau Masukan).',
             'type.in' => 'Jenis yang dipilih tidak valid.',
-            'subject.required' => 'Subjek harus diisi.',
+            'subject.required' => 'Subjek atau topik keluhan harus diisi.',
             'subject.max' => 'Subjek terlalu panjang (maksimal 255 karakter).',
-            'message.required' => 'Pesan harus diisi.',
+            'message.required' => 'Detail pesan keluhan harus diisi.',
             'message.max' => 'Pesan terlalu panjang (maksimal 5000 karakter).',
-            'image.image' => 'File harus berupa gambar.',
+            'image.image' => 'File lampiran harus berupa gambar.',
             'image.mimes' => 'Format gambar harus: JPEG, PNG, JPG, atau GIF.',
             'image.max' => 'Ukuran gambar maksimal 5MB.',
             'name.max' => 'Nama terlalu panjang (maksimal 100 karakter).',
         ]);
 
         if ($validator->fails()) {
+            if ($request->input('from_home')) {
+                return redirect()->to(url('/#keluhan-warga'))
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+
             return redirect()->back()
                 ->withErrors($validator)
                 ->withInput();
@@ -1627,7 +1641,7 @@ class PublicController extends Controller
         if (empty($data['name'])) {
             $latestTicket = \App\Models\Feedback::max('id') ?? 0;
             $ticketNumber = str_pad($latestTicket + 1, 4, '0', STR_PAD_LEFT);
-            $data['name'] = "Ticket #" . $ticketNumber;
+            $data['name'] = "Warga #" . $ticketNumber;
         }
 
         // Check for duplicate feedback (same subject and message from same name within last 5 minutes)
@@ -1638,19 +1652,28 @@ class PublicController extends Controller
             ->first();
 
         if ($duplicate) {
-            // Silently redirect to success as if it was submitted
+            if ($request->input('from_home')) {
+                return redirect()->to(url('/#keluhan-warga'))
+                    ->with('feedback_success', 'Pengaduan / Keluhan Anda telah diterima sebelumnya dan sedang ditinjau.');
+            }
             return redirect()->route('feedback.success');
         }
 
         // Create feedback
         \App\Models\Feedback::create([
             'name' => $data['name'],
+            'user_id' => auth()->check() ? auth()->id() : null,
             'type' => $data['type'],
             'subject' => $data['subject'],
             'message' => $data['message'],
             'image' => $data['image'] ?? null,
             'status' => 'new',
         ]);
+
+        if ($request->input('from_home')) {
+            return redirect()->to(url('/#keluhan-warga'))
+                ->with('feedback_success', 'Terima kasih! Pengaduan / keluhan Anda (' . e($data['name']) . ') telah berhasil dikirimkan ke pihak manajemen rumah sakit.');
+        }
 
         return redirect()->route('feedback.success');
     }

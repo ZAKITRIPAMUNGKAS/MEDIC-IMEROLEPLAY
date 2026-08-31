@@ -696,6 +696,47 @@
                 </div>
             @endif
 
+            {{-- Manager & Above: Kotak Keluhan & Pengaduan Warga Quick Access --}}
+            @if(auth()->user()->isManagerOrAbove())
+                @php
+                    $newFeedbackCount = \App\Models\Feedback::where('status', 'new')->count();
+                    $totalFeedbackCount = \App\Models\Feedback::count();
+                @endphp
+                <div class="card backdrop-blur-xl border-2 border-orange-400/60 rounded-3xl shadow-2xl elegant-card elegant-stagger overflow-hidden mb-8"
+                    style="background: linear-gradient(135deg, rgba(7, 89, 133, 0.95) 0%, rgba(194, 65, 12, 0.85) 100%);">
+                    <div class="p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-14 h-14 bg-gradient-to-br from-orange-400 to-red-500 rounded-2xl flex items-center justify-center text-white text-2xl shadow-xl shrink-0">
+                                <i class="fas fa-bullhorn animate-pulse"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="px-2.5 py-0.5 bg-orange-500 text-white text-[10px] font-black uppercase rounded-full tracking-wider shadow-sm">
+                                        KHUSUS JABATAN MANAGER KE ATAS
+                                    </span>
+                                    @if($newFeedbackCount > 0)
+                                        <span class="px-2.5 py-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full animate-bounce">
+                                            {{ $newFeedbackCount }} Pengaduan Baru
+                                        </span>
+                                    @endif
+                                </div>
+                                <h4 class="text-xl font-bold text-white">Laporan & Keluhan Warga</h4>
+                                <p class="text-xs text-sky-100 mt-0.5">
+                                    Tinjau masukan dan komplain yang dikirimkan warga melalui portal utama secara real-time.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="w-full md:w-auto flex items-center gap-3">
+                            <a href="{{ route('admin.feedback.index') }}"
+                                class="w-full md:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white hover:bg-orange-50 text-orange-700 text-xs font-black shadow-lg transition-all hover:scale-105">
+                                <i class="fas fa-inbox"></i>
+                                <span>Buka Kotak Pengaduan ({{ $totalFeedbackCount }})</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             @php
                 $weeklyHoursFormatted = optional($weeklyStats)->total_hours_formatted ?? '00:00:00';
                 $weeklyActiveDays = optional($weeklyStats)->total_days ?? 0;

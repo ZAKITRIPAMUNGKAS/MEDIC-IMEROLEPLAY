@@ -505,7 +505,13 @@ Route::post('/form/submit', [PublicController::class, 'submitForm'])->name('publ
 Route::post('/appointment/create', [PublicController::class, 'createAppointment'])->name('public.appointment.create');
 Route::get('/appointment/success/{id}', [PublicController::class, 'appointmentSuccess'])->name('public.appointment.success');
 
-// User Chat & Feedback Routes (Authentication Required)
+// Public Feedback / Keluhan & Pengaduan Warga Routes
+Route::get('/feedback', [PublicController::class, 'showFeedbackForm'])->name('feedback.form');
+Route::post('/feedback', [PublicController::class, 'submitFeedback'])->name('feedback.submit');
+Route::get('/feedback/success', [PublicController::class, 'feedbackSuccess'])->name('feedback.success');
+Route::get('/keluhan', [PublicController::class, 'showFeedbackForm'])->name('public.keluhan');
+
+// User Chat & Stickers Routes (Authentication Required)
 Route::middleware(['auth'])->group(function () {
     Route::get('/chat', function () {
         return view('chat.index');
@@ -514,10 +520,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/livechat', function () {
         return view('chat.livechat');
     })->name('chat.livechat');
-
-    Route::get('/feedback', [PublicController::class, 'showFeedbackForm'])->name('feedback.form');
-    Route::post('/feedback', [PublicController::class, 'submitFeedback'])->name('feedback.submit');
-    Route::get('/feedback/success', [PublicController::class, 'feedbackSuccess'])->name('feedback.success');
 
     // GIPHY & Custom Stickers API Routes
     Route::get('/api/stickers/trending', [\App\Http\Controllers\StickerController::class, 'trending']);

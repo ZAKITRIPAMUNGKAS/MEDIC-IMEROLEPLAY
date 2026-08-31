@@ -125,6 +125,15 @@ class User extends Authenticatable
         return $this->role && $this->role->name === 'admin';
     }
 
+    public function isManagerOrAbove(): bool
+    {
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        return (bool) ($this->role && $this->role->level >= 5);
+    }
+
     /**
      * Check if the user has a specific permission through their role.
      *
@@ -141,6 +150,13 @@ class User extends Authenticatable
         // Check custom user permissions first
         if (!empty($this->custom_permissions) && in_array($permission, $this->custom_permissions)) {
             return true;
+        }
+
+        // Jabatan Manager ke atas (level >= 5: Staff Manager, Manajer, Executive, Admin) dapat melihat Laporan & Keluhan
+        if ($permission === 'access_feedback') {
+            if ($this->role && $this->role->level >= 5) {
+                return true;
+            }
         }
 
         // Dokter Spesialis ke atas (level >= 4) dapat mengelola Jadwal Dokter

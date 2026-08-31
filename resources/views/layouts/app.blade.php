@@ -1346,12 +1346,13 @@
                         </a>
                     @endguest
 
-                    @auth
-                        {{-- User Badge --}}
-                        <div class="hidden xl:flex items-center gap-2 bg-white/10 border border-white/15 px-3 h-9 rounded-lg mr-1">
-                            <i class="fas fa-user-circle text-sky-300 text-sm"></i>
-                            <span class="text-white/90 text-xs font-medium max-w-[110px] truncate" title="{{ auth()->user()->name }}">{{ auth()->user()->name }}</span>
-                        </div>
+                        {{-- User Badge / Direct Link to Member Profile --}}
+                        <a href="{{ route('staff.members.show', auth()->id()) }}" 
+                           class="hidden xl:inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/15 hover:border-white/30 px-3 h-9 rounded-lg mr-1 transition-all duration-200 group" 
+                           title="Lihat Profil Anggota: {{ auth()->user()->name }}">
+                            <i class="fas fa-user-circle text-sky-300 group-hover:text-sky-200 text-sm"></i>
+                            <span class="text-white/90 group-hover:text-white text-xs font-medium max-w-[120px] truncate">{{ auth()->user()->name }}</span>
+                        </a>
 
                         {{-- Dashboard --}}
                         <a href="{{ route('staff.dashboard') }}" class="inline-flex items-center gap-1.5 h-9 px-3 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-lg border border-white/20 transition-all duration-200 whitespace-nowrap">
@@ -1401,7 +1402,7 @@
                                     </button>
                                     @if(auth()->user()->isAdmin() || strtolower(trim(auth()->user()->role?->name ?? '')) !== 'trainee')
                                         <a href="{{ route('staff.operations.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
-                                            <i class="fas fa-procedures w-4 text-emerald-500 text-sm"></i> Rekam Operasi
+                                            <i class="fas fa-file-medical w-4 text-emerald-500 text-sm"></i> Rekam Medis
                                         </a>
                                     @endif
                                 </div>
@@ -1508,7 +1509,14 @@
                 @endguest
 
                 @auth
-                    <div class="text-white text-sm font-medium px-3 py-2">Selamat datang, {{ auth()->user()->name }}</div>
+                    <a href="{{ route('staff.members.show', auth()->id()) }}" 
+                       class="flex items-center justify-between text-white hover:bg-white/10 text-sm font-semibold px-3 py-2.5 rounded-lg transition-colors border border-white/10 mb-1">
+                        <span class="flex items-center gap-2">
+                            <i class="fas fa-user-circle text-sky-300 text-base"></i>
+                            <span>{{ auth()->user()->name }}</span>
+                        </span>
+                        <span class="text-[10px] text-sky-200 bg-sky-500/20 px-2 py-0.5 rounded-full border border-sky-400/30 font-normal">Lihat Profil &rarr;</span>
+                    </a>
                     <a href="{{ route('staff.dashboard') }}"
                         class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
                             class="fas fa-tachometer-alt w-6 mr-2"></i>Dashboard</a>
@@ -1529,7 +1537,7 @@
                     @if(auth()->user()->isAdmin() || strtolower(trim(auth()->user()->role?->name ?? '')) !== 'trainee')
                     <a href="{{ route('staff.operations.index') }}"
                         class="text-gray-300 hover:bg-white/10 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><i
-                            class="fas fa-procedures w-6 mr-2 text-emerald-300"></i>Rekam Operasi</a>
+                            class="fas fa-file-medical w-6 mr-2 text-emerald-300"></i>Rekam Medis</a>
                     @endif
                     @if(auth()->user()->hasPermission('access_live_chat'))
                         <a href="{{ route('admin.chat.index') }}"
