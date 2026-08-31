@@ -1681,7 +1681,7 @@ class PublicController extends Controller
             'status' => 'new',
         ]);
 
-        $rsName = ($data['hospital'] === 'roxwood') ? 'Roxwood Hospital' : 'Alta Street Hospital';
+        $rsName = ($data['hospital'] === 'roxwood') ? 'Roxwood Hospital' : 'Alta Hospital';
 
         if ($request->input('from_home')) {
             return redirect()->to(url('/#keluhan-warga'))

@@ -119,7 +119,7 @@ class TelegramService
     {
         $emoji = $type === 'laporan' ? '⚠️' : '💡';
         $typeLabel = $type === 'laporan' ? 'Laporan / Keluhan' : 'Masukan / Saran';
-        $hospitalLabel = $hospital === 'roxwood' ? '🏥 Roxwood Hospital' : '🏥 Alta Street Hospital';
+        $hospitalLabel = $hospital === 'roxwood' ? '🏥 Roxwood Hospital' : '🏥 Alta Hospital';
         $reporterLabel = $reporterType === 'medic' ? '🩺 Staf Medic (Internal)' : '👤 Warga / Pasien (Publik)';
 
         $notification = "{$emoji} <b>{$typeLabel} Baru!</b>\n\n";

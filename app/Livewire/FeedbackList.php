@@ -37,17 +37,36 @@ class FeedbackList extends Component
 
     public function loadFeedback()
     {
-        $query = Feedback::with(['user', 'reviewer']);
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('feedback', 'hospital')) {
+                \Illuminate\Support\Facades\Schema::table('feedback', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->string('hospital')->default('alta')->nullable();
+                });
+            }
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('feedback', 'reporter_type')) {
+                \Illuminate\Support\Facades\Schema::table('feedback', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->string('reporter_type')->default('warga')->nullable();
+                });
+            }
+        } catch (\Throwable $e) {
+            // Ignore schema alter exception
+        }
 
-        // Apply filters
-        $query->status($this->filterStatus);
-        $query->type($this->filterType);
-        $query->hospital($this->filterHospital);
-        $query->reporterType($this->filterReporterType);
+        try {
+            $query = Feedback::with(['user', 'reviewer']);
 
-        $this->feedbackList = $query->orderBy('status', 'asc') // New first
-            ->orderBy('created_at', 'desc')
-            ->get();
+            // Apply filters
+            $query->status($this->filterStatus);
+            $query->type($this->filterType);
+            $query->hospital($this->filterHospital);
+            $query->reporterType($this->filterReporterType);
+
+            $this->feedbackList = $query->orderBy('status', 'asc') // New first
+                ->orderBy('created_at', 'desc')
+                ->get();
+        } catch (\Throwable $e) {
+            $this->feedbackList = Feedback::orderBy('created_at', 'desc')->get();
+        }
     }
 
     public function selectFeedback($id)

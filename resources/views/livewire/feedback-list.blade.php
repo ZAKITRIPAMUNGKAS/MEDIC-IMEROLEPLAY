@@ -16,7 +16,7 @@
                     style="color: #0f172a !important;"
                     class="w-full px-2.5 md:px-3 py-1.5 md:py-2 rounded-lg border border-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 outline-none text-xs md:text-sm bg-white font-medium">
                     <option value="all">🏥 Semua Rumah Sakit</option>
-                    <option value="alta">🏥 Alta Street Hospital</option>
+                    <option value="alta">🏥 Alta Hospital</option>
                     <option value="roxwood">🏥 Roxwood Hospital</option>
                 </select>
 
@@ -73,7 +73,7 @@
                                     </span>
                                     <span class="text-slate-300">•</span>
                                     <span class="px-1.5 py-0.2 rounded text-[9px] font-bold {{ ($feedback->hospital ?? 'alta') === 'roxwood' ? 'bg-amber-100 text-amber-800' : 'bg-sky-100 text-sky-800' }}">
-                                        {{ ($feedback->hospital ?? 'alta') === 'roxwood' ? 'Roxwood' : 'Alta' }}
+                                        {{ ($feedback->hospital ?? 'alta') === 'roxwood' ? 'Roxwood' : 'Alta Hospital' }}
                                     </span>
                                     <span class="px-1.5 py-0.2 rounded text-[9px] font-bold {{ ($feedback->reporter_type ?? 'warga') === 'medic' ? 'bg-purple-100 text-purple-800' : 'bg-slate-100 text-slate-700' }}">
                                         {{ ($feedback->reporter_type ?? 'warga') === 'medic' ? 'Medic' : 'Warga' }}
@@ -131,7 +131,7 @@
                     <div class="flex-1 min-w-0">
                         <div class="flex items-center gap-2 mb-1">
                             <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider {{ ($selectedFeedback->hospital ?? 'alta') === 'roxwood' ? 'bg-amber-500 text-white' : 'bg-sky-600 text-white' }}">
-                                🏥 {{ ($selectedFeedback->hospital ?? 'alta') === 'roxwood' ? 'Roxwood Hospital' : 'Alta Street Hospital' }}
+                                🏥 {{ ($selectedFeedback->hospital ?? 'alta') === 'roxwood' ? 'Roxwood Hospital' : 'Alta Hospital' }}
                             </span>
                             <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider {{ ($selectedFeedback->reporter_type ?? 'warga') === 'medic' ? 'bg-purple-600 text-white' : 'bg-slate-700 text-white' }}">
                                 {{ ($selectedFeedback->reporter_type ?? 'warga') === 'medic' ? '🩺 Staf Medic (Internal)' : '👤 Warga / Pasien' }}

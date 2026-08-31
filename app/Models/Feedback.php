@@ -72,7 +72,21 @@ class Feedback extends Model
     public function scopeHospital($query, $hospital)
     {
         if ($hospital && $hospital !== 'all') {
-            return $query->where('hospital', $hospital);
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasColumn('feedback', 'hospital')) {
+                    if ($hospital === 'alta') {
+                        return $query->where(function($q) {
+                            $q->where('hospital', 'alta')
+                              ->orWhere('hospital', 'Alta Hospital')
+                              ->orWhere('hospital', 'Alta Street Hospital')
+                              ->orWhereNull('hospital');
+                        });
+                    }
+                    return $query->where('hospital', $hospital);
+                }
+            } catch (\Throwable $e) {
+                // Return query as is if column does not exist
+            }
         }
         return $query;
     }
@@ -83,7 +97,19 @@ class Feedback extends Model
     public function scopeReporterType($query, $reporterType)
     {
         if ($reporterType && $reporterType !== 'all') {
-            return $query->where('reporter_type', $reporterType);
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasColumn('feedback', 'reporter_type')) {
+                    if ($reporterType === 'warga') {
+                        return $query->where(function($q) {
+                            $q->where('reporter_type', 'warga')
+                              ->orWhereNull('reporter_type');
+                        });
+                    }
+                    return $query->where('reporter_type', $reporterType);
+                }
+            } catch (\Throwable $e) {
+                // Return query as is if column does not exist
+            }
         }
         return $query;
     }

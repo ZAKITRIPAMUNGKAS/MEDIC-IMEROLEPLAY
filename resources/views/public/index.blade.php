@@ -322,7 +322,7 @@
                             Kotak Keluhan & Aspirasi Pelayanan
                         </h2>
                         <p class="text-xs sm:text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed">
-                            Layanan penyampaian pengaduan, kritik, dan saran untuk <strong>Alta Street Hospital</strong> & <strong>Roxwood Hospital</strong>. Terbuka untuk seluruh <strong>Warga/Pasien</strong> maupun laporan internal <strong>Staf Medic</strong> (bisa dikirim secara <strong>Anonim</strong>).
+                            Layanan penyampaian pengaduan, kritik, dan saran untuk <strong>Alta Hospital</strong> & <strong>Roxwood Hospital</strong>. Terbuka untuk seluruh <strong>Warga/Pasien</strong> maupun laporan internal <strong>Staf Medic</strong> (bisa dikirim secara <strong>Anonim</strong>).
                         </p>
                     </div>
 
@@ -371,7 +371,7 @@
                                     <span class="text-[11px] text-slate-500 font-medium">Pilih rumah sakit terkait keluhan Anda</span>
                                 </div>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                                    <!-- Option: Alta Street Hospital -->
+                                    <!-- Option: Alta Hospital -->
                                     <label class="relative flex items-start gap-3.5 p-4 sm:p-5 rounded-2xl border-2 cursor-pointer transition-all duration-200 has-[:checked]:border-sky-500 has-[:checked]:bg-sky-50/70 has-[:checked]:ring-2 has-[:checked]:ring-sky-500/20 border-slate-200 hover:border-slate-300 group">
                                         <input type="radio" name="hospital" value="alta" class="w-4 h-4 text-sky-600 focus:ring-sky-500 border-slate-300 mt-1" {{ old('hospital', 'alta') === 'alta' ? 'checked' : '' }}>
                                         <div class="flex-1">
@@ -379,7 +379,7 @@
                                                 <div class="w-7 h-7 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center text-xs font-bold">
                                                     <i class="fas fa-hospital-alt"></i>
                                                 </div>
-                                                <span class="text-sm sm:text-base font-black text-slate-900">Alta Street Hospital</span>
+                                                <span class="text-sm sm:text-base font-black text-slate-900">Alta Hospital</span>
                                             </div>
                                             <p class="text-[11px] text-slate-500 leading-snug">Rumah Sakit Utama Kota (Central Hospital, Los Santos EMS)</p>
                                         </div>
