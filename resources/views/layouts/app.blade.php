@@ -1295,8 +1295,12 @@
                 right: 20px;
                 width: auto;
                 max-width: none;
-                top: 70px;
-            }
+        /* Solid Navigation Background - 100% Non-Transparent */
+        nav,
+        #mobile-menu {
+            background-color: #0b1329 !important;
+            background: #0b1329 !important;
+            opacity: 1 !important;
         }
     </style>
     @stack('styles')
@@ -1304,7 +1308,7 @@
 
 <body class="min-h-screen">
     <!-- Navigation -->
-    <nav class="glass-effect fixed w-full top-0 z-[9999]">
+    <nav class="fixed w-full top-0 z-[9999]" style="background-color: #0b1329 !important; background: #0b1329 !important; border-bottom: 1px solid rgba(14, 165, 233, 0.3);">
         <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
 
@@ -1492,8 +1496,8 @@
             </div>
         </div>
 
-        <!-- Mobile Menu Drawer (Fixed Full-Height Under Navbar, 100% Scrollable) -->
-        <div id="mobile-menu" class="sm:hidden hidden fixed top-16 left-0 right-0 bottom-0 w-full bg-slate-950/98 backdrop-blur-3xl px-4 pt-4 pb-28 overflow-y-auto overscroll-contain shadow-2xl z-[99999] border-t border-sky-500/30" style="-webkit-overflow-scrolling: touch; touch-action: pan-y; height: calc(100dvh - 4rem); max-height: calc(100dvh - 4rem);">
+        <!-- Mobile Menu Drawer (Fixed Full-Height Under Navbar, 100% Solid & Non-Transparent) -->
+        <div id="mobile-menu" class="sm:hidden hidden fixed top-16 left-0 right-0 bottom-0 w-full px-4 pt-4 pb-28 overflow-y-auto overscroll-contain shadow-2xl z-[99999] border-t border-sky-500/40" style="background-color: #0b1329 !important; background: #0b1329 !important; -webkit-overflow-scrolling: touch; touch-action: pan-y; height: calc(100dvh - 4rem); max-height: calc(100dvh - 4rem); opacity: 1 !important;">
             <div class="space-y-3.5 pb-20">
                 
                 <!-- Quick Action PWA & Recruitment / Login -->
