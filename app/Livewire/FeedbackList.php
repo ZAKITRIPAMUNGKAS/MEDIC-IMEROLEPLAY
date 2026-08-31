@@ -21,14 +21,29 @@ class FeedbackList extends Component
 
     public function mount()
     {
-        if (!Auth::user()->hasPermission('access_feedback')) {
+        $user = Auth::user();
+        if (!$user || !$user->hasPermission('access_feedback')) {
             abort(403, 'Unauthorized');
         }
+
+        // Set default hospital filter based on user's assignment
+        if (!$user->isAdmin()) {
+            $this->filterHospital = $user->isRoxwood() ? 'roxwood' : 'alta';
+        } else {
+            $this->filterHospital = 'all';
+        }
+
         $this->loadFeedback();
     }
 
     public function updated($propertyName)
     {
+        $user = Auth::user();
+        if ($user && !$user->isAdmin()) {
+            // Lock hospital to user's branch for non-admins
+            $this->filterHospital = $user->isRoxwood() ? 'roxwood' : 'alta';
+        }
+
         if (in_array($propertyName, ['filterStatus', 'filterType', 'filterHospital', 'filterReporterType'])) {
             $this->loadFeedback();
             $this->selectedFeedback = null;
@@ -53,12 +68,28 @@ class FeedbackList extends Component
         }
 
         try {
+            $user = Auth::user();
             $query = Feedback::with(['user', 'reviewer']);
 
-            // Apply filters
+            // Strict hospital isolation for non-admins
+            if ($user && !$user->isAdmin()) {
+                if ($user->isRoxwood()) {
+                    $query->where('hospital', 'roxwood');
+                } else {
+                    $query->where(function($q) {
+                        $q->where('hospital', 'alta')
+                          ->orWhere('hospital', 'Alta Hospital')
+                          ->orWhere('hospital', 'Alta Street Hospital')
+                          ->orWhereNull('hospital');
+                    });
+                }
+            } else {
+                $query->hospital($this->filterHospital);
+            }
+
+            // Apply other filters
             $query->status($this->filterStatus);
             $query->type($this->filterType);
-            $query->hospital($this->filterHospital);
             $query->reporterType($this->filterReporterType);
 
             $this->feedbackList = $query->orderBy('status', 'asc') // New first
@@ -72,8 +103,23 @@ class FeedbackList extends Component
     public function selectFeedback($id)
     {
         Log::info("Selecting feedback ID: " . $id);
-        $this->selectedFeedback = Feedback::with(['user', 'reviewer'])->find($id);
-        $this->adminNotes = $this->selectedFeedback?->notes ?? '';
+        $feedback = Feedback::with(['user', 'reviewer'])->find($id);
+        
+        if ($feedback) {
+            $user = Auth::user();
+            if ($user && !$user->isAdmin()) {
+                // Prevent viewing feedback from the other hospital
+                if ($user->isRoxwood() && ($feedback->hospital ?? 'alta') !== 'roxwood') {
+                    return;
+                }
+                if ($user->isAlta() && ($feedback->hospital ?? 'alta') === 'roxwood') {
+                    return;
+                }
+            }
+            
+            $this->selectedFeedback = $feedback;
+            $this->adminNotes = $this->selectedFeedback?->notes ?? '';
+        }
     }
 
     public function markAsReviewed()
@@ -134,6 +180,16 @@ class FeedbackList extends Component
         $feedback = Feedback::find($id);
 
         if ($feedback) {
+            $user = Auth::user();
+            if ($user && !$user->isAdmin()) {
+                if ($user->isRoxwood() && ($feedback->hospital ?? 'alta') !== 'roxwood') {
+                    return;
+                }
+                if ($user->isAlta() && ($feedback->hospital ?? 'alta') === 'roxwood') {
+                    return;
+                }
+            }
+
             $feedback->delete();
 
             if ($this->selectedFeedback && $this->selectedFeedback->id == $id) {
@@ -146,14 +202,30 @@ class FeedbackList extends Component
 
     public function render()
     {
+        $user = Auth::user();
+        $statsQuery = Feedback::query();
+
+        if ($user && !$user->isAdmin()) {
+            if ($user->isRoxwood()) {
+                $statsQuery->where('hospital', 'roxwood');
+            } else {
+                $statsQuery->where(function($q) {
+                    $q->where('hospital', 'alta')
+                      ->orWhere('hospital', 'Alta Hospital')
+                      ->orWhere('hospital', 'Alta Street Hospital')
+                      ->orWhereNull('hospital');
+                });
+            }
+        }
+
         // Get statistics
         $stats = [
-            'total' => Feedback::count(),
-            'new' => Feedback::where('status', 'new')->count(),
-            'reviewed' => Feedback::where('status', 'reviewed')->count(),
-            'resolved' => Feedback::where('status', 'resolved')->count(),
-            'laporan' => Feedback::where('type', 'laporan')->count(),
-            'masukan' => Feedback::where('type', 'masukan')->count(),
+            'total' => (clone $statsQuery)->count(),
+            'new' => (clone $statsQuery)->where('status', 'new')->count(),
+            'reviewed' => (clone $statsQuery)->where('status', 'reviewed')->count(),
+            'resolved' => (clone $statsQuery)->where('status', 'resolved')->count(),
+            'laporan' => (clone $statsQuery)->where('type', 'laporan')->count(),
+            'masukan' => (clone $statsQuery)->where('type', 'masukan')->count(),
         ];
 
         return view('livewire.feedback-list', compact('stats'));

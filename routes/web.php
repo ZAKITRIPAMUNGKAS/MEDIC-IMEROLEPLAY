@@ -846,12 +846,28 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
         return view('admin.chat.index');
     })->middleware('permission:access_live_chat')->name('chat.index');
 
-    // Feedback Management (Permission-based access)
+    // Feedback Management (Permission-based access with Hospital Isolation)
     Route::get('/feedback', function () {
-        $totalFeedback = \App\Models\Feedback::count();
-        $newFeedback = \App\Models\Feedback::where('status', 'new')->count();
-        $kritikCount = \App\Models\Feedback::where('type', 'laporan')->count();
-        $saranCount = \App\Models\Feedback::where('type', 'masukan')->count();
+        $user = Auth::user();
+        $query = \App\Models\Feedback::query();
+
+        if (!$user->isAdmin()) {
+            if ($user->isRoxwood()) {
+                $query->where('hospital', 'roxwood');
+            } else {
+                $query->where(function($q) {
+                    $q->where('hospital', 'alta')
+                      ->orWhere('hospital', 'Alta Hospital')
+                      ->orWhere('hospital', 'Alta Street Hospital')
+                      ->orWhereNull('hospital');
+                });
+            }
+        }
+
+        $totalFeedback = (clone $query)->count();
+        $newFeedback = (clone $query)->where('status', 'new')->count();
+        $kritikCount = (clone $query)->where('type', 'laporan')->count();
+        $saranCount = (clone $query)->where('type', 'masukan')->count();
 
         return view('admin.feedback.index', compact('totalFeedback', 'newFeedback', 'kritikCount', 'saranCount'));
     })->middleware('permission:access_feedback')->name('feedback.index');

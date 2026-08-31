@@ -12,13 +12,20 @@
 
             <div class="space-y-1.5 md:space-y-2">
                 <!-- Hospital Filter -->
-                <select wire:model.live="filterHospital"
-                    style="color: #0f172a !important;"
-                    class="w-full px-2.5 md:px-3 py-1.5 md:py-2 rounded-lg border border-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 outline-none text-xs md:text-sm bg-white font-medium">
-                    <option value="all">🏥 Semua Rumah Sakit</option>
-                    <option value="alta">🏥 Alta Hospital</option>
-                    <option value="roxwood">🏥 Roxwood Hospital</option>
-                </select>
+                @if(auth()->check() && auth()->user()->isAdmin())
+                    <select wire:model.live="filterHospital"
+                        style="color: #0f172a !important;"
+                        class="w-full px-2.5 md:px-3 py-1.5 md:py-2 rounded-lg border border-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 outline-none text-xs md:text-sm bg-white font-medium">
+                        <option value="all">🏥 Semua Rumah Sakit</option>
+                        <option value="alta">🏥 Alta Hospital</option>
+                        <option value="roxwood">🏥 Roxwood Hospital</option>
+                    </select>
+                @else
+                    <div class="px-2.5 md:px-3 py-1.5 md:py-2 rounded-lg border border-slate-200 bg-slate-100/90 text-xs md:text-sm font-bold flex items-center justify-between text-slate-700">
+                        <span>🏥 {{ (auth()->check() && auth()->user()->isRoxwood()) ? 'Roxwood Hospital' : 'Alta Hospital' }}</span>
+                        <span class="text-[10px] text-slate-500 font-semibold flex items-center gap-1 bg-white px-1.5 py-0.5 rounded border border-slate-200"><i class="fas fa-lock text-amber-500 text-[9px]"></i> Unit Anda</span>
+                    </div>
+                @endif
 
                 <!-- Reporter Type Filter -->
                 <select wire:model.live="filterReporterType"
