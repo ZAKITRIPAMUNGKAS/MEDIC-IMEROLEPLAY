@@ -1345,7 +1345,8 @@
                             <i class="fas fa-user-md text-sm"></i><span>Login Staf</span>
                         </a>
                     @endguest
-
+                    
+                    @auth
                         {{-- User Badge / Direct Link to Member Profile --}}
                         <a href="{{ route('staff.members.show', auth()->id()) }}" 
                            class="hidden xl:inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/15 hover:border-white/30 px-3 h-9 rounded-lg mr-1 transition-all duration-200 group" 

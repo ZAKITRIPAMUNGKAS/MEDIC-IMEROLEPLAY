@@ -297,6 +297,38 @@ Route::get('/auto-setup-db', function () {
             $logs[] = 'ℹ️ Tabel member_messages sudah ada.';
         }
 
+        if (!\Illuminate\Support\Facades\Schema::hasTable('feedback')) {
+            \Illuminate\Support\Facades\Schema::create('feedback', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->id();
+                $table->string('name')->nullable();
+                $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+                $table->string('type')->default('laporan');
+                $table->string('subject');
+                $table->text('message');
+                $table->string('image')->nullable();
+                $table->string('status')->default('new');
+                $table->foreignId('reviewed_by')->nullable()->constrained('users')->nullOnDelete();
+                $table->timestamp('reviewed_at')->nullable();
+                $table->text('notes')->nullable();
+                $table->timestamps();
+            });
+            $logs[] = '✅ Tabel feedback berhasil dibuat.';
+        } else {
+            $logs[] = 'ℹ️ Tabel feedback sudah ada.';
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('feedback', 'image')) {
+                \Illuminate\Support\Facades\Schema::table('feedback', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->string('image')->nullable()->after('message');
+                });
+                $logs[] = '✅ Kolom image berhasil ditambahkan ke tabel feedback.';
+            }
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('feedback', 'user_id')) {
+                \Illuminate\Support\Facades\Schema::table('feedback', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete()->after('name');
+                });
+                $logs[] = '✅ Kolom user_id berhasil ditambahkan ke tabel feedback.';
+            }
+        }
+
         $logs[] = '';
         $logs[] = '🎉 DATABASE SETUP BERHASIL 100%! SILAKAN KEMBALI KE HALAMAN UTAMA / REFRESH WEBSITE ANDA.';
     } catch (\Exception $e) {

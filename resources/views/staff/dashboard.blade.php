@@ -699,8 +699,13 @@
             {{-- Manager & Above: Kotak Keluhan & Pengaduan Warga Quick Access --}}
             @if(auth()->user()->isManagerOrAbove())
                 @php
-                    $newFeedbackCount = \App\Models\Feedback::where('status', 'new')->count();
-                    $totalFeedbackCount = \App\Models\Feedback::count();
+                    try {
+                        $newFeedbackCount = \App\Models\Feedback::where('status', 'new')->count();
+                        $totalFeedbackCount = \App\Models\Feedback::count();
+                    } catch (\Throwable $e) {
+                        $newFeedbackCount = 0;
+                        $totalFeedbackCount = 0;
+                    }
                 @endphp
                 <div class="card backdrop-blur-xl border-2 border-orange-400/60 rounded-3xl shadow-2xl elegant-card elegant-stagger overflow-hidden mb-8"
                     style="background: linear-gradient(135deg, rgba(7, 89, 133, 0.95) 0%, rgba(194, 65, 12, 0.85) 100%);">
