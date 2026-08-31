@@ -115,18 +115,19 @@ class TelegramService
         return $this->sendNotification($notification);
     }
 
-    /**
-     * Send notification for new feedback
-     */
-    public function notifyNewFeedback(string $type, string $subject, string $from, string $url): bool
+    public function notifyNewFeedback(string $type, string $subject, string $from, string $url, string $hospital = 'alta', string $reporterType = 'warga'): bool
     {
         $emoji = $type === 'laporan' ? '⚠️' : '💡';
-        $typeLabel = $type === 'laporan' ? 'Laporan' : 'Masukan';
+        $typeLabel = $type === 'laporan' ? 'Laporan / Keluhan' : 'Masukan / Saran';
+        $hospitalLabel = $hospital === 'roxwood' ? '🏥 Roxwood Hospital' : '🏥 Alta Street Hospital';
+        $reporterLabel = $reporterType === 'medic' ? '🩺 Staf Medic (Internal)' : '👤 Warga / Pasien (Publik)';
 
         $notification = "{$emoji} <b>{$typeLabel} Baru!</b>\n\n";
+        $notification .= "🏥 <b>Rumah Sakit:</b> {$hospitalLabel}\n";
+        $notification .= "👥 <b>Kategori:</b> {$reporterLabel}\n";
         $notification .= "📋 <b>Subjek:</b> {$this->escapeHtml($subject)}\n";
-        $notification .= "👤 <b>Dari:</b> {$this->escapeHtml($from)}\n";
-        $notification .= "\n🔗 <a href=\"{$url}\">Lihat Detail</a>";
+        $notification .= "👤 <b>Pelapor:</b> {$this->escapeHtml($from)}\n";
+        $notification .= "\n🔗 <a href=\"{$url}\">Buka Panel Feedback</a>";
 
         return $this->sendNotification($notification);
     }

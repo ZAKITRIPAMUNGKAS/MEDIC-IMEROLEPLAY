@@ -12,6 +12,8 @@ class Feedback extends Model
     protected $fillable = [
         'name',
         'user_id',
+        'hospital',
+        'reporter_type',
         'type',
         'subject',
         'message',
@@ -60,6 +62,28 @@ class Feedback extends Model
     {
         if ($type && $type !== 'all') {
             return $query->where('type', $type);
+        }
+        return $query;
+    }
+
+    /**
+     * Scope to filter by hospital
+     */
+    public function scopeHospital($query, $hospital)
+    {
+        if ($hospital && $hospital !== 'all') {
+            return $query->where('hospital', $hospital);
+        }
+        return $query;
+    }
+
+    /**
+     * Scope to filter by reporter type
+     */
+    public function scopeReporterType($query, $reporterType)
+    {
+        if ($reporterType && $reporterType !== 'all') {
+            return $query->where('reporter_type', $reporterType);
         }
         return $query;
     }

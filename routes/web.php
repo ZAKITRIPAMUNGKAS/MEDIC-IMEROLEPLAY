@@ -302,6 +302,8 @@ Route::get('/auto-setup-db', function () {
                 $table->id();
                 $table->string('name')->nullable();
                 $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+                $table->string('hospital')->default('alta'); // alta, roxwood
+                $table->string('reporter_type')->default('warga'); // warga, medic
                 $table->string('type')->default('laporan');
                 $table->string('subject');
                 $table->text('message');
@@ -315,6 +317,18 @@ Route::get('/auto-setup-db', function () {
             $logs[] = '✅ Tabel feedback berhasil dibuat.';
         } else {
             $logs[] = 'ℹ️ Tabel feedback sudah ada.';
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('feedback', 'hospital')) {
+                \Illuminate\Support\Facades\Schema::table('feedback', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->string('hospital')->default('alta')->after('user_id');
+                });
+                $logs[] = '✅ Kolom hospital berhasil ditambahkan ke tabel feedback.';
+            }
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('feedback', 'reporter_type')) {
+                \Illuminate\Support\Facades\Schema::table('feedback', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->string('reporter_type')->default('warga')->after('hospital');
+                });
+                $logs[] = '✅ Kolom reporter_type berhasil ditambahkan ke tabel feedback.';
+            }
             if (!\Illuminate\Support\Facades\Schema::hasColumn('feedback', 'image')) {
                 \Illuminate\Support\Facades\Schema::table('feedback', function (\Illuminate\Database\Schema\Blueprint $table) {
                     $table->string('image')->nullable()->after('message');

@@ -26,8 +26,10 @@ class FeedbackObserver
             $subject = $feedback->subject;
             $from = $feedback->display_name ?? 'Anonymous';
             $url = 'https://medicalcenterime.my.id/admin/feedback';
+            $hospital = $feedback->hospital ?? 'alta';
+            $reporterType = $feedback->reporter_type ?? 'warga';
 
-            $telegram->notifyNewFeedback($type, $subject, $from, $url);
+            $telegram->notifyNewFeedback($type, $subject, $from, $url, $hospital, $reporterType);
         } catch (\Exception $e) {
             \Log::error('Failed to send Telegram notification for feedback', [
                 'feedback_id' => $feedback->id,

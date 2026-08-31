@@ -307,7 +307,7 @@
             </div>
 
             <!-- =========================================================
-                 4. FORM KELUHAN & PENGADUAN WARGA (KOTAK ASPIRASI)
+                 4. FORM KELUHAN & PENGADUAN (ALTA & ROXWOOD HOSPITAL)
             ========================================================= -->
             <div id="keluhan-warga" class="p-6 sm:p-10 lg:p-12 bg-gradient-to-b from-slate-50/90 via-white to-red-50/40 relative overflow-hidden">
                 <div class="max-w-4xl mx-auto space-y-8">
@@ -316,13 +316,13 @@
                     <div class="text-center space-y-3">
                         <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-100/90 border border-red-200 text-xs font-bold text-red-700 shadow-sm">
                             <i class="fas fa-bullhorn text-red-600 animate-pulse"></i>
-                            <span>LAYANAN PENGADUAN & KELUHAN WARGA</span>
+                            <span>LAYANAN PENGADUAN & KELUHAN TERPADU</span>
                         </div>
                         <h2 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-                            Kotak Keluhan & Aspirasi Warga
+                            Kotak Keluhan & Aspirasi Pelayanan
                         </h2>
-                        <p class="text-xs sm:text-sm text-slate-600 max-w-xl mx-auto leading-relaxed">
-                            Punya keluhan terkait pelayanan, fasilitas rumah sakit, atau perilaku tenaga medis? Sampaikan di sini. Anda bisa mengirimkannya secara <strong>Anonim</strong> atau mencantumkan nama Anda.
+                        <p class="text-xs sm:text-sm text-slate-600 max-w-2xl mx-auto leading-relaxed">
+                            Layanan penyampaian pengaduan, kritik, dan saran untuk <strong>Alta Street Hospital</strong> & <strong>Roxwood Hospital</strong>. Terbuka untuk seluruh <strong>Warga/Pasien</strong> maupun laporan internal <strong>Staf Medic</strong> (bisa dikirim secara <strong>Anonim</strong>).
                         </p>
                     </div>
 
@@ -362,61 +362,139 @@
                             @csrf
                             <input type="hidden" name="from_home" value="1">
 
-                            <!-- 1. PILIH JENIS PENGADUAN (RADIO TABS) -->
-                            <div class="space-y-2">
+                            <!-- 1. PILIH RUMAH SAKIT TUJUAN (ALTA VS ROXWOOD) -->
+                            <div class="space-y-2.5">
+                                <div class="flex items-center justify-between">
+                                    <label class="block text-xs font-black uppercase tracking-wider text-slate-700">
+                                        1. Pilih Rumah Sakit Tujuan <span class="text-red-500">*</span>
+                                    </label>
+                                    <span class="text-[11px] text-slate-500 font-medium">Pilih rumah sakit terkait keluhan Anda</span>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                    <!-- Option: Alta Street Hospital -->
+                                    <label class="relative flex items-start gap-3.5 p-4 sm:p-5 rounded-2xl border-2 cursor-pointer transition-all duration-200 has-[:checked]:border-sky-500 has-[:checked]:bg-sky-50/70 has-[:checked]:ring-2 has-[:checked]:ring-sky-500/20 border-slate-200 hover:border-slate-300 group">
+                                        <input type="radio" name="hospital" value="alta" class="w-4 h-4 text-sky-600 focus:ring-sky-500 border-slate-300 mt-1" {{ old('hospital', 'alta') === 'alta' ? 'checked' : '' }}>
+                                        <div class="flex-1">
+                                            <div class="flex items-center gap-2 mb-1">
+                                                <div class="w-7 h-7 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center text-xs font-bold">
+                                                    <i class="fas fa-hospital-alt"></i>
+                                                </div>
+                                                <span class="text-sm sm:text-base font-black text-slate-900">Alta Street Hospital</span>
+                                            </div>
+                                            <p class="text-[11px] text-slate-500 leading-snug">Rumah Sakit Utama Kota (Central Hospital, Los Santos EMS)</p>
+                                        </div>
+                                    </label>
+
+                                    <!-- Option: Roxwood Hospital -->
+                                    <label class="relative flex items-start gap-3.5 p-4 sm:p-5 rounded-2xl border-2 cursor-pointer transition-all duration-200 has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50/70 has-[:checked]:ring-2 has-[:checked]:ring-emerald-600/20 border-slate-200 hover:border-slate-300 group">
+                                        <input type="radio" name="hospital" value="roxwood" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500 border-slate-300 mt-1" {{ old('hospital') === 'roxwood' ? 'checked' : '' }}>
+                                        <div class="flex-1">
+                                            <div class="flex items-center gap-2 mb-1">
+                                                <div class="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold">
+                                                    <i class="fas fa-clinic-medical"></i>
+                                                </div>
+                                                <span class="text-sm sm:text-base font-black text-slate-900">Roxwood Hospital</span>
+                                            </div>
+                                            <p class="text-[11px] text-slate-500 leading-snug">Pusat Layanan Medis Roxwood County & Sekitarnya</p>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- 2. PILIH KATEGORI PELAPOR (WARGA VS MEDIC) -->
+                            <div class="space-y-2.5 pt-2 border-t border-slate-100">
+                                <div class="flex items-center justify-between">
+                                    <label class="block text-xs font-black uppercase tracking-wider text-slate-700">
+                                        2. Kategori Pelapor <span class="text-red-500">*</span>
+                                    </label>
+                                    <span class="text-[11px] text-slate-500 font-medium">Apakah Anda Warga atau Staf Medic?</span>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                    <!-- Option: Warga / Pasien -->
+                                    <label class="relative flex items-start gap-3.5 p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 has-[:checked]:border-indigo-500 has-[:checked]:bg-indigo-50/60 has-[:checked]:ring-2 has-[:checked]:ring-indigo-500/20 border-slate-200 hover:border-slate-300">
+                                        <input type="radio" name="reporter_type" value="warga" class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-slate-300 mt-1" {{ old('reporter_type', 'warga') === 'warga' ? 'checked' : '' }}>
+                                        <div class="flex-1">
+                                            <div class="flex items-center gap-2 mb-0.5">
+                                                <div class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center text-xs font-bold">
+                                                    <i class="fas fa-user"></i>
+                                                </div>
+                                                <span class="text-xs sm:text-sm font-bold text-slate-900">Warga / Pasien Publik</span>
+                                            </div>
+                                            <p class="text-[10px] text-slate-500">Masyarakat umum pengguna layanan rumah sakit</p>
+                                        </div>
+                                    </label>
+
+                                    <!-- Option: Staf Medic -->
+                                    <label class="relative flex items-start gap-3.5 p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 has-[:checked]:border-purple-600 has-[:checked]:bg-purple-50/60 has-[:checked]:ring-2 has-[:checked]:ring-purple-600/20 border-slate-200 hover:border-slate-300">
+                                        <input type="radio" name="reporter_type" value="medic" class="w-4 h-4 text-purple-600 focus:ring-purple-500 border-slate-300 mt-1" {{ old('reporter_type') === 'medic' ? 'checked' : '' }}>
+                                        <div class="flex-1">
+                                            <div class="flex items-center gap-2 mb-0.5">
+                                                <div class="w-7 h-7 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-bold">
+                                                    <i class="fas fa-user-md"></i>
+                                                </div>
+                                                <span class="text-xs sm:text-sm font-bold text-slate-900">Staf Medic (Laporan Internal)</span>
+                                            </div>
+                                            <p class="text-[10px] text-slate-500">Anggota dokter, perawat, atau staf dinas medis</p>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- 3. PILIH JENIS PENGADUAN (LAPORAN VS SARAN) -->
+                            <div class="space-y-2.5 pt-2 border-t border-slate-100">
                                 <label class="block text-xs font-black uppercase tracking-wider text-slate-700">
-                                    Jenis Pengaduan <span class="text-red-500">*</span>
+                                    3. Jenis Pengaduan <span class="text-red-500">*</span>
                                 </label>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                                     <!-- Option: Laporan / Keluhan -->
-                                    <label class="relative flex items-center gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 has-[:checked]:border-red-500 has-[:checked]:bg-red-50/60 border-slate-200 hover:border-slate-300">
+                                    <label class="relative flex items-center gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 has-[:checked]:border-red-500 has-[:checked]:bg-red-50/60 has-[:checked]:ring-2 has-[:checked]:ring-red-500/20 border-slate-200 hover:border-slate-300">
                                         <input type="radio" name="type" value="laporan" class="w-4 h-4 text-red-600 focus:ring-red-500 border-slate-300" {{ old('type', 'laporan') === 'laporan' ? 'checked' : '' }}>
                                         <div class="flex items-center gap-2.5">
-                                            <div class="w-8 h-8 rounded-xl bg-red-100 text-red-600 flex items-center justify-center text-sm font-bold">
+                                            <div class="w-8 h-8 rounded-xl bg-red-100 text-red-600 flex items-center justify-center text-sm font-bold shrink-0">
                                                 <i class="fas fa-exclamation-triangle"></i>
                                             </div>
                                             <div>
                                                 <span class="text-xs sm:text-sm font-bold text-slate-900 block">Laporan / Keluhan</span>
-                                                <span class="text-[10px] text-slate-500 block">Komplain pelayanan, antrean, atau perilaku staf</span>
+                                                <span class="text-[10px] text-slate-500 block">Komplain pelayanan, fasilitas, atau kendala operasional</span>
                                             </div>
                                         </div>
                                     </label>
 
                                     <!-- Option: Masukan / Saran -->
-                                    <label class="relative flex items-center gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50/60 border-slate-200 hover:border-slate-300">
+                                    <label class="relative flex items-center gap-3 p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50/60 has-[:checked]:ring-2 has-[:checked]:ring-emerald-500/20 border-slate-200 hover:border-slate-300">
                                         <input type="radio" name="type" value="masukan" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500 border-slate-300" {{ old('type') === 'masukan' ? 'checked' : '' }}>
                                         <div class="flex items-center gap-2.5">
-                                            <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm font-bold">
+                                            <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm font-bold shrink-0">
                                                 <i class="fas fa-lightbulb"></i>
                                             </div>
                                             <div>
                                                 <span class="text-xs sm:text-sm font-bold text-slate-900 block">Masukan / Saran</span>
-                                                <span class="text-[10px] text-slate-500 block">Ide perbaikan fasilitas atau sistem RS</span>
+                                                <span class="text-[10px] text-slate-500 block">Ide perbaikan fasilitas, SOP, atau inovasi RS</span>
                                             </div>
                                         </div>
                                     </label>
                                 </div>
                             </div>
 
-                            <!-- 2. NAMA PENGIRIM & SUBJEK KELUHAN -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- 4. NAMA PENGIRIM & SUBJEK KELUHAN -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
                                 <!-- Nama Pengirim (Opsional) -->
                                 <div>
                                     <div class="flex items-center justify-between mb-1.5">
                                         <label for="feedback_name" class="text-xs font-black uppercase tracking-wider text-slate-700">
-                                            Nama Warga / Pelapor
+                                            Nama Pelapor / Staf
                                         </label>
-                                        <span class="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Opsional</span>
+                                        <span class="text-[10px] font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">Opsional (Bisa Anonim)</span>
                                     </div>
                                     <div class="relative">
                                         <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                                            <i class="fas fa-user text-xs"></i>
+                                            <i class="fas fa-user-tag text-xs"></i>
                                         </span>
                                         <input type="text" id="feedback_name" name="name" value="{{ old('name') }}"
-                                            placeholder="Contoh: John Doe (Kosongkan jika Anonim)"
+                                            placeholder="Contoh: John Doe / Medic-01 (Kosongkan jika Anonim)"
                                             class="w-full pl-9 pr-3.5 py-3 rounded-2xl bg-slate-50 border border-slate-300 text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none transition-all">
                                     </div>
-                                    <p class="text-[10px] text-slate-500 mt-1">Jika dikosongkan, laporan akan tercatat otomatis sebagai <strong>Warga Anonim</strong>.</p>
+                                    <p class="text-[10px] text-slate-500 mt-1">Jika dikosongkan, laporan akan tercatat otomatis sebagai <strong>Anonim</strong>.</p>
                                 </div>
 
                                 <!-- Subjek Keluhan -->
@@ -436,27 +514,29 @@
                                         <datalist id="subjectSuggestions">
                                             <option value="Keluhan Pelayanan Antrean Alta Hospital">
                                             <option value="Keluhan Pelayanan Roxwood Hospital">
-                                            <option value="Sikap / Perilaku Tenaga Medis">
-                                            <option value="Ketersediaan Dokter Spesialis & On-Duty">
-                                            <option value="Kendala Formulir Medis / Surat Kesehatan">
-                                            <option value="Masukan Fasilitas & Pelayanan Rumah Sakit">
+                                            <option value="Ketersediaan Dokter On-Duty / Piket">
+                                            <option value="Respon Ambulans / Panggilan Darurat">
+                                            <option value="Sikap & Perilaku Tenaga Medis">
+                                            <option value="Laporan Fasilitas & Sarana Medis Internal">
+                                            <option value="Kendala Radio / Komunikasi Dinas Medic">
+                                            <option value="Masukan & Saran Peningkatan Fasilitas RS">
                                         </datalist>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- 3. DETAIL KELUHAN (TEXTAREA) -->
+                            <!-- 5. DETAIL KELUHAN (TEXTAREA) -->
                             <div class="space-y-1.5">
                                 <label for="feedback_message" class="block text-xs font-black uppercase tracking-wider text-slate-700">
-                                    Detail Kronologi / Isi Keluhan <span class="text-red-500">*</span>
+                                    Detail Kronologi / Isi Laporan <span class="text-red-500">*</span>
                                 </label>
                                 <textarea id="feedback_message" name="message" rows="4" required
-                                    placeholder="Jelaskan secara rinci kronologi keluhan, waktu kejadian, lokasi rumah sakit, serta nama staf terkait (jika ada)..."
+                                    placeholder="Jelaskan secara rinci kronologi keluhan, waktu kejadian, ruangan/lokasi di rumah sakit, serta nama pihak terkait (jika ada)..."
                                     class="w-full p-4 rounded-2xl bg-slate-50 border border-slate-300 text-xs sm:text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-red-500 focus:ring-2 focus:ring-red-500/20 focus:outline-none transition-all leading-relaxed">{{ old('message') }}</textarea>
-                                <p class="text-[10px] text-slate-500">Mohon berikan informasi yang jelas dan santun agar dapat segera ditindaklanjuti oleh staf.</p>
+                                <p class="text-[10px] text-slate-500">Mohon berikan informasi yang jelas dan santun agar segera ditinjau oleh jajaran pimpinan rumah sakit.</p>
                             </div>
 
-                            <!-- 4. LAMPIRAN BUKTI GAMBAR (OPSIONAL) -->
+                            <!-- 6. LAMPIRAN BUKTI GAMBAR (OPSIONAL) -->
                             <div class="p-4 rounded-2xl bg-slate-50 border border-dashed border-slate-300 space-y-3">
                                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                                     <div>
@@ -483,16 +563,16 @@
                                 </div>
                             </div>
 
-                            <!-- 5. SUBMIT BUTTON -->
+                            <!-- 7. SUBMIT BUTTON -->
                             <div class="pt-2 flex flex-col sm:flex-row items-center justify-between gap-4">
                                 <div class="flex items-center gap-2 text-xs text-slate-500">
                                     <i class="fas fa-shield-alt text-emerald-600 text-sm"></i>
-                                    <span>Laporan Anda terenkripsi aman & rahasia.</span>
+                                    <span>Laporan terenkripsi aman & langsung diteruskan ke Manajemen.</span>
                                 </div>
                                 <button type="submit" id="submitFeedbackBtn"
                                     class="w-full sm:w-auto px-8 py-3.5 rounded-full bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-700 hover:to-rose-800 text-white text-sm font-black shadow-lg shadow-red-600/30 transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
                                     <i class="fas fa-paper-plane text-xs"></i>
-                                    <span>Kirim Pengaduan Sekarang</span>
+                                    <span>Kirim Laporan Pengaduan</span>
                                 </button>
                             </div>
 

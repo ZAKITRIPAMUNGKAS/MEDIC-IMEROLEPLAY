@@ -1597,12 +1597,18 @@ class PublicController extends Controller
     public function submitFeedback(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'hospital' => 'required|in:alta,roxwood',
+            'reporter_type' => 'required|in:warga,medic',
             'type' => 'required|in:laporan,masukan',
             'subject' => 'required|string|max:255',
             'message' => 'required|string|max:5000',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120', // 5MB max
             'name' => 'nullable|string|max:100',
         ], [
+            'hospital.required' => 'Silakan pilih rumah sakit terkait (Alta Hospital atau Roxwood Hospital).',
+            'hospital.in' => 'Pilihan rumah sakit tidak valid.',
+            'reporter_type.required' => 'Silakan pilih kategori pelapor (Warga / Pasien atau Staf Medic).',
+            'reporter_type.in' => 'Kategori pelapor tidak valid.',
             'type.required' => 'Silakan pilih jenis pengaduan (Laporan / Keluhan atau Masukan).',
             'type.in' => 'Jenis yang dipilih tidak valid.',
             'subject.required' => 'Subjek atau topik keluhan harus diisi.',
@@ -1627,7 +1633,9 @@ class PublicController extends Controller
                 ->withInput();
         }
 
-        $data = $request->only(['type', 'subject', 'message', 'name']);
+        $data = $request->only(['hospital', 'reporter_type', 'type', 'subject', 'message', 'name']);
+        $data['hospital'] = $data['hospital'] ?? 'alta';
+        $data['reporter_type'] = $data['reporter_type'] ?? 'warga';
 
         // Handle image upload
         if ($request->hasFile('image')) {
@@ -1641,7 +1649,8 @@ class PublicController extends Controller
         if (empty($data['name'])) {
             $latestTicket = \App\Models\Feedback::max('id') ?? 0;
             $ticketNumber = str_pad($latestTicket + 1, 4, '0', STR_PAD_LEFT);
-            $data['name'] = "Warga #" . $ticketNumber;
+            $prefix = ($data['reporter_type'] === 'medic') ? 'Medic Anonim #' : 'Warga #';
+            $data['name'] = $prefix . $ticketNumber;
         }
 
         // Check for duplicate feedback (same subject and message from same name within last 5 minutes)
@@ -1661,6 +1670,8 @@ class PublicController extends Controller
 
         // Create feedback
         \App\Models\Feedback::create([
+            'hospital' => $data['hospital'],
+            'reporter_type' => $data['reporter_type'],
             'name' => $data['name'],
             'user_id' => auth()->check() ? auth()->id() : null,
             'type' => $data['type'],
@@ -1670,9 +1681,11 @@ class PublicController extends Controller
             'status' => 'new',
         ]);
 
+        $rsName = ($data['hospital'] === 'roxwood') ? 'Roxwood Hospital' : 'Alta Street Hospital';
+
         if ($request->input('from_home')) {
             return redirect()->to(url('/#keluhan-warga'))
-                ->with('feedback_success', 'Terima kasih! Pengaduan / keluhan Anda (' . e($data['name']) . ') telah berhasil dikirimkan ke pihak manajemen rumah sakit.');
+                ->with('feedback_success', 'Terima kasih! Laporan pengaduan / masukan Anda untuk ' . $rsName . ' (' . e($data['name']) . ') telah berhasil dikirimkan ke jajaran Manajemen.');
         }
 
         return redirect()->route('feedback.success');

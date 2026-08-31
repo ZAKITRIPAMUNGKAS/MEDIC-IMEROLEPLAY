@@ -14,6 +14,8 @@ class FeedbackList extends Component
     public $feedbackList = [];
     public $filterStatus = 'all';
     public $filterType = 'all';
+    public $filterHospital = 'all';
+    public $filterReporterType = 'all';
     public $selectedFeedback = null;
     public $adminNotes = '';
 
@@ -27,7 +29,7 @@ class FeedbackList extends Component
 
     public function updated($propertyName)
     {
-        if (in_array($propertyName, ['filterStatus', 'filterType'])) {
+        if (in_array($propertyName, ['filterStatus', 'filterType', 'filterHospital', 'filterReporterType'])) {
             $this->loadFeedback();
             $this->selectedFeedback = null;
         }
@@ -40,6 +42,8 @@ class FeedbackList extends Component
         // Apply filters
         $query->status($this->filterStatus);
         $query->type($this->filterType);
+        $query->hospital($this->filterHospital);
+        $query->reporterType($this->filterReporterType);
 
         $this->feedbackList = $query->orderBy('status', 'asc') // New first
             ->orderBy('created_at', 'desc')
