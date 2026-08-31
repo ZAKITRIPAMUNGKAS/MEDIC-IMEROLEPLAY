@@ -325,9 +325,18 @@ Route::get('/auto-setup-db', function () {
             }
             if (!\Illuminate\Support\Facades\Schema::hasColumn('feedback', 'reporter_type')) {
                 \Illuminate\Support\Facades\Schema::table('feedback', function (\Illuminate\Database\Schema\Blueprint $table) {
-                    $table->string('reporter_type')->default('warga')->after('hospital');
+                    $table->string('reporter_type')->default('medic')->after('hospital');
                 });
                 $logs[] = '✅ Kolom reporter_type berhasil ditambahkan ke tabel feedback.';
+            }
+
+            // Migrasikan feedback lama yang belum berkategori menjadi laporan internal medic
+            $updatedRows = \Illuminate\Support\Facades\DB::table('feedback')
+                ->whereNull('reporter_type')
+                ->orWhere('reporter_type', '')
+                ->update(['reporter_type' => 'medic']);
+            if ($updatedRows > 0) {
+                $logs[] = "✅ {$updatedRows} data keluhan lama otomatis diklasifikasikan sebagai keluhan Anggota Medic.";
             }
             if (!\Illuminate\Support\Facades\Schema::hasColumn('feedback', 'image')) {
                 \Illuminate\Support\Facades\Schema::table('feedback', function (\Illuminate\Database\Schema\Blueprint $table) {

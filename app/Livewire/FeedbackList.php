@@ -60,9 +60,14 @@ class FeedbackList extends Component
             }
             if (!\Illuminate\Support\Facades\Schema::hasColumn('feedback', 'reporter_type')) {
                 \Illuminate\Support\Facades\Schema::table('feedback', function (\Illuminate\Database\Schema\Blueprint $table) {
-                    $table->string('reporter_type')->default('warga')->nullable();
+                    $table->string('reporter_type')->default('medic')->nullable();
                 });
             }
+            // Update legacy feedback with NULL reporter_type to 'medic'
+            \Illuminate\Support\Facades\DB::table('feedback')
+                ->whereNull('reporter_type')
+                ->orWhere('reporter_type', '')
+                ->update(['reporter_type' => 'medic']);
         } catch (\Throwable $e) {
             // Ignore schema alter exception
         }
@@ -218,9 +223,18 @@ class FeedbackList extends Component
             }
         }
 
+        // Get tab counts
+        $wargaCount = (clone $statsQuery)->where('reporter_type', 'warga')->count();
+        $medicCount = (clone $statsQuery)->where(function($q) {
+            $q->where('reporter_type', 'medic')
+              ->orWhereNotNull('user_id')
+              ->orWhereNull('reporter_type');
+        })->count();
+        $totalCount = (clone $statsQuery)->count();
+
         // Get statistics
         $stats = [
-            'total' => (clone $statsQuery)->count(),
+            'total' => $totalCount,
             'new' => (clone $statsQuery)->where('status', 'new')->count(),
             'reviewed' => (clone $statsQuery)->where('status', 'reviewed')->count(),
             'resolved' => (clone $statsQuery)->where('status', 'resolved')->count(),
@@ -228,6 +242,6 @@ class FeedbackList extends Component
             'masukan' => (clone $statsQuery)->where('type', 'masukan')->count(),
         ];
 
-        return view('livewire.feedback-list', compact('stats'));
+        return view('livewire.feedback-list', compact('stats', 'wargaCount', 'medicCount', 'totalCount'));
     }
 }

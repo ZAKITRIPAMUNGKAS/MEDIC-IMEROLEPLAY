@@ -100,8 +100,11 @@ class Feedback extends Model
             try {
                 if (\Illuminate\Support\Facades\Schema::hasColumn('feedback', 'reporter_type')) {
                     if ($reporterType === 'warga') {
+                        return $query->where('reporter_type', 'warga');
+                    } elseif ($reporterType === 'medic') {
                         return $query->where(function($q) {
-                            $q->where('reporter_type', 'warga')
+                            $q->where('reporter_type', 'medic')
+                              ->orWhereNotNull('user_id')
                               ->orWhereNull('reporter_type');
                         });
                     }
@@ -112,6 +115,17 @@ class Feedback extends Model
             }
         }
         return $query;
+    }
+
+    /**
+     * Get reporter type attribute (treat legacy reports as medic)
+     */
+    public function getReporterTypeAttribute($value)
+    {
+        if ($value === 'warga') {
+            return 'warga';
+        }
+        return 'medic';
     }
 
     /**

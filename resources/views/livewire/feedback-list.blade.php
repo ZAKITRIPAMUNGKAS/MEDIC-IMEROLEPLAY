@@ -1,40 +1,74 @@
-<div class="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-3 md:gap-4" style="min-height: 500px; height: auto;">
-    <!-- Left Sidebar - Feedback List -->
-    <div
-        class="bg-white/95 backdrop-blur-sm rounded-xl lg:rounded-2xl shadow-xl border border-sky-200/50 overflow-hidden flex flex-col"
-        style="min-height: 300px; max-height: 500px; height: 500px;">
-        <!-- Filter Section -->
-        <div class="p-3 md:p-4 border-b border-slate-200 bg-gradient-to-r from-sky-50 to-cyan-50 shrink-0">
-            <h3 class="font-bold text-slate-800 text-xs md:text-sm mb-2 md:mb-3 flex items-center gap-2">
-                <i class="fas fa-filter text-sky-600 text-[10px] md:text-xs"></i>
-                Filter
-            </h3>
+<div class="space-y-4">
+    <!-- Top Category Tabs (Warga vs Medic) -->
+    <div class="bg-white/95 backdrop-blur-md rounded-2xl p-2 sm:p-2.5 shadow-xl border border-sky-200/60 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div class="flex items-center gap-2 w-full sm:w-auto overflow-x-auto p-0.5">
+            <!-- All Tab -->
+            <button type="button" wire:click="$set('filterReporterType', 'all')"
+                class="px-4 py-2.5 rounded-xl font-black text-xs sm:text-sm transition-all duration-200 flex items-center gap-2 whitespace-nowrap cursor-pointer {{ $filterReporterType === 'all' ? 'bg-gradient-to-r from-sky-600 to-cyan-600 text-white shadow-md shadow-sky-500/30 scale-[1.02]' : 'bg-slate-100 hover:bg-slate-200 text-slate-700' }}">
+                <i class="fas fa-layer-group text-xs"></i>
+                <span>Semua Laporan</span>
+                <span class="px-2 py-0.5 rounded-full text-[11px] font-bold {{ $filterReporterType === 'all' ? 'bg-white/25 text-white' : 'bg-slate-200 text-slate-700' }}">
+                    {{ $totalCount }}
+                </span>
+            </button>
 
-            <div class="space-y-1.5 md:space-y-2">
-                <!-- Hospital Filter -->
-                @if(auth()->check() && auth()->user()->isAdmin())
-                    <select wire:model.live="filterHospital"
-                        style="color: #0f172a !important;"
-                        class="w-full px-2.5 md:px-3 py-1.5 md:py-2 rounded-lg border border-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 outline-none text-xs md:text-sm bg-white font-medium">
-                        <option value="all">🏥 Semua Rumah Sakit</option>
-                        <option value="alta">🏥 Alta Hospital</option>
-                        <option value="roxwood">🏥 Roxwood Hospital</option>
-                    </select>
-                @else
-                    <div class="px-2.5 md:px-3 py-1.5 md:py-2 rounded-lg border border-slate-200 bg-slate-100/90 text-xs md:text-sm font-bold flex items-center justify-between text-slate-700">
-                        <span>🏥 {{ (auth()->check() && auth()->user()->isRoxwood()) ? 'Roxwood Hospital' : 'Alta Hospital' }}</span>
-                        <span class="text-[10px] text-slate-500 font-semibold flex items-center gap-1 bg-white px-1.5 py-0.5 rounded border border-slate-200"><i class="fas fa-lock text-amber-500 text-[9px]"></i> Unit Anda</span>
-                    </div>
-                @endif
+            <!-- Warga Tab -->
+            <button type="button" wire:click="$set('filterReporterType', 'warga')"
+                class="px-4 py-2.5 rounded-xl font-black text-xs sm:text-sm transition-all duration-200 flex items-center gap-2 whitespace-nowrap cursor-pointer {{ $filterReporterType === 'warga' ? 'bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-md shadow-indigo-500/30 scale-[1.02]' : 'bg-slate-100 hover:bg-slate-200 text-slate-700' }}">
+                <i class="fas fa-users text-xs"></i>
+                <span>👤 Laporan Warga / Pasien Publik</span>
+                <span class="px-2 py-0.5 rounded-full text-[11px] font-bold {{ $filterReporterType === 'warga' ? 'bg-white/25 text-white' : 'bg-indigo-100 text-indigo-800' }}">
+                    {{ $wargaCount }}
+                </span>
+            </button>
 
-                <!-- Reporter Type Filter -->
-                <select wire:model.live="filterReporterType"
-                    style="color: #0f172a !important;"
-                    class="w-full px-2.5 md:px-3 py-1.5 md:py-2 rounded-lg border border-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 outline-none text-xs md:text-sm bg-white font-medium">
-                    <option value="all">👥 Semua Kategori Pelapor</option>
-                    <option value="warga">👤 Warga / Pasien (Publik)</option>
-                    <option value="medic">🩺 Staf Medic (Internal)</option>
-                </select>
+            <!-- Medic Tab -->
+            <button type="button" wire:click="$set('filterReporterType', 'medic')"
+                class="px-4 py-2.5 rounded-xl font-black text-xs sm:text-sm transition-all duration-200 flex items-center gap-2 whitespace-nowrap cursor-pointer {{ $filterReporterType === 'medic' ? 'bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white shadow-md shadow-purple-500/30 scale-[1.02]' : 'bg-slate-100 hover:bg-slate-200 text-slate-700' }}">
+                <i class="fas fa-user-md text-xs"></i>
+                <span>🩺 Keluhan Anggota Medic (Internal)</span>
+                <span class="px-2 py-0.5 rounded-full text-[11px] font-bold {{ $filterReporterType === 'medic' ? 'bg-white/25 text-white' : 'bg-purple-100 text-purple-800' }}">
+                    {{ $medicCount }}
+                </span>
+            </button>
+        </div>
+
+        <!-- Hospital Indicator on Right of Header -->
+        <div class="hidden lg:flex items-center gap-2 text-xs font-bold text-slate-600 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 shrink-0">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>Unit Aktif: <strong class="text-slate-900">{{ (auth()->check() && auth()->user()->isRoxwood()) ? 'Roxwood Hospital' : (auth()->check() && auth()->user()->isAdmin() ? 'Semua Unit (Admin)' : 'Alta Hospital') }}</strong></span>
+        </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-3 md:gap-4" style="min-height: 500px; height: auto;">
+        <!-- Left Sidebar - Feedback List -->
+        <div
+            class="bg-white/95 backdrop-blur-sm rounded-xl lg:rounded-2xl shadow-xl border border-sky-200/50 overflow-hidden flex flex-col"
+            style="min-height: 300px; max-height: 500px; height: 500px;">
+            <!-- Filter Section -->
+            <div class="p-3 md:p-4 border-b border-slate-200 bg-gradient-to-r from-sky-50 to-cyan-50 shrink-0">
+                <h3 class="font-bold text-slate-800 text-xs md:text-sm mb-2 md:mb-3 flex items-center gap-2">
+                    <i class="fas fa-filter text-sky-600 text-[10px] md:text-xs"></i>
+                    Filter Tambahan
+                </h3>
+
+                <div class="space-y-1.5 md:space-y-2">
+                    <!-- Hospital Filter -->
+                    @if(auth()->check() && auth()->user()->isAdmin())
+                        <select wire:model.live="filterHospital"
+                            style="color: #0f172a !important;"
+                            class="w-full px-2.5 md:px-3 py-1.5 md:py-2 rounded-lg border border-slate-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-200 outline-none text-xs md:text-sm bg-white font-medium">
+                            <option value="all">🏥 Semua Rumah Sakit</option>
+                            <option value="alta">🏥 Alta Hospital</option>
+                            <option value="roxwood">🏥 Roxwood Hospital</option>
+                        </select>
+                    @else
+                        <div class="px-2.5 md:px-3 py-1.5 md:py-2 rounded-lg border border-slate-200 bg-slate-100/90 text-xs md:text-sm font-bold flex items-center justify-between text-slate-700">
+                            <span>🏥 {{ (auth()->check() && auth()->user()->isRoxwood()) ? 'Roxwood Hospital' : 'Alta Hospital' }}</span>
+                            <span class="text-[10px] text-slate-500 font-semibold flex items-center gap-1 bg-white px-1.5 py-0.5 rounded border border-slate-200"><i class="fas fa-lock text-amber-500 text-[9px]"></i> Unit Anda</span>
+                        </div>
+                    @endif
 
                 <!-- Status Filter -->
                 <select wire:model.live="filterStatus"
