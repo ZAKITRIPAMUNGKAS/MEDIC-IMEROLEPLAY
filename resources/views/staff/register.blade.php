@@ -10,45 +10,45 @@
             style="background-image: radial-gradient(circle at 20% 20%, rgba(14, 165, 233, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);">
         </div>
 
-        <div class="relative z-10 px-4 py-8 sm:px-6 lg:px-8 text-white">
+        <div class="relative z-10 px-3 py-6 sm:px-6 lg:px-8 text-white">
             <div class="max-w-2xl mx-auto">
                 <!-- Header -->
-                <div class="text-center mb-8">
-                    <div class="flex justify-center mb-6">
+                <div class="text-center mb-6 sm:mb-8">
+                    <div class="flex justify-center mb-4 sm:mb-6">
                         <div
-                            class="h-16 w-16 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-2xl animate-float">
-                            <i class="fas fa-user-plus text-white text-2xl"></i>
+                            class="h-14 w-14 sm:h-16 sm:w-16 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-2xl flex items-center justify-center shadow-2xl animate-float">
+                            <i class="fas fa-user-plus text-white text-xl sm:text-2xl"></i>
                         </div>
                     </div>
                     <h1
-                        class="text-4xl md:text-5xl font-black bg-gradient-to-r from-sky-300 to-cyan-300 bg-clip-text text-transparent mb-4">
+                        class="text-2xl sm:text-4xl md:text-5xl font-black bg-gradient-to-r from-sky-300 to-cyan-300 bg-clip-text text-transparent mb-2 sm:mb-4">
                         Daftar Staf Baru</h1>
-                    <p class="text-xl text-sky-200">Tambahkan anggota tim medis baru ke sistem</p>
+                    <p class="text-xs sm:text-lg text-sky-200">Tambahkan anggota tim medis baru ke sistem</p>
                 </div>
 
                 <!-- Registration Form -->
-                <div class="glass-effect rounded-2xl elegant-shadow-lg p-8">
+                <div class="glass-effect rounded-2xl sm:rounded-3xl elegant-shadow-lg p-4 sm:p-8">
                     <form method="POST" action="{{ route('staff.register.post') }}" enctype="multipart/form-data"
-                        class="space-y-6">
+                        class="space-y-4 sm:space-y-6">
                         @csrf
 
                         <!-- Name -->
                         <div>
-                            <label for="name" class="block text-lg font-bold text-white mb-2">Nama Lengkap</label>
+                            <label for="name" class="block text-xs sm:text-sm font-bold text-white mb-1.5">Nama Lengkap</label>
                             <input type="text" id="name" name="name" value="{{ old('name') }}" required
-                                class="w-full bg-white text-black placeholder-slate-600 border-3 border-slate-700 rounded-lg px-4 py-3 focus:ring-4 focus:ring-blue-500 focus:border-blue-700 transition-all duration-300 text-lg font-bold shadow-lg">
+                                class="w-full bg-white text-slate-900 placeholder-slate-400 border border-slate-300 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 focus:ring-4 focus:ring-sky-400 focus:border-sky-500 transition-all duration-300 text-sm sm:text-base font-semibold shadow-sm">
                             @error('name')
-                                <p class="mt-1 text-sm text-red-300">{{ $message }}</p>
+                                <p class="mt-1 text-xs text-red-300 font-medium">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <!-- Email -->
                         <div>
-                            <label for="email" class="block text-lg font-bold text-white mb-2">Email</label>
+                            <label for="email" class="block text-xs sm:text-sm font-bold text-white mb-1.5">Email</label>
                             <input type="email" id="email" name="email" value="{{ old('email') }}" required
-                                class="w-full bg-white text-black placeholder-slate-600 border-3 border-slate-700 rounded-lg px-4 py-3 focus:ring-4 focus:ring-blue-500 focus:border-blue-700 transition-all duration-300 text-lg font-bold shadow-lg">
+                                class="w-full bg-white text-slate-900 placeholder-slate-400 border border-slate-300 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 focus:ring-4 focus:ring-sky-400 focus:border-sky-500 transition-all duration-300 text-sm sm:text-base font-semibold shadow-sm">
                             @error('email')
-                                <p class="mt-1 text-sm text-red-300">{{ $message }}</p>
+                                <p class="mt-1 text-xs text-red-300 font-medium">{{ $message }}</p>
                             @enderror
                         </div>
 

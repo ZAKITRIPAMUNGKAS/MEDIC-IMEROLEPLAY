@@ -3,30 +3,30 @@
 @section('title', 'Jadwal Praktek Dokter - Motion Medical Center')
 
 @section('content')
-<div class="relative min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+<div class="relative min-h-screen pt-16 sm:pt-24 pb-8 sm:pb-12 px-3 sm:px-6 lg:px-8">
     <div class="absolute inset-0 bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700"></div>
     <div class="absolute inset-0 bg-black bg-opacity-20"></div>
 
     <div class="relative max-w-7xl mx-auto">
         <!-- Hero Section -->
-        <div class="text-center mb-16 animate-fade-in-up">
-            <div class="inline-flex items-center px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-md mb-6">
-                <i class="fas fa-calendar-check text-cyan-400 mr-2"></i>
-                <span class="text-sky-100 text-sm font-medium tracking-wide">Update Jadwal Terbaru</span>
+        <div class="text-center mb-8 sm:mb-16 animate-fade-in-up">
+            <div class="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-md mb-4 sm:mb-6">
+                <i class="fas fa-calendar-check text-cyan-400 mr-2 text-xs sm:text-sm"></i>
+                <span class="text-sky-100 text-xs sm:text-sm font-medium tracking-wide">Update Jadwal Terbaru</span>
             </div>
-            <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white mb-6 tracking-tight">
+            <h1 class="text-2xl sm:text-5xl md:text-6xl font-extrabold text-white mb-3 sm:mb-6 tracking-tight">
                 Jadwal Praktek <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-sky-400">Dokter & Poli Umum</span>
             </h1>
-            <p class="text-lg sm:text-xl text-sky-100 max-w-3xl mx-auto leading-relaxed opacity-90">
+            <p class="text-xs sm:text-xl text-sky-100 max-w-3xl mx-auto leading-relaxed opacity-90">
                 Temukan jadwal ketersediaan dokter umum dan dokter spesialis kami untuk membantu kesehatan Anda. Silakan buat janji temu untuk konsultasi lebih lanjut.
             </p>
         </div>
 
         <!-- Filter/Quick Actions Section -->
         @if(count($schedules) > 0)
-            <div class="mb-12 flex flex-wrap justify-center gap-3 animate-fade-in-up" style="animation-delay: 0.2s">
+            <div class="mb-8 sm:mb-12 flex flex-wrap justify-center gap-2 sm:gap-3 animate-fade-in-up" style="animation-delay: 0.2s">
                 @foreach($schedules as $poliName => $docs)
-                    <a href="#{{ Str::slug($poliName) }}" class="px-4 py-2 rounded-xl bg-white/10 border border-white/20 hover:bg-white/25 hover:border-cyan-400 text-white text-xs sm:text-sm font-bold transition-all duration-300 flex items-center gap-1.5 shadow-sm">
+                    <a href="#{{ Str::slug($poliName) }}" class="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-white/10 border border-white/20 hover:bg-white/25 hover:border-cyan-400 text-white text-xs sm:text-sm font-bold transition-all duration-300 flex items-center gap-1.5 shadow-sm">
                         <span>{{ explode(' ', $poliName)[0] ?? '🩺' }}</span>
                         <span>{{ str_replace(explode(' ', $poliName)[0] . ' ', '', $poliName) }}</span>
                         <span class="ml-1 px-1.5 py-0.2 rounded-full bg-white/20 text-[10px]">{{ count($docs) }}</span>
@@ -36,23 +36,23 @@
         @endif
 
         <!-- Schedule Grid by Poli -->
-        <div class="space-y-16">
+        <div class="space-y-10 sm:space-y-16">
             @forelse($schedules as $poli => $doctors)
                 <div id="{{ Str::slug($poli) }}" class="animate-fade-in-up" style="animation-delay: 0.3s">
                     <!-- Poli Header -->
-                    <div class="flex items-center mb-8">
+                    <div class="flex items-center mb-6 sm:mb-8">
                         <div class="h-px flex-1 bg-gradient-to-r from-transparent to-white/20"></div>
-                        <h2 class="mx-6 text-2xl sm:text-3xl font-bold text-white flex items-center">
-                            <span class="mr-3">{{ explode(' ', $poli)[0] ?? '🩺' }}</span>
-                            {{ str_replace(explode(' ', $poli)[0] . ' ', '', $poli) }}
+                        <h2 class="mx-3 sm:mx-6 text-lg sm:text-3xl font-bold text-white flex items-center text-center">
+                            <span class="mr-2 sm:mr-3">{{ explode(' ', $poli)[0] ?? '🩺' }}</span>
+                            <span>{{ str_replace(explode(' ', $poli)[0] . ' ', '', $poli) }}</span>
                         </h2>
                         <div class="h-px flex-1 bg-gradient-to-l from-transparent to-white/20"></div>
                     </div>
 
                     <!-- Doctors Cards -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
                         @foreach($doctors as $doctor)
-                            <div class="group relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 sm:p-8 hover:bg-white/15 transition-all duration-500 overflow-hidden group">
+                            <div class="group relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl sm:rounded-3xl p-4 sm:p-8 hover:bg-white/15 transition-all duration-500 overflow-hidden group">
                                 <!-- Decoration -->
                                 <div class="absolute -right-10 -top-10 w-32 h-32 bg-sky-500/10 rounded-full blur-3xl group-hover:bg-sky-500/20 transition-all duration-500"></div>
                                 

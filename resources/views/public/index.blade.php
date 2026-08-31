@@ -44,105 +44,105 @@
     </div>
 
     <!-- MAIN PAGE CONTAINER (DOMINANT WHITE THEME) -->
-    <div class="min-h-screen bg-slate-100/90 pt-6 pb-16 px-3 sm:px-6 lg:px-8 font-sans">
-        <div class="max-w-[1240px] mx-auto bg-white rounded-[32px] shadow-2xl border border-slate-200/80 overflow-hidden divide-y divide-slate-100 text-slate-800">
+    <div class="min-h-screen bg-slate-100/90 pt-3 sm:pt-6 pb-12 sm:pb-16 px-2 sm:px-6 lg:px-8 font-sans">
+        <div class="max-w-[1240px] mx-auto bg-white rounded-[20px] sm:rounded-[32px] shadow-2xl border border-slate-200/80 overflow-hidden divide-y divide-slate-100 text-slate-800">
 
             <!-- =========================================================
                  1. HERO SECTION (DOMINANT WHITE + RED ACCENTS)
             ========================================================= -->
-            <div class="p-6 sm:p-10 lg:p-12 bg-gradient-to-b from-red-50/70 via-white to-slate-50/80 relative overflow-hidden">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+            <div class="p-4 sm:p-10 lg:p-12 bg-gradient-to-b from-red-50/70 via-white to-slate-50/80 relative overflow-hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10 items-center">
 
                     <!-- HERO LEFT COPY -->
-                    <div class="space-y-6">
-                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-100/80 border border-red-200 text-xs font-bold text-red-600 shadow-sm">
+                    <div class="space-y-4 sm:space-y-6">
+                        <div class="inline-flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-red-100/80 border border-red-200 text-[11px] sm:text-xs font-bold text-red-600 shadow-sm">
                             <span class="w-2.5 h-2.5 rounded-full bg-red-600 animate-ping"></span> 🇮🇩 Edisi Khusus Hari Kemerdekaan RI Ke-81
                         </div>
 
-                        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.05]">
+                        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.05]">
                             iMe<br>
                             <span class="text-slate-900">Medical Center</span><span class="text-red-600">.</span>
                         </h1>
 
-                        <p class="text-sm text-slate-600 leading-relaxed max-w-md">
+                        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-md">
                             Pusat pelayanan medis terpadu dan profesional untuk seluruh warga Los Santos dengan standar pelayanan terbaik 24/7 dan semangat pengabdian Kemerdekaan.
                         </p>
 
-                        <div class="flex flex-wrap items-center gap-3 pt-2">
-                            <a href="{{ route('public.cek-kesehatan') }}" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white text-sm font-bold shadow-lg shadow-red-500/25 transition-all hover:scale-105">
+                        <div class="flex flex-wrap items-center gap-2 sm:gap-3 pt-1 sm:pt-2">
+                            <a href="{{ route('public.cek-kesehatan') }}" class="inline-flex items-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white text-xs sm:text-sm font-bold shadow-lg shadow-red-500/25 transition-all hover:scale-105">
                                 <i class="fas fa-file-medical text-xs"></i> Surat Kesehatan
                             </a>
-                            <a href="{{ route('public.poli-umum') }}" class="inline-flex items-center gap-2 px-5 py-3.5 rounded-full bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-sm font-bold transition-all shadow-sm hover:scale-105">
+                            <a href="{{ route('public.poli-umum') }}" class="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3.5 rounded-full bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs sm:text-sm font-bold transition-all shadow-sm hover:scale-105">
                                 <i class="fas fa-user-md text-xs"></i> Form Poli Umum
                             </a>
-                            <a href="{{ route('public.doctor-schedule') }}" class="inline-flex items-center gap-2 px-5 py-3.5 rounded-full bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 text-sm font-semibold transition-all shadow-sm hover:scale-105">
+                            <a href="{{ route('public.doctor-schedule') }}" class="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3.5 rounded-full bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 text-xs sm:text-sm font-semibold transition-all shadow-sm hover:scale-105">
                                 <i class="fas fa-calendar-alt text-xs text-sky-600"></i> Jadwal Dokter
                             </a>
-                            <button onclick="showRegulationModal()" class="inline-flex items-center gap-2 px-4 py-3.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium transition-all shadow-sm">
+                            <button onclick="showRegulationModal()" class="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 sm:py-3.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-medium transition-all shadow-sm">
                                 Regulasi <i class="fas fa-file-alt text-xs text-red-600"></i>
                             </button>
-                            <a href="#keluhan-warga" class="inline-flex items-center gap-2 px-4 py-3.5 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-sm font-semibold transition-all shadow-sm hover:scale-105">
+                            <a href="#keluhan-warga" class="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 sm:py-3.5 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs sm:text-sm font-semibold transition-all shadow-sm hover:scale-105">
                                 <i class="fas fa-bullhorn text-xs text-red-600"></i> Keluhan Warga
                             </a>
                         </div>
 
                         <!-- ANIMATED HOSPITAL LOGOS (iMe, Alta Hospital, Roxwood Hospital) -->
-                        <div class="pt-4 pb-2 border-t border-slate-200/80">
-                            <p class="text-[10px] uppercase font-bold text-slate-500 tracking-widest mb-3 flex items-center gap-1.5">
+                        <div class="pt-3 sm:pt-4 pb-2 border-t border-slate-200/80">
+                            <p class="text-[10px] uppercase font-bold text-slate-500 tracking-widest mb-2.5 flex items-center gap-1.5">
                                 <span class="w-1.5 h-1.5 rounded-full bg-red-600 animate-ping"></span> Jaringan Rumah Sakit Terpadu
                             </p>
-                            <div class="flex items-center gap-3 sm:gap-4 overflow-x-auto custom-scrollbar pb-1">
+                            <div class="flex items-center gap-2.5 sm:gap-4 overflow-x-auto custom-scrollbar pb-1">
                                 <!-- Logo iMe Roleplay -->
-                                <div class="flex items-center gap-2.5 bg-white px-3.5 py-2 rounded-2xl border border-slate-200 shadow-sm hover:border-red-500/60 transition-all hover:scale-105 group shrink-0 animate-float-1">
-                                    <img src="{{ asset('images/logoime.webp') }}" alt="iMe Roleplay Logo" class="w-7 h-7 object-contain group-hover:rotate-12 transition-transform duration-300">
+                                <div class="flex items-center gap-2 bg-white px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm hover:border-red-500/60 transition-all hover:scale-105 group shrink-0 animate-float-1">
+                                    <img src="{{ asset('images/logoime.webp') }}" alt="iMe Roleplay Logo" class="w-6 h-6 sm:w-7 sm:h-7 object-contain group-hover:rotate-12 transition-transform duration-300">
                                     <div class="leading-tight">
-                                        <span class="text-xs font-bold text-slate-800 block">iMe Network</span>
-                                        <span class="text-[9px] text-red-600 font-semibold">Roleplay Community</span>
+                                        <span class="text-[11px] sm:text-xs font-bold text-slate-800 block">iMe Network</span>
+                                        <span class="text-[8px] sm:text-[9px] text-red-600 font-semibold">Roleplay Community</span>
                                     </div>
                                 </div>
 
                                 <!-- Logo Alta Medical Center / EMS -->
-                                <div class="flex items-center gap-2.5 bg-white px-3.5 py-2 rounded-2xl border border-slate-200 shadow-sm hover:border-sky-500/60 transition-all hover:scale-105 group shrink-0 animate-float-2">
-                                    <img src="{{ asset('images/logo_ems.webp') }}" alt="Alta Medical Center" class="w-7 h-7 object-contain group-hover:scale-110 transition-transform duration-300">
+                                <div class="flex items-center gap-2 bg-white px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm hover:border-sky-500/60 transition-all hover:scale-105 group shrink-0 animate-float-2">
+                                    <img src="{{ asset('images/logo_ems.webp') }}" alt="Alta Medical Center" class="w-6 h-6 sm:w-7 sm:h-7 object-contain group-hover:scale-110 transition-transform duration-300">
                                     <div class="leading-tight">
-                                        <span class="text-xs font-bold text-slate-800 block">Alta Hospital</span>
-                                        <span class="text-[9px] text-sky-600 font-semibold">Medical Center</span>
+                                        <span class="text-[11px] sm:text-xs font-bold text-slate-800 block">Alta Hospital</span>
+                                        <span class="text-[8px] sm:text-[9px] text-sky-600 font-semibold">Medical Center</span>
                                     </div>
                                 </div>
 
                                 <!-- Logo Roxwood Hospital -->
-                                <div class="flex items-center gap-2.5 bg-white px-3.5 py-2 rounded-2xl border border-slate-200 shadow-sm hover:border-purple-500/60 transition-all hover:scale-105 group shrink-0 animate-float-3">
-                                    <img src="{{ asset('images/logo rhv2.png') }}" alt="Roxwood Hospital" class="w-7 h-7 object-contain group-hover:rotate-[-12deg] transition-transform duration-300">
+                                <div class="flex items-center gap-2 bg-white px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm hover:border-purple-500/60 transition-all hover:scale-105 group shrink-0 animate-float-3">
+                                    <img src="{{ asset('images/logo rhv2.png') }}" alt="Roxwood Hospital" class="w-6 h-6 sm:w-7 sm:h-7 object-contain group-hover:rotate-[-12deg] transition-transform duration-300">
                                     <div class="leading-tight">
-                                        <span class="text-xs font-bold text-slate-800 block">Roxwood Hospital</span>
-                                        <span class="text-[9px] text-purple-600 font-semibold">Medical Services</span>
+                                        <span class="text-[11px] sm:text-xs font-bold text-slate-800 block">Roxwood Hospital</span>
+                                        <span class="text-[8px] sm:text-[9px] text-purple-600 font-semibold">Medical Services</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- STATS BOX -->
-                        <div class="pt-4 border-t border-slate-200 flex items-center justify-between max-w-sm">
+                        <div class="pt-3 sm:pt-4 border-t border-slate-200 flex items-center justify-between max-w-sm">
                             <div>
-                                <div class="text-2xl font-black text-slate-900">{{ number_format($stats['total_forms']) }}+</div>
-                                <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Pasien</div>
+                                <div class="text-xl sm:text-2xl font-black text-slate-900">{{ number_format($stats['total_forms']) }}+</div>
+                                <div class="text-[10px] sm:text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Pasien</div>
                             </div>
-                            <div class="h-8 w-px bg-slate-200"></div>
+                            <div class="h-7 sm:h-8 w-px bg-slate-200"></div>
                             <div>
-                                <div class="text-2xl font-black text-slate-900">{{ $stats['total_staff'] }}+</div>
-                                <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Tenaga Medis</div>
+                                <div class="text-xl sm:text-2xl font-black text-slate-900">{{ $stats['total_staff'] }}+</div>
+                                <div class="text-[10px] sm:text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Tenaga Medis</div>
                             </div>
-                            <div class="h-8 w-px bg-slate-200"></div>
+                            <div class="h-7 sm:h-8 w-px bg-slate-200"></div>
                             <div>
-                                <div class="text-2xl font-black text-red-600">100%</div>
-                                <div class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Digital</div>
+                                <div class="text-xl sm:text-2xl font-black text-red-600">100%</div>
+                                <div class="text-[10px] sm:text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Digital</div>
                             </div>
                         </div>
                     </div>
 
                     <!-- HERO RIGHT PHOTO & BADGES -->
-                    <div class="relative flex justify-center items-center">
-                        <div class="relative w-full max-w-md h-[400px] rounded-[28px] overflow-hidden shadow-2xl bg-gradient-to-b from-red-600 via-rose-600 to-red-800 border-4 border-white">
+                    <div class="relative flex justify-center items-center mt-4 lg:mt-0">
+                        <div class="relative w-full max-w-md h-[260px] sm:h-[380px] lg:h-[400px] rounded-[22px] sm:rounded-[28px] overflow-hidden shadow-2xl bg-gradient-to-b from-red-600 via-rose-600 to-red-800 border-4 border-white">
                             <img src="{{ asset('images/foto_dokter.jpg') }}"
                                  alt="Dokter iMe Medical Center - HUT RI Ke-81"
                                  class="w-full h-full object-cover object-center transform hover:scale-105 transition-transform duration-700">
