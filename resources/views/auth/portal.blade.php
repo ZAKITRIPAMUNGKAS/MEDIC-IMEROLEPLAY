@@ -229,78 +229,78 @@
 
         /* Mobile Responsiveness */
         @media (max-width: 870px) {
+            body {
+                overflow-y: auto !important;
+                background-color: #0b1329 !important;
+            }
+
             .container-custom {
-                min-height: 800px;
-                height: 100vh;
-            }
-
-            .signin-signup {
-                width: 100%;
-                top: 95%;
-                transform: translate(-50%, -100%);
-                transition: 1s 0.8s ease-in-out;
-                left: 50%;
-            }
-
-            .panels-container {
-                grid-template-columns: 1fr;
-                grid-template-rows: 1fr 2fr 1fr;
-            }
-
-            .panel {
-                flex-direction: row;
-                justify-content: space-around;
-                align-items: center;
-                padding: 2.5rem 8%;
-                grid-column: 1 / 2;
-            }
-
-            .right-panel {
-                grid-row: 3 / 4;
-            }
-
-            .left-panel {
-                grid-row: 1 / 2;
-            }
-
-            .panel .content {
-                padding-right: 0;
-                transition: transform 0.9s ease-in-out;
-                transition-delay: 0.8s;
+                min-height: 100vh !important;
+                height: auto !important;
+                overflow-y: auto !important;
+                padding: 2.5rem 1rem !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: center !important;
+                align-items: center !important;
+                background: #0b1329 !important;
             }
 
             .container-custom:before {
-                width: 1500px;
-                height: 1500px;
-                transform: translateX(-50%);
-                left: 30%;
-                bottom: 68%;
-                right: initial;
-                top: initial;
-                transition: 2s ease-in-out;
+                display: none !important;
             }
 
-            .container-custom.sign-up-mode:before {
-                transform: translate(-50%, 100%);
-                bottom: 32%;
-                right: initial;
+            .panels-container {
+                display: none !important;
             }
 
-            .container-custom.sign-up-mode .left-panel .content {
-                transform: translateY(-300px);
+            .forms-container {
+                position: relative !important;
+                width: 100% !important;
+                height: auto !important;
+                max-width: 440px !important;
+                margin: auto !important;
             }
 
-            .container-custom.sign-up-mode .right-panel .content {
-                transform: translateY(0px);
+            .signin-signup {
+                position: relative !important;
+                width: 100% !important;
+                top: auto !important;
+                left: auto !important;
+                transform: none !important;
+                background: #ffffff !important;
+                border-radius: 1.5rem !important;
+                padding: 2rem 1.5rem !important;
+                box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45) !important;
+                display: block !important;
+                z-index: 10 !important;
             }
 
-            .right-panel .content {
-                transform: translateY(300px);
+            form {
+                padding: 0 !important;
+                width: 100% !important;
             }
 
-            .container-custom.sign-up-mode .signin-signup {
-                top: 5%;
-                transform: translate(-50%, 0);
+            form.sign-in-form {
+                display: flex !important;
+                opacity: 1 !important;
+                position: relative !important;
+            }
+
+            form.sign-up-form {
+                display: none !important;
+                opacity: 0 !important;
+                position: relative !important;
+            }
+
+            .container-custom.sign-up-mode form.sign-in-form {
+                display: none !important;
+                opacity: 0 !important;
+            }
+
+            .container-custom.sign-up-mode form.sign-up-form {
+                display: flex !important;
+                opacity: 1 !important;
             }
         }
     </style>
@@ -536,10 +536,17 @@
                         LOGIN
                     </button>
 
-                    <!-- Mobile only switch (hidden on desktop generally, but useful fallback) -->
-                    <p class="mt-8 text-sm text-slate-500 md:hidden">
-                        Belum punya akun? <a href="#" id="mobile-sign-up-btn" class="text-sky-600 font-bold">Daftar</a>
-                    </p>
+                    <!-- Mobile only switch -->
+                    <div class="mt-6 text-center space-y-3 md:hidden">
+                        <p class="text-sm text-slate-500">
+                            Belum punya akun? <a href="#" id="mobile-sign-up-btn" class="text-sky-600 font-bold hover:underline">Daftar Sekarang</a>
+                        </p>
+                        <div>
+                            <a href="{{ route('public.index') }}" class="inline-flex items-center text-xs font-medium text-slate-400 hover:text-sky-600 transition-colors">
+                                <i class="fas fa-arrow-left mr-1.5"></i>Kembali ke Halaman Utama
+                            </a>
+                        </div>
+                    </div>
                 </form>
 
                 <!-- REGISTER FORM -->
@@ -650,9 +657,17 @@
                         REGISTER
                     </button>
 
-                    <p class="mt-6 text-sm text-slate-500 md:hidden">
-                        Sudah punya akun? <a href="#" id="mobile-sign-in-btn" class="text-sky-600 font-bold">Login</a>
-                    </p>
+                    <!-- Mobile only switch -->
+                    <div class="mt-6 text-center space-y-3 md:hidden">
+                        <p class="text-sm text-slate-500">
+                            Sudah punya akun? <a href="#" id="mobile-sign-in-btn" class="text-sky-600 font-bold hover:underline">Login di sini</a>
+                        </p>
+                        <div>
+                            <a href="{{ route('public.index') }}" class="inline-flex items-center text-xs font-medium text-slate-400 hover:text-sky-600 transition-colors">
+                                <i class="fas fa-arrow-left mr-1.5"></i>Kembali ke Halaman Utama
+                            </a>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>
