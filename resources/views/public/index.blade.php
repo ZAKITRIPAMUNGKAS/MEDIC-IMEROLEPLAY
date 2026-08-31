@@ -69,14 +69,17 @@
                         </p>
 
                         <div class="flex flex-wrap items-center gap-3 pt-2">
-                            <a href="#layanan" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white text-sm font-bold shadow-lg shadow-red-500/25 transition-all hover:scale-105">
-                                Lihat Layanan <i class="fas fa-arrow-right text-xs"></i>
+                            <a href="{{ route('public.poli-umum') }}" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white text-sm font-bold shadow-lg shadow-red-500/25 transition-all hover:scale-105">
+                                <i class="fas fa-user-md text-xs"></i> Form Poli Umum
                             </a>
-                            <button onclick="showRegulationModal()" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 text-sm font-semibold transition-all shadow-sm">
-                                Regulasi Pengobatan <i class="fas fa-file-alt text-xs text-red-600"></i>
+                            <a href="{{ route('public.doctor-schedule') }}" class="inline-flex items-center gap-2 px-5 py-3.5 rounded-full bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 text-sm font-semibold transition-all shadow-sm hover:scale-105">
+                                <i class="fas fa-calendar-alt text-xs text-sky-600"></i> Jadwal Dokter
+                            </a>
+                            <button onclick="showRegulationModal()" class="inline-flex items-center gap-2 px-5 py-3.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium transition-all shadow-sm">
+                                Regulasi <i class="fas fa-file-alt text-xs text-red-600"></i>
                             </button>
-                            <a href="#keluhan-warga" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-sm font-bold transition-all shadow-sm hover:scale-105">
-                                <i class="fas fa-bullhorn text-xs text-red-600"></i> Form Keluhan Warga
+                            <a href="#keluhan-warga" class="inline-flex items-center gap-2 px-5 py-3.5 rounded-full bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-sm font-bold transition-all shadow-sm hover:scale-105">
+                                <i class="fas fa-bullhorn text-xs text-red-600"></i> Keluhan Warga
                             </a>
                         </div>
 
@@ -193,20 +196,20 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-                    <!-- CARD 01: Konsultasi Medis -->
-                    <a href="{{ route('public.cek-kesehatan') }}" class="group reveal-on-scroll shimmer-card bg-slate-50/80 hover:bg-red-50/40 rounded-[24px] p-6 border border-slate-200 shadow-sm hover:shadow-xl hover:border-red-400 transition-all duration-300 flex flex-col justify-between min-h-[200px] hover:-translate-y-1">
+                    <!-- CARD 01: Poli Umum & Dokter -->
+                    <a href="{{ route('public.poli-umum') }}" class="group reveal-on-scroll shimmer-card bg-slate-50/80 hover:bg-red-50/40 rounded-[24px] p-6 border border-slate-200 shadow-sm hover:shadow-xl hover:border-red-400 transition-all duration-300 flex flex-col justify-between min-h-[200px] hover:-translate-y-1">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold text-slate-400 group-hover:text-red-600 transition-colors">01</span>
                             <div class="w-10 h-10 rounded-2xl bg-red-100 text-red-600 border border-red-200 flex items-center justify-center text-base group-hover:bg-red-600 group-hover:text-white transition-all">
-                                <i class="fas fa-stethoscope"></i>
+                                <i class="fas fa-user-md"></i>
                             </div>
                         </div>
                         <div class="my-3 space-y-1">
-                            <h3 class="text-base font-bold text-slate-900 group-hover:text-red-600 transition-colors">Konsultasi Medis</h3>
-                            <p class="text-xs text-slate-500 leading-relaxed">Pemeriksaan umum, diagnosis penyakit, dan penanganan kesehatan rutin.</p>
+                            <h3 class="text-base font-bold text-slate-900 group-hover:text-red-600 transition-colors">Poli Umum & Dokter</h3>
+                            <p class="text-xs text-slate-500 leading-relaxed">Pendaftaran pemeriksaan dokter umum, keluhan flu/demam, tensi fisik, dan resep obat.</p>
                         </div>
                         <div class="flex items-center gap-2 text-xs font-bold text-red-600 group-hover:translate-x-1 transition-transform">
-                            Surat Kesehatan <i class="fas fa-arrow-right text-[10px]"></i>
+                            Daftar Poli Umum <i class="fas fa-arrow-right text-[10px]"></i>
                         </div>
                     </a>
 
