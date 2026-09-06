@@ -1295,11 +1295,11 @@
                 right: 20px;
                 width: auto;
                 max-width: none;
-        /* Solid Navigation Background - 100% Non-Transparent */
+        /* Solid Navigation Background - 100% Non-Transparent (Default Theme Sky-900) */
         nav,
         #mobile-menu {
-            background-color: #0b1329 !important;
-            background: #0b1329 !important;
+            background-color: #0c4a6e !important;
+            background: linear-gradient(135deg, #0c4a6e 0%, #075985 100%) !important;
             opacity: 1 !important;
         }
     </style>
@@ -1308,7 +1308,7 @@
 
 <body class="min-h-screen">
     <!-- Navigation -->
-    <nav class="fixed w-full top-0 z-[9999]" style="background-color: #0b1329 !important; background: #0b1329 !important; border-bottom: 1px solid rgba(14, 165, 233, 0.3);">
+    <nav class="fixed w-full top-0 z-[9999] shadow-lg" style="background-color: #0c4a6e !important; background: linear-gradient(135deg, #0c4a6e 0%, #075985 100%) !important; border-bottom: 1px solid rgba(14, 165, 233, 0.35);">
         <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
 
@@ -1321,7 +1321,7 @@
                     </div>
                     <div class="leading-none">
                         <div class="text-sm font-bold text-white tracking-widest uppercase group-hover:text-sky-200 transition-colors duration-300">iMe</div>
-                        <div class="text-[10px] text-white/50 tracking-wide">Portal Medis</div>
+                        <div class="text-[10px] text-sky-200/80 tracking-wide">Portal Medis</div>
                     </div>
                 </a>
 
