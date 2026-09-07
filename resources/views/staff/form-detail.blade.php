@@ -32,7 +32,7 @@
                                 </form>
                                 @if($user->canApproveForm($form->form_type))
                                     @php
-                                        $isAppointment = in_array($form->form_type, ['penyakit_dalam', 'spesialis_anak', 'spesialis_bedah', 'spesialis_mata', 'spesialis_saraf', 'spesialis_urologi', 'spesialis_tht', 'spesialis_ortopedi']);
+                                        $isAppointment = in_array($form->form_type, ['janji_temu', 'poli_umum', 'penyakit_dalam', 'spesialis_anak', 'spesialis_bedah', 'spesialis_mata', 'spesialis_saraf', 'spesialis_urologi', 'spesialis_tht', 'spesialis_ortopedi']);
                                     @endphp
                                     <form method="POST" action="{{ route('staff.forms.approve', $form->id) }}"
                                         onsubmit="return confirm('{{ $isAppointment ? 'Yakin ingin menandai janji temu sudah ditemui?' : 'Yakin ingin menyetujui formulir ini?' }}');">
@@ -321,8 +321,11 @@
                                                                     'age' => 'Usia',
                                                                     'occupation' => 'Pekerjaan',
                                                                     'phone_number' => 'Nomor Telepon',
-                                                                    'purpose' => 'Tujuan',
+                                                                    'purpose' => 'Tujuan / Jenis Temu',
                                                                     'doctor_name' => 'Nama Dokter',
+                                                                    'poli' => 'Poli / Spesialisasi',
+                                                                    'appointment_date' => 'Tanggal Janji Temu',
+                                                                    'appointment_time' => 'Waktu Janji Temu',
                                                                     'photo_ktp_url' => 'Foto KTP',
                                                                     'photo_skb_url' => 'Foto SKB',
                                                                 ];
@@ -380,7 +383,7 @@
                     <div class="backdrop-blur-xl border-2 border-sky-400/60 rounded-2xl shadow-2xl p-6 md:p-8 mb-6"
                         style="background-color: rgba(7, 89, 133, 0.9);">
                         @php
-                            $isAppointmentForm = in_array($form->form_type, ['penyakit_dalam', 'spesialis_anak', 'spesialis_bedah', 'spesialis_mata', 'spesialis_saraf', 'spesialis_urologi', 'spesialis_tht', 'spesialis_ortopedi']);
+                            $isAppointmentForm = in_array($form->form_type, ['janji_temu', 'poli_umum', 'penyakit_dalam', 'spesialis_anak', 'spesialis_bedah', 'spesialis_mata', 'spesialis_saraf', 'spesialis_urologi', 'spesialis_tht', 'spesialis_ortopedi']);
                         @endphp
                         <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
                             <i class="fas {{ $isAppointmentForm ? 'fa-stethoscope' : 'fa-file-alt' }} mr-3 text-cyan-400"></i>
@@ -635,7 +638,7 @@
                         <div class="space-y-3">
                             @if($form->status === 'pending')
                                 @php
-                                    $isAppointment = in_array($form->form_type, ['penyakit_dalam', 'spesialis_anak', 'spesialis_bedah', 'spesialis_mata', 'spesialis_saraf', 'spesialis_urologi', 'spesialis_tht', 'spesialis_ortopedi']);
+                                    $isAppointment = in_array($form->form_type, ['janji_temu', 'poli_umum', 'penyakit_dalam', 'spesialis_anak', 'spesialis_bedah', 'spesialis_mata', 'spesialis_saraf', 'spesialis_urologi', 'spesialis_tht', 'spesialis_ortopedi']);
                                     $canApprove = $user->canApproveForm($form->form_type);
                                 @endphp
 

@@ -1435,6 +1435,9 @@
                                                 $appointmentDate = $formData['appointment_date'] ?? null;
                                                 $appointmentTime = $formData['appointment_time'] ?? null;
                                                 $formTypeNames = [
+                                                    'janji_temu' => 'Janji Temu',
+                                                    'poli_umum' => 'Poli Umum',
+                                                    'Poli Umum' => 'Poli Umum',
                                                     'penyakit_dalam' => 'Poli Penyakit Dalam',
                                                     'spesialis_anak' => 'Poli Spesialis Anak',
                                                     'spesialis_bedah' => 'Poli Spesialis Bedah',

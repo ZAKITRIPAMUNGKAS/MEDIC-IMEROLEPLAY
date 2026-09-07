@@ -254,6 +254,8 @@ class DashboardService
     private function getAppointmentTypes(): array
     {
         return [
+            'janji_temu',
+            'poli_umum',
             'penyakit_dalam',
             'spesialis_anak',
             'spesialis_bedah',

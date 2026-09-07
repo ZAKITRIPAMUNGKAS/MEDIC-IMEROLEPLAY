@@ -1168,6 +1168,7 @@
                                         </label>
                                         <select id="poli_jt" name="form_data[poli]" class="form-select w-full @error('form_data.poli') border-red-500 @enderror" required>
                                             <option value="">-- Pilih Poli --</option>
+                                            <option value="Poli Umum" @if(old('form_data.poli', request('poli')) == 'Poli Umum') selected @endif class="bg-slate-900 text-white font-bold">🩺 Poli Umum</option>
                                             <option value="Spesialis Anestesiologi" @if(old('form_data.poli') == 'Spesialis Anestesiologi') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Anestesiologi</option>
                                             <option value="Spesialis Bedah" @if(old('form_data.poli') == 'Spesialis Bedah') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Bedah</option>
                                             <option value="Spesialis Bedah Mulut" @if(old('form_data.poli') == 'Spesialis Bedah Mulut') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Bedah Mulut</option>
@@ -1978,10 +1979,10 @@
             if (poliParam) {
                 const poliSelect = document.getElementById('poli_jt');
                 if (poliSelect) {
-                    const cleanPoli = poliParam.replace(/🩺\s*/, '').trim();
+                    const cleanPoli = poliParam.replace(/🩺\s*/, '').trim().toLowerCase();
                     for (let option of poliSelect.options) {
-                        const cleanOption = option.value.replace(/🩺\s*/, '').trim();
-                        if (cleanOption === cleanPoli || option.value === poliParam) {
+                        const cleanOption = option.value.replace(/🩺\s*/, '').trim().toLowerCase();
+                        if (cleanOption === cleanPoli || cleanOption.includes(cleanPoli) || cleanPoli.includes(cleanOption)) {
                             poliSelect.value = option.value;
                             break;
                         }

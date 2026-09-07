@@ -610,8 +610,11 @@ Route::get('/surat-psikolog', function () {
     return redirect()->route('public.form', 'surat_psikolog');
 })->name('public.surat-psikolog');
 Route::get('/poli-umum', function () {
-    return redirect()->route('public.form', ['type' => 'poli_umum']);
+    return redirect()->route('public.form', ['type' => 'janji_temu', 'poli' => 'Poli Umum']);
 })->name('public.poli-umum');
+Route::get('/janji-temu', function () {
+    return redirect()->route('public.form', ['type' => 'janji_temu']);
+})->name('public.janji-temu');
 Route::get('/pendaftaran-karakter', function () {
     return redirect()->route('public.form', ['type' => 'pendaftaran_karakter']);
 })->name('public.pendaftaran-karakter');

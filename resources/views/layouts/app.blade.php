@@ -1683,10 +1683,10 @@
                         <span>Beranda Utama</span>
                     </a>
 
-                    <a href="{{ route('public.poli-umum') }}"
+                    <a href="{{ route('public.form', ['type' => 'janji_temu', 'poli' => 'Poli Umum']) }}"
                         class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                        <i class="fas fa-user-md w-5 text-cyan-400 text-sm"></i>
-                        <span>Form Dokter Poli Umum</span>
+                        <i class="fas fa-calendar-check w-5 text-cyan-400 text-sm"></i>
+                        <span>Janji Temu Dokter</span>
                     </a>
 
                     <a href="{{ route('public.cek-kesehatan') }}"

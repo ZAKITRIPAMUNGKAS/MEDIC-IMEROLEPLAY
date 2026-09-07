@@ -75,8 +75,8 @@
                             <a href="{{ route('public.cek-kesehatan') }}" class="inline-flex items-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-full bg-gradient-to-r from-sky-600 to-cyan-600 hover:from-sky-700 hover:to-cyan-700 text-white text-xs sm:text-sm font-bold shadow-lg shadow-sky-600/25 transition-all hover:scale-105">
                                 <i class="fas fa-file-medical text-xs"></i> Surat Kesehatan
                             </a>
-                            <a href="{{ route('public.poli-umum') }}" class="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3.5 rounded-full bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 text-xs sm:text-sm font-bold transition-all shadow-sm hover:scale-105">
-                                <i class="fas fa-user-md text-xs text-sky-600"></i> Form Poli Umum
+                            <a href="{{ route('public.form', ['type' => 'janji_temu', 'poli' => 'Poli Umum']) }}" class="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3.5 rounded-full bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 text-xs sm:text-sm font-bold transition-all shadow-sm hover:scale-105">
+                                <i class="fas fa-calendar-check text-xs text-sky-600"></i> Buat Janji Temu
                             </a>
                             <a href="{{ route('public.doctor-schedule') }}" class="inline-flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3.5 rounded-full bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 text-xs sm:text-sm font-semibold transition-all shadow-sm hover:scale-105">
                                 <i class="fas fa-calendar-alt text-xs text-sky-600"></i> Jadwal Dokter
@@ -233,8 +233,8 @@
                         </div>
                     </a>
 
-                    <!-- CARD 02: Poli Umum & Dokter -->
-                    <a href="{{ route('public.poli-umum') }}" class="group reveal-on-scroll shimmer-card bg-slate-50/80 hover:bg-sky-50/50 rounded-[24px] p-6 border border-slate-200 shadow-sm hover:shadow-xl hover:border-sky-300 transition-all duration-300 flex flex-col justify-between min-h-[200px] hover:-translate-y-1">
+                    <!-- CARD 02: Poli Umum & Dokter (Janji Temu) -->
+                    <a href="{{ route('public.form', ['type' => 'janji_temu', 'poli' => 'Poli Umum']) }}" class="group reveal-on-scroll shimmer-card bg-slate-50/80 hover:bg-sky-50/50 rounded-[24px] p-6 border border-slate-200 shadow-sm hover:shadow-xl hover:border-sky-300 transition-all duration-300 flex flex-col justify-between min-h-[200px] hover:-translate-y-1">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold text-slate-400 group-hover:text-sky-700 transition-colors">02</span>
                             <div class="w-10 h-10 rounded-2xl bg-sky-50 text-sky-700 border border-sky-200 flex items-center justify-center text-base group-hover:bg-sky-600 group-hover:text-white transition-all">
@@ -243,10 +243,10 @@
                         </div>
                         <div class="my-3 space-y-1">
                             <h3 class="text-base font-bold text-slate-900 group-hover:text-sky-700 transition-colors">Poli Umum & Dokter</h3>
-                            <p class="text-xs text-slate-500 leading-relaxed">Pemeriksaan umum dokter, diagnosis penyakit, keluhan sakit/flu, dan resep obat.</p>
+                            <p class="text-xs text-slate-500 leading-relaxed">Pemeriksaan umum dokter, diagnosis penyakit, keluhan sakit/flu, dan jadwal temu dokter.</p>
                         </div>
                         <div class="flex items-center gap-2 text-xs font-bold text-sky-700 group-hover:translate-x-1 transition-transform">
-                            Daftar Poli Umum <i class="fas fa-arrow-right text-[10px]"></i>
+                            Buat Janji Temu <i class="fas fa-arrow-right text-[10px]"></i>
                         </div>
                     </a>
 

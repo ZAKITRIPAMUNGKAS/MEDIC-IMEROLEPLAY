@@ -169,6 +169,10 @@ class PublicController extends Controller
         // Allow selecting form type via query string (?type=...)
         $type = request('type', $type);
 
+        if ($type === 'poli_umum') {
+            return redirect()->route('public.form', array_merge(['type' => 'janji_temu', 'poli' => 'Poli Umum'], request()->except('type')));
+        }
+
         $formTypes = [
             'surat_kesehatan' => 'Surat Kesehatan',
             'operasi_plastik' => 'Operasi Plastik',
@@ -482,6 +486,8 @@ class PublicController extends Controller
                 'spesialis_urologi' => 'Poli Spesialis Urologi',
                 'spesialis_tht' => 'Poli Spesialis THT',
                 'spesialis_ortopedi' => 'Poli Spesialis Ortopedi',
+                'janji_temu' => 'Janji Temu',
+                'poli_umum' => 'Poli Umum',
             ];
 
             $formTypeLabel = $formTypeLabels[$request->form_type] ?? ucfirst(str_replace('_', ' ', $request->form_type));
@@ -507,6 +513,8 @@ class PublicController extends Controller
                 'konsultasi_medis' => 'Konsultasi Medis',
                 'laporan_kecelakaan' => 'Laporan Kecelakaan',
                 'permintaan_ambulans' => 'Permintaan Ambulans',
+                'janji_temu' => 'Janji Temu Dokter',
+                'poli_umum' => 'Janji Temu Poli Umum',
             ];
             $label = $typeLabelMap[$request->form_type] ?? ucfirst(str_replace('_', ' ', $request->form_type));
             return $label . ' - otomatis (tanpa deskripsi tambahan)';

@@ -209,7 +209,7 @@
                                     </td>
                                     <td class="px-6 py-4">
                                         @php
-                                            $isAppointment = in_array($form->form_type, ['penyakit_dalam', 'spesialis_anak', 'spesialis_bedah', 'spesialis_mata', 'spesialis_saraf', 'spesialis_urologi', 'spesialis_tht', 'spesialis_ortopedi']);
+                                            $isAppointment = in_array($form->form_type, ['janji_temu', 'poli_umum', 'penyakit_dalam', 'spesialis_anak', 'spesialis_bedah', 'spesialis_mata', 'spesialis_saraf', 'spesialis_urologi', 'spesialis_tht', 'spesialis_ortopedi']);
                                         @endphp
                                         
                                         @if($form->status === 'pending')
