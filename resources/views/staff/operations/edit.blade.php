@@ -851,6 +851,26 @@ $(document).ready(function() {
             reader.readAsDataURL(file);
         });
     }
+
+    // Anti-Double Submit Protection
+    $('form').on('submit', function(e) {
+        const $form = $(this);
+        const $btn = $form.find('button[type="submit"]');
+
+        if ($form.data('submitted') === true) {
+            e.preventDefault();
+            return false;
+        }
+
+        if (this.checkValidity && !this.checkValidity()) {
+            return true;
+        }
+
+        $form.data('submitted', true);
+        $btn.prop('disabled', true).addClass('opacity-75 cursor-not-allowed pointer-events-none');
+        $btn.html('<i class="fas fa-spinner fa-spin mr-2"></i> Sedang Menyimpan Perubahan...');
+        return true;
+    });
 });
 </script>
 @endpush

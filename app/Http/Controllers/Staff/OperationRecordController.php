@@ -133,9 +133,18 @@ class OperationRecordController extends Controller
                 ? $validated['tindakan_operasi'] 
                 : (!empty($medicalDetails['tindakan']['nama_tindakan']) ? $medicalDetails['tindakan']['nama_tindakan'] : 'Operasi Medis');
 
-            $hasilVal = !empty($validated['hasil_operasi']) 
-                ? $validated['hasil_operasi'] 
-                : 'Selesai Sesuai Prosedur';
+            // Anti-Double Submit / Idempotency check (mencegah duplikasi data saat klik ganda)
+            $existingRecord = OperationRecord::where('created_by', Auth::id())
+                ->where('nama_pasien', $validated['nama_pasien'])
+                ->where('tanggal_waktu', $validated['tanggal_waktu'])
+                ->where('created_at', '>=', now()->subSeconds(20))
+                ->first();
+
+            if ($existingRecord) {
+                \Illuminate\Support\Facades\Log::warning('Terdeteksi double submission rekam operasi, diarahkan ke record yang sudah dibuat.', ['id' => $existingRecord->id]);
+                DB::rollBack();
+                return redirect()->route('staff.operations.index')->with('success', 'Rekam Operasi berhasil disimpan.');
+            }
 
             // Create record
             $operation = OperationRecord::create([
