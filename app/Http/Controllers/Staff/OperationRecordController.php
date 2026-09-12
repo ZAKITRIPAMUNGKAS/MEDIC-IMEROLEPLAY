@@ -117,7 +117,7 @@ class OperationRecordController extends Controller
             'members'         => $request->input('jenis_operasi') === 'Konsultasi Spesialisasi' ? 'nullable|array' : 'required|array|min:1',
             'members.*'       => 'exists:users,id',
             'photos'          => 'nullable|array',
-            'photos.*'        => 'image|mimes:jpeg,png,jpg,webp|max:5120',
+            'photos.*'        => 'nullable|file|mimes:jpeg,png,jpg,webp|max:10240',
             'medical_details' => 'nullable|array',
         ]);
 
@@ -132,6 +132,10 @@ class OperationRecordController extends Controller
             $tindakanVal = !empty($validated['tindakan_operasi']) 
                 ? $validated['tindakan_operasi'] 
                 : (!empty($medicalDetails['tindakan']['nama_tindakan']) ? $medicalDetails['tindakan']['nama_tindakan'] : 'Operasi Medis');
+
+            $hasilVal = !empty($validated['hasil_operasi']) 
+                ? $validated['hasil_operasi'] 
+                : (!empty($medicalDetails['pasca_operasi']['kondisi_keluar']) ? $medicalDetails['pasca_operasi']['kondisi_keluar'] : 'Operasi Selesai');
 
             // Anti-Double Submit / Idempotency check (mencegah duplikasi data saat klik ganda)
             $existingRecord = OperationRecord::where('created_by', Auth::id())
@@ -163,27 +167,28 @@ class OperationRecordController extends Controller
             ]);
 
             // Sync members
-            $operation->members()->sync($validated['members']);
+            $members = $validated['members'] ?? [];
+            if (!empty($members)) {
+                $operation->members()->sync($members);
+            }
 
             // Upload photos — simpan ke public/uploads/operations/ (folder yang sudah ada di server)
             if ($request->hasFile('photos')) {
                 \Illuminate\Support\Facades\Log::info('Memulai proses upload foto operasi', ['count' => count($request->file('photos'))]);
                 $uploadDir = public_path('uploads/operations');
-                \Illuminate\Support\Facades\Log::info('Target direktori upload: ' . $uploadDir);
                 
                 if (!file_exists($uploadDir)) {
-                    $created = @mkdir($uploadDir, 0777, true);
-                    \Illuminate\Support\Facades\Log::info('Direktori belum ada, proses mkdir: ' . ($created ? 'Berhasil' : 'Gagal'));
+                    @mkdir($uploadDir, 0777, true);
                 }
 
                 foreach ($request->file('photos') as $idx => $photo) {
-                    \Illuminate\Support\Facades\Log::info("Memproses foto ke-$idx", [
-                        'valid' => $photo->isValid(),
-                        'error' => $photo->getError(),
-                        'originalName' => $photo->getClientOriginalName()
-                    ]);
-                    
-                    if (!$photo->isValid()) continue;
+                    if (!$photo || !$photo->isValid()) {
+                        \Illuminate\Support\Facades\Log::warning("Foto ke-$idx tidak valid atau gagal upload", [
+                            'error' => $photo ? $photo->getError() : 'null',
+                            'errorMessage' => $photo ? $photo->getErrorMessage() : 'null'
+                        ]);
+                        continue;
+                    }
 
                     $filename = time() . '_' . uniqid() . '.' . $photo->getClientOriginalExtension();
 
@@ -325,7 +330,7 @@ class OperationRecordController extends Controller
             'members'         => 'nullable|array',
             'members.*'       => 'exists:users,id',
             'photos'          => 'nullable|array',
-            'photos.*'        => 'image|mimes:jpeg,png,jpg,webp|max:5120',
+            'photos.*'        => 'nullable|file|mimes:jpeg,png,jpg,webp|max:10240',
             'medical_details' => 'nullable|array',
         ]);
 

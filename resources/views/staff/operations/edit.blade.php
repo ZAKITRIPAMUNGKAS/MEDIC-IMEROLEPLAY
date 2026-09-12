@@ -135,10 +135,24 @@
             </div>
         </div>
 
+        @if ($errors->any())
+        <div class="mb-6 bg-red-500/20 border border-red-500 text-red-200 px-5 py-4 rounded-2xl flex items-start gap-3 shadow-lg">
+            <i class="fas fa-exclamation-circle text-red-400 text-xl mt-0.5 flex-shrink-0"></i>
+            <div>
+                <h4 class="font-bold text-red-100 text-sm">Gagal Menyimpan Perubahan (Mohon periksa data berikut):</h4>
+                <ul class="list-disc list-inside text-xs mt-1.5 space-y-1 text-red-200">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+        @endif
+
         @if(session('error'))
-        <div class="mb-6 bg-red-500/20 border border-red-500 text-red-200 px-4 py-3 rounded-xl flex items-center gap-3">
-            <i class="fas fa-exclamation-triangle text-red-400"></i>
-            <span>{{ session('error') }}</span>
+        <div class="mb-6 bg-red-500/20 border border-red-500 text-red-200 px-5 py-4 rounded-2xl flex items-center gap-3 shadow-lg">
+            <i class="fas fa-exclamation-triangle text-red-400 text-xl flex-shrink-0"></i>
+            <span class="text-sm font-medium">{{ session('error') }}</span>
         </div>
         @endif
 
@@ -801,10 +815,76 @@ $(document).ready(function() {
     updateMembersRequirement();
     $membersSelect.trigger('change');
 
-    // Dropzone logic for photo upload
+    // Dropzone logic for photo upload with client-side compression
     const dropzone = document.getElementById('dropzone');
     const photoInput = document.getElementById('photo-upload');
     const previewContainer = document.getElementById('photo-preview');
+    let selectedFiles = [];
+
+    function formatBytes(bytes, decimals = 1) {
+        if (!+bytes) return '0 B';
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+    }
+
+    async function compressImageIfNeeded(file, maxDimension = 1920, quality = 0.85) {
+        if (!file.type || !file.type.startsWith('image/')) {
+            return file;
+        }
+        if (file.type === 'image/gif' || file.type === 'image/svg+xml') {
+            return file;
+        }
+
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > maxDimension || height > maxDimension) {
+                        if (width > height) {
+                            height = Math.round((height * maxDimension) / width);
+                            width = maxDimension;
+                        } else {
+                            width = Math.round((width * maxDimension) / height);
+                            height = maxDimension;
+                        }
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    canvas.toBlob(
+                        (blob) => {
+                            if (!blob || blob.size >= file.size) {
+                                return resolve(file);
+                            }
+                            const cleanName = file.name.replace(/\.[^/.]+$/, "") + ".jpg";
+                            const compressedFile = new File([blob], cleanName, {
+                                type: 'image/jpeg',
+                                lastModified: Date.now()
+                            });
+                            resolve(compressedFile);
+                        },
+                        'image/jpeg',
+                        quality
+                    );
+                };
+                img.onerror = () => resolve(file);
+                img.src = e.target.result;
+            };
+            reader.onerror = () => resolve(file);
+            reader.readAsDataURL(file);
+        });
+    }
 
     if (dropzone && photoInput) {
         dropzone.addEventListener('click', function(e) {
@@ -825,30 +905,95 @@ $(document).ready(function() {
         dropzone.addEventListener('drop', (e) => {
             e.preventDefault();
             dropzone.classList.remove('bg-white/10');
-            if (e.dataTransfer.files.length) {
-                photoInput.files = e.dataTransfer.files;
-                renderPreviews(e.dataTransfer.files);
-            }
+            addFiles(e.dataTransfer.files);
         });
 
-        photoInput.addEventListener('change', () => {
-            renderPreviews(photoInput.files);
+        photoInput.addEventListener('change', function() {
+            addFiles(this.files);
         });
     }
 
-    function renderPreviews(files) {
+    async function addFiles(newFiles) {
+        if (!newFiles || newFiles.length === 0) return;
+
+        const processingId = 'photo-processing-badge';
+        if (!document.getElementById(processingId)) {
+            const procBadge = document.createElement('div');
+            procBadge.id = processingId;
+            procBadge.className = 'text-xs text-amber-300 font-semibold mt-2 flex items-center gap-1.5';
+            procBadge.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengoptimalkan & memproses foto...';
+            previewContainer.parentNode.insertBefore(procBadge, previewContainer);
+        }
+
+        for (const rawFile of Array.from(newFiles)) {
+            if (rawFile.type && rawFile.type.match('image.*')) {
+                try {
+                    const optimizedFile = await compressImageIfNeeded(rawFile);
+                    if (!selectedFiles.some(f => f.name === optimizedFile.name && f.size === optimizedFile.size)) {
+                        selectedFiles.push(optimizedFile);
+                    }
+                } catch (err) {
+                    console.error('Error optimizing image:', err);
+                    selectedFiles.push(rawFile);
+                }
+            }
+        }
+
+        const proc = document.getElementById(processingId);
+        if (proc) proc.remove();
+
+        updateFileInput();
+        renderPreviews();
+    }
+
+    function removeFile(index) {
+        selectedFiles.splice(index, 1);
+        updateFileInput();
+        renderPreviews();
+    }
+
+    function updateFileInput() {
+        if (!photoInput) return;
+        const dt = new DataTransfer();
+        selectedFiles.forEach(file => dt.items.add(file));
+        photoInput.files = dt.files;
+    }
+
+    function renderPreviews() {
         if (!previewContainer) return;
         previewContainer.innerHTML = '';
-        Array.from(files).forEach(file => {
-            if (!file.type.startsWith('image/')) return;
+        selectedFiles.forEach((file, index) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'relative group w-28 h-28 rounded-xl overflow-hidden border-2 border-amber-400/50 shadow-md flex-shrink-0 bg-slate-800';
+
+            const img = document.createElement('img');
+            img.className = 'w-full h-full object-cover';
+
             const reader = new FileReader();
             reader.onload = (e) => {
-                const div = document.createElement('div');
-                div.className = 'relative w-24 h-24 border border-white/20 rounded-xl overflow-hidden shadow-md';
-                div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
-                previewContainer.appendChild(div);
+                img.src = e.target.result;
             };
             reader.readAsDataURL(file);
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'absolute top-1 right-1 w-6 h-6 bg-red-600 hover:bg-red-700 text-white rounded-full flex items-center justify-center text-xs shadow-lg transition-transform transform hover:scale-110 z-20 cursor-pointer';
+            removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            removeBtn.title = 'Hapus foto ini';
+            removeBtn.onclick = function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                removeFile(index);
+            };
+
+            const badge = document.createElement('div');
+            badge.className = 'absolute bottom-0 inset-x-0 bg-black/80 text-white text-[10px] px-1 py-0.5 truncate text-center z-10';
+            badge.textContent = `${formatBytes(file.size)}`;
+
+            wrapper.appendChild(img);
+            wrapper.appendChild(removeBtn);
+            wrapper.appendChild(badge);
+            previewContainer.appendChild(wrapper);
         });
     }
 
@@ -860,11 +1005,10 @@ $(document).ready(function() {
         if ($form.data('submitted') === true) {
             e.preventDefault();
             return false;
-        }
+            }
 
-        if (this.checkValidity && !this.checkValidity()) {
-            return true;
-        }
+        // Sync file input before submit
+        updateFileInput();
 
         $form.data('submitted', true);
         $btn.prop('disabled', true).addClass('opacity-75 cursor-not-allowed pointer-events-none');

@@ -169,10 +169,24 @@
             </div>
         </div>
 
+        @if ($errors->any())
+        <div class="mb-6 bg-red-500/20 border border-red-500 text-red-200 px-5 py-4 rounded-2xl flex items-start gap-3 shadow-lg">
+            <i class="fas fa-exclamation-circle text-red-400 text-xl mt-0.5 flex-shrink-0"></i>
+            <div>
+                <h4 class="font-bold text-red-100 text-sm">Gagal Menyimpan Rekam Medis (Mohon periksa data berikut):</h4>
+                <ul class="list-disc list-inside text-xs mt-1.5 space-y-1 text-red-200">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+        @endif
+
         @if(session('error'))
-        <div class="mb-6 bg-red-500 bg-opacity-20 border border-red-500 text-red-200 px-4 py-3 rounded-xl flex items-center gap-3">
-            <i class="fas fa-exclamation-triangle text-red-400"></i>
-            <span>{{ session('error') }}</span>
+        <div class="mb-6 bg-red-500/20 border border-red-500 text-red-200 px-5 py-4 rounded-2xl flex items-center gap-3 shadow-lg">
+            <i class="fas fa-exclamation-triangle text-red-400 text-xl flex-shrink-0"></i>
+            <span class="text-sm font-medium">{{ session('error') }}</span>
         </div>
         @endif
 
@@ -773,6 +787,71 @@
             }, false);
         });
 
+        function formatBytes(bytes, decimals = 1) {
+            if (!+bytes) return '0 B';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+        }
+
+        async function compressImageIfNeeded(file, maxDimension = 1920, quality = 0.85) {
+            if (!file.type || !file.type.startsWith('image/')) {
+                return file;
+            }
+            if (file.type === 'image/gif' || file.type === 'image/svg+xml') {
+                return file;
+            }
+
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > maxDimension || height > maxDimension) {
+                            if (width > height) {
+                                height = Math.round((height * maxDimension) / width);
+                                width = maxDimension;
+                            } else {
+                                width = Math.round((width * maxDimension) / height);
+                                height = maxDimension;
+                            }
+                        }
+
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        canvas.toBlob(
+                            (blob) => {
+                                if (!blob || blob.size >= file.size) {
+                                    return resolve(file);
+                                }
+                                const cleanName = file.name.replace(/\.[^/.]+$/, "") + ".jpg";
+                                const compressedFile = new File([blob], cleanName, {
+                                    type: 'image/jpeg',
+                                    lastModified: Date.now()
+                                });
+                                resolve(compressedFile);
+                            },
+                            'image/jpeg',
+                            quality
+                        );
+                    };
+                    img.onerror = () => resolve(file);
+                    img.src = e.target.result;
+                };
+                reader.onerror = () => resolve(file);
+                reader.readAsDataURL(file);
+            });
+        }
+
         dropzone.addEventListener('drop', (e) => {
             addFiles(e.dataTransfer.files);
         });
@@ -781,15 +860,35 @@
             addFiles(this.files);
         });
 
-        function addFiles(newFiles) {
+        async function addFiles(newFiles) {
             if (!newFiles || newFiles.length === 0) return;
-            Array.from(newFiles).forEach(file => {
-                if (file.type.match('image.*')) {
-                    if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
-                        selectedFiles.push(file);
+
+            const processingId = 'photo-processing-badge';
+            if (!document.getElementById(processingId)) {
+                const procBadge = document.createElement('div');
+                procBadge.id = processingId;
+                procBadge.className = 'text-xs text-amber-300 font-semibold mt-2 flex items-center gap-1.5';
+                procBadge.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengoptimalkan & memproses foto...';
+                previewContainer.parentNode.insertBefore(procBadge, previewContainer);
+            }
+
+            for (const rawFile of Array.from(newFiles)) {
+                if (rawFile.type && rawFile.type.match('image.*')) {
+                    try {
+                        const optimizedFile = await compressImageIfNeeded(rawFile);
+                        if (!selectedFiles.some(f => f.name === optimizedFile.name && f.size === optimizedFile.size)) {
+                            selectedFiles.push(optimizedFile);
+                        }
+                    } catch (err) {
+                        console.error('Error optimizing image:', err);
+                        selectedFiles.push(rawFile);
                     }
                 }
-            });
+            }
+
+            const proc = document.getElementById(processingId);
+            if (proc) proc.remove();
+
             updateFileInput();
             renderPreview();
         }
@@ -810,7 +909,7 @@
             previewContainer.innerHTML = '';
             selectedFiles.forEach((file, index) => {
                 const wrapper = document.createElement('div');
-                wrapper.className = 'relative group w-24 h-24 rounded-xl overflow-hidden border-2 border-sky-400/50 shadow-md flex-shrink-0 bg-slate-800';
+                wrapper.className = 'relative group w-28 h-28 rounded-xl overflow-hidden border-2 border-sky-400/50 shadow-md flex-shrink-0 bg-slate-800';
 
                 const img = document.createElement('img');
                 img.className = 'w-full h-full object-cover';
@@ -834,8 +933,8 @@
                 };
 
                 const badge = document.createElement('div');
-                badge.className = 'absolute bottom-0 inset-x-0 bg-black/70 text-white text-[9px] px-1 py-0.5 truncate text-center z-10';
-                badge.textContent = file.name;
+                badge.className = 'absolute bottom-0 inset-x-0 bg-black/80 text-white text-[10px] px-1 py-0.5 truncate text-center z-10';
+                badge.textContent = `${formatBytes(file.size)}`;
 
                 wrapper.appendChild(img);
                 wrapper.appendChild(removeBtn);
@@ -854,14 +953,12 @@
                 return false;
             }
 
-            // Cek validitas form standar
-            if (this.checkValidity && !this.checkValidity()) {
-                return true;
-            }
+            // Sync file input once again right before submit
+            updateFileInput();
 
             $form.data('submitted', true);
             $btn.prop('disabled', true).addClass('opacity-75 cursor-not-allowed pointer-events-none');
-            $btn.html('<i class="fas fa-spinner fa-spin mr-2"></i> Menyimpan Rekam Operasi...');
+            $btn.html('<i class="fas fa-spinner fa-spin mr-2"></i> Menyimpan Rekam Medis...');
             return true;
         });
     });
