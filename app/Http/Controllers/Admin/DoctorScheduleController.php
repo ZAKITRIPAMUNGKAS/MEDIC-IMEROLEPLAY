@@ -9,13 +9,13 @@ use Illuminate\Http\Request;
 class DoctorScheduleController extends Controller
 {
     public const POLI_LIST = [
+        '🩺 Spesialis Kesehatan Jiwa',
         '🩺 Poli Umum',
         '🩺 Spesialis Anestesiologi',
         '🩺 Spesialis Bedah',
         '🩺 Spesialis Bedah Mulut',
         '🩺 Spesialis Bedah Plastik, Rekonstruksi, dan Estetik',
         '🩺 Spesialis Forensik dan Medikolegal',
-        '🩺 Spesialis Kesehatan Jiwa',
         '🩺 Spesialis Kedokteran Gigi Anak',
         '🩺 Spesialis Radiologi',
         '🩺 Spesialis Mata',

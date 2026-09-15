@@ -21,6 +21,15 @@ class PublicController extends Controller
             ->get()
             ->groupBy('poli');
 
+        // Pastikan 'Spesialis Kesehatan Jiwa' di urutan paling atas
+        $jiwa = $schedules->filter(function ($docs, $poli) {
+            return stripos($poli, 'Kesehatan Jiwa') !== false;
+        });
+        $others = $schedules->reject(function ($docs, $poli) {
+            return stripos($poli, 'Kesehatan Jiwa') !== false;
+        });
+        $schedules = $jiwa->union($others);
+
         return view('public.doctor-schedule', compact('schedules', 'poliList'));
     }
 
