@@ -44,6 +44,28 @@ class AiSetting extends Model
                 'enabled'  => false,
             ]);
         } catch (\Throwable $e) {
+            // Jika tabel belum ada di database, buat otomatis on-the-fly
+            try {
+                if (!\Illuminate\Support\Facades\Schema::hasTable('ai_settings')) {
+                    \Illuminate\Support\Facades\Schema::create('ai_settings', function (\Illuminate\Database\Schema\Blueprint $table) {
+                        $table->id();
+                        $table->string('provider')->default('gemini');
+                        $table->text('api_key')->nullable();
+                        $table->string('model')->default('gemini-3.5-flash');
+                        $table->boolean('enabled')->default(false);
+                        $table->timestamps();
+                    });
+
+                    return static::firstOrCreate([], [
+                        'provider' => 'gemini',
+                        'model'    => 'gemini-3.5-flash',
+                        'enabled'  => false,
+                    ]);
+                }
+            } catch (\Throwable $ex) {
+                // Ignore schema creation failure
+            }
+
             $instance = new static([
                 'provider' => 'gemini',
                 'model'    => 'gemini-3.5-flash',

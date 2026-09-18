@@ -356,7 +356,7 @@
                 {{-- Form Footer Actions (Inside Form) --}}
                 <div class="pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
                     {{-- Tombol Test --}}
-                    <button type="button" onclick="document.getElementById('ai-test-form').submit()"
+                    <button type="button" onclick="submitTestConnection()"
                         class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white border border-slate-300 text-slate-700 rounded-xl font-bold text-xs hover:bg-slate-100 hover:border-sky-400 hover:text-sky-700 transition-all shadow-sm">
                         <i class="fas fa-plug text-sky-500"></i>
                         <span>Test Koneksi API</span>
@@ -372,9 +372,11 @@
 
             </form>
 
-            {{-- Form Terpisah untuk Test Koneksi (Dipanggil via JS) --}}
+            {{-- Form Terpisah untuk Test Koneksi (Membawa API Key yang diketik) --}}
             <form method="POST" action="{{ route('admin.ai-settings.test') }}" id="ai-test-form" style="display:none;">
                 @csrf
+                <input type="hidden" name="api_key" id="test_api_key">
+                <input type="hidden" name="model" id="test_model">
             </form>
 
         </div>
@@ -416,6 +418,16 @@
 </div>
 
 <script>
+    // Submit test koneksi dengan membawa nilai dari input
+    function submitTestConnection() {
+        const apiKey = document.getElementById('api_key').value;
+        const model = document.getElementById('model').value;
+        
+        document.getElementById('test_api_key').value = apiKey;
+        document.getElementById('test_model').value = model;
+        document.getElementById('ai-test-form').submit();
+    }
+
     // Toggle visibilitas API key via CSS mask (tanpa memicu password manager)
     const apiKeyInput = document.getElementById('api_key');
     const toggleBtn = document.getElementById('toggle-api-key-visibility');

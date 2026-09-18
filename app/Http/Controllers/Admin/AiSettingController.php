@@ -45,30 +45,36 @@ class AiSettingController extends Controller
 
         // Only update API key if a new one was provided
         if (!empty($validated['api_key'])) {
-            $data['api_key'] = $validated['api_key'];
+            $data['api_key'] = trim($validated['api_key']);
         }
 
-        $settings->update($data);
+        // Gunakan fill & save agar otomatis INSERT jika record belum ada
+        $settings->fill($data);
+        $settings->save();
 
         // Beri tahu admin jika diaktifkan tapi API key masih kosong
-        if ($isEnabled && empty($settings->api_key) && empty($validated['api_key'])) {
+        if ($isEnabled && empty($settings->api_key)) {
             return redirect()->route('admin.ai-settings.index')
                 ->with('warning', 'Integrasi AI BERHASIL DIAKTIFKAN dan tombol AI sudah muncul di aplikasi! Namun API Key masih kosong. Harap masukkan API Key Gemini Anda agar AI dapat merespons pertanyaan.');
         }
 
         return redirect()->route('admin.ai-settings.index')
-            ->with('success', 'Pengaturan AI berhasil disimpan!');
+            ->with('success', 'Pengaturan AI berhasil disimpan! Status: ' . ($isEnabled ? 'Aktif' : 'Nonaktif'));
     }
 
     /**
      * Test the Gemini API connection.
      */
-    public function test()
+    public function test(Request $request)
     {
         $settings = AiSetting::getSettings();
 
-        if (!$settings->enabled || empty($settings->api_key)) {
-            return back()->with('error', 'AI belum dikonfigurasi. Pastikan API Key sudah diisi dan diaktifkan.');
+        // Ambil API Key dari request (jika dikirim dari input form) atau dari database
+        $apiKey = trim($request->input('api_key') ?? '') ?: $settings->api_key;
+        $primaryModel = $request->input('model') ?: ($settings->model ?? 'gemini-3.5-flash');
+
+        if (empty($apiKey)) {
+            return back()->with('error', 'API Key masih kosong! Silakan ketik atau tempelkan API Key Gemini Anda di kolom Google Gemini API Key terlebih dahulu.');
         }
 
         try {
