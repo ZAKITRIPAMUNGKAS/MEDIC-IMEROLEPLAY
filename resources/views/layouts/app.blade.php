@@ -1369,7 +1369,7 @@
                         </a>
 
                         {{-- Tanya AI Button in Navbar --}}
-                        @if(\App\Models\AiSetting::getSettings()->isConfigured())
+                        @if(\App\Models\AiSetting::getSettings()->enabled)
                         <button type="button" onclick="openFullAiModal()" class="inline-flex items-center gap-1.5 h-9 px-3.5 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-400 hover:to-cyan-400 text-white text-xs font-bold rounded-lg shadow-md shadow-sky-950/30 border border-sky-300/40 transition-all duration-200 whitespace-nowrap active:scale-95 group" title="Buka Gemini AI Assistant">
                             <span class="w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></span>
                             <svg class="w-3.5 h-3.5 text-amber-300 group-hover:rotate-12 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -3150,8 +3150,9 @@
 
 @auth
 @php
-    $aiChatEnabled = \App\Models\AiSetting::getSettings()->isConfigured();
-    $aiCurrentModel = \App\Models\AiSetting::getSettings()->model ?? 'gemini-3.5-flash';
+    $aiSettings = \App\Models\AiSetting::getSettings();
+    $aiChatEnabled = (bool) $aiSettings->enabled;
+    $aiCurrentModel = $aiSettings->model ?? 'gemini-3.5-flash';
     $aiInitialQuotas = \App\Http\Controllers\Staff\AiChatController::getModelQuotas(Auth::id());
 @endphp
 @if($aiChatEnabled)

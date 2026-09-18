@@ -35,10 +35,12 @@ class AiSettingController extends Controller
         // If api_key field is blank string, keep existing key
         $settings = AiSetting::getSettings();
 
+        $isEnabled = $request->boolean('enabled');
+
         $data = [
             'provider' => 'gemini',
             'model'    => $validated['model'] ?? 'gemini-3.5-flash',
-            'enabled'  => $validated['enabled'] ?? false,
+            'enabled'  => $isEnabled,
         ];
 
         // Only update API key if a new one was provided
@@ -47,6 +49,12 @@ class AiSettingController extends Controller
         }
 
         $settings->update($data);
+
+        // Beri tahu admin jika diaktifkan tapi API key masih kosong
+        if ($isEnabled && empty($settings->api_key) && empty($validated['api_key'])) {
+            return redirect()->route('admin.ai-settings.index')
+                ->with('warning', 'Integrasi AI BERHASIL DIAKTIFKAN dan tombol AI sudah muncul di aplikasi! Namun API Key masih kosong. Harap masukkan API Key Gemini Anda agar AI dapat merespons pertanyaan.');
+        }
 
         return redirect()->route('admin.ai-settings.index')
             ->with('success', 'Pengaturan AI berhasil disimpan!');

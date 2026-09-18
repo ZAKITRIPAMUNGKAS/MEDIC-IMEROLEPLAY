@@ -176,6 +176,13 @@
             </div>
         @endif
 
+        @if(session('warning'))
+            <div class="mb-5 p-4 bg-amber-950/80 border border-amber-500/60 text-amber-200 rounded-xl flex items-center gap-3 backdrop-blur-md shadow-lg">
+                <svg class="w-5 h-5 text-amber-400 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495ZM10 5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd"/></svg>
+                <div class="text-sm font-medium">{{ session('warning') }}</div>
+            </div>
+        @endif
+
         {{-- Main Settings Card Shell --}}
         <div class="ai-card-shell">
 
@@ -331,29 +338,29 @@
                     </div>
                 </div>
 
+                {{-- Form Footer Actions (Inside Form) --}}
+                <div class="pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    {{-- Tombol Test --}}
+                    <button type="button" onclick="document.getElementById('ai-test-form').submit()"
+                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white border border-slate-300 text-slate-700 rounded-xl font-bold text-xs hover:bg-slate-100 hover:border-sky-400 hover:text-sky-700 transition-all shadow-sm">
+                        <i class="fas fa-plug text-sky-500"></i>
+                        <span>Test Koneksi API</span>
+                    </button>
+
+                    {{-- Tombol Simpan --}}
+                    <button type="submit"
+                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-gradient-to-r from-sky-500 via-sky-600 to-cyan-600 hover:from-sky-600 hover:to-cyan-700 text-white rounded-xl font-bold text-xs transition-all shadow-md shadow-sky-600/30 active:scale-95">
+                        <i class="fas fa-save"></i>
+                        <span>Simpan Pengaturan</span>
+                    </button>
+                </div>
+
             </form>
 
-            {{-- Form Terpisah untuk Test Koneksi (Mencegah Form Bersarang) --}}
-            <form method="POST" action="{{ route('admin.ai-settings.test') }}" id="ai-test-form">
+            {{-- Form Terpisah untuk Test Koneksi (Dipanggil via JS) --}}
+            <form method="POST" action="{{ route('admin.ai-settings.test') }}" id="ai-test-form" style="display:none;">
                 @csrf
             </form>
-
-            {{-- Form Footer Actions --}}
-            <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
-                {{-- Tombol Test --}}
-                <button type="submit" form="ai-test-form"
-                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white border border-slate-300 text-slate-700 rounded-xl font-bold text-xs hover:bg-slate-100 hover:border-sky-400 hover:text-sky-700 transition-all shadow-sm">
-                    <i class="fas fa-plug text-sky-500"></i>
-                    <span>Test Koneksi API</span>
-                </button>
-
-                {{-- Tombol Simpan --}}
-                <button type="submit" form="ai-settings-form"
-                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-gradient-to-r from-sky-500 via-sky-600 to-cyan-600 hover:from-sky-600 hover:to-cyan-700 text-white rounded-xl font-bold text-xs transition-all shadow-md shadow-sky-600/30 active:scale-95">
-                    <i class="fas fa-save"></i>
-                    <span>Simpan Pengaturan</span>
-                </button>
-            </div>
 
         </div>
 

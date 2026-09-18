@@ -1145,10 +1145,15 @@
                                             <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
                                             Aktif — {{ $aiSettings->model }}
                                         </span>
+                                    @elseif($aiSettings->enabled)
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-500/30 border border-amber-400/50 text-amber-300 text-xs font-bold rounded-full">
+                                            <span class="w-1.5 h-1.5 bg-amber-400 rounded-full animate-pulse"></span>
+                                            Aktif (API Key Belum Diisi)
+                                        </span>
                                     @else
                                         <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-slate-500/30 border border-slate-400/50 text-slate-300 text-xs font-bold rounded-full">
                                             <span class="w-1.5 h-1.5 bg-slate-400 rounded-full"></span>
-                                            Belum Dikonfigurasi
+                                            Nonaktif
                                         </span>
                                     @endif
                                 </div>
