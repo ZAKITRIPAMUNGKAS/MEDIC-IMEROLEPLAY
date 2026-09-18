@@ -64,6 +64,15 @@
         box-sizing: border-box !important;
         transition: border-color 0.2s, box-shadow 0.2s !important;
     }
+    .ai-field-input-masked {
+        -webkit-text-security: disc !important;
+        text-security: disc !important;
+        font-family: monospace !important;
+    }
+    .ai-field-input-masked.ai-revealed {
+        -webkit-text-security: none !important;
+        text-security: none !important;
+    }
     .ai-field-input:focus {
         border-color: #0284c7 !important;
         box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15) !important;
@@ -214,7 +223,7 @@
             </div>
 
             {{-- Form Fields --}}
-            <form method="POST" action="{{ route('admin.ai-settings.update') }}" id="ai-settings-form" class="p-6 sm:p-8 space-y-6">
+            <form method="POST" action="{{ route('admin.ai-settings.update') }}" id="ai-settings-form" class="p-6 sm:p-8 space-y-6" autocomplete="off">
                 @csrf
                 @method('PUT')
 
@@ -270,13 +279,19 @@
                             <i class="fas fa-key text-slate-400"></i>
                         </div>
 
-                        {{-- Input Text --}}
-                        <input type="password"
+                        {{-- Input Text (type="text" dengan CSS Mask agar tidak dideteksi sebagai password akun oleh Chrome/browser) --}}
+                        <input type="text"
                             id="api_key"
                             name="api_key"
-                            class="ai-field-input"
+                            class="ai-field-input ai-field-input-masked"
                             placeholder="{{ $settings->api_key ? '••••••••••••••••••••••••••••••••' : 'Masukkan Gemini API Key (AIzaSy...)' }}"
-                            autocomplete="new-password">
+                            autocomplete="off"
+                            autocorrect="off"
+                            autocapitalize="off"
+                            spellcheck="false"
+                            data-lpignore="true"
+                            data-1p-ignore="true"
+                            data-form-type="other">
 
                         {{-- Tombol Toggle Lihat Password Kanan --}}
                         <div class="ai-field-icon-right">
@@ -401,16 +416,15 @@
 </div>
 
 <script>
-    // Toggle visibilitas API key
+    // Toggle visibilitas API key via CSS mask (tanpa memicu password manager)
     const apiKeyInput = document.getElementById('api_key');
     const toggleBtn = document.getElementById('toggle-api-key-visibility');
     const eyeIcon = document.getElementById('eye-icon');
 
     if (toggleBtn && apiKeyInput && eyeIcon) {
         toggleBtn.addEventListener('click', function () {
-            const isPassword = apiKeyInput.type === 'password';
-            apiKeyInput.type = isPassword ? 'text' : 'password';
-            eyeIcon.className = isPassword ? 'fas fa-eye-slash text-sm' : 'fas fa-eye text-sm';
+            const isRevealed = apiKeyInput.classList.toggle('ai-revealed');
+            eyeIcon.className = isRevealed ? 'fas fa-eye-slash text-sm' : 'fas fa-eye text-sm';
         });
     }
 </script>
