@@ -3,268 +3,387 @@
 @section('title', 'Pengaturan AI (Gemini) - Portal Medis')
 
 @section('content')
-<div class="relative min-h-screen py-8 px-4 sm:px-6 lg:px-8">
-    {{-- Background gradient --}}
-    <div class="absolute inset-0 bg-gradient-to-br from-violet-900 via-purple-800 to-indigo-700"></div>
-    <div class="absolute inset-0 bg-black bg-opacity-20"></div>
+<style>
+    /* Styling khusus agar kebal dari benturan CSS global dan tidak ada text yang tertimpa */
+    .ai-settings-page {
+        position: relative;
+        min-height: 100vh;
+        padding: 2.5rem 1rem;
+        background: radial-gradient(ellipse at top, #0c4a6e 0%, #032b43 50%, #071726 100%);
+    }
+    .ai-card-shell {
+        max-width: 860px;
+        margin: 0 auto;
+        border-radius: 20px;
+        background: #ffffff;
+        box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.1);
+        overflow: hidden;
+    }
+    .ai-field-wrapper {
+        position: relative;
+        width: 100%;
+    }
+    .ai-field-icon-left {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        color: #64748b;
+        pointer-events: none;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .ai-field-icon-right {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+    }
+    .ai-field-input {
+        width: 100% !important;
+        height: 50px !important;
+        padding-left: 48px !important;
+        padding-right: 48px !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        font-size: 14px !important;
+        line-height: 50px !important;
+        border-radius: 12px !important;
+        border: 1.5px solid #cbd5e1 !important;
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        outline: none !important;
+        box-sizing: border-box !important;
+        transition: border-color 0.2s, box-shadow 0.2s !important;
+    }
+    .ai-field-input:focus {
+        border-color: #0284c7 !important;
+        box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15) !important;
+    }
+    .ai-field-select {
+        width: 100% !important;
+        height: 50px !important;
+        padding-left: 48px !important;
+        padding-right: 48px !important;
+        font-size: 14px !important;
+        line-height: normal !important;
+        border-radius: 12px !important;
+        border: 1.5px solid #cbd5e1 !important;
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        outline: none !important;
+        box-sizing: border-box !important;
+        cursor: pointer !important;
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        transition: border-color 0.2s, box-shadow 0.2s !important;
+    }
+    .ai-field-select:focus {
+        border-color: #0284c7 !important;
+        box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15) !important;
+    }
+    .ai-field-select option {
+        color: #0f172a !important;
+        background: #ffffff !important;
+        padding: 10px !important;
+    }
 
-    {{-- Floating particles decoration --}}
-    <div class="absolute inset-0 overflow-hidden pointer-events-none">
-        <div class="absolute top-20 left-10 w-32 h-32 bg-violet-400 rounded-full opacity-10 blur-3xl animate-pulse"></div>
-        <div class="absolute bottom-20 right-10 w-48 h-48 bg-indigo-400 rounded-full opacity-10 blur-3xl animate-pulse" style="animation-delay:1s"></div>
-        <div class="absolute top-1/2 left-1/2 w-64 h-64 bg-purple-400 rounded-full opacity-5 blur-3xl animate-pulse" style="animation-delay:0.5s"></div>
-    </div>
+    /* Custom Toggle Switch */
+    .ai-toggle-btn {
+        position: relative;
+        display: inline-block;
+        width: 54px;
+        height: 30px;
+        cursor: pointer;
+        user-select: none;
+        margin: 0;
+    }
+    .ai-toggle-btn input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+        position: absolute;
+    }
+    .ai-toggle-slider {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #cbd5e1;
+        border-radius: 999px;
+        transition: background-color 0.25s ease;
+    }
+    .ai-toggle-slider::before {
+        position: absolute;
+        content: "";
+        height: 24px;
+        width: 24px;
+        left: 3px;
+        bottom: 3px;
+        background-color: #ffffff;
+        border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .ai-toggle-btn input:checked + .ai-toggle-slider {
+        background-color: #0284c7;
+    }
+    .ai-toggle-btn input:checked + .ai-toggle-slider::before {
+        transform: translateX(24px);
+    }
+</style>
 
-    <div class="relative max-w-4xl w-full mx-auto">
+<div class="ai-settings-page">
+    <div class="max-w-4xl mx-auto">
 
-        {{-- Header --}}
-        <div class="mb-8 text-center">
-            <div class="inline-flex items-center justify-center w-20 h-20 bg-white/10 backdrop-blur-sm rounded-3xl mb-4 shadow-2xl ring-1 ring-white/20">
-                <svg class="w-10 h-10 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" />
-                </svg>
+        {{-- Header Breadcrumb & Judul --}}
+        <div class="mb-6 text-center">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-500/10 border border-sky-400/20 text-sky-300 text-xs font-semibold mb-3">
+                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                <span>PANEL ADMINISTRATOR</span>
             </div>
-            <h1 class="text-3xl font-bold text-white mb-2">Pengaturan Google Gemini AI</h1>
-            <p class="text-purple-200">Konfigurasi API Key untuk integrasi kecerdasan buatan Gemini</p>
+            <h1 class="text-3xl font-extrabold text-white tracking-tight flex items-center justify-center gap-3">
+                <svg class="w-8 h-8 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z"/>
+                </svg>
+                Pengaturan Google Gemini AI
+            </h1>
+            <p class="text-sky-200 text-sm mt-1">Konfigurasi API Key & Model kecerdasan buatan untuk asisten medis staf</p>
         </div>
 
-        {{-- Alert Messages --}}
+        {{-- Alerts --}}
         @if(session('success'))
-            <div class="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-lg shadow-sm">
-                <div class="flex items-center gap-3">
-                    <svg class="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/></svg>
-                    <span class="font-medium">{{ session('success') }}</span>
-                </div>
+            <div class="mb-5 p-4 bg-emerald-950/70 border border-emerald-500/50 text-emerald-200 rounded-xl flex items-center gap-3 backdrop-blur-md shadow-lg">
+                <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/></svg>
+                <div class="text-sm font-medium">{{ session('success') }}</div>
             </div>
         @endif
 
         @if(session('error'))
-            <div class="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-lg shadow-sm">
-                <div class="flex items-center gap-3">
-                    <svg class="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd"/></svg>
-                    <span class="font-medium">{{ session('error') }}</span>
-                </div>
+            <div class="mb-5 p-4 bg-rose-950/70 border border-rose-500/50 text-rose-200 rounded-xl flex items-center gap-3 backdrop-blur-md shadow-lg">
+                <svg class="w-5 h-5 text-rose-400 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd"/></svg>
+                <div class="text-sm font-medium">{{ session('error') }}</div>
             </div>
         @endif
 
-        {{-- Main Card --}}
-        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden">
+        {{-- Main Settings Card Shell --}}
+        <div class="ai-card-shell">
 
-            {{-- Status Banner --}}
-            <div class="bg-gradient-to-r {{ $settings->enabled ? 'from-violet-500 to-purple-600' : 'from-slate-400 to-slate-500' }} p-5">
-                <div class="flex items-center justify-between text-white">
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center ring-1 ring-white/30">
-                            @if($settings->enabled)
-                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/></svg>
-                            @else
-                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd"/></svg>
-                            @endif
-                        </div>
-                        <div>
-                            <p class="text-xs font-medium opacity-80">Status Integrasi AI</p>
-                            <p class="text-xl font-bold">{{ $settings->enabled ? 'Aktif' : 'Nonaktif' }}</p>
+            {{-- Top Status Banner --}}
+            <div class="px-6 py-4 {{ $settings->enabled ? 'bg-gradient-to-r from-teal-600 via-emerald-600 to-sky-600' : 'bg-gradient-to-r from-slate-700 via-slate-800 to-slate-900' }} text-white flex items-center justify-between gap-4 flex-wrap">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-11 h-11 rounded-xl bg-white/15 backdrop-blur-sm border border-white/20 flex items-center justify-center shrink-0">
+                        @if($settings->enabled)
+                            <svg class="w-6 h-6 text-emerald-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/></svg>
+                        @else
+                            <svg class="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                        @endif
+                    </div>
+                    <div>
+                        <div class="text-[11px] font-semibold tracking-wider uppercase opacity-80">Status Integrasi AI</div>
+                        <div class="text-base font-bold flex items-center gap-2">
+                            <span>{{ $settings->enabled ? 'Aktif Berjalan' : 'Nonaktif (Belum Aktif)' }}</span>
+                            <span class="w-2 h-2 rounded-full {{ $settings->enabled ? 'bg-emerald-300 animate-ping' : 'bg-slate-400' }}"></span>
                         </div>
                     </div>
-                    <div class="text-right hidden sm:block">
-                        <p class="text-xs opacity-80">Model Aktif</p>
-                        <p class="text-lg font-semibold">{{ $settings->model ?? '-' }}</p>
+                </div>
+
+                <div class="text-right">
+                    <div class="text-[11px] font-semibold tracking-wider uppercase opacity-80">Model AI Terpilih</div>
+                    <div class="text-sm font-bold bg-black/25 px-3 py-1 rounded-lg inline-block border border-white/10 mt-0.5">
+                        {{ $settings->model ?? 'gemini-3.5-flash' }}
                     </div>
                 </div>
             </div>
 
-            {{-- Form Body --}}
-            <form method="POST" action="{{ route('admin.ai-settings.update') }}" id="ai-settings-form">
+            {{-- Form Fields --}}
+            <form method="POST" action="{{ route('admin.ai-settings.update') }}" id="ai-settings-form" class="p-6 sm:p-8 space-y-6">
                 @csrf
                 @method('PUT')
 
-                <div class="p-6 space-y-6">
-
-                    {{-- Provider Info --}}
-                    <div class="flex items-center gap-4 p-4 bg-gradient-to-r from-violet-50 to-purple-50 rounded-xl border border-violet-100">
-                        <div class="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center shrink-0">
-                            <img src="https://www.gstatic.com/lamda/images/gemini_favicon_f069958c85030456e93de685481c559f160ea06.svg"
-                                 alt="Gemini"
-                                 class="w-7 h-7"
-                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
-                            <div style="display:none" class="w-7 h-7 items-center justify-center">
-                                <svg class="w-7 h-7 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
-                                </svg>
-                            </div>
+                {{-- Info Provider Gemini --}}
+                <div class="flex items-center gap-4 p-4 bg-sky-50/70 rounded-xl border border-sky-100">
+                    <div class="w-12 h-12 bg-white rounded-xl shadow-sm border border-sky-100 flex items-center justify-center shrink-0">
+                        <img src="https://www.gstatic.com/lamda/images/gemini_favicon_f069958c85030456e93de685481c559f160ea06.svg"
+                             alt="Gemini"
+                             class="w-7 h-7"
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                        <div style="display:none" class="w-7 h-7 items-center justify-center text-sky-600">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/></svg>
                         </div>
-                        <div>
-                            <p class="font-semibold text-slate-800">Google Gemini AI</p>
-                            <p class="text-sm text-slate-500">Dapatkan API Key gratis di
-                                <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-violet-600 hover:underline font-medium">
-                                    Google AI Studio →
-                                </a>
-                            </p>
-                        </div>
-                        <input type="hidden" name="provider" value="gemini">
                     </div>
-
-                    {{-- Enable Toggle --}}
-                    <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200">
-                        <div>
-                            <label class="font-semibold text-slate-700 block">Aktifkan Integrasi AI</label>
-                            <p class="text-sm text-slate-500 mt-0.5">Nyalakan untuk menggunakan fitur AI di aplikasi</p>
-                        </div>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="hidden" name="enabled" value="0">
-                            <input type="checkbox" id="enabled-toggle" name="enabled" value="1"
-                                class="sr-only peer"
-                                {{ $settings->enabled ? 'checked' : '' }}>
-                            <div class="w-14 h-7 bg-slate-300 peer-focus:ring-4 peer-focus:ring-violet-200 rounded-full peer
-                                        peer-checked:bg-violet-600 transition-colors duration-200 after:content-[''] after:absolute
-                                        after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-6 after:w-6
-                                        after:transition-all peer-checked:after:translate-x-7"></div>
-                        </label>
+                    <div class="flex-1">
+                        <p class="font-bold text-slate-800 text-sm">Google Gemini AI Engine</p>
+                        <p class="text-xs text-slate-500 mt-0.5">
+                            Dapatkan API Key resmi gratis langsung melalui
+                            <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="text-sky-600 font-bold hover:underline inline-flex items-center gap-1">
+                                Google AI Studio <i class="fas fa-external-link-alt text-[10px]"></i>
+                            </a>
+                        </p>
                     </div>
+                    <input type="hidden" name="provider" value="gemini">
+                </div>
 
-                    {{-- API Key --}}
+                {{-- Toggle Saklar Aktifkan AI --}}
+                <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200">
                     <div>
-                        <label for="api_key" class="block text-sm font-semibold text-slate-700 mb-2">
-                            API Key
-                            <span class="text-red-500">*</span>
+                        <label for="ai-toggle-checkbox" class="font-bold text-slate-800 text-sm block cursor-pointer">
+                            Aktifkan Integrasi AI
                         </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 0 1 21.75 8.25Z" />
-                                </svg>
-                            </div>
-                            <input type="password"
-                                id="api_key"
-                                name="api_key"
-                                placeholder="{{ $settings->api_key ? '••••••••••••••••' . substr($settings->api_key, -4) : 'Masukkan Gemini API Key Anda...' }}"
-                                class="w-full pl-11 pr-12 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-violet-400 focus:border-violet-400 outline-none transition-all text-slate-700 bg-white font-mono text-sm"
-                                autocomplete="new-password">
+                        <p class="text-xs text-slate-500 mt-0.5">
+                            Nyalakan agar tombol asisten medis "Tanya AI" muncul di portal seluruh staf
+                        </p>
+                    </div>
+
+                    <input type="hidden" name="enabled" value="0">
+                    <label class="ai-toggle-btn">
+                        <input type="checkbox" id="ai-toggle-checkbox" name="enabled" value="1" {{ $settings->enabled ? 'checked' : '' }}>
+                        <span class="ai-toggle-slider"></span>
+                    </label>
+                </div>
+
+                {{-- Input API Key --}}
+                <div>
+                    <label for="api_key" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                        Google Gemini API Key <span class="text-rose-500 font-bold">*</span>
+                    </label>
+                    <div class="ai-field-wrapper">
+                        {{-- Icon Key Kiri --}}
+                        <div class="ai-field-icon-left">
+                            <i class="fas fa-key text-slate-400"></i>
+                        </div>
+
+                        {{-- Input Text --}}
+                        <input type="password"
+                            id="api_key"
+                            name="api_key"
+                            class="ai-field-input"
+                            placeholder="{{ $settings->api_key ? '••••••••••••••••••••••••••••••••' : 'Masukkan Gemini API Key (AIzaSy...)' }}"
+                            autocomplete="new-password">
+
+                        {{-- Tombol Toggle Lihat Password Kanan --}}
+                        <div class="ai-field-icon-right">
                             <button type="button"
                                 id="toggle-api-key-visibility"
-                                class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-700 transition-colors"
-                                title="Tampilkan/Sembunyikan API Key">
-                                <svg id="eye-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"/>
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                                </svg>
-                                <svg id="eye-off-icon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88"/>
-                                </svg>
+                                class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                                title="Lihat/Sembunyikan API Key">
+                                <i id="eye-icon" class="fas fa-eye text-sm"></i>
                             </button>
                         </div>
-                        @if($settings->api_key)
-                            <p class="mt-1.5 text-xs text-slate-500">
-                                <span class="inline-flex items-center gap-1">
-                                    <svg class="w-3 h-3 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd"/></svg>
-                                    API Key sudah tersimpan. Kosongkan field ini jika tidak ingin mengubahnya.
-                                </span>
-                            </p>
-                        @else
-                            <p class="mt-1.5 text-xs text-slate-500">API Key belum dikonfigurasi.</p>
-                        @endif
                     </div>
 
-                    {{-- Model Selection --}}
-                    <div>
-                        <label for="model" class="block text-sm font-semibold text-slate-700 mb-2">
-                            Model Gemini
-                        </label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z" />
-                                </svg>
-                            </div>
-                            <select id="model" name="model"
-                                class="w-full pl-11 pr-4 py-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-violet-400 focus:border-violet-400 outline-none transition-all text-slate-700 bg-white appearance-none">
-                                @foreach($geminiModels as $value => $label)
-                                    <option value="{{ $value }}" {{ ($settings->model ?? 'gemini-3.6-flash') === $value ? 'selected' : '' }}>
-                                        {{ $label }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none">
-                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
-                                </svg>
-                            </div>
+                    @if($settings->api_key)
+                        <div class="mt-2 flex items-center gap-1.5 text-xs text-emerald-600 font-medium">
+                            <i class="fas fa-check-circle"></i>
+                            <span>API Key sudah tersimpan dengan aman (terenkripsi). Kosongkan field ini jika tidak ingin mengubahnya.</span>
                         </div>
-                        <p class="mt-1.5 text-xs text-slate-500">Pilih model yang sesuai kebutuhan. Gemini 3.6 Flash paling cepat dan stabil.</p>
-                    </div>
-
-                    {{-- Info Box --}}
-                    <div class="p-4 bg-amber-50 border border-amber-200 rounded-xl">
-                        <div class="flex gap-3">
-                            <svg class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495ZM10 5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd"/>
-                            </svg>
-                            <div class="text-sm text-amber-800">
-                                <p class="font-semibold mb-1">Keamanan API Key</p>
-                                <p class="text-amber-700">API Key disimpan terenkripsi di database. Pastikan tidak membagikan API Key Anda kepada siapapun.</p>
-                            </div>
+                    @else
+                        <div class="mt-2 flex items-center gap-1.5 text-xs text-amber-600 font-medium">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>API Key belum diisi. Masukkan API Key Anda untuk mulai menggunakan AI.</span>
                         </div>
-                    </div>
-
+                    @endif
                 </div>
 
-                {{-- Form Footer --}}
-                <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
-                    {{-- Test Button --}}
-                    <form method="POST" action="{{ route('admin.ai-settings.test') }}" class="w-full sm:w-auto">
-                        @csrf
-                        <button type="submit"
-                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white border border-slate-300 text-slate-700 rounded-xl font-medium text-sm hover:bg-slate-100 hover:border-violet-400 hover:text-violet-700 transition-all duration-200 shadow-sm">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"/>
-                            </svg>
-                            Test Koneksi
-                        </button>
-                    </form>
+                {{-- Pilihan Model Gemini --}}
+                <div>
+                    <label for="model" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                        Pilihan Model AI Default
+                    </label>
+                    <div class="ai-field-wrapper">
+                        <div class="ai-field-icon-left">
+                            <i class="fas fa-microchip text-slate-400"></i>
+                        </div>
 
-                    {{-- Save Button --}}
-                    <button type="submit" form="ai-settings-form"
-                        class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white rounded-xl font-semibold text-sm transition-all duration-200 shadow-lg hover:shadow-violet-500/30 active:scale-95">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 16v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2M12 12V4m0 0L8 8m4-4 4 4"/>
-                        </svg>
-                        Simpan Pengaturan
-                    </button>
+                        <select id="model" name="model" class="ai-field-select">
+                            @foreach($geminiModels as $value => $label)
+                                <option value="{{ $value }}" {{ ($settings->model ?? 'gemini-3.5-flash') === $value ? 'selected' : '' }}>
+                                    {{ $label }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        <div class="ai-field-icon-right pointer-events-none">
+                            <i class="fas fa-chevron-down text-xs text-slate-400"></i>
+                        </div>
+                    </div>
+                    <p class="mt-1.5 text-xs text-slate-500">
+                        Rekomendasi: <b>Gemini 3.5 Flash</b> untuk kecepatan respons dan kuota gratis yang sangat stabil.
+                    </p>
                 </div>
+
+                {{-- Kotak Peringatan Keamanan --}}
+                <div class="p-4 bg-amber-50/80 border border-amber-200 rounded-xl flex items-start gap-3">
+                    <i class="fas fa-shield-alt text-amber-500 text-lg mt-0.5 shrink-0"></i>
+                    <div class="text-xs text-amber-900 leading-relaxed">
+                        <span class="font-bold block text-sm mb-0.5">Keamanan Data & Privasi</span>
+                        API Key disimpan secara terenkripsi di server (AES-256-CBC) dan tidak pernah dibagikan ke client browser publik.
+                    </div>
+                </div>
+
             </form>
+
+            {{-- Form Terpisah untuk Test Koneksi (Mencegah Form Bersarang) --}}
+            <form method="POST" action="{{ route('admin.ai-settings.test') }}" id="ai-test-form">
+                @csrf
+            </form>
+
+            {{-- Form Footer Actions --}}
+            <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
+                {{-- Tombol Test --}}
+                <button type="submit" form="ai-test-form"
+                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-white border border-slate-300 text-slate-700 rounded-xl font-bold text-xs hover:bg-slate-100 hover:border-sky-400 hover:text-sky-700 transition-all shadow-sm">
+                    <i class="fas fa-plug text-sky-500"></i>
+                    <span>Test Koneksi API</span>
+                </button>
+
+                {{-- Tombol Simpan --}}
+                <button type="submit" form="ai-settings-form"
+                    class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-gradient-to-r from-sky-500 via-sky-600 to-cyan-600 hover:from-sky-600 hover:to-cyan-700 text-white rounded-xl font-bold text-xs transition-all shadow-md shadow-sky-600/30 active:scale-95">
+                    <i class="fas fa-save"></i>
+                    <span>Simpan Pengaturan</span>
+                </button>
+            </div>
+
         </div>
 
-        {{-- Gemini Setup Guide (Collapsible) --}}
-        <div class="mt-6 bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 overflow-hidden">
+        {{-- Accordion Panduan Setup --}}
+        <div class="mt-6 bg-sky-950/60 backdrop-blur-md rounded-2xl border border-sky-400/20 overflow-hidden shadow-xl">
             <button type="button"
-                onclick="document.getElementById('setup-guide').classList.toggle('hidden')"
+                onclick="document.getElementById('setup-guide').classList.toggle('hidden'); document.getElementById('guide-arrow').classList.toggle('rotate-180')"
                 class="w-full flex items-center justify-between px-6 py-4 text-white hover:bg-white/5 transition-colors">
                 <div class="flex items-center gap-3">
-                    <svg class="w-5 h-5 text-purple-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
-                    </svg>
-                    <span class="font-semibold">Panduan Setup Google Gemini API</span>
+                    <i class="fas fa-book-medical text-cyan-400 text-base"></i>
+                    <span class="font-bold text-sm text-sky-100">Panduan Praktis Mendapatkan API Key Google Gemini (Gratis)</span>
                 </div>
-                <svg class="w-5 h-5 text-purple-200 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5"/>
-                </svg>
+                <i id="guide-arrow" class="fas fa-chevron-down text-sky-300 transition-transform duration-200 text-xs"></i>
             </button>
 
-            <div id="setup-guide" class="hidden px-6 pb-6 space-y-4">
+            <div id="setup-guide" class="hidden px-6 pb-6 pt-2 space-y-3.5 border-t border-sky-400/10">
                 @foreach([
-                    ['step' => '1', 'title' => 'Buka Google AI Studio', 'desc' => 'Kunjungi <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-purple-200 hover:underline">aistudio.google.com/app/apikey</a> dan login dengan akun Google Anda.'],
-                    ['step' => '2', 'title' => 'Buat API Key Baru', 'desc' => 'Klik tombol <strong>"Create API Key"</strong> dan pilih project Google Cloud Anda (atau buat project baru).'],
-                    ['step' => '3', 'title' => 'Salin API Key', 'desc' => 'Salin API Key yang dihasilkan. Format biasanya dimulai dengan <code class="bg-white/10 px-1 rounded">AIza...</code>'],
-                    ['step' => '4', 'title' => 'Paste di Form', 'desc' => 'Tempel API Key di field "API Key" di atas, pilih model, aktifkan toggle, lalu klik <strong>Simpan</strong>.'],
-                    ['step' => '5', 'title' => 'Test Koneksi', 'desc' => 'Klik tombol <strong>"Test Koneksi"</strong> untuk memastikan API Key berfungsi dengan baik.'],
-                ] as $item)
-                    <div class="flex gap-4">
-                        <div class="w-8 h-8 bg-violet-500 text-white rounded-full flex items-center justify-center font-bold text-sm shrink-0">
-                            {{ $item['step'] }}
+                    ['num' => '1', 'title' => 'Kunjungi Google AI Studio', 'desc' => 'Buka <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-cyan-300 font-bold underline">aistudio.google.com/app/apikey</a> lalu login menggunakan akun Google.'],
+                    ['num' => '2', 'title' => 'Klik tombol Create API Key', 'desc' => 'Pilih <strong>"Create API Key"</strong> di Google AI Studio (bisa menggunakan project bawaan Google Cloud).'],
+                    ['num' => '3', 'title' => 'Salin Kunci API', 'desc' => 'Klik ikon salin (copy) pada API Key yang berawalan <code>AIzaSy...</code>.'],
+                    ['num' => '4', 'title' => 'Tempel & Simpan', 'desc' => 'Tempelkan di kotak <strong>Google Gemini API Key</strong> di atas, aktifkan saklar, lalu klik <strong>Simpan Pengaturan</strong>.'],
+                    ['num' => '5', 'title' => 'Uji Koneksi', 'desc' => 'Klik <strong>Test Koneksi API</strong> untuk memastikan server berhasil terhubung ke Google AI.'],
+                ] as $step)
+                    <div class="flex items-start gap-3.5 bg-white/5 p-3 rounded-xl border border-white/5">
+                        <div class="w-6 h-6 rounded-full bg-sky-500 text-white font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                            {{ $step['num'] }}
                         </div>
-                        <div>
-                            <p class="text-white font-semibold">{{ $item['title'] }}</p>
-                            <p class="text-purple-200 text-sm mt-0.5">{!! $item['desc'] !!}</p>
+                        <div class="text-xs text-slate-300">
+                            <span class="font-bold text-white block mb-0.5">{{ $step['title'] }}</span>
+                            <span class="text-sky-200/90">{!! $step['desc'] !!}</span>
                         </div>
                     </div>
                 @endforeach
@@ -275,17 +394,17 @@
 </div>
 
 <script>
-    // Toggle API key visibility
+    // Toggle visibilitas API key
     const apiKeyInput = document.getElementById('api_key');
     const toggleBtn = document.getElementById('toggle-api-key-visibility');
     const eyeIcon = document.getElementById('eye-icon');
-    const eyeOffIcon = document.getElementById('eye-off-icon');
 
-    toggleBtn.addEventListener('click', function () {
-        const isPassword = apiKeyInput.type === 'password';
-        apiKeyInput.type = isPassword ? 'text' : 'password';
-        eyeIcon.classList.toggle('hidden', isPassword);
-        eyeOffIcon.classList.toggle('hidden', !isPassword);
-    });
+    if (toggleBtn && apiKeyInput && eyeIcon) {
+        toggleBtn.addEventListener('click', function () {
+            const isPassword = apiKeyInput.type === 'password';
+            apiKeyInput.type = isPassword ? 'text' : 'password';
+            eyeIcon.className = isPassword ? 'fas fa-eye-slash text-sm' : 'fas fa-eye text-sm';
+        });
+    }
 </script>
 @endsection
