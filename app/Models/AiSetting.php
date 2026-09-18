@@ -37,11 +37,20 @@ class AiSetting extends Model
      */
     public static function getSettings(): self
     {
-        return static::firstOrCreate([], [
-            'provider' => 'gemini',
-            'model'    => 'gemini-3.5-flash',
-            'enabled'  => false,
-        ]);
+        try {
+            return static::firstOrCreate([], [
+                'provider' => 'gemini',
+                'model'    => 'gemini-3.5-flash',
+                'enabled'  => false,
+            ]);
+        } catch (\Throwable $e) {
+            $instance = new static([
+                'provider' => 'gemini',
+                'model'    => 'gemini-3.5-flash',
+                'enabled'  => false,
+            ]);
+            return $instance;
+        }
     }
 
     /**

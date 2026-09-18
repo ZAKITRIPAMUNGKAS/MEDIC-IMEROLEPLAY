@@ -352,6 +352,20 @@ Route::get('/auto-setup-db', function () {
             }
         }
 
+        if (!\Illuminate\Support\Facades\Schema::hasTable('ai_settings')) {
+            \Illuminate\Support\Facades\Schema::create('ai_settings', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->id();
+                $table->string('provider')->default('gemini');
+                $table->text('api_key')->nullable();
+                $table->string('model')->default('gemini-3.5-flash');
+                $table->boolean('enabled')->default(false);
+                $table->timestamps();
+            });
+            $logs[] = '✅ Tabel ai_settings berhasil dibuat.';
+        } else {
+            $logs[] = 'ℹ️ Tabel ai_settings sudah ada.';
+        }
+
         $logs[] = '';
         $logs[] = '🎉 DATABASE SETUP BERHASIL 100%! SILAKAN KEMBALI KE HALAMAN UTAMA / REFRESH WEBSITE ANDA.';
     } catch (\Exception $e) {
