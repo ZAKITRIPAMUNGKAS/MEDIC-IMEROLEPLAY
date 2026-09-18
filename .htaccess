@@ -1,7 +1,15 @@
 <IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
     RewriteEngine On
-    RewriteBase /affdigital/MEDIC-IMEROLEPLAY/
-    RewriteRule ^$ public/ [R=302,L]
-    RewriteCond %{REQUEST_URI} !/public/
-    RewriteRule ^(.*)$ public/$1 [R=302,L]
+
+    # Lindungi file konfigurasi sensitif agar tidak bisa diakses dari browser
+    RewriteRule ^(\.env|\.git|composer\.(json|lock)|package(-lock)?\.json|artisan) - [F,L,NC]
+
+    # Arahkan semua request ke folder public secara internal (tanpa mengubah URL di browser)
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
 </IfModule>
+
