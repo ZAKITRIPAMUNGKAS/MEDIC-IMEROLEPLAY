@@ -24,11 +24,10 @@ class AiSetting extends Model
     public static function geminiModels(): array
     {
         return [
-            'gemini-3.5-flash'       => 'Gemini 3.5 Flash (Paling Cepat & Stabil - Direkomendasikan)',
-            'gemini-3.5-flash-lite'  => 'Gemini 3.5 Flash Lite (Super Ringan & Responsif)',
-            'gemini-3.6-flash'       => 'Gemini 3.6 Flash',
-            'gemini-3.1-flash-lite'  => 'Gemini 3.1 Flash Lite',
-            'gemini-3.7-flash'       => 'Gemini 3.7 Flash',
+            'gemini-1.5-flash'      => 'Gemini 1.5 Flash (Paling Cepat & Stabil - Direkomendasikan)',
+            'gemini-2.0-flash'      => 'Gemini 2.0 Flash (Generasi Terbaru & Sangat Responsif)',
+            'gemini-1.5-pro'        => 'Gemini 1.5 Pro (Penalaran Medis Kompleks & Akurat)',
+            'gemini-2.0-flash-lite' => 'Gemini 2.0 Flash Lite (Super Ringan & Hemat Kuota)',
         ];
     }
 

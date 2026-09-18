@@ -78,9 +78,7 @@ class AiSettingController extends Controller
         }
 
         try {
-            $apiKey = $settings->api_key;
-            $primaryModel = $settings->model ?? 'gemini-3.5-flash';
-            $candidateModels = array_unique([$primaryModel, 'gemini-3.5-flash', 'gemini-3.5-flash-lite']);
+            $candidateModels = array_unique([$primaryModel, 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro']);
 
             $response = null;
             $usedModel = $primaryModel;
@@ -88,19 +86,25 @@ class AiSettingController extends Controller
 
             foreach ($candidateModels as $model) {
                 try {
-                    $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}";
-                    $response = Http::withoutVerifying()->timeout(25)->post($url, [
-                        'contents' => [
-                            [
-                                'parts' => [
-                                    ['text' => 'Respond with exactly: "MEDIC-IMEROLEPLAY AI connection successful."']
+                    $url = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key=" . urlencode($apiKey);
+                    $response = Http::withoutVerifying()
+                        ->withHeaders([
+                            'x-goog-api-key' => $apiKey,
+                            'Content-Type'   => 'application/json',
+                        ])
+                        ->timeout(25)
+                        ->post($url, [
+                            'contents' => [
+                                [
+                                    'parts' => [
+                                        ['text' => 'Respond with exactly: "MEDIC-IMEROLEPLAY AI connection successful."']
+                                    ]
                                 ]
+                            ],
+                            'generationConfig' => [
+                                'maxOutputTokens' => 30,
                             ]
-                        ],
-                        'generationConfig' => [
-                            'maxOutputTokens' => 30,
-                        ]
-                    ]);
+                        ]);
 
                     if ($response->successful()) {
                         $usedModel = $model;
