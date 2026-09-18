@@ -1368,6 +1368,17 @@
                             <i class="fas fa-user-cog text-sm"></i><span>Profil</span>
                         </a>
 
+                        {{-- Tanya AI Button in Navbar --}}
+                        @if(\App\Models\AiSetting::getSettings()->isConfigured())
+                        <button type="button" onclick="openFullAiModal()" class="inline-flex items-center gap-1.5 h-9 px-3.5 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-400 hover:to-cyan-400 text-white text-xs font-bold rounded-lg shadow-md shadow-sky-950/30 border border-sky-300/40 transition-all duration-200 whitespace-nowrap active:scale-95 group" title="Buka Gemini AI Assistant">
+                            <span class="w-2 h-2 rounded-full bg-emerald-300 animate-pulse"></span>
+                            <svg class="w-3.5 h-3.5 text-amber-300 group-hover:rotate-12 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z"/>
+                            </svg>
+                            <span>Tanya AI</span>
+                        </button>
+                        @endif
+
                         {{-- Menu Staf Dropdown --}}
                         @php
                             try { $unreadMessagesCount = \App\Models\MemberMessage::where('receiver_id', auth()->id())->where('is_read', false)->count(); }
@@ -3135,6 +3146,1629 @@
             pwaTriggers.forEach(btn => btn.style.display = 'none');
         });
     </script>
+
+@auth
+@php
+    $aiChatEnabled = \App\Models\AiSetting::getSettings()->isConfigured();
+    $aiCurrentModel = \App\Models\AiSetting::getSettings()->model ?? 'gemini-3.5-flash';
+    $aiInitialQuotas = \App\Http\Controllers\Staff\AiChatController::getModelQuotas(Auth::id());
+@endphp
+@if($aiChatEnabled)
+{{-- =====================================================
+     GEMINI AI CHAT ASSISTANT — Fullscreen Modern Workspace
+====================================================== --}}
+<style>
+    /* Trigger Floating Button - Web Theme: Sky & Cyan */
+    #ai-chat-btn {
+        position: fixed;
+        bottom: 92px; /* Positioned right above Live Chat button (bottom: 24px) to prevent overlap */
+        right: 24px;
+        z-index: 99990;
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 50%, #06b6d4 100%);
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        cursor: pointer;
+        box-shadow: 0 4px 20px rgba(14, 165, 233, 0.45), 0 2px 8px rgba(0,0,0,0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: aiPulse 3s ease-in-out infinite;
+    }
+    #ai-chat-btn:hover {
+        transform: scale(1.08) translateY(-2px);
+        box-shadow: 0 8px 30px rgba(14, 165, 233, 0.65), 0 4px 12px rgba(0,0,0,0.3);
+    }
+    @keyframes aiPulse {
+        0%, 100% { box-shadow: 0 4px 20px rgba(14, 165, 233, 0.45), 0 2px 8px rgba(0,0,0,0.2); }
+        50%       { box-shadow: 0 4px 30px rgba(14, 165, 233, 0.75), 0 2px 8px rgba(0,0,0,0.2); }
+    }
+    @media (max-width: 640px) {
+        #ai-chat-btn {
+            bottom: 88px;
+            right: 20px;
+            width: 48px;
+            height: 48px;
+        }
+    }
+
+    /* Fullscreen Modal Overlay */
+    #ai-full-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 999999;
+        background: rgba(6, 13, 26, 0.85);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+    }
+    #ai-full-modal.visible {
+        display: flex;
+        opacity: 1;
+    }
+
+    /* Workspace Shell - Slate & Ocean Navy */
+    .ai-workspace {
+        width: 100%;
+        max-width: 1320px;
+        height: 92vh;
+        max-height: 940px;
+        background: #081120;
+        border: 1px solid rgba(14, 165, 233, 0.35);
+        border-radius: 24px;
+        box-shadow: 0 25px 80px -10px rgba(0,0,0,0.85), 0 0 50px rgba(14, 165, 233, 0.18);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        transform: scale(0.97);
+        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    #ai-full-modal.visible .ai-workspace {
+        transform: scale(1);
+    }
+
+    /* Top Navigation Bar - Matches Navbar Theme (#0c4a6e to #075985) */
+    .ai-topbar {
+        background: linear-gradient(90deg, #0c4a6e 0%, #075985 60%, #091c33 100%);
+        border-bottom: 1px solid rgba(14, 165, 233, 0.3);
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+        position: relative;
+        z-index: 100; /* Stays above .ai-body */
+    }
+    .ai-topbar-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .ai-topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .ai-brand-badge {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .ai-brand-avatar {
+        width: 38px;
+        height: 38px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #0284c7, #06b6d4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        box-shadow: 0 4px 14px rgba(14, 165, 233, 0.4);
+    }
+
+    /* Interactive Model Selector Styles */
+    .ai-model-picker-wrap {
+        position: relative;
+        z-index: 110; /* Ensures dropdown is highest in stacking context */
+    }
+    .ai-model-pill-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 4px 12px;
+        background: rgba(12, 74, 110, 0.55);
+        border: 1px solid rgba(56, 189, 248, 0.45);
+        color: #f0f9ff;
+        font-size: 11.5px;
+        font-weight: 600;
+        border-radius: 999px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .ai-model-pill-btn:hover {
+        background: rgba(12, 74, 110, 0.95);
+        border-color: #38bdf8;
+        box-shadow: 0 0 14px rgba(14, 165, 233, 0.45);
+        color: white;
+    }
+    .ai-model-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        flex-shrink: 0;
+        box-shadow: 0 0 6px currentColor;
+    }
+    .ai-quota-mini-tag {
+        font-size: 10px;
+        padding: 2px 7px;
+        border-radius: 999px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+    }
+    .ai-model-dropdown {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        width: 390px;
+        max-width: min(390px, calc(100vw - 32px));
+        background: #081324;
+        border: 1px solid rgba(14, 165, 233, 0.45);
+        border-radius: 18px;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.92), 0 0 35px rgba(14, 165, 233, 0.25);
+        z-index: 9999; /* Above all body elements */
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        animation: aiDropdownIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .ai-model-dropdown.hidden {
+        display: none;
+    }
+    @keyframes aiDropdownIn {
+        from { opacity: 0; transform: translateY(-8px) scale(0.97); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .ai-model-dropdown-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        margin-bottom: 4px;
+    }
+    .ai-model-dropdown-title {
+        color: #f1f5f9;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .ai-model-cards-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        max-height: 420px;
+        overflow-y: auto;
+        padding-right: 2px;
+    }
+    .ai-model-cards-list::-webkit-scrollbar { width: 4px; }
+    .ai-model-cards-list::-webkit-scrollbar-thumb { background: rgba(14, 165, 233, 0.35); border-radius: 4px; }
+    .ai-model-card {
+        padding: 10px 12px;
+        background: #0d1a2d;
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        position: relative;
+    }
+    .ai-model-card:hover {
+        background: #12243d;
+        border-color: rgba(14, 165, 233, 0.5);
+        transform: translateY(-1px);
+    }
+    .ai-model-card.active {
+        background: linear-gradient(135deg, rgba(2, 132, 199, 0.25), rgba(12, 74, 110, 0.35));
+        border-color: #38bdf8;
+        box-shadow: 0 0 16px rgba(14, 165, 233, 0.25);
+    }
+    .ai-model-card-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+    }
+    .ai-model-name-wrap {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .ai-model-check-circle {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 1.5px solid rgba(255,255,255,0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: all 0.2s;
+    }
+    .ai-model-card.active .ai-model-check-circle {
+        background: #0284c7;
+        border-color: #38bdf8;
+    }
+    .ai-model-name {
+        color: #f8fafc;
+        font-size: 12.5px;
+        font-weight: 700;
+    }
+    .ai-model-badge {
+        font-size: 10px;
+        padding: 1px 6px;
+        border-radius: 6px;
+        background: rgba(14, 165, 233, 0.2);
+        color: #38bdf8;
+        border: 1px solid rgba(14, 165, 233, 0.35);
+        font-weight: 600;
+    }
+    .ai-model-status-pill {
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        white-space: nowrap;
+    }
+    .status-emerald {
+        background: rgba(16, 185, 129, 0.15);
+        color: #34d399;
+        border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+    .status-amber {
+        background: rgba(245, 158, 11, 0.15);
+        color: #fbbf24;
+        border: 1px solid rgba(245, 158, 11, 0.35);
+    }
+    .status-red {
+        background: rgba(239, 68, 68, 0.15);
+        color: #f87171;
+        border: 1px solid rgba(239, 68, 68, 0.35);
+    }
+    .ai-model-desc {
+        color: #94a3b8;
+        font-size: 11px;
+        line-height: 1.35;
+    }
+    .ai-model-quota-bar-track {
+        width: 100%;
+        height: 6px;
+        background: #060d18;
+        border-radius: 999px;
+        overflow: hidden;
+        position: relative;
+    }
+    .ai-model-quota-bar-fill {
+        height: 100%;
+        border-radius: 999px;
+        transition: width 0.3s ease;
+    }
+    .ai-model-quota-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 10px;
+        color: #64748b;
+    }
+    .ai-model-dropdown-footer {
+        padding-top: 8px;
+        border-top: 1px solid rgba(255,255,255,0.06);
+        font-size: 10.5px;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .ai-icon-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .ai-icon-btn:hover {
+        background: rgba(255,255,255,0.15);
+        color: white;
+    }
+    .ai-newchat-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 14px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #0284c7, #0369a1);
+        border: 1px solid rgba(56, 189, 248, 0.35);
+        color: white;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 2px 10px rgba(14, 165, 233, 0.3);
+    }
+    .ai-newchat-btn:hover {
+        background: linear-gradient(135deg, #0ea5e9, #0284c7);
+        transform: translateY(-1px);
+    }
+    .ai-close-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: rgba(239, 68, 68, 0.15);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: #f87171;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .ai-close-btn:hover {
+        background: rgba(239, 68, 68, 0.85);
+        color: white;
+    }
+
+    /* Workspace Body: Sidebar + Main Area */
+    .ai-body {
+        flex: 1;
+        display: flex;
+        overflow: hidden;
+        position: relative;
+        z-index: 1; /* Below .ai-topbar */
+    }
+
+    /* Left Sidebar: Riwayat Chat */
+    .ai-sidebar {
+        width: 310px;
+        background: #08111e;
+        border-right: 1px solid rgba(14, 165, 233, 0.18);
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s;
+    }
+    .ai-sidebar.collapsed {
+        width: 0;
+        overflow: hidden;
+        border-right: none;
+    }
+    .ai-sidebar-header {
+        padding: 16px;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .ai-sidebar-search {
+        position: relative;
+        margin-top: 10px;
+    }
+    .ai-sidebar-search input {
+        width: 100%;
+        background: #0d1a2d;
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 10px;
+        padding: 8px 12px 8px 34px;
+        color: #e2e8f0;
+        font-size: 12px;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+    .ai-sidebar-search input:focus {
+        border-color: #0ea5e9;
+    }
+    .ai-sidebar-search svg {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 14px;
+        height: 14px;
+        color: #64748b;
+    }
+    .ai-history-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 12px 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+    .ai-history-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 12px;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.02);
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: all 0.2s;
+        position: relative;
+    }
+    .ai-history-item:hover {
+        background: rgba(14, 165, 233, 0.1);
+        border-color: rgba(14, 165, 233, 0.25);
+    }
+    .ai-history-item.active {
+        background: linear-gradient(135deg, rgba(2, 132, 199, 0.25), rgba(12, 74, 110, 0.35));
+        border-color: rgba(14, 165, 233, 0.5);
+    }
+    .ai-history-title {
+        color: #e2e8f0;
+        font-size: 12px;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 210px;
+    }
+    .ai-history-time {
+        color: #64748b;
+        font-size: 10px;
+        margin-top: 2px;
+    }
+    .ai-item-del-btn {
+        opacity: 0;
+        background: none;
+        border: none;
+        color: #94a3b8;
+        padding: 4px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .ai-history-item:hover .ai-item-del-btn {
+        opacity: 1;
+    }
+    .ai-item-del-btn:hover {
+        color: #f87171;
+        background: rgba(239, 68, 68, 0.15);
+    }
+    .ai-sidebar-footer {
+        padding: 12px 16px;
+        border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .ai-clear-all-btn {
+        width: 100%;
+        padding: 7px;
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        color: #fca5a5;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: all 0.2s;
+    }
+    .ai-clear-all-btn:hover {
+        background: rgba(239, 68, 68, 0.25);
+        color: white;
+    }
+
+    /* Main Chat Column */
+    .ai-main-chat {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: #070e1a;
+    }
+
+    /* Messages Scroll Area */
+    #ai-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 24px 32px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        scrollbar-width: thin;
+        scrollbar-color: rgba(14, 165, 233, 0.3) transparent;
+    }
+    #ai-messages::-webkit-scrollbar { width: 6px; }
+    #ai-messages::-webkit-scrollbar-thumb { background: rgba(14, 165, 233, 0.3); border-radius: 4px; }
+
+    /* Welcome Hero & Suggestions */
+    .ai-welcome-hero {
+        max-width: 760px;
+        margin: auto;
+        text-align: center;
+        padding: 30px 16px;
+    }
+    .ai-hero-icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #0284c7, #06b6d4);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        box-shadow: 0 10px 30px rgba(14, 165, 233, 0.35);
+        margin-bottom: 16px;
+    }
+    .ai-hero-title {
+        color: white;
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+    .ai-hero-desc {
+        color: #94a3b8;
+        font-size: 13px;
+        line-height: 1.6;
+        max-width: 580px;
+        margin: 0 auto 24px;
+    }
+    .ai-suggestion-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 12px;
+        text-align: left;
+    }
+    .ai-suggestion-card {
+        padding: 14px 16px;
+        background: #0d1a2d;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .ai-suggestion-card:hover {
+        background: #11233e;
+        border-color: rgba(14, 165, 233, 0.5);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    }
+    .ai-sug-head {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #38bdf8;
+        font-weight: 600;
+        font-size: 13px;
+        margin-bottom: 4px;
+    }
+    .ai-sug-sub {
+        color: #64748b;
+        font-size: 11px;
+        line-height: 1.4;
+    }
+
+    /* Message Bubbles */
+    .ai-bubble-row {
+        display: flex;
+        gap: 12px;
+        max-width: 88%;
+        animation: bubbleFadeIn 0.2s ease-out;
+    }
+    @keyframes bubbleFadeIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    .ai-bubble-row.user {
+        align-self: flex-end;
+        flex-direction: row-reverse;
+    }
+    .ai-bubble-row.assistant {
+        align-self: flex-start;
+    }
+    .ai-bubble-avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+    .ai-bubble-avatar.user {
+        background: linear-gradient(135deg, #0284c7, #0369a1);
+        color: white;
+    }
+    .ai-bubble-avatar.assistant {
+        background: linear-gradient(135deg, #0284c7, #06b6d4);
+        color: white;
+    }
+    .ai-bubble-content {
+        display: flex;
+        flex-direction: column;
+    }
+    .ai-bubble {
+        padding: 14px 18px;
+        border-radius: 18px;
+        font-size: 13.5px;
+        line-height: 1.65;
+        word-break: break-word;
+        position: relative;
+    }
+    .ai-bubble-row.user .ai-bubble {
+        background: linear-gradient(135deg, #0284c7, #0369a1);
+        color: white;
+        border-top-right-radius: 4px;
+    }
+    .ai-bubble-row.assistant .ai-bubble {
+        background: #0e1a2d;
+        color: #e2e8f0;
+        border: 1px solid rgba(14, 165, 233, 0.25);
+        border-top-left-radius: 4px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    }
+    .ai-bubble-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 6px;
+        padding: 0 4px;
+    }
+    .ai-bubble-time {
+        font-size: 10px;
+        color: #64748b;
+    }
+    .ai-copy-btn {
+        background: none;
+        border: none;
+        color: #94a3b8;
+        cursor: pointer;
+        font-size: 11px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 6px;
+        border-radius: 4px;
+        transition: all 0.2s;
+    }
+    .ai-copy-btn:hover {
+        color: white;
+        background: rgba(255,255,255,0.1);
+    }
+
+    /* Markdown styling */
+    .ai-bubble strong { color: #7dd3fc; font-weight: 700; }
+    .ai-bubble code {
+        background: #050b14;
+        padding: 2px 6px;
+        border-radius: 5px;
+        font-size: 12px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        color: #34d399;
+        border: 1px solid rgba(255,255,255,0.06);
+    }
+    .ai-bubble pre {
+        background: #050b14;
+        padding: 12px 14px;
+        border-radius: 8px;
+        overflow-x: auto;
+        margin: 8px 0;
+        border: 1px solid rgba(255,255,255,0.08);
+    }
+    .ai-bubble pre code { background: none; border: none; padding: 0; }
+    .ai-bubble ul, .ai-bubble ol { margin: 8px 0 8px 20px; }
+    .ai-bubble li { margin: 4px 0; }
+    .ai-bubble hr { border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 12px 0; }
+    .ai-md-h1 { color: #f0f9ff; font-size: 16px; font-weight: 800; margin: 14px 0 8px; padding-bottom: 4px; border-bottom: 1px solid rgba(14, 165, 233, 0.25); }
+    .ai-md-h2 { color: #bae6fd; font-size: 14.5px; font-weight: 700; margin: 12px 0 6px; }
+    .ai-md-h3 { color: #7dd3fc; font-size: 13.5px; font-weight: 700; margin: 10px 0 4px; }
+    .ai-md-quote { border-left: 3px solid #0ea5e9; padding: 6px 12px; margin: 8px 0; color: #cbd5e1; font-style: italic; background: rgba(14, 165, 233, 0.08); border-radius: 0 8px 8px 0; }
+    .ai-md-bullet { display: flex; align-items: flex-start; gap: 8px; margin: 4px 0; line-height: 1.6; }
+    .ai-bullet-dot { color: #0ea5e9; font-weight: 800; flex-shrink: 0; }
+    .ai-md-num { display: flex; align-items: flex-start; gap: 8px; margin: 4px 0; line-height: 1.6; }
+    .ai-num-badge { color: #38bdf8; font-weight: 700; flex-shrink: 0; font-size: 12px; }
+
+    /* Typing dots */
+    .ai-typing-box {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 12px 16px;
+        background: #0e1a2d;
+        border-radius: 14px;
+        border: 1px solid rgba(14, 165, 233, 0.25);
+        width: fit-content;
+    }
+    .ai-typing-box span {
+        width: 7px;
+        height: 7px;
+        background: #0ea5e9;
+        border-radius: 50%;
+        animation: aiTypeBounce 1.2s infinite ease-in-out;
+    }
+    .ai-typing-box span:nth-child(2) { animation-delay: 0.2s; }
+    .ai-typing-box span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes aiTypeBounce {
+        0%, 80%, 100% { transform: scale(0.8); opacity: 0.4; }
+        40%            { transform: scale(1.3); opacity: 1; }
+    }
+
+    /* Input Dock */
+    .ai-input-dock {
+        padding: 16px 24px;
+        background: #08111e;
+        border-top: 1px solid rgba(14, 165, 233, 0.18);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .ai-input-card {
+        background: #0d1a2d;
+        border: 1px solid rgba(14, 165, 233, 0.3);
+        border-radius: 16px;
+        padding: 10px 14px;
+        display: flex;
+        align-items: flex-end;
+        gap: 10px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .ai-input-card:focus-within {
+        border-color: #0ea5e9;
+        box-shadow: 0 0 20px rgba(14, 165, 233, 0.25);
+    }
+    #ai-input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        outline: none;
+        color: #f1f5f9;
+        font-size: 13.5px;
+        line-height: 1.5;
+        resize: none;
+        max-height: 140px;
+        min-height: 38px;
+        font-family: inherit;
+    }
+    #ai-input::placeholder { color: #64748b; }
+    .ai-send-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, #0284c7, #0369a1);
+        border: none;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: all 0.2s;
+    }
+    .ai-send-btn:hover:not(:disabled) {
+        transform: scale(1.05);
+        background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    }
+    .ai-send-btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+    .ai-input-hint {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 11px;
+        color: #475569;
+        padding: 0 4px;
+    }
+
+    /* Mobile Adaptations */
+    @media (max-width: 768px) {
+        #ai-full-modal { padding: 0; }
+        .ai-workspace { height: 100vh; max-height: 100vh; border-radius: 0; border: none; }
+        .ai-sidebar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: 10;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.8);
+        }
+        .ai-sidebar.collapsed {
+            transform: translateX(-100%);
+            width: 280px;
+        }
+        #ai-messages { padding: 16px; }
+        .ai-input-dock { padding: 12px 16px; }
+    }
+</style>
+
+{{-- Floating Quick Trigger Button --}}
+<button id="ai-chat-btn" onclick="toggleFullAiModal()" title="Buka Gemini AI Assistant">
+    <svg id="ai-btn-icon" class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z"/>
+    </svg>
+</button>
+
+{{-- Fullscreen AI Assistant Modal --}}
+<div id="ai-full-modal" role="dialog" aria-modal="true" aria-label="Gemini AI Assistant Workspace">
+    <div class="ai-workspace">
+        {{-- Top Navigation Bar --}}
+        <header class="ai-topbar">
+            <div class="ai-topbar-left">
+                <button type="button" class="ai-icon-btn" onclick="toggleAiSidebar()" title="Buka/Tutup Riwayat">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"/></svg>
+                </button>
+                <div class="ai-brand-badge">
+                    <div class="ai-brand-avatar">✨</div>
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                            <h3 class="text-white text-sm font-bold tracking-wide">Gemini AI</h3>
+                            
+                            {{-- Interactive Model Picker Dropdown --}}
+                            <div class="ai-model-picker-wrap" id="ai-model-picker-container">
+                                <button type="button" class="ai-model-pill-btn" onclick="toggleAiModelPicker(event)" id="ai-current-model-btn" title="Klik untuk memilih model AI & lihat sisa kuota">
+                                    <span class="ai-model-dot" id="ai-model-dot" style="background:#10b981;"></span>
+                                    <span id="ai-current-model-name">{{ $aiCurrentModel }}</span>
+                                    <span class="ai-quota-mini-tag status-emerald" id="ai-current-quota-tag">Masih Banyak</span>
+                                    <svg class="w-3 h-3 ml-0.5 opacity-70 transition-transform duration-200" id="ai-model-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </button>
+                                
+                                {{-- Dropdown Modal / Popup List --}}
+                                <div id="ai-model-dropdown" class="ai-model-dropdown hidden" onclick="event.stopPropagation()">
+                                    <div class="ai-model-dropdown-header">
+                                        <div class="ai-model-dropdown-title">
+                                            <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                                            <span>Pilih Model AI</span>
+                                        </div>
+                                        <span class="text-[10px] text-slate-400">Status Kuota Live</span>
+                                    </div>
+                                    <div id="ai-model-cards-list" class="ai-model-cards-list">
+                                        {{-- Rendered dynamically by renderModelPicker() --}}
+                                    </div>
+                                    <div class="ai-model-dropdown-footer">
+                                        <svg class="w-3.5 h-3.5 text-sky-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        <span>Tiap model memiliki kuota terpisah per jam. Jika satu menipis, pilih model lain!</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-slate-400 text-xs truncate max-w-[280px]" id="ai-active-topic">Asisten Medis IMEROLEPLAY</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai-topbar-right">
+                <button type="button" class="ai-newchat-btn" onclick="startNewAiChat()" title="Mulai Sesi Chat Baru">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.5v15m7.5-7.5h-15"/></svg>
+                    <span>Chat Baru</span>
+                </button>
+                <div class="hidden sm:inline-flex items-center gap-1.5 text-xs text-slate-300 px-3 py-1.5 bg-white/5 border border-white/10 rounded-xl" id="ai-topbar-quota-box" title="Sisa kuota model aktif per jam">
+                    <span id="ai-topbar-model-short" class="text-slate-400">Sisa:</span>
+                    <strong id="ai-remaining-badge" class="text-emerald-400 font-bold">25</strong>
+                    <span id="ai-remaining-max" class="text-slate-400">/25</span>
+                    <span class="text-[10px] text-slate-500">sesi/jam</span>
+                </div>
+                <button type="button" class="ai-close-btn" onclick="closeFullAiModal()" title="Tutup Modal (ESC)">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+        </header>
+
+        {{-- Body: Left Sidebar (History) + Main Chat --}}
+        <div class="ai-body">
+            {{-- Left Sidebar --}}
+            <aside class="ai-sidebar" id="ai-sidebar">
+                <div class="ai-sidebar-header">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold uppercase tracking-wider text-sky-300 flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+                            Riwayat Pencarian
+                        </span>
+                        <span class="text-[10px] px-2 py-0.5 bg-sky-500/20 text-sky-300 font-semibold rounded-full" id="ai-history-count">0</span>
+                    </div>
+                    <div class="ai-sidebar-search">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/></svg>
+                        <input type="text" id="ai-search-query" placeholder="Cari riwayat pertanyaan..." oninput="filterAiHistory()">
+                    </div>
+                </div>
+
+                {{-- History List --}}
+                <div class="ai-history-list" id="ai-history-items">
+                    {{-- Dynamically populated --}}
+                </div>
+
+                {{-- Sidebar Footer --}}
+                <div class="ai-sidebar-footer">
+                    <button type="button" class="ai-clear-all-btn" onclick="clearAllAiSessions()">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"/></svg>
+                        <span>Hapus Semua Riwayat</span>
+                    </button>
+                </div>
+            </aside>
+
+            {{-- Main Chat Area --}}
+            <main class="ai-main-chat">
+                <div id="ai-messages">
+                    {{-- Default Welcome Hero / Conversation Messages --}}
+                </div>
+
+                {{-- Input Dock --}}
+                <div class="ai-input-dock">
+                    <div class="ai-input-card">
+                        <textarea
+                            id="ai-input"
+                            placeholder="Tanyakan SOP operasi, kode medis, triage, formulir, atau hal lainnya... (Enter untuk kirim)"
+                            rows="1"
+                            maxlength="2000"
+                        ></textarea>
+                        <button type="button" id="ai-send-btn" class="ai-send-btn" onclick="sendAiMessage()" title="Kirim">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="ai-input-hint">
+                        <span>💡 Tekan <strong>Enter</strong> untuk kirim, <strong>Shift+Enter</strong> baris baru. Tekan <strong>ESC</strong> untuk menutup.</span>
+                        <span id="ai-char-count">0/2000</span>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ====== AI Chat Workspace & Session History ======
+    const AI_USER_ID      = '{{ Auth::id() ?? "guest" }}';
+    const AI_STORAGE_KEY  = 'ime_ai_sessions_user_' + AI_USER_ID;
+    const AI_CHAT_ROUTE   = '{{ route("staff.ai-chat") }}';
+    const AI_MODELS_ROUTE = '{{ route("staff.ai-chat.models") }}';
+    const AI_CSRF_TOKEN   = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+    const AI_USER_NAME    = '{{ Auth::user()->name ?? "Staf" }}';
+
+    let aiModalOpen       = false;
+    let aiLoading         = false;
+    let aiSessions        = [];
+    let aiActiveSessionId = null;
+
+    // AI Models State & Selection
+    let aiModelsData      = @json($aiInitialQuotas);
+    let aiSelectedModel   = localStorage.getItem('ime_ai_selected_model') || '{{ $aiCurrentModel }}';
+
+    // Verify aiSelectedModel exists in available configs
+    if (!aiModelsData[aiSelectedModel]) {
+        aiSelectedModel = Object.keys(aiModelsData)[0] || 'gemini-3.5-flash';
+    }
+
+    // Toggle and Close Model Picker
+    function toggleAiModelPicker(e) {
+        if (e) e.stopPropagation();
+        const dropdown = document.getElementById('ai-model-dropdown');
+        const chevron = document.getElementById('ai-model-chevron');
+        if (!dropdown) return;
+
+        const isHidden = dropdown.classList.contains('hidden');
+        if (isHidden) {
+            dropdown.classList.remove('hidden');
+            if (chevron) chevron.style.transform = 'rotate(180deg)';
+            renderModelPicker();
+        } else {
+            dropdown.classList.add('hidden');
+            if (chevron) chevron.style.transform = 'rotate(0deg)';
+        }
+    }
+
+    function closeAiModelPicker() {
+        const dropdown = document.getElementById('ai-model-dropdown');
+        const chevron = document.getElementById('ai-model-chevron');
+        if (dropdown) dropdown.classList.add('hidden');
+        if (chevron) chevron.style.transform = 'rotate(0deg)';
+    }
+
+    // Select Active Model
+    function selectAiModel(key) {
+        if (!aiModelsData[key]) return;
+        aiSelectedModel = key;
+        localStorage.setItem('ime_ai_selected_model', key);
+        renderModelPicker();
+        closeAiModelPicker();
+    }
+
+    // Render Model Picker dropdown and update topbar indicator
+    function renderModelPicker() {
+        const list = document.getElementById('ai-model-cards-list');
+        const currentModel = aiModelsData[aiSelectedModel] || Object.values(aiModelsData)[0];
+
+        // Update Topbar Button display
+        if (currentModel) {
+            const nameEl     = document.getElementById('ai-current-model-name');
+            const dotEl      = document.getElementById('ai-model-dot');
+            const tagEl      = document.getElementById('ai-current-quota-tag');
+            const remBadge   = document.getElementById('ai-remaining-badge');
+            const maxBadge   = document.getElementById('ai-remaining-max');
+            const shortLabel = document.getElementById('ai-topbar-model-short');
+
+            if (nameEl) nameEl.textContent = currentModel.name;
+            if (dotEl) {
+                dotEl.style.backgroundColor = currentModel.dot_color;
+                dotEl.style.color = currentModel.dot_color;
+            }
+            if (tagEl) {
+                tagEl.textContent = currentModel.status + ` (${currentModel.remaining})`;
+                tagEl.className = 'ai-quota-mini-tag status-' + currentModel.status_color;
+            }
+            if (remBadge) {
+                remBadge.textContent = currentModel.remaining;
+                remBadge.className = currentModel.status_color === 'emerald'
+                    ? 'text-emerald-400 font-bold'
+                    : (currentModel.status_color === 'amber' ? 'text-amber-400 font-bold' : 'text-red-400 font-bold');
+            }
+            if (maxBadge) maxBadge.textContent = '/' + currentModel.limit;
+            if (shortLabel) shortLabel.textContent = currentModel.badge + ':';
+        }
+
+        if (!list) return;
+
+        // Render card for each model
+        list.innerHTML = Object.values(aiModelsData).map(m => {
+            const isActive   = m.key === aiSelectedModel;
+            const fillColor  = m.dot_color;
+            const statusIcon = m.status_color === 'emerald' ? '🟢' : (m.status_color === 'amber' ? '🟡' : '🔴');
+
+            return `
+                <div class="ai-model-card ${isActive ? 'active' : ''}" onclick="selectAiModel('${m.key}')" title="Pilih model ${m.name}">
+                    <div class="ai-model-card-top">
+                        <div class="ai-model-name-wrap">
+                            <div class="ai-model-check-circle">
+                                ${isActive ? '<svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>' : ''}
+                            </div>
+                            <span class="ai-model-name">${m.name}</span>
+                            <span class="ai-model-badge">${m.badge}</span>
+                        </div>
+                        <span class="ai-model-status-pill status-${m.status_color}">
+                            ${statusIcon} ${m.status}
+                        </span>
+                    </div>
+                    <div class="ai-model-desc">${m.desc}</div>
+                    <div class="ai-model-quota-bar-track">
+                        <div class="ai-model-quota-bar-fill" style="width: ${m.percent}%; background-color: ${fillColor};"></div>
+                    </div>
+                    <div class="ai-model-quota-meta">
+                        <span>Sisa: <strong style="color:${fillColor}; font-weight:700;">${m.remaining}</strong>/${m.limit} sesi/jam</span>
+                        <span>${m.percent}% tersedia</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Fetch live quota status from server
+    async function fetchLiveAiModels() {
+        try {
+            const res = await fetch(AI_MODELS_ROUTE, {
+                headers: { 'Accept': 'application/json' }
+            });
+            const data = await res.json();
+            if (data.success && data.models) {
+                aiModelsData = data.models;
+                renderModelPicker();
+            }
+        } catch (e) {
+            console.warn('[AI] Failed to fetch live models:', e);
+        }
+    }
+
+    // Load saved sessions from localStorage
+    function loadAiSessions() {
+        try {
+            const raw = localStorage.getItem(AI_STORAGE_KEY);
+            aiSessions = raw ? JSON.parse(raw) : [];
+            if (!Array.isArray(aiSessions)) aiSessions = [];
+        } catch (e) {
+            aiSessions = [];
+        }
+    }
+
+    function saveAiSessions() {
+        try {
+            localStorage.setItem(AI_STORAGE_KEY, JSON.stringify(aiSessions));
+        } catch (e) {
+            console.error('[AI] Failed to save sessions:', e);
+        }
+    }
+
+    // Modal Visibility
+    function openFullAiModal() {
+        aiModalOpen = true;
+        const modal = document.getElementById('ai-full-modal');
+        modal.classList.add('visible');
+        renderHistoryList();
+        renderModelPicker();
+        fetchLiveAiModels();
+
+        if (!aiActiveSessionId && aiSessions.length > 0) {
+            loadSession(aiSessions[0].id);
+        } else if (!aiActiveSessionId) {
+            renderWelcomeScreen();
+        }
+
+        setTimeout(() => document.getElementById('ai-input')?.focus(), 200);
+    }
+
+    function closeFullAiModal() {
+        aiModalOpen = false;
+        closeAiModelPicker();
+        const modal = document.getElementById('ai-full-modal');
+        modal.classList.remove('visible');
+    }
+
+    function toggleFullAiModal() {
+        if (aiModalOpen) {
+            closeFullAiModal();
+        } else {
+            openFullAiModal();
+        }
+    }
+
+    function toggleAiSidebar() {
+        const sidebar = document.getElementById('ai-sidebar');
+        sidebar.classList.toggle('collapsed');
+    }
+
+    // Start fresh chat
+    function startNewAiChat() {
+        aiActiveSessionId = null;
+        document.getElementById('ai-active-topic').textContent = 'Percakapan Baru';
+        renderWelcomeScreen();
+        renderHistoryList();
+        document.getElementById('ai-input')?.focus();
+    }
+
+    // Render Welcome Hero Screen
+    function renderWelcomeScreen() {
+        const msgs = document.getElementById('ai-messages');
+        msgs.innerHTML = `
+            <div class="ai-welcome-hero">
+                <div class="ai-hero-icon">🏥</div>
+                <h2 class="ai-hero-title">Halo, ${AI_USER_NAME}!</h2>
+                <p class="ai-hero-desc">Saya asisten medis resmi IMEROLEPLAY. Tanyakan SOP tindakan medis, triage gawat darurat, penulisan rekam medis, alur rujukan, atau roleplay /me & /do.</p>
+                <div class="ai-suggestion-grid">
+                    <div class="ai-suggestion-card" onclick="sendQuickPrompt('Bagaimana SOP dan tahapan operasi bedah (surgery) medis roleplay di Alta Hospital?')">
+                        <div class="ai-sug-head">📋 SOP Tindakan Operasi</div>
+                        <div class="ai-sug-sub">Langkah persiapan anestesi, asepsis, insisi, hingga pasca-operasi</div>
+                    </div>
+                    <div class="ai-suggestion-card" onclick="sendQuickPrompt('Apa langkah penanganan dan triage awal pasien kecelakaan lalu lintas (KLL)?')">
+                        <div class="ai-sug-head">🚨 Triage Pasien KLL</div>
+                        <div class="ai-sug-sub">Primary survey ABCDE, imobilisasi leher, dan resusitasi cairan</div>
+                    </div>
+                    <div class="ai-suggestion-card" onclick="sendQuickPrompt('Berikan contoh penulisan rekam medis operasi yang rapi dengan format diagnosa & tindakan.')">
+                        <div class="ai-sug-head">📝 Format Rekam Medis</div>
+                        <div class="ai-sug-sub">Contoh form diagnosa, laporan operasi, dan tindakan DPJP</div>
+                    </div>
+                    <div class="ai-suggestion-card" onclick="sendQuickPrompt('Bagaimana panduan penggunaan perintah /me dan /do yang realistis saat memeriksa pasien?')">
+                        <div class="ai-sug-head">🎭 Panduan /me & /do Medis</div>
+                        <div class="ai-sug-sub">Contoh roleplay pemasangan infus, nebulizer, dan defibrilator</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function sendQuickPrompt(text) {
+        const input = document.getElementById('ai-input');
+        if (input) {
+            input.value = text;
+            sendAiMessage();
+        }
+    }
+
+    // Render Session History in Sidebar
+    function renderHistoryList(filterText = '') {
+        const container = document.getElementById('ai-history-items');
+        const countBadge = document.getElementById('ai-history-count');
+        if (!container) return;
+
+        let filtered = aiSessions;
+        if (filterText.trim()) {
+            const q = filterText.toLowerCase();
+            filtered = aiSessions.filter(s => (s.title || '').toLowerCase().includes(q));
+        }
+
+        if (countBadge) countBadge.textContent = aiSessions.length;
+
+        if (filtered.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-8 px-4 text-slate-500 text-xs">
+                    <svg class="w-8 h-8 mx-auto mb-2 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+                    ${filterText ? 'Tidak ada riwayat yang cocok.' : 'Belum ada riwayat chat.<br>Mulai ajukan pertanyaan!'}
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = filtered.map(s => {
+            const isActive = s.id === aiActiveSessionId;
+            const dateStr = formatSessionDate(s.createdAt);
+            const titleSafe = escapeHtml(s.title || 'Percakapan');
+            return `
+                <div class="ai-history-item ${isActive ? 'active' : ''}" onclick="loadSession('${s.id}')" title="${titleSafe}">
+                    <div style="flex:1; min-width:0;">
+                        <div class="ai-history-title">${titleSafe}</div>
+                        <div class="ai-history-time">${dateStr} • ${s.messages ? s.messages.length : 0} pesan</div>
+                    </div>
+                    <button type="button" class="ai-item-del-btn" onclick="deleteAiSession('${s.id}', event)" title="Hapus riwayat ini">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    </button>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function filterAiHistory() {
+        const val = document.getElementById('ai-search-query')?.value ?? '';
+        renderHistoryList(val);
+    }
+
+    function loadSession(sessionId) {
+        const session = aiSessions.find(s => s.id === sessionId);
+        if (!session) return;
+
+        aiActiveSessionId = sessionId;
+        document.getElementById('ai-active-topic').textContent = session.title || 'Percakapan';
+
+        const msgs = document.getElementById('ai-messages');
+        msgs.innerHTML = '';
+
+        if (session.messages && session.messages.length > 0) {
+            session.messages.forEach(m => {
+                appendBubbleToDom(m.text, m.role, m.time);
+            });
+        } else {
+            renderWelcomeScreen();
+        }
+
+        renderHistoryList();
+        scrollToBottom();
+    }
+
+    function deleteAiSession(sessionId, event) {
+        if (event) event.stopPropagation();
+        aiSessions = aiSessions.filter(s => s.id !== sessionId);
+        saveAiSessions();
+
+        if (aiActiveSessionId === sessionId) {
+            startNewAiChat();
+        } else {
+            renderHistoryList();
+        }
+    }
+
+    function clearAllAiSessions() {
+        if (!confirm('Apakah Anda yakin ingin menghapus seluruh riwayat pencarian & percakapan AI?')) return;
+        aiSessions = [];
+        saveAiSessions();
+        startNewAiChat();
+    }
+
+    function formatSessionDate(isoStr) {
+        if (!isoStr) return '';
+        try {
+            const d = new Date(isoStr);
+            const now = new Date();
+            const diffHours = (now - d) / (1000 * 60 * 60);
+            if (diffHours < 24 && now.getDate() === d.getDate()) {
+                return 'Hari ini, ' + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            }
+            return d.toLocaleDateString([], {day: 'numeric', month: 'short'}) + ', ' + d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        } catch (e) {
+            return '';
+        }
+    }
+
+    function formatCurrentTime() {
+        const now = new Date();
+        return now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    }
+
+    function escapeHtml(text) {
+        return text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function formatMarkdown(text) {
+        let html = escapeHtml(text);
+        
+        // Code blocks ```...```
+        html = html.replace(/```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+        html = html.replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>');
+        
+        // Inline code `...`
+        html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+        
+        // Bold & Italic
+        html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        
+        // Headings (#, ##, ###)
+        html = html.replace(/^### (.+)$/gm, '<h4 class="ai-md-h3">$1</h4>');
+        html = html.replace(/^## (.+)$/gm, '<h3 class="ai-md-h2">$1</h3>');
+        html = html.replace(/^# (.+)$/gm, '<h2 class="ai-md-h1">$1</h2>');
+        
+        // Blockquotes (> ...)
+        html = html.replace(/^>\s+(.+)$/gm, '<div class="ai-md-quote">$1</div>');
+        
+        // Numbered lists (1. 2. 3.)
+        html = html.replace(/^(\d+)\.\s+(.+)$/gm, '<div class="ai-md-num"><span class="ai-num-badge">$1.</span><div>$2</div></div>');
+        
+        // Bullet lists (- or * or •)
+        html = html.replace(/^[\-\*•]\s+(.+)$/gm, '<div class="ai-md-bullet"><span class="ai-bullet-dot">•</span><div>$1</div></div>');
+        
+        // Line breaks
+        html = html.replace(/\n/g, '<br>');
+        
+        return html;
+    }
+
+    function appendBubbleToDom(text, role, timeStr) {
+        // Remove welcome hero if present
+        document.querySelector('.ai-welcome-hero')?.remove();
+
+        const msgs = document.getElementById('ai-messages');
+        const row  = document.createElement('div');
+        row.className = 'ai-bubble-row ' + role;
+
+        const time = timeStr || formatCurrentTime();
+        const avatar = role === 'user' ? '👤' : '✨';
+
+        let innerContent = '';
+        if (role === 'assistant') {
+            innerContent = `
+                <div class="ai-bubble-avatar ${role}">${avatar}</div>
+                <div class="ai-bubble-content" style="max-width:calc(100% - 46px);">
+                    <div class="ai-bubble" data-raw="${escapeHtml(text)}">
+                        ${formatMarkdown(text)}
+                    </div>
+                    <div class="ai-bubble-footer">
+                        <span class="ai-bubble-time">${time}</span>
+                        <button type="button" class="ai-copy-btn" onclick="copyAiResponse(this)">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                            <span>Salin</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        } else {
+            innerContent = `
+                <div class="ai-bubble-avatar ${role}">${avatar}</div>
+                <div class="ai-bubble-content">
+                    <div class="ai-bubble">${escapeHtml(text)}</div>
+                    <div class="ai-bubble-footer" style="justify-content:flex-end;">
+                        <span class="ai-bubble-time">${time}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        row.innerHTML = innerContent;
+        msgs.appendChild(row);
+        scrollToBottom();
+        return row;
+    }
+
+    function copyAiResponse(btn) {
+        const bubble = btn.closest('.ai-bubble-content')?.querySelector('.ai-bubble');
+        const raw = bubble?.getAttribute('data-raw') || bubble?.innerText || '';
+        navigator.clipboard.writeText(raw).then(() => {
+            const span = btn.querySelector('span');
+            if (span) span.textContent = 'Tersalin!';
+            setTimeout(() => { if (span) span.textContent = 'Salin'; }, 2000);
+        });
+    }
+
+    function showTypingIndicator() {
+        document.querySelector('.ai-welcome-hero')?.remove();
+        const msgs = document.getElementById('ai-messages');
+        const row = document.createElement('div');
+        row.className = 'ai-bubble-row assistant';
+        row.id = 'ai-typing-indicator';
+        row.innerHTML = `
+            <div class="ai-bubble-avatar assistant">✨</div>
+            <div class="ai-typing-box">
+                <span></span><span></span><span></span>
+            </div>
+        `;
+        msgs.appendChild(row);
+        scrollToBottom();
+    }
+
+    function hideTypingIndicator() {
+        document.getElementById('ai-typing-indicator')?.remove();
+    }
+
+    function scrollToBottom() {
+        const msgs = document.getElementById('ai-messages');
+        if (msgs) msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    // Send AI message handler
+    async function sendAiMessage() {
+        if (aiLoading) return;
+
+        const input = document.getElementById('ai-input');
+        const text  = (input?.value || '').trim();
+        if (!text) return;
+
+        // Clear input
+        input.value = '';
+        input.style.height = 'auto';
+        document.getElementById('ai-char-count').textContent = '0/2000';
+
+        // Check or create active session
+        let currentSession = aiSessions.find(s => s.id === aiActiveSessionId);
+        if (!currentSession) {
+            const cleanTitle = text.length > 35 ? text.substring(0, 35) + '...' : text;
+            currentSession = {
+                id: 'session_' + Date.now(),
+                title: cleanTitle,
+                createdAt: new Date().toISOString(),
+                messages: []
+            };
+            aiSessions.unshift(currentSession);
+            aiActiveSessionId = currentSession.id;
+            document.getElementById('ai-active-topic').textContent = cleanTitle;
+        }
+
+        const userTime = formatCurrentTime();
+        // Append user message
+        appendBubbleToDom(text, 'user', userTime);
+        currentSession.messages.push({ role: 'user', text: text, time: userTime });
+        saveAiSessions();
+        renderHistoryList();
+
+        // Build history payload for Gemini API
+        const apiHistory = [];
+        (currentSession.messages || []).slice(-10).forEach(m => {
+            if (m.role === 'user' || m.role === 'assistant') {
+                apiHistory.push({
+                    role: m.role === 'user' ? 'user' : 'model',
+                    text: m.text
+                });
+            }
+        });
+        // Remove the last message from history array since it's the current user message
+        apiHistory.pop();
+
+        aiLoading = true;
+        document.getElementById('ai-send-btn').disabled = true;
+        showTypingIndicator();
+
+        try {
+            const res = await fetch(AI_CHAT_ROUTE, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': AI_CSRF_TOKEN,
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: text,
+                    history: apiHistory,
+                    model: aiSelectedModel,
+                }),
+            });
+
+            hideTypingIndicator();
+            const data = await res.json();
+            const aiTime = formatCurrentTime();
+
+            // Refresh quota models data from response if present
+            if (data.models) {
+                aiModelsData = data.models;
+                renderModelPicker();
+            }
+
+            if (data.success && data.message) {
+                appendBubbleToDom(data.message, 'assistant', aiTime);
+                currentSession.messages.push({ role: 'assistant', text: data.message, time: aiTime });
+                saveAiSessions();
+                renderHistoryList();
+            } else {
+                appendBubbleToDom('⚠️ ' + (data.message || 'Terjadi kesalahan saat memproses pertanyaan.'), 'assistant', aiTime);
+                if (res.status === 429) {
+                    // Open model picker so user can immediately choose another model
+                    setTimeout(() => toggleAiModelPicker(), 500);
+                }
+            }
+        } catch (err) {
+            hideTypingIndicator();
+            appendBubbleToDom('⚠️ Gagal terhubung ke server. Periksa koneksi internet Anda.', 'assistant', formatCurrentTime());
+        } finally {
+            aiLoading = false;
+            document.getElementById('ai-send-btn').disabled = false;
+            document.getElementById('ai-input')?.focus();
+        }
+    }
+
+    // Keyboard and input listeners
+    document.addEventListener('DOMContentLoaded', function () {
+        loadAiSessions();
+        renderModelPicker();
+
+        const input = document.getElementById('ai-input');
+        if (input) {
+            input.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendAiMessage();
+                }
+            });
+
+            input.addEventListener('input', function () {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 140) + 'px';
+                const counter = document.getElementById('ai-char-count');
+                if (counter) counter.textContent = this.value.length + '/2000';
+            });
+        }
+
+        // Close on ESC
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && aiModalOpen) {
+                closeFullAiModal();
+            }
+        });
+
+        // Close modal when clicking on backdrop outside workspace
+        const modal = document.getElementById('ai-full-modal');
+        if (modal) {
+            modal.addEventListener('click', function (e) {
+                if (e.target === modal) {
+                    closeFullAiModal();
+                }
+            });
+        }
+
+        // Close model dropdown when clicking outside
+        document.addEventListener('click', function (e) {
+            const picker = document.getElementById('ai-model-picker-container');
+            if (picker && !picker.contains(e.target)) {
+                closeAiModelPicker();
+            }
+        });
+    });
+</script>
+@endif
+@endauth
+
 </body>
 
 </html>

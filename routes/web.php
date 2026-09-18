@@ -621,6 +621,11 @@ Route::get('/pendaftaran-karakter', function () {
 // Sitemap route for SEO
 Route::get('/sitemap.xml', [PublicController::class, 'sitemap'])->name('public.sitemap');
 
+// AI Settings Shortcut / Redirect to Admin
+Route::get('/ai-settings', function () {
+    return redirect()->route('admin.ai-settings.index');
+});
+
 // Staff routes
 // Routes for guests (not logged in) - Displays login/register forms and processes them
 Route::middleware(['guest'])->group(function () {
@@ -633,6 +638,10 @@ Route::middleware(['guest'])->group(function () {
 Route::middleware(['auth', 'staff'])->group(function () {
     Route::get('/staff/dashboard', [DashboardController::class, 'index'])->name('staff.dashboard');
     Route::post('/staff/logout', [StaffController::class, 'logout'])->name('staff.logout');
+
+    // AI Chat Assistant (available to all staff)
+    Route::post('/staff/ai-chat', [\App\Http\Controllers\Staff\AiChatController::class, 'send'])->name('staff.ai-chat');
+    Route::get('/staff/ai-chat/models', [\App\Http\Controllers\Staff\AiChatController::class, 'getModels'])->name('staff.ai-chat.models');
 
     // Attendance routes
     Route::post('/staff/attendance/clock-in', [DashboardController::class, 'clockIn'])->name('staff.attendance.clock-in');
@@ -912,6 +921,17 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/telegram/test', [\App\Http\Controllers\Admin\TelegramSettingController::class, 'test'])
         ->middleware('admin')
         ->name('telegram.test');
+
+    // AI (Google Gemini) Settings
+    Route::get('/ai-settings', [\App\Http\Controllers\Admin\AiSettingController::class, 'index'])
+        ->middleware('admin')
+        ->name('ai-settings.index');
+    Route::put('/ai-settings', [\App\Http\Controllers\Admin\AiSettingController::class, 'update'])
+        ->middleware('admin')
+        ->name('ai-settings.update');
+    Route::post('/ai-settings/test', [\App\Http\Controllers\Admin\AiSettingController::class, 'test'])
+        ->middleware('admin')
+        ->name('ai-settings.test');
 
     // Voting Management (Admin / High Command)
     Route::get('/voting', [VotingController::class, 'adminIndex'])->middleware('permission:manage_users')->name('voting.index');
