@@ -1453,6 +1453,7 @@
                                     @if(auth()->user()->isAdmin())
                                         <a href="{{ route('admin.organizational-structure.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-sitemap w-4 text-teal-500 text-sm"></i> Struktural EMS</a>
                                         <a href="{{ route('admin.roles.permissions') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-shield-alt w-4 text-violet-500 text-sm"></i> Role Permissions</a>
+                                        <a href="{{ route('admin.ai-settings.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-robot w-4 text-sky-500 text-sm"></i> Pengaturan AI</a>
                                     @endif
                                     @if(auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('view_attendance_reports'))
                                         <div class="my-1 border-t border-gray-100"></div>
