@@ -3152,8 +3152,11 @@
 @php
     $aiSettings = \App\Models\AiSetting::getSettings();
     $aiChatEnabled = (bool) $aiSettings->enabled;
-    $aiCurrentModel = $aiSettings->model ?? 'gemini-3.5-flash';
     $aiInitialQuotas = \App\Http\Controllers\Staff\AiChatController::getModelQuotas(Auth::id());
+    $aiCurrentModel = $aiSettings->model ?? 'gemini-1.5-flash';
+    if (!isset($aiInitialQuotas[$aiCurrentModel])) {
+        $aiCurrentModel = array_key_first($aiInitialQuotas) ?? 'gemini-1.5-flash';
+    }
 @endphp
 @if($aiChatEnabled)
 {{-- =====================================================
@@ -4164,7 +4167,8 @@
 
     // Verify aiSelectedModel exists in available configs
     if (!aiModelsData[aiSelectedModel]) {
-        aiSelectedModel = Object.keys(aiModelsData)[0] || 'gemini-3.5-flash';
+        aiSelectedModel = Object.keys(aiModelsData)[0] || 'gemini-1.5-flash';
+        localStorage.setItem('ime_ai_selected_model', aiSelectedModel);
     }
 
     // Toggle and Close Model Picker
@@ -4660,10 +4664,14 @@
         const apiHistory = [];
         (currentSession.messages || []).slice(-10).forEach(m => {
             if (m.role === 'user' || m.role === 'assistant') {
-                apiHistory.push({
-                    role: m.role === 'user' ? 'user' : 'model',
-                    text: m.text
-                });
+                const cleanText = (m.text || '').trim();
+                // Exclude empty text or system error notices from AI context
+                if (cleanText && !cleanText.startsWith('⚠️')) {
+                    apiHistory.push({
+                        role: m.role === 'user' ? 'user' : 'model',
+                        text: cleanText
+                    });
+                }
             }
         });
         // Remove the last message from history array since it's the current user message
@@ -4705,6 +4713,12 @@
                 renderHistoryList();
             } else {
                 appendBubbleToDom('⚠️ ' + (data.message || 'Terjadi kesalahan saat memproses pertanyaan.'), 'assistant', aiTime);
+                // Roll back user message from session messages so consecutive unanswered turns don't accumulate
+                if (currentSession.messages.length > 0 && currentSession.messages[currentSession.messages.length - 1].role === 'user') {
+                    currentSession.messages.pop();
+                    saveAiSessions();
+                    renderHistoryList();
+                }
                 if (res.status === 429) {
                     // Open model picker so user can immediately choose another model
                     setTimeout(() => toggleAiModelPicker(), 500);
@@ -4713,6 +4727,11 @@
         } catch (err) {
             hideTypingIndicator();
             appendBubbleToDom('⚠️ Gagal terhubung ke server. Periksa koneksi internet Anda.', 'assistant', formatCurrentTime());
+            if (currentSession.messages.length > 0 && currentSession.messages[currentSession.messages.length - 1].role === 'user') {
+                currentSession.messages.pop();
+                saveAiSessions();
+                renderHistoryList();
+            }
         } finally {
             aiLoading = false;
             document.getElementById('ai-send-btn').disabled = false;

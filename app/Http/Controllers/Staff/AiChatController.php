@@ -135,7 +135,11 @@ PROMPT;
     public function getModels()
     {
         $settings     = AiSetting::getSettings();
-        $defaultModel = $settings->model ?? 'gemini-3.5-flash';
+        $configs      = self::getModelConfigs();
+        $defaultModel = $settings->model ?? 'gemini-1.5-flash';
+        if (!isset($configs[$defaultModel])) {
+            $defaultModel = array_key_first($configs) ?? 'gemini-1.5-flash';
+        }
         $quotas       = self::getModelQuotas(Auth::id());
 
         return response()->json([
@@ -159,12 +163,12 @@ PROMPT;
             ], 503);
         }
 
-        // Validate input
+        // Validate input - allow long text for history to accommodate detailed AI answers
         $validated = $request->validate([
-            'message'        => 'required|string|max:1000',
-            'history'        => 'nullable|array|max:20',
+            'message'        => 'required|string|max:4000',
+            'history'        => 'nullable|array|max:30',
             'history.*.role' => 'required|in:user,model',
-            'history.*.text' => 'required|string|max:2000',
+            'history.*.text' => 'required|string|max:50000',
             'model'          => 'nullable|string|max:60',
         ]);
 
@@ -173,13 +177,13 @@ PROMPT;
 
         // Determine target model
         $modelConfigs  = self::getModelConfigs();
-        $selectedModel = $validated['model'] ?? $settings->model ?? 'gemini-3.5-flash';
+        $selectedModel = $validated['model'] ?? $settings->model ?? 'gemini-1.5-flash';
         if (!isset($modelConfigs[$selectedModel])) {
-            $selectedModel = 'gemini-3.5-flash';
+            $selectedModel = 'gemini-1.5-flash';
         }
 
         // Rate limit: per model per user per hour
-        $modelLimit    = $modelConfigs[$selectedModel]['limit'];
+        $modelLimit    = $modelConfigs[$selectedModel]['limit'] ?? 30;
         $rateLimitKey  = 'ai_model_usage_' . (Auth::id() ?? 0) . '_' . str_replace('.', '_', $selectedModel);
         $messageCount  = (int) Cache::get($rateLimitKey, 0);
 
@@ -194,24 +198,53 @@ PROMPT;
         try {
             $apiKey = trim($settings->api_key ?? '');
             // Models to try in order
-            $candidateModels = array_unique([$selectedModel, 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro']);
+            $candidateModels = array_unique([$selectedModel, 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro', 'gemini-2.0-flash-lite']);
 
-            // Build conversation contents
+            // Build conversation contents with valid turn alternation (user -> model -> user ...)
             $contents = [];
+            $lastRole = null;
 
-            // Add history
+            // Process history items
             foreach ($history as $item) {
-                $contents[] = [
-                    'role'  => $item['role'],
-                    'parts' => [['text' => $item['text']]],
-                ];
+                $role = $item['role'] === 'model' ? 'model' : 'user';
+                $text = trim($item['text'] ?? '');
+
+                // Filter empty or error notices
+                if ($text === '' || str_starts_with($text, '⚠️')) {
+                    continue;
+                }
+
+                // Trim extremely long turns to preserve token budget
+                if (mb_strlen($text) > 8000) {
+                    $text = mb_substr($text, 0, 8000) . '...';
+                }
+
+                if ($lastRole === $role) {
+                    // Merge consecutive same-role turns to keep Gemini API happy
+                    $contents[count($contents) - 1]['parts'][0]['text'] .= "\n\n" . $text;
+                } else {
+                    $contents[] = [
+                        'role'  => $role,
+                        'parts' => [['text' => $text]],
+                    ];
+                    $lastRole = $role;
+                }
             }
 
-            // Add current user message
-            $contents[] = [
-                'role'  => 'user',
-                'parts' => [['text' => $userMessage]],
-            ];
+            // Gemini API requires multi-turn chat to begin with a 'user' turn
+            while (!empty($contents) && $contents[0]['role'] !== 'user') {
+                array_shift($contents);
+            }
+
+            // Append current user prompt
+            if ($lastRole === 'user' && !empty($contents)) {
+                $contents[count($contents) - 1]['parts'][0]['text'] .= "\n\n" . $userMessage;
+            } else {
+                $contents[] = [
+                    'role'  => 'user',
+                    'parts' => [['text' => $userMessage]],
+                ];
+            }
 
             $payload = [
                 'system_instruction' => [

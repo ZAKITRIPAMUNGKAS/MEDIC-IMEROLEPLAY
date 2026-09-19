@@ -217,7 +217,7 @@
                 <div class="text-right">
                     <div class="text-[11px] font-semibold tracking-wider uppercase opacity-80">Model AI Terpilih</div>
                     <div class="text-sm font-bold bg-black/25 px-3 py-1 rounded-lg inline-block border border-white/10 mt-0.5">
-                        {{ $settings->model ?? 'gemini-3.5-flash' }}
+                        {{ $settings->model ?? 'gemini-1.5-flash' }}
                     </div>
                 </div>
             </div>
@@ -329,7 +329,7 @@
 
                         <select id="model" name="model" class="ai-field-select">
                             @foreach($geminiModels as $value => $label)
-                                <option value="{{ $value }}" {{ ($settings->model ?? 'gemini-3.5-flash') === $value ? 'selected' : '' }}>
+                                <option value="{{ $value }}" {{ ($settings->model ?? 'gemini-1.5-flash') === $value ? 'selected' : '' }}>
                                     {{ $label }}
                                 </option>
                             @endforeach
@@ -340,7 +340,7 @@
                         </div>
                     </div>
                     <p class="mt-1.5 text-xs text-slate-500">
-                        Rekomendasi: <b>Gemini 3.5 Flash</b> untuk kecepatan respons dan kuota gratis yang sangat stabil.
+                        Rekomendasi: <b>Gemini 1.5 Flash</b> untuk kecepatan respons dan kuota gratis yang sangat stabil.
                     </p>
                 </div>
 

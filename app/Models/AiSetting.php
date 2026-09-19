@@ -37,11 +37,19 @@ class AiSetting extends Model
     public static function getSettings(): self
     {
         try {
-            return static::firstOrCreate([], [
+            $settings = static::firstOrCreate([], [
                 'provider' => 'gemini',
-                'model'    => 'gemini-3.5-flash',
+                'model'    => 'gemini-1.5-flash',
                 'enabled'  => false,
             ]);
+
+            // Auto-migrate obsolete or invalid model name to gemini-1.5-flash
+            if (empty($settings->model) || !array_key_exists($settings->model, static::geminiModels())) {
+                $settings->model = 'gemini-1.5-flash';
+                $settings->save();
+            }
+
+            return $settings;
         } catch (\Throwable $e) {
             // Jika tabel belum ada di database, buat otomatis on-the-fly
             try {
@@ -50,14 +58,14 @@ class AiSetting extends Model
                         $table->id();
                         $table->string('provider')->default('gemini');
                         $table->text('api_key')->nullable();
-                        $table->string('model')->default('gemini-3.5-flash');
+                        $table->string('model')->default('gemini-1.5-flash');
                         $table->boolean('enabled')->default(false);
                         $table->timestamps();
                     });
 
                     return static::firstOrCreate([], [
                         'provider' => 'gemini',
-                        'model'    => 'gemini-3.5-flash',
+                        'model'    => 'gemini-1.5-flash',
                         'enabled'  => false,
                     ]);
                 }
@@ -67,7 +75,7 @@ class AiSetting extends Model
 
             $instance = new static([
                 'provider' => 'gemini',
-                'model'    => 'gemini-3.5-flash',
+                'model'    => 'gemini-1.5-flash',
                 'enabled'  => false,
             ]);
             return $instance;

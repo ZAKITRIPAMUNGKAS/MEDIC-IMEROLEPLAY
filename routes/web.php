@@ -357,7 +357,7 @@ Route::get('/auto-setup-db', function () {
                 $table->id();
                 $table->string('provider')->default('gemini');
                 $table->text('api_key')->nullable();
-                $table->string('model')->default('gemini-3.5-flash');
+                $table->string('model')->default('gemini-1.5-flash');
                 $table->boolean('enabled')->default(false);
                 $table->timestamps();
             });
