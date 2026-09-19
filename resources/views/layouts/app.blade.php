@@ -3153,9 +3153,9 @@
     $aiSettings = \App\Models\AiSetting::getSettings();
     $aiChatEnabled = (bool) $aiSettings->enabled;
     $aiInitialQuotas = \App\Http\Controllers\Staff\AiChatController::getModelQuotas(Auth::id());
-    $aiCurrentModel = $aiSettings->model ?? 'gemini-1.5-flash';
+    $aiCurrentModel = $aiSettings->model ?? 'gemini-3.5-flash';
     if (!isset($aiInitialQuotas[$aiCurrentModel])) {
-        $aiCurrentModel = array_key_first($aiInitialQuotas) ?? 'gemini-1.5-flash';
+        $aiCurrentModel = array_key_first($aiInitialQuotas) ?? 'gemini-3.5-flash';
     }
 @endphp
 @if($aiChatEnabled)
@@ -4167,7 +4167,7 @@
 
     // Verify aiSelectedModel exists in available configs
     if (!aiModelsData[aiSelectedModel]) {
-        aiSelectedModel = Object.keys(aiModelsData)[0] || 'gemini-1.5-flash';
+        aiSelectedModel = Object.keys(aiModelsData)[0] || 'gemini-3.5-flash';
         localStorage.setItem('ime_ai_selected_model', aiSelectedModel);
     }
 

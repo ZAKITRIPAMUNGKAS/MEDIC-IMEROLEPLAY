@@ -54,29 +54,29 @@ PROMPT;
     public static function getModelConfigs(): array
     {
         return [
-            'gemini-1.5-flash' => [
-                'name'  => 'Gemini 1.5 Flash',
+            'gemini-3.5-flash' => [
+                'name'  => 'Gemini 3.5 Flash',
                 'desc'  => 'Paling Cepat & Kuota Sangat Stabil (Rekomendasi Utama)',
                 'badge' => 'Cepat & Stabil',
                 'limit' => 30,
             ],
-            'gemini-2.0-flash' => [
-                'name'  => 'Gemini 2.0 Flash',
-                'desc'  => 'Generasi AI Terbaru & Respons Sangat Cepat',
-                'badge' => 'Generasi Baru',
-                'limit' => 25,
-            ],
-            'gemini-1.5-pro' => [
-                'name'  => 'Gemini 1.5 Pro',
-                'desc'  => 'Penalaran Medis Kompleks & Analisis Detail',
-                'badge' => 'Paling Cerdas',
-                'limit' => 15,
-            ],
-            'gemini-2.0-flash-lite' => [
-                'name'  => 'Gemini 2.0 Flash Lite',
+            'gemini-3.5-flash-lite' => [
+                'name'  => 'Gemini 3.5 Flash Lite',
                 'desc'  => 'Super Ringan & Hemat Kuota',
                 'badge' => 'Hemat Kuota',
                 'limit' => 50,
+            ],
+            'gemini-3.6-flash' => [
+                'name'  => 'Gemini 3.6 Flash',
+                'desc'  => 'Penalaran Medis Lanjutan & Analisis Detail',
+                'badge' => 'Cerdas & Detail',
+                'limit' => 25,
+            ],
+            'gemini-3.7-flash' => [
+                'name'  => 'Gemini 3.7 Flash',
+                'desc'  => 'Generasi AI Terbaru & Sangat Responsif',
+                'badge' => 'Generasi Baru',
+                'limit' => 20,
             ],
         ];
     }
@@ -136,9 +136,9 @@ PROMPT;
     {
         $settings     = AiSetting::getSettings();
         $configs      = self::getModelConfigs();
-        $defaultModel = $settings->model ?? 'gemini-1.5-flash';
+        $defaultModel = $settings->model ?? 'gemini-3.5-flash';
         if (!isset($configs[$defaultModel])) {
-            $defaultModel = array_key_first($configs) ?? 'gemini-1.5-flash';
+            $defaultModel = array_key_first($configs) ?? 'gemini-3.5-flash';
         }
         $quotas       = self::getModelQuotas(Auth::id());
 
@@ -177,9 +177,9 @@ PROMPT;
 
         // Determine target model
         $modelConfigs  = self::getModelConfigs();
-        $selectedModel = $validated['model'] ?? $settings->model ?? 'gemini-1.5-flash';
+        $selectedModel = $validated['model'] ?? $settings->model ?? 'gemini-3.5-flash';
         if (!isset($modelConfigs[$selectedModel])) {
-            $selectedModel = 'gemini-1.5-flash';
+            $selectedModel = 'gemini-3.5-flash';
         }
 
         // Rate limit: per model per user per hour
@@ -197,8 +197,8 @@ PROMPT;
 
         try {
             $apiKey = trim($settings->api_key ?? '');
-            // Models to try in order
-            $candidateModels = array_unique([$selectedModel, 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro', 'gemini-2.0-flash-lite']);
+            // Verified working models to try in order
+            $candidateModels = array_unique([$selectedModel, 'gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-3.6-flash', 'gemini-3.7-flash']);
 
             // Build conversation contents with valid turn alternation (user -> model -> user ...)
             $contents = [];

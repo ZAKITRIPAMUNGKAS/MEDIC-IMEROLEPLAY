@@ -39,7 +39,7 @@ class AiSettingController extends Controller
 
         $data = [
             'provider' => 'gemini',
-            'model'    => $validated['model'] ?? 'gemini-1.5-flash',
+            'model'    => $validated['model'] ?? 'gemini-3.5-flash',
             'enabled'  => $isEnabled,
         ];
 
@@ -71,14 +71,14 @@ class AiSettingController extends Controller
 
         // Ambil API Key dari request (jika dikirim dari input form) atau dari database
         $apiKey = trim($request->input('api_key') ?? '') ?: $settings->api_key;
-        $primaryModel = $request->input('model') ?: ($settings->model ?? 'gemini-1.5-flash');
+        $primaryModel = $request->input('model') ?: ($settings->model ?? 'gemini-3.5-flash');
 
         if (empty($apiKey)) {
             return back()->with('error', 'API Key masih kosong! Silakan ketik atau tempelkan API Key Gemini Anda di kolom Google Gemini API Key terlebih dahulu.');
         }
 
         try {
-            $candidateModels = array_unique([$primaryModel, 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro', 'gemini-2.0-flash-lite']);
+            $candidateModels = array_unique([$primaryModel, 'gemini-3.5-flash', 'gemini-3.5-flash-lite', 'gemini-3.6-flash', 'gemini-3.7-flash']);
 
             $response = null;
             $usedModel = $primaryModel;

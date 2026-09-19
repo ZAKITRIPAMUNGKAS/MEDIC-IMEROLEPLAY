@@ -24,10 +24,10 @@ class AiSetting extends Model
     public static function geminiModels(): array
     {
         return [
-            'gemini-1.5-flash'      => 'Gemini 1.5 Flash (Paling Cepat & Stabil - Direkomendasikan)',
-            'gemini-2.0-flash'      => 'Gemini 2.0 Flash (Generasi Terbaru & Sangat Responsif)',
-            'gemini-1.5-pro'        => 'Gemini 1.5 Pro (Penalaran Medis Kompleks & Akurat)',
-            'gemini-2.0-flash-lite' => 'Gemini 2.0 Flash Lite (Super Ringan & Hemat Kuota)',
+            'gemini-3.5-flash'      => 'Gemini 3.5 Flash (Paling Cepat & Stabil - Direkomendasikan)',
+            'gemini-3.5-flash-lite' => 'Gemini 3.5 Flash Lite (Super Ringan & Hemat Kuota)',
+            'gemini-3.6-flash'      => 'Gemini 3.6 Flash (Penalaran Medis Lanjutan)',
+            'gemini-3.7-flash'      => 'Gemini 3.7 Flash (Generasi AI Terbaru & Responsif)',
         ];
     }
 
@@ -39,13 +39,13 @@ class AiSetting extends Model
         try {
             $settings = static::firstOrCreate([], [
                 'provider' => 'gemini',
-                'model'    => 'gemini-1.5-flash',
+                'model'    => 'gemini-3.5-flash',
                 'enabled'  => false,
             ]);
 
-            // Auto-migrate obsolete or invalid model name to gemini-1.5-flash
+            // Auto-migrate obsolete or invalid model name to gemini-3.5-flash
             if (empty($settings->model) || !array_key_exists($settings->model, static::geminiModels())) {
-                $settings->model = 'gemini-1.5-flash';
+                $settings->model = 'gemini-3.5-flash';
                 $settings->save();
             }
 
@@ -58,14 +58,14 @@ class AiSetting extends Model
                         $table->id();
                         $table->string('provider')->default('gemini');
                         $table->text('api_key')->nullable();
-                        $table->string('model')->default('gemini-1.5-flash');
+                        $table->string('model')->default('gemini-3.5-flash');
                         $table->boolean('enabled')->default(false);
                         $table->timestamps();
                     });
 
                     return static::firstOrCreate([], [
                         'provider' => 'gemini',
-                        'model'    => 'gemini-1.5-flash',
+                        'model'    => 'gemini-3.5-flash',
                         'enabled'  => false,
                     ]);
                 }
@@ -75,7 +75,7 @@ class AiSetting extends Model
 
             $instance = new static([
                 'provider' => 'gemini',
-                'model'    => 'gemini-1.5-flash',
+                'model'    => 'gemini-3.5-flash',
                 'enabled'  => false,
             ]);
             return $instance;
