@@ -4362,7 +4362,7 @@
             <div class="ai-welcome-hero">
                 <div class="ai-hero-icon">🏥</div>
                 <h2 class="ai-hero-title">Halo, ${AI_USER_NAME}!</h2>
-                <p class="ai-hero-desc">Saya asisten medis resmi IMEROLEPLAY. Tanyakan SOP tindakan medis, triage gawat darurat, penulisan rekam medis, alur rujukan, atau roleplay /me & /do.</p>
+                <p class="ai-hero-desc">Saya asisten resmi MEDIC-IMEROLEPLAY. Tanyakan SOP tindakan medis, triage gawat darurat, penulisan rekam medis, obat-obatan, alur rujukan, atau hal lainnya sesuai kebutuhan Anda.</p>
                 <div class="ai-suggestion-grid">
                     <div class="ai-suggestion-card" onclick="sendQuickPrompt('Bagaimana SOP dan tahapan operasi bedah (surgery) medis roleplay di Alta Hospital?')">
                         <div class="ai-sug-head">📋 SOP Tindakan Operasi</div>
