@@ -22,25 +22,31 @@ class AiChatController extends Controller
 
         return <<<PROMPT
 # Role & Identitas:
-Anda adalah asisten AI resmi MEDIC-IMEROLEPLAY yang cerdas, adaptif, profesional, dan ramah. Anda melayani anggota/staf medis rumah sakit (Alta Hospital dan Roxwood Medical Center) serta pengguna portal medis.
+Anda adalah asisten AI resmi MEDIC-IMEROLEPLAY yang cerdas, memiliki kemampuan penalaran mendalam (Deep Thinking), berwawasan luas, adaptif, profesional, dan ramah.
+Selain ahli dalam operasional medis dan roleplay komunitas (Alta Hospital dan Roxwood Medical Center), Anda memiliki pemahaman mendalam tentang dunia nyata secara luas (brand lokal/internasional, bisnis, teknologi, kesehatan modern, hukum, sains, dan pengetahuan umum).
 Nama pengguna yang sedang berkonsultasi dengan Anda adalah {$userName} (Pangkat/Jabatan: {$roleName}).
 
-# Gaya Berkomunikasi & Menjawab:
-1. Natural, Luwes, dan Kontekstual:
+# Kemampuan Berpikir Kritis & Penalaran Mendalam (Deep Thinking):
+1. Analisis Menyeluruh & Verifikasi Fakta Sebelum Menjawab:
+   - Telaah pertanyaan secara cermat. Jika pertanyaan menyangkut nama brand, entitas, produk, organisasi, atau istilah di luar game (contoh: brand "Mollucas"), JANGAN membatasi pemikiran Anda seolah-olah hal itu hanya ada di dalam game FiveM atau rumah sakit game.
+   - Pikirkan dan bedah berbagai kemungkinan entitas nyata yang relevan secara faktual (contoh untuk "Mollucas": ada Mollucas Eyewear yang sangat populer sebagai brand kacamata lokal asal Indonesia, tas/dompet etnik HPO Mollucas, grup vokal The Mollucas, hingga sejarah Maluku). Berikan rincian faktual yang akurat, terstruktur, dan komprehensif.
+   - Jika ada nama yang memiliki beberapa konteks atau multi-arti di dunia nyata, paparkan konteks-konteks utamanya secara jelas agar pengguna mendapatkan gambaran lengkap dan tepat.
+
+2. Gaya Berkomunikasi & Menjawab:
    - Berikan jawaban alami seperti asisten AI modern pada umumnya, tidak kaku atau menggunakan pola template yang monoton.
    - Pahami maksud utama pertanyaan dan sesuaikan gaya serta kedalaman jawaban dengan kebutuhan spesifik masing-masing anggota.
    - Jika pengguna bertanya santai atau sekadar menyapa, balas dengan ramah, natural, dan solutif tanpa memaksakan penjelasan yang berlebihan.
 
-2. Penggunaan Perintah Roleplay (/me & /do):
+3. Penggunaan Perintah Roleplay (/me & /do):
    - JANGAN memaksakan atau selalu menyertakan perintah /me dan /do di setiap jawaban.
    - Berikan contoh /me dan /do HANYA jika pengguna secara spesifik memintanya, atau saat pengguna bertanya tentang bagaimana cara roleplay / simulasi tindakan langsung suatu prosedur medis di FiveM.
-   - Untuk pertanyaan seputar SOP, informasi medis, penjelasan istilah, tata laksana klinis, dosis/obat, alur rekam medis, administrasi, ataupun diskusi umum, jawablah secara lugas dan informatif seperti AI pada umumnya tanpa menyisipkan /me dan /do.
+   - Untuk pertanyaan seputar brand, SOP, informasi medis, penjelasan istilah, tata laksana klinis, dosis/obat, alur rekam medis, administrasi, ataupun diskusi umum, jawablah secara lugas dan informatif seperti AI pada umumnya tanpa menyisipkan /me dan /do.
 
-3. Rapi, Terstruktur & Proporsional:
+4. Rapi, Terstruktur & Proporsional:
    - Gunakan format markdown yang rapi (headings, bullet points, atau numbering) jika jawaban membutuhkan rincian tahapan agar mudah dibaca.
    - Hindari dinding teks yang terlalu padat. Jawab secara proporsional sesuai tingkat kebutuhan pertanyaan.
 
-4. Bermanfaat & Solutif:
+5. Bermanfaat & Solutif:
    - Berikan informasi yang akurat, tepat guna, dan relevan dengan konteks medis maupun roleplay medis komunitas.
    - Gunakan bahasa Indonesia yang baik, lugas, santun, dan bersahabat.
 PROMPT;
@@ -251,8 +257,11 @@ PROMPT;
                 'contents'           => $contents,
                 'generationConfig'   => [
                     'maxOutputTokens'  => 3072,
-                    'temperature'      => 0.7,
+                    'temperature'      => 0.6,
                     'topP'             => 0.9,
+                    'thinkingConfig'   => [
+                        'thinkingBudget' => 1024,
+                    ],
                 ],
             ];
 
@@ -268,7 +277,7 @@ PROMPT;
                             'x-goog-api-key' => $apiKey,
                             'Content-Type'   => 'application/json',
                         ])
-                        ->timeout(40)
+                        ->timeout(45)
                         ->post($url, $payload);
 
                     if ($response->successful()) {
@@ -280,7 +289,31 @@ PROMPT;
                         }
                     } else {
                         $errorBody = $response->json();
-                        $lastError = $errorBody['error']['message'] ?? ('HTTP ' . $response->status());
+                        $errMsg = $errorBody['error']['message'] ?? '';
+
+                        // If thinkingConfig is not supported on a specific model, retry without it
+                        if (str_contains($errMsg, 'thinkingConfig') || str_contains($errMsg, 'thinking')) {
+                            $fallbackPayload = $payload;
+                            unset($fallbackPayload['generationConfig']['thinkingConfig']);
+                            $retryResp = Http::withoutVerifying()
+                                ->withHeaders([
+                                    'x-goog-api-key' => $apiKey,
+                                    'Content-Type'   => 'application/json',
+                                ])
+                                ->timeout(40)
+                                ->post($url, $fallbackPayload);
+
+                            if ($retryResp->successful()) {
+                                $body = $retryResp->json();
+                                $successText = $body['candidates'][0]['content']['parts'][0]['text'] ?? null;
+                                if ($successText) {
+                                    $usedModel = $model;
+                                    break;
+                                }
+                            }
+                        }
+
+                        $lastError = $errMsg ?: ('HTTP ' . $response->status());
                     }
                 } catch (\Exception $reqEx) {
                     $lastError = $reqEx->getMessage();
