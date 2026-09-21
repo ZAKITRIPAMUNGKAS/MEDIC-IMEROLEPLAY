@@ -109,6 +109,16 @@ class InterviewController extends Controller
     }
 
     /**
+     * Tampilkan formulir pengajuan role interviewer untuk anggota staf
+     */
+    public function showApplicationForm()
+    {
+        $user = Auth::user();
+        $myApplication = InterviewerApplication::where('user_id', $user->id)->latest()->first();
+        return view('portal.interview.request', compact('user', 'myApplication'));
+    }
+
+    /**
      * Staf mengajukan diri untuk mendapatkan Role Interviewer sementara
      */
     public function submitApplication(Request $request)

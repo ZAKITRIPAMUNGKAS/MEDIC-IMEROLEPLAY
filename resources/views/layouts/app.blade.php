@@ -1529,6 +1529,9 @@
                                     <a href="{{ route('credit-score.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 transition-colors">
                                         <i class="fas fa-star-half-alt w-4 text-teal-400 text-sm"></i> Credit Score Saya
                                     </a>
+                                    <a href="{{ route('portal.interview.apply-form') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors">
+                                        <i class="fas fa-user-plus w-4 text-indigo-500 text-sm"></i> Pengajuan Role Interviewer
+                                    </a>
                                 </div>
 
                                 {{-- Divisi-specific --}}
@@ -1900,6 +1903,11 @@
                                 class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
                                 <i class="fas fa-star-half-alt w-5 text-teal-400 text-sm"></i>
                                 <span>Credit Score Alta</span>
+                            </a>
+                            <a href="{{ route('portal.interview.apply-form') }}"
+                                class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                <i class="fas fa-user-plus w-5 text-indigo-400 text-sm"></i>
+                                <span>Pengajuan Role Interviewer</span>
                             </a>
 
                             @if(auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('ie') || auth()->user()->isInDivision('pnd'))

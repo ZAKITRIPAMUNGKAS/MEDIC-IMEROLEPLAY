@@ -1561,6 +1561,7 @@ Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->gro
     // ── Role Interview: Wawancara Calon Medis & Pengajuan Role ─────────────────
     Route::prefix('interview')->name('interview.')->group(function () {
         Route::get('/',                                                   [\App\Http\Controllers\Portal\InterviewController::class, 'index'])->name('index');
+        Route::get('/apply',                                              [\App\Http\Controllers\Portal\InterviewController::class, 'showApplicationForm'])->name('apply-form');
         Route::post('/apply',                                             [\App\Http\Controllers\Portal\InterviewController::class, 'submitApplication'])->name('apply');
         Route::post('/applications/{application}/approve',                [\App\Http\Controllers\Portal\InterviewController::class, 'approveApplication'])->name('approve-application');
         Route::post('/applications/{application}/reject',                 [\App\Http\Controllers\Portal\InterviewController::class, 'rejectApplication'])->name('reject-application');
