@@ -127,7 +127,7 @@
                         <div class="text-gray-700">Diverifikasi oleh: <strong>{{ $resignation->ieVerifiedBy->name }}</strong></div>
                         <div class="text-gray-500 text-[11px]">{{ $resignation->ie_verified_at ? $resignation->ie_verified_at->format('d M Y H:i') : '-' }}</div>
                         @if($resignation->fine_amount)
-                            <div class="mt-1 font-semibold text-rose-700">Denda: ${{ number_format($resignation->fine_amount, 0, ',', '.') }} ({{ $resignation->fine_percentage }}%)</div>
+                            <div class="mt-1 font-semibold text-rose-700">Denda: ${{ number_format($resignation->fine_amount, 0, ',', '.') }} ({{ $resignation->fine_percentage }}% dari total gaji pokok ${{ number_format($resignation->base_salary, 0, ',', '.') }})</div>
                             <div class="text-[11px] {{ $resignation->fine_paid ? 'text-emerald-700 font-bold' : 'text-amber-700' }}">
                                 Status Pembayaran: {{ $resignation->fine_paid ? 'Sudah Lunas' : 'Belum Lunas' }}
                             </div>

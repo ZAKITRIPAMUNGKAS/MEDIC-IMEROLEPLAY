@@ -102,7 +102,7 @@
                             @if($stage === 'ie')
                             <td class="px-5 py-3.5">
                                 <div class="text-orange-300 font-semibold">${{ number_format($req->fine_amount, 0, ',', '.') }}</div>
-                                <div class="text-white/40 text-xs">{{ $req->fine_percentage }}% dari gaji</div>
+                                <div class="text-white/40 text-xs">{{ $req->fine_percentage }}% dari total gapok (${{ number_format($req->base_salary, 0, ',', '.') }})</div>
                             </td>
                             @endif
                             <td class="px-5 py-3.5 text-right">
@@ -146,9 +146,8 @@
                                         </form>
                                     </div>
                                     @else
-                                    <span class="text-white/30 text-xs">—</span>
+                                    <span class="text-white/20 text-xs">—</span>
                                     @endif
-
                                 {{-- Aksi IE --}}
                                 @elseif($stage === 'ie')
                                     @if($req->status === 'pending_ie')
@@ -157,7 +156,7 @@
                                         <form method="POST" action="{{ route('portal.resignation.ie-verify', $req) }}">
                                             @csrf
                                             <button type="submit"
-                                                    onclick="return confirm('Confirm hasil perhitungan denda sebesar ${{ number_format($req->fine_amount, 0, ',', '.') }}? Proses resign {{ addslashes($req->applicant_name) }} akan dinyatakan selesai dan akun otomatis dinonaktifkan.')"
+                                                    onclick="return confirm('Confirm hasil perhitungan denda sebesar ${{ number_format($req->fine_amount, 0, ',', '.') }} ({{ $req->fine_percentage }}% dari total gaji pokok ${{ number_format($req->base_salary, 0, ',', '.') }})? Proses resign {{ addslashes($req->applicant_name) }} akan dinyatakan selesai dan akun otomatis dinonaktifkan.')"
                                                     class="px-2.5 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-xs font-semibold rounded-lg border border-emerald-500/30 transition-all flex items-center gap-1">
                                                 <i class="fas fa-check-double"></i> Confirm Denda &amp; Selesai
                                             </button>

@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Payroll;
+use App\Helpers\PayrollHelper;
 
 class ResignationRequest extends Model
 {
@@ -93,12 +95,35 @@ class ResignationRequest extends Model
     }
 
     /**
-     * Hitung denda otomatis berdasarkan jabatan.
+     * Hitung denda otomatis berdasarkan jabatan dan total akumulasi gaji pokok yang diterima.
+     * Dihitung dari seluruh riwayat penerimaan gaji (status paid) sejak awal sampai akhir.
+     * Hanya gaji pokok (base_salary) yang dihitung, bonus/calculated_salary tidak dihitung.
      * Perawat – Co-Ass: 30% dari Total Gaji Pokok
      * Dokter Umum: 25% dari Total Gaji Pokok
      */
     public function calculateFine(): void
     {
+        $user = $this->user ?? User::find($this->user_id);
+
+        if ($user) {
+            // Hitung akumulasi gaji pokok dari seluruh riwayat payroll yang telah dibayar (status = 'paid')
+            $paidBaseSalarySum = Payroll::where('user_id', $user->id)
+                ->where('status', 'paid')
+                ->sum('base_salary');
+
+            if ($paidBaseSalarySum > 0) {
+                $this->base_salary = (int) $paidBaseSalarySum;
+            } else {
+                // Fallback jika belum pernah ada payroll berstatus paid
+                $allBaseSalarySum = Payroll::where('user_id', $user->id)->sum('base_salary');
+                if ($allBaseSalarySum > 0) {
+                    $this->base_salary = (int) $allBaseSalarySum;
+                } elseif (!$this->base_salary || $this->base_salary <= 0) {
+                    $this->base_salary = (int) PayrollHelper::getBaseSalary($user->role?->name, $user->custom_salary ?? 0);
+                }
+            }
+        }
+
         // Prioritaskan cek jabatan medis klinis jika ada
         $userMedic = $this->user?->effective_medic_role?->name ?? $this->user?->role?->name ?? '';
         $posName = strtolower(trim(str_replace([' ', '-'], '_', (string) ($userMedic ?: $this->position))));
@@ -112,7 +137,7 @@ class ResignationRequest extends Model
         }
 
         $this->fine_percentage = $pct;
-        $this->fine_amount     = (int) round($this->base_salary * $pct / 100);
+        $this->fine_amount     = (int) round(($this->base_salary ?? 0) * $pct / 100);
     }
 
     /**

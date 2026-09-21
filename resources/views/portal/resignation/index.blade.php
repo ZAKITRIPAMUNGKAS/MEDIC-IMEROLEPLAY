@@ -101,8 +101,8 @@
                     <p class="text-xs text-orange-300 uppercase tracking-wider mb-2 font-semibold">Kalkulasi Denda Resign</p>
                     <div class="grid grid-cols-3 gap-3 text-center">
                         <div>
-                            <p class="text-white/40 text-xs mb-0.5">Gaji Pokok</p>
-                            <p class="text-white font-bold">Rp {{ number_format($request->base_salary, 0, ',', '.') }}</p>
+                            <p class="text-white/40 text-xs mb-0.5">Total Gaji Pokok (Tanpa Bonus)</p>
+                            <p class="text-white font-bold">$ {{ number_format($request->base_salary, 0, ',', '.') }}</p>
                         </div>
                         <div>
                             <p class="text-white/40 text-xs mb-0.5">Persentase Denda</p>
@@ -110,7 +110,7 @@
                         </div>
                         <div>
                             <p class="text-white/40 text-xs mb-0.5">Jumlah Denda</p>
-                            <p class="text-orange-300 font-bold">Rp {{ number_format($request->fine_amount, 0, ',', '.') }}</p>
+                            <p class="text-orange-300 font-bold">$ {{ number_format($request->fine_amount, 0, ',', '.') }}</p>
                         </div>
                     </div>
                     <div class="mt-2 text-center">

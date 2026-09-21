@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ResignationRequest;
 use App\Models\OrganizationalStructure;
 use App\Models\User;
+use App\Models\Payroll;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -70,7 +71,20 @@ class ResignationController extends Controller
         ]);
 
         $position = $user->role?->display_name ?? '-';
-        $baseSalary = PayrollHelper::getBaseSalary($user->role?->name);
+
+        // Hitung akumulasi gaji pokok yang telah diterima selama masa kerja (hanya gaji pokok, tanpa bonus)
+        $paidBaseSalary = (int) Payroll::where('user_id', $user->id)
+            ->where('status', 'paid')
+            ->sum('base_salary');
+
+        if ($paidBaseSalary <= 0) {
+            $allBaseSalary = (int) Payroll::where('user_id', $user->id)->sum('base_salary');
+            $paidBaseSalary = $allBaseSalary > 0
+                ? $allBaseSalary
+                : (int) PayrollHelper::getBaseSalary($user->role?->name, $user->custom_salary ?? 0);
+        }
+
+        $baseSalary = $paidBaseSalary;
 
         // Generate standard text
         $today = Carbon::today()->isoFormat('D MMMM Y');
@@ -195,8 +209,8 @@ class ResignationController extends Controller
                         'inline' => true,
                     ],
                     [
-                        'name'   => '💰 Gaji Pokok',
-                        'value'  => 'Rp ' . number_format($resignation->base_salary, 0, ',', '.'),
+                        'name'   => '💰 Total Gaji Pokok (Tanpa Bonus)',
+                        'value'  => '$ ' . number_format($resignation->base_salary, 0, ',', '.'),
                         'inline' => true,
                     ],
                     [
@@ -206,7 +220,7 @@ class ResignationController extends Controller
                     ],
                     [
                         'name'   => '💵 Total Denda Resign',
-                        'value'  => 'Rp ' . number_format($resignation->fine_amount, 0, ',', '.'),
+                        'value'  => '$ ' . number_format($resignation->fine_amount, 0, ',', '.'),
                         'inline' => true,
                     ],
                     [
@@ -276,6 +290,14 @@ class ResignationController extends Controller
         $query = ResignationRequest::with(['user:id,name,staff_id,hospital', 'pndApprovedBy:id,name', 'ieVerifiedBy:id,name'])
             ->whereHas('user', fn($q) => $q->where('hospital', Auth::user()->hospital ?? 'alta'))
             ->latest();
+
+        // Otomatis update perhitungan denda untuk permohonan yang berstatus pending_ie
+        // agar nominal denda selalu tersinkronisasi dengan riwayat penerimaan gaji pokok terbaru
+        $pendingIeRequests = ResignationRequest::where('status', ResignationRequest::STATUS_PENDING_IE)->get();
+        foreach ($pendingIeRequests as $pReq) {
+            $pReq->calculateFine();
+            $pReq->save();
+        }
 
         if ($status = $request->get('status')) {
             $query->where('status', $status);
