@@ -49,11 +49,17 @@
                         </td>
                         <td class="px-5 py-3.5">
                             <div class="flex gap-2 justify-center">
-                                @if(in_array($app->status, ['pending_msl','approved_konsulen']))
-                                <form method="POST" action="{{ route('portal.msl.stase.approve', $app) }}">
+                                @if(in_array($app->status, ['pending_konsulen', 'pending_msl', 'approved_konsulen']))
+                                <form method="POST" action="{{ route('portal.msl.stase.approve', $app) }}" onsubmit="return confirm('Setujui stase {{ addslashes($app->stase_name) }} untuk {{ addslashes($app->user?->name) }}?')">
                                     @csrf
-                                    <button type="submit" class="px-3 py-1.5 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 text-xs font-semibold rounded-lg border border-blue-500/30 transition-all">
+                                    <button type="submit" class="px-3 py-1.5 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 text-xs font-semibold rounded-lg border border-blue-500/30 transition-all flex items-center gap-1">
                                         <i class="fas fa-check"></i> Setujui
+                                    </button>
+                                </form>
+                                <form method="POST" action="{{ route('portal.msl.stase.reject', $app) }}" onsubmit="return confirm('Tolak permohonan stase ini?')">
+                                    @csrf
+                                    <button type="submit" class="px-3 py-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-semibold rounded-lg border border-rose-500/30 transition-all flex items-center gap-1">
+                                        <i class="fas fa-times"></i> Tolak
                                     </button>
                                 </form>
                                 @endif
@@ -69,6 +75,19 @@
                                         <i class="fas fa-flag-checkered"></i> Selesaikan
                                     </button>
                                 </form>
+                                @endif
+                                @if($app->status === 'completed')
+                                    @if($app->passed && $app->certification_id)
+                                        <a href="{{ route('portal.cert.image', $app->certification_id) }}" target="_blank"
+                                           class="px-2.5 py-1 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 rounded-lg text-xs font-semibold flex items-center gap-1">
+                                            <i class="fas fa-eye text-[10px]"></i> Sertifikat
+                                        </a>
+                                    @else
+                                        <span class="text-xs text-white/40 italic">Selesai ({{ $app->passed ? 'Lulus' : 'Tidak Lulus' }})</span>
+                                    @endif
+                                @endif
+                                @if($app->status === 'rejected')
+                                    <span class="text-xs text-rose-300/60 italic">Ditolak</span>
                                 @endif
                             </div>
                         </td>

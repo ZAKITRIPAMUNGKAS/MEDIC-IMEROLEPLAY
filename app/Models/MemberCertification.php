@@ -28,7 +28,7 @@ class MemberCertification extends Model
     // Tipe sertifikat yang dikeluarkan per divisi
     const TYPES = [
         'ga'  => ['vehicle_land' => 'Sertifikat Kendaraan Darat', 'vehicle_heli' => 'Sertifikat Kendaraan Heli'],
-        'msl' => ['visum_alive' => 'Sertifikat Visum Hidup', 'visum_dead' => 'Sertifikat Visum Mati'],
+        'msl' => ['visum_alive' => 'Sertifikat Visum Hidup', 'visum_dead' => 'Sertifikat Visum Mati', 'stase' => 'Sertifikat Kelulusan Stase'],
         'pnd' => ['operation_cert' => 'Sertifikat Operasi Medis'],
         'ie'  => ['medical_contract' => 'Surat Perjanjian Kontrak Medis'],
     ];

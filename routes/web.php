@@ -1317,6 +1317,7 @@ Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->gro
         Route::post('/visum',                     [\App\Http\Controllers\Portal\MslCertificationController::class, 'storeVisum'])->name('visum.store');
         Route::get('/stase',                      [\App\Http\Controllers\Portal\MslCertificationController::class, 'staseIndex'])->name('stase.index');
         Route::post('/stase/{stase}/approve',     [\App\Http\Controllers\Portal\MslCertificationController::class, 'staseApprove'])->name('stase.approve');
+        Route::post('/stase/{stase}/reject',      [\App\Http\Controllers\Portal\MslCertificationController::class, 'staseReject'])->name('stase.reject');
         Route::post('/stase/{stase}/complete',    [\App\Http\Controllers\Portal\MslCertificationController::class, 'staseComplete'])->name('stase.complete');
     });
 

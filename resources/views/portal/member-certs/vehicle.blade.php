@@ -49,13 +49,14 @@
         @endif
 
         {{-- Sertifikat yang Sudah Terbit --}}
-        @if($myCertifications->isNotEmpty())
+        @php $myCerts = $myCertifications ?? $certificates ?? collect(); @endphp
+        @if($myCerts->isNotEmpty())
         <div class="mb-8">
             <h2 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
                 <i class="fas fa-award text-amber-400"></i> Sertifikat Kendaraan Aktif Saya
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                @foreach($myCertifications as $cert)
+                @foreach($myCerts as $cert)
                 <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-5 hover:border-amber-500/40 transition-all flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-3">

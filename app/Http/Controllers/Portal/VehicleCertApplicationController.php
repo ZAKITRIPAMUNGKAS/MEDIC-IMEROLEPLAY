@@ -22,13 +22,15 @@ class VehicleCertApplicationController extends Controller
             ->get();
 
         // Sertifikat kendaraan resmi yang sudah dimiliki user
-        $certificates = MemberCertification::with('issuedBy:id,name')
+        $myCertifications = MemberCertification::with('issuedBy:id,name')
             ->where('user_id', $user->id)
             ->whereIn('type', ['vehicle_land', 'vehicle_heli'])
             ->latest()
             ->get();
 
-        return view('portal.member-certs.vehicle', compact('applications', 'certificates', 'user'));
+        $certificates = $myCertifications;
+
+        return view('portal.member-certs.vehicle', compact('applications', 'myCertifications', 'certificates', 'user'));
     }
 
     public function store(Request $request)
@@ -37,13 +39,14 @@ class VehicleCertApplicationController extends Controller
 
         $validated = $request->validate([
             'type'   => 'required|in:vehicle_land,vehicle_heli',
-            'reason' => 'required|string|max:1000',
+            'title'  => 'required|string|max:255',
+            'reason' => 'nullable|string|max:1000',
             'notes'  => 'nullable|string|max:500',
         ]);
 
-        $title = $validated['type'] === 'vehicle_land' 
+        $title = $validated['title'] ?? ($validated['type'] === 'vehicle_land' 
             ? 'Sertifikat Kelayakan Kendaraan Darat' 
-            : 'Sertifikat Kelayakan Helikopter Medis';
+            : 'Sertifikat Kelayakan Helikopter Medis');
 
         // Cek apakah ada pengajuan sejenis yang masih pending
         $existing = CertificateApplication::where('user_id', $user->id)
@@ -60,7 +63,7 @@ class VehicleCertApplicationController extends Controller
             'type'     => $validated['type'],
             'division' => 'ga',
             'title'    => $title,
-            'reason'   => $validated['reason'],
+            'reason'   => $validated['notes'] ?? $validated['reason'] ?? null,
             'notes'    => $validated['notes'] ?? null,
             'status'   => CertificateApplication::STATUS_PENDING,
         ]);

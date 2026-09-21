@@ -109,18 +109,48 @@ class MslCertificationController extends Controller
         $this->checkIsMsl();
         $request->validate(['msl_notes' => 'nullable|string|max:500']);
 
-        if ($stase->status !== StaseApplication::STATUS_PENDING_MSL && $stase->status !== StaseApplication::STATUS_APPROVED_KONSULEN) {
+        $allowed = [
+            StaseApplication::STATUS_PENDING_KONSULEN,
+            StaseApplication::STATUS_PENDING_MSL,
+            StaseApplication::STATUS_APPROVED_KONSULEN,
+        ];
+
+        if (!in_array($stase->status, $allowed)) {
             return back()->with('error', 'Status stase tidak sesuai untuk disetujui MSL.');
         }
 
-        $stase->update([
+        $updateData = [
             'status'          => StaseApplication::STATUS_APPROVED,
             'msl_approved_by' => Auth::id(),
             'msl_approved_at' => now(),
             'msl_notes'       => $request->msl_notes,
-        ]);
+        ];
+
+        // Jika konsulen belum sempat menyetujui, tandai disetujui langsung oleh MSL
+        if (!$stase->konsulen_approved_at) {
+            $updateData['konsulen_approved_by'] = $stase->konsulen_id ?? Auth::id();
+            $updateData['konsulen_approved_at'] = now();
+            $updateData['konsulen_notes']       = 'Disetujui langsung oleh Divisi MSL.';
+        }
+
+        $stase->update($updateData);
 
         return back()->with('success', 'Stase ' . $stase->stase_name . ' disetujui oleh MSL.');
+    }
+
+    public function staseReject(Request $request, StaseApplication $stase)
+    {
+        $this->checkIsMsl();
+        $request->validate(['msl_notes' => 'nullable|string|max:500']);
+
+        $stase->update([
+            'status'          => StaseApplication::STATUS_REJECTED,
+            'msl_approved_by' => Auth::id(),
+            'msl_approved_at' => now(),
+            'msl_notes'       => $request->msl_notes ?? 'Ditolak oleh Divisi MSL.',
+        ]);
+
+        return back()->with('success', 'Pengajuan stase ' . $stase->stase_name . ' ditolak oleh MSL.');
     }
 
     public function staseComplete(Request $request, StaseApplication $stase)
@@ -138,14 +168,17 @@ class MslCertificationController extends Controller
         if ($passed) {
             $cert = MemberCertification::create([
                 'user_id'           => $stase->user_id,
-                'type'              => 'visum_alive', // placeholder stase type
+                'type'              => 'stase',
                 'division'          => 'msl',
                 'title'             => 'Sertifikat Kelulusan Stase: ' . $stase->stase_name,
                 'issued_by_user_id' => Auth::id(),
                 'issue_date'        => now()->toDateString(),
-                'notes'             => 'Kelulusan stase ' . $stase->stase_name . '. Grade: ' . $request->grade,
+                'notes'             => 'Kelulusan stase ' . $stase->stase_name . '. Nilai / Grade: ' . ($request->grade ?? 'Lulus'),
                 'status'            => 'active',
             ]);
+
+            $filePath = \App\Services\CertificateGeneratorService::generate($cert);
+            $cert->update(['file_path' => $filePath]);
             $certId = $cert->id;
         }
 

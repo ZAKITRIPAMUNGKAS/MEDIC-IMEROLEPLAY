@@ -22,13 +22,15 @@ class OperationCertApplicationController extends Controller
             ->get();
 
         // Sertifikat operasi resmi yang sudah dimiliki user
-        $certificates = MemberCertification::with('issuedBy:id,name')
+        $myCertifications = MemberCertification::with('issuedBy:id,name')
             ->where('user_id', $user->id)
             ->where('type', 'operation_cert')
             ->latest()
             ->get();
 
-        return view('portal.member-certs.operation', compact('applications', 'certificates', 'user'));
+        $certificates = $myCertifications;
+
+        return view('portal.member-certs.operation', compact('applications', 'myCertifications', 'certificates', 'user'));
     }
 
     public function store(Request $request)
@@ -37,7 +39,7 @@ class OperationCertApplicationController extends Controller
 
         $validated = $request->validate([
             'title'  => 'required|string|max:255',
-            'reason' => 'required|string|max:1000',
+            'reason' => 'nullable|string|max:1000',
             'notes'  => 'nullable|string|max:500',
         ]);
 
@@ -56,7 +58,7 @@ class OperationCertApplicationController extends Controller
             'type'     => 'operation_cert',
             'division' => 'pnd',
             'title'    => $validated['title'],
-            'reason'   => $validated['reason'],
+            'reason'   => $validated['notes'] ?? $validated['reason'] ?? null,
             'notes'    => $validated['notes'] ?? null,
             'status'   => CertificateApplication::STATUS_PENDING,
         ]);
