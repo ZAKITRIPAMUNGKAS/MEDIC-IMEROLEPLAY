@@ -197,15 +197,27 @@ class MemberController extends Controller
         }
 
         $userHospital = strtolower(trim($user->hospital ?? 'alta'));
-        if ($userHospital === 'alta') {
-            $currentLevel = $user->role?->level ?? 0;
-            $currentRoleName = strtolower($user->role?->name ?? '');
+        // Deteksi Jabatan Medis staf (bukan manager atau sub-role divisi)
+        $currentMedicRole = $user->effective_medic_role;
+        if (!$currentMedicRole || !in_array(strtolower($currentMedicRole->name), ['trainee', 'perawat', 'co_ass', 'dokter_umum', 'dokter_spesialis'])) {
+            if ($user->role && in_array(strtolower($user->role->name), ['trainee', 'perawat', 'co_ass', 'dokter_umum', 'dokter_spesialis'])) {
+                $currentMedicRole = $user->role;
+            } else {
+                $currentMedicRole = \App\Models\StaffRole::where('name', 'trainee')->first();
+            }
+        }
 
-            if ($user->isAdmin() || $currentLevel >= 6 || in_array($currentRoleName, ['admin', 'direktur', 'vice_director', 'executive'])) {
+        if ($userHospital === 'alta') {
+            $currentMedicLevel = $currentMedicRole?->level ?? 0;
+            $currentMedicName = strtolower($currentMedicRole?->name ?? '');
+
+            // Dokter Spesialis (level 4) adalah jenjang klinis/medis tertinggi
+            if ($currentMedicLevel >= 4 || $currentMedicName === 'dokter_spesialis') {
                 $isHighestLevel = true;
             } else {
-                $promotionTargetRole = \App\Models\StaffRole::where('level', '>', $currentLevel)
-                    ->where('name', '!=', 'admin')
+                // Target kenaikan promosi berikutnya hanya pada jenjang medis
+                $promotionTargetRole = \App\Models\StaffRole::whereIn('name', ['perawat', 'co_ass', 'dokter_umum', 'dokter_spesialis'])
+                    ->where('level', '>', $currentMedicLevel)
                     ->orderBy('level', 'asc')
                     ->first();
 
@@ -251,7 +263,7 @@ class MemberController extends Controller
             'user', 'stats', 'timeline', 'canViewMedical', 'canSeeAll',
             'operations', 'forms', 'managerEvaluations', 'evaluationsAvg', 'evaluationsCount',
             'promotionTargetRole', 'promotionChecklist', 'promotionProgressPercent', 'promotionAllMet', 'isHighestLevel', 'creditScore',
-            'certifications'
+            'certifications', 'currentMedicRole'
         ));
     }
 }

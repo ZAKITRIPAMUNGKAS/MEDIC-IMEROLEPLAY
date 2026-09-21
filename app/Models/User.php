@@ -91,8 +91,14 @@ class User extends Authenticatable
      */
     public function getEffectiveMedicRoleAttribute(): ?StaffRole
     {
+        if ($this->relationLoaded('medicRole') && $this->medicRole) {
+            return $this->medicRole;
+        }
         if ($this->medic_role_id) {
-            return $this->relationLoaded('medicRole') ? $this->medicRole : $this->medicRole()->first();
+            return $this->medicRole()->first();
+        }
+        if ($this->relationLoaded('role') && $this->role && in_array(strtolower($this->role->name), ['dokter_spesialis', 'dokter_umum', 'co_ass', 'perawat', 'trainee'])) {
+            return $this->role;
         }
         if ($this->role && in_array(strtolower($this->role->name), ['dokter_spesialis', 'dokter_umum', 'co_ass', 'perawat', 'trainee'])) {
             return $this->role;
@@ -706,8 +712,15 @@ class User extends Authenticatable
     public function buildPromotionChecklist(\App\Models\StaffRole $targetRole): array
     {
         $targetName   = strtolower($targetRole->name);
-        $currentMedic = $this->effective_medic_role ?? $this->role;
-        $currentName  = strtolower($currentMedic?->name ?? '');
+        $currentMedic = $this->effective_medic_role;
+        if (!$currentMedic || !in_array(strtolower($currentMedic->name), ['trainee', 'perawat', 'co_ass', 'dokter_umum', 'dokter_spesialis'])) {
+            if ($this->role && in_array(strtolower($this->role->name), ['trainee', 'perawat', 'co_ass', 'dokter_umum', 'dokter_spesialis'])) {
+                $currentMedic = $this->role;
+            } else {
+                $currentMedic = \App\Models\StaffRole::where('name', 'trainee')->first();
+            }
+        }
+        $currentName  = strtolower($currentMedic?->name ?? 'trainee');
         $creditScore  = $this->getCreditBalance();
         $checklist    = [];
 

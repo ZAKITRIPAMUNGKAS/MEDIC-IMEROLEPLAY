@@ -239,14 +239,9 @@
             </button>
         </div>
 
-        {{-- ═══ SECTION: PERSYARATAN & STATUS KENAIKAN JABATAN (ALTA HOSPITAL - BERKAS PRIBADI) ═══ --}}
+        {{-- ═══ SECTION: PERSYARATAN & STATUS KENAIKAN JABATAN (ALTA HOSPITAL) ═══ --}}
         @php
-            $canSeePromotionDetails = $viewer && (
-                $viewer->id === $user->id ||
-                $viewer->isAdmin() ||
-                $viewer->isExecutiveOrAbove() ||
-                $viewer->isInDivision('pnd', 'ie', 'comdis')
-            );
+            $canSeePromotionDetails = (bool) $viewer;
         @endphp
         @if(strtolower(trim($user->hospital ?? 'alta')) === 'alta' && $canSeePromotionDetails)
         <div class="bg-white bg-opacity-10 backdrop-blur-md border border-white border-opacity-20 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
@@ -260,17 +255,29 @@
                             Status & Persyaratan Kenaikan Jabatan
                         </h2>
                         <p class="text-xs sm:text-sm text-sky-200 mt-0.5">
-                            Deteksi otomatis kelayakan promosi berdasarkan database aktif Alta Hospital
+                            Deteksi otomatis kelayakan promosi jenjang medis berdasarkan database aktif Alta Hospital
                         </p>
                     </div>
                 </div>
 
                 @if($isHighestLevel ?? false)
-                    <span class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                        <i class="fas fa-crown text-amber-400"></i> Jenjang Eksekutif / Tertinggi
-                    </span>
+                    <div class="text-right">
+                        @if(!empty($currentMedicRole))
+                            <div class="text-[11px] text-sky-200 font-medium mb-0.5">
+                                Jabatan Medis: <strong class="text-emerald-300">{{ $currentMedicRole->display_name }}</strong>
+                            </div>
+                        @endif
+                        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                            <i class="fas fa-crown text-amber-400"></i> Jenjang Medis Tertinggi (Dokter Spesialis)
+                        </span>
+                    </div>
                 @elseif(!empty($promotionTargetRole))
                     <div class="text-right">
+                        @if(!empty($currentMedicRole))
+                            <div class="text-[11px] text-sky-200 font-medium mb-0.5">
+                                Jabatan Medis: <strong class="text-emerald-300">{{ $currentMedicRole->display_name }}</strong>
+                            </div>
+                        @endif
                         <span class="text-[11px] uppercase tracking-wider text-violet-300 font-bold block">Target Kenaikan:</span>
                         <span class="text-sm font-extrabold text-white">
                             {{ $promotionTargetRole->display_name }} (Level {{ $promotionTargetRole->level }})
@@ -285,9 +292,9 @@
                         <i class="fas fa-award"></i>
                     </div>
                     <div>
-                        <h3 class="text-sm font-bold text-amber-200">Jabatan Tertinggi Alta Hospital</h3>
+                        <h3 class="text-sm font-bold text-amber-200">Jenjang Medis Tertinggi Alta Hospital</h3>
                         <p class="text-xs text-slate-300 mt-0.5">
-                            {{ $user->name }} saat ini memegang posisi pimpinan atau manajemen tertinggi sehingga tidak memiliki jenjang promosi reguler berikutnya.
+                            {{ $user->name }} saat ini memegang jenjang klinis/medis tertinggi (Dokter Spesialis) di Alta Hospital.
                         </p>
                     </div>
                 </div>

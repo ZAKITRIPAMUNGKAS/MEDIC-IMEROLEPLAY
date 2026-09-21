@@ -61,7 +61,14 @@ class PromotionController extends Controller
         }
 
         // Ambil semua jabatan medis sebagai target promosi (lebih tinggi dari jabatan medis sekarang)
-        $currentMedic = $user->effective_medic_role ?? $user->role;
+        $currentMedic = $user->effective_medic_role;
+        if (!$currentMedic || !in_array(strtolower($currentMedic->name), ['trainee', 'perawat', 'co_ass', 'dokter_umum', 'dokter_spesialis'])) {
+            if ($user->role && in_array(strtolower($user->role->name), ['trainee', 'perawat', 'co_ass', 'dokter_umum', 'dokter_spesialis'])) {
+                $currentMedic = $user->role;
+            } else {
+                $currentMedic = StaffRole::where('name', 'trainee')->first();
+            }
+        }
         $currentLevel = $currentMedic?->level ?? 0;
         $targetRoles  = StaffRole::whereIn('name', ['perawat', 'co_ass', 'dokter_umum', 'dokter_spesialis'])
             ->where('level', '>', $currentLevel)
@@ -143,7 +150,14 @@ class PromotionController extends Controller
             return $item;
         }, $checklist);
 
-        $currentMedic = $user->effective_medic_role ?? $user->role;
+        $currentMedic = $user->effective_medic_role;
+        if (!$currentMedic || !in_array(strtolower($currentMedic->name), ['trainee', 'perawat', 'co_ass', 'dokter_umum', 'dokter_spesialis'])) {
+            if ($user->role && in_array(strtolower($user->role->name), ['trainee', 'perawat', 'co_ass', 'dokter_umum', 'dokter_spesialis'])) {
+                $currentMedic = $user->role;
+            } else {
+                $currentMedic = StaffRole::where('name', 'trainee')->first();
+            }
+        }
 
         $payload = [
             'user_id'                    => $user->id,
