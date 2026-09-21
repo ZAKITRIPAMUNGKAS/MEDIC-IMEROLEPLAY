@@ -1140,8 +1140,8 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/inactive-staff', [\App\Http\Controllers\Admin\InactiveStaffController::class, 'index'])
         ->name('inactive-staff.index');
 
-    // Sub-Jabatan / Divisi (Executive ke atas)
-    Route::prefix('sub-roles')->name('sub-roles.')->group(function () {
+    // Sub-Jabatan / Divisi (Executive ke atas, Khusus Alta Hospital)
+    Route::middleware('alta_only')->prefix('sub-roles')->name('sub-roles.')->group(function () {
         Route::get('/',                  [\App\Http\Controllers\Admin\SubRoleController::class, 'index'])->name('index');
         Route::get('/assign',            [\App\Http\Controllers\Admin\SubRoleController::class, 'assignForm'])->name('assign');
         Route::post('/assign',           [\App\Http\Controllers\Admin\SubRoleController::class, 'assignStore'])->name('assign.store');
@@ -1249,9 +1249,9 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
 
 // ═══════════════════════════════════════════════════════════════════════════
 // PORTAL MANAJEMEN ALTA HOSPITAL — Cuti, Resign, Sertifikasi, Stase, Promosi
-// Semua route di sini memerlukan autentikasi (middleware 'auth').
+// Fitur ini khusus anggota Alta Hospital (bukan Roxwood).
 // ═══════════════════════════════════════════════════════════════════════════
-Route::middleware('auth')->prefix('portal')->name('portal.')->group(function () {
+Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->group(function () {
 
     // ── Pengajuan Cuti (Semua Anggota) ───────────────────────────────────────
     Route::prefix('leave')->name('leave.')->group(function () {
@@ -1345,8 +1345,8 @@ Route::middleware('auth')->prefix('portal')->name('portal.')->group(function () 
     });
 });
 
-// ── Komisi Disiplin (Comdis) & Credit Score ──────────────────────────────
-Route::middleware('auth')->prefix('credit-score')->name('credit-score.')->group(function () {
+// ── Komisi Disiplin (Comdis) & Credit Score (Khusus Alta Hospital) ───────
+Route::middleware(['auth', 'alta_only'])->prefix('credit-score')->name('credit-score.')->group(function () {
     Route::get('/',              [\App\Http\Controllers\CreditScoreController::class, 'index'])->name('index');
     Route::get('/{user}',        [\App\Http\Controllers\CreditScoreController::class, 'show'])->name('show');
     Route::get('/{user}/input',  [\App\Http\Controllers\CreditScoreController::class, 'inputForm'])->name('input');
@@ -1354,7 +1354,7 @@ Route::middleware('auth')->prefix('credit-score')->name('credit-score.')->group(
 });
 
 // Alias jika diakses melalui /portal/credit-score
-Route::middleware('auth')->prefix('portal/credit-score')->group(function () {
+Route::middleware(['auth', 'alta_only'])->prefix('portal/credit-score')->group(function () {
     Route::get('/',              [\App\Http\Controllers\CreditScoreController::class, 'index']);
     Route::get('/{user}',        [\App\Http\Controllers\CreditScoreController::class, 'show']);
     Route::get('/{user}/input',  [\App\Http\Controllers\CreditScoreController::class, 'inputForm']);

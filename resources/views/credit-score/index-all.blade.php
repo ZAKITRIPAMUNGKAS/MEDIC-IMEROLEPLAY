@@ -21,31 +21,30 @@
                 </div>
             </div>
 
-            {{-- Filter & Search Form --}}
+            {{-- Filter & Search Form (Khusus Alta Hospital) --}}
             <form method="GET" action="{{ route('credit-score.index') }}" class="mt-5 flex flex-wrap items-center gap-3">
                 <div class="relative flex-1 min-w-[220px]">
                     <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
                     <input type="text" id="csSearchInput" name="q" value="{{ $search }}"
-                           placeholder="Cari nama anggota, Staff ID, divisi, jabatan..."
+                           placeholder="Ketik nama anggota, Staff ID, divisi, pangkat..."
                            class="w-full bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded-xl pl-10 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all">
                     @if(!empty($search))
-                    <a href="{{ route('credit-score.index', ['hospital' => $hospital]) }}"
+                    <a href="{{ route('credit-score.index') }}"
                        class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs" title="Reset pencarian">
                         <i class="fas fa-times-circle"></i>
                     </a>
                     @endif
                 </div>
 
-                <select name="hospital" onchange="this.form.submit()"
-                        class="bg-white/10 text-white border border-white/20 rounded-xl px-4 py-2.5 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-sky-400 cursor-pointer">
-                    <option value="alta" {{ ($hospital ?? 'alta') === 'alta' ? 'selected' : '' }} class="bg-sky-900">Alta Hospital</option>
-                    <option value="roxwood" {{ ($hospital ?? '') === 'roxwood' ? 'selected' : '' }} class="bg-sky-900">Roxwood</option>
-                    <option value="all" {{ ($hospital ?? '') === 'all' ? 'selected' : '' }} class="bg-sky-900">Semua Rumah Sakit</option>
-                </select>
+                {{-- Indikator Alta Hospital --}}
+                <div class="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 whitespace-nowrap">
+                    <i class="fas fa-hospital-alt text-emerald-400"></i>
+                    <span>Alta Hospital</span>
+                </div>
 
                 <button type="submit"
                         class="px-5 py-2.5 bg-sky-500 hover:bg-sky-400 text-white rounded-xl font-semibold text-sm transition-all shadow-md flex items-center gap-2">
-                    <i class="fas fa-filter text-xs"></i> Cari
+                    <i class="fas fa-search text-xs"></i> Cari
                 </button>
             </form>
         </div>

@@ -29,14 +29,15 @@ class SubRoleController extends Controller
     {
         $this->checkAccess();
 
-        $hospital = $request->get('hospital', 'alta');
+        // Fitur divisi/sub-jabatan ini khusus untuk Alta Hospital
+        $hospital = 'alta';
 
         $subRoles = StaffSubRole::withCount('users')
             ->forHospital($hospital)
             ->orderBy('sort_order')
             ->get();
 
-        // Staf yang belum punya sub-jabatan (untuk info)
+        // Staf Alta yang belum punya sub-jabatan
         $unassigned = User::where('is_active', true)
             ->whereNotNull('role_id')
             ->whereNull('sub_role_id')
@@ -57,7 +58,8 @@ class SubRoleController extends Controller
         $search = trim($request->get('q', ''));
 
         $query = User::with('role:id,name,display_name,level')
-            ->where('sub_role_id', $subRole->id);
+            ->where('sub_role_id', $subRole->id)
+            ->where('hospital', 'alta');
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -73,30 +75,27 @@ class SubRoleController extends Controller
 
     /**
      * GET /admin/sub-roles/assign
-     * Form assign sub-jabatan ke staf.
+     * Form assign sub-jabatan ke staf (Khusus Alta Hospital).
      */
     public function assignForm(Request $request)
     {
         $this->checkAccess();
 
-        $hospital = $request->get('hospital', 'alta');
+        // Khusus Alta Hospital
+        $hospital = 'alta';
         $search   = trim($request->get('q', ''));
 
-        $subRolesQuery = StaffSubRole::active()->orderBy('sort_order');
-        if ($hospital && $hospital !== 'all') {
-            $subRolesQuery->forHospital($hospital);
-        }
-        $subRoles = $subRolesQuery->get();
+        $subRoles = StaffSubRole::active()
+            ->forHospital('alta')
+            ->orderBy('sort_order')
+            ->get();
 
-        // Staf aktif sesuai hospital, urutkan by level
+        // Staf aktif khusus Alta Hospital, urutkan by level
         $staffQuery = User::with(['role:id,name,display_name,level', 'subRole:id,name,short_name,color'])
             ->where('is_active', true)
             ->whereNotNull('role_id')
+            ->where('hospital', 'alta')
             ->whereHas('role', fn($q) => $q->where('name', '!=', 'admin'));
-
-        if ($hospital && $hospital !== 'all') {
-            $staffQuery->where('hospital', $hospital);
-        }
 
         if ($search) {
             $staffQuery->where(function ($q) use ($search) {
@@ -129,13 +128,18 @@ class SubRoleController extends Controller
 
         $user = User::findOrFail($request->user_id);
 
-        // Pastikan user dalam hospital yang sama
+        // Pastikan staf adalah anggota Alta Hospital
+        if (strtolower(trim($user->hospital ?? '')) !== 'alta') {
+            return back()->with('error', 'Penetapan sub-jabatan saat ini hanya diperuntukkan bagi anggota Alta Hospital.');
+        }
+
+        // Pastikan sub-jabatan adalah untuk Alta
         $newSubRole = $request->sub_role_id
             ? StaffSubRole::findOrFail($request->sub_role_id)
             : null;
 
-        if ($newSubRole && $newSubRole->hospital !== $user->hospital) {
-            return back()->with('error', 'Sub-jabatan tidak tersedia untuk hospital staf ini.');
+        if ($newSubRole && $newSubRole->hospital !== 'alta') {
+            return back()->with('error', 'Sub-jabatan ini bukan milik Alta Hospital.');
         }
 
         $oldSubRole = $user->subRole?->short_name ?? 'Tidak ada';
@@ -148,7 +152,7 @@ class SubRoleController extends Controller
 
     /**
      * POST /admin/sub-roles/assign-bulk
-     * Assign sub-jabatan ke banyak staf sekaligus.
+     * Assign sub-jabatan ke banyak staf sekaligus (Khusus Alta Hospital).
      */
     public function assignBulk(Request $request)
     {
@@ -166,12 +170,14 @@ class SubRoleController extends Controller
 
         $count = 0;
         foreach ($request->assignments as $item) {
+            // Hanya perbarui jika anggota Alta
             User::where('id', $item['user_id'])
+                ->where('hospital', 'alta')
                 ->update(['sub_role_id' => $item['sub_role_id'] ?? null]);
             $count++;
         }
 
-        return back()->with('success', "{$count} staf berhasil diperbarui sub-jabatannya.");
+        return back()->with('success', "{$count} staf Alta berhasil diperbarui sub-jabatannya.");
     }
 
     /**

@@ -67,20 +67,22 @@ class CreditScoreController extends Controller
         $this->ensureTablesExist();
         $user = auth()->user();
 
+        // Sistem Credit Score khusus Alta Hospital
+        $userHospital = strtolower(trim($user->hospital ?? 'alta'));
+        if ($userHospital === 'roxwood' && !$user->isAdmin()) {
+            abort(403, 'Sistem Credit Score saat ini khusus untuk anggota Alta Hospital.');
+        }
 
         if ($this->canViewAll()) {
-            // Tampilkan semua anggota aktif + skor mereka
+            // Tampilkan semua anggota aktif Alta Hospital + skor mereka
             $search = trim($request->get('q', ''));
-            $hospital = $request->get('hospital', 'alta');
+            $hospital = 'alta';
 
             $query = User::with(['role:id,name,display_name,level', 'subRole:id,name,short_name,color', 'creditScore'])
                 ->where('is_active', true)
                 ->whereNotNull('role_id')
+                ->where('hospital', 'alta')
                 ->whereHas('role', fn($q) => $q->where('name', '!=', 'admin'));
-
-            if ($hospital && $hospital !== 'all') {
-                $query->where('hospital', $hospital);
-            }
 
             if ($search) {
                 $query->where(function ($q) use ($search) {
@@ -109,11 +111,17 @@ class CreditScoreController extends Controller
 
     /**
      * GET /credit-score/{user}
-     * Detail skor + log satu anggota (Comdis/PND/IE/Admin).
+     * Detail skor + log satu anggota Alta (Comdis/PND/IE/Admin).
      */
     public function show(User $user)
     {
         $this->ensureTablesExist();
+
+        // Validasi: hanya untuk staf Alta Hospital
+        if (strtolower(trim($user->hospital ?? 'alta')) !== 'alta' && !auth()->user()->isAdmin()) {
+            abort(404, 'Data Credit Score hanya tersedia untuk staf Alta Hospital.');
+        }
+
         if (!$this->canViewAll()) {
             // Anggota biasa hanya boleh lihat milik sendiri
             if ($user->id !== auth()->id()) {
@@ -132,7 +140,7 @@ class CreditScoreController extends Controller
 
     /**
      * GET /credit-score/{user}/input
-     * Form input poin — khusus Comdis.
+     * Form input poin — khusus Comdis (Khusus Staf Alta).
      */
     public function inputForm(User $user)
     {
@@ -141,19 +149,27 @@ class CreditScoreController extends Controller
             abort(403, 'Hanya Divisi Comdis yang dapat menginput Credit Score.');
         }
 
+        if (strtolower(trim($user->hospital ?? 'alta')) !== 'alta') {
+            return redirect()->route('credit-score.index')->with('error', 'Credit Score hanya berlaku untuk anggota Alta Hospital.');
+        }
+
         $creditScore = CreditScore::getOrCreate($user->id);
         return view('credit-score.input', compact('user', 'creditScore'));
     }
 
     /**
      * POST /credit-score/{user}/input
-     * Simpan penambahan/pengurangan poin.
+     * Simpan penambahan/pengurangan poin (Khusus Staf Alta).
      */
     public function inputStore(Request $request, User $user)
     {
         $this->ensureTablesExist();
         if (!$this->canManage()) {
             abort(403, 'Hanya Divisi Comdis yang dapat menginput Credit Score.');
+        }
+
+        if (strtolower(trim($user->hospital ?? 'alta')) !== 'alta') {
+            return back()->with('error', 'Credit Score hanya berlaku untuk anggota Alta Hospital.');
         }
 
         $validator = Validator::make($request->all(), [

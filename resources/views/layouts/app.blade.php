@@ -1470,29 +1470,35 @@
                                     @if(auth()->user()->isAdmin() || auth()->user()->isManagerOrAbove())
                                         <a href="{{ route('admin.inactive-staff.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-user-slash w-4 text-red-500 text-sm"></i> Staf Tidak Aktif</a>
                                     @endif
-                                    @if(auth()->user()->isExecutiveOrAbove())
+                                    @php
+                                        $userHospitalNav = strtolower(trim(auth()->user()->hospital ?? 'alta'));
+                                        $isAltaStaffNav  = ($userHospitalNav === 'alta') || (auth()->user()->isAdmin() && $userHospitalNav !== 'roxwood');
+                                    @endphp
+                                    @if(auth()->user()->isExecutiveOrAbove() && $isAltaStaffNav)
                                         <div class="my-1 border-t border-gray-100"></div>
-                                        <a href="{{ route('admin.sub-roles.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-layer-group w-4 text-indigo-500 text-sm"></i> Sub-Jabatan / Divisi</a>
+                                        <a href="{{ route('admin.sub-roles.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-layer-group w-4 text-indigo-500 text-sm"></i> Sub-Jabatan / Divisi (Alta)</a>
                                     @endif
                                 </div>
                             </div>
                         </div>
                         @endif
 
-                        {{-- ═══ PORTAL MANAJEMEN (RBAC-Aware) ═══ --}}
+                        {{-- ═══ PORTAL MANAJEMEN ALTA HOSPITAL (RBAC-Aware, Khusus Alta) ═══ --}}
                         @php
-                            $canSeePortal = auth()->user()->isStaff();
-                            $isGa     = auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('ga');
-                            $isMsl    = auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('msl');
-                            $isPnd    = auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('pnd');
-                            $isIe     = auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('ie');
-                            $isComdis = auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('comdis');
+                            $userHospital = strtolower(trim(auth()->user()->hospital ?? 'alta'));
+                            $isAltaMember = ($userHospital === 'alta') || (auth()->user()->isAdmin() && $userHospital !== 'roxwood');
+                            $canSeePortal = auth()->user()->isStaff() && $isAltaMember;
+                            $isGa     = $isAltaMember && (auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('ga'));
+                            $isMsl    = $isAltaMember && (auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('msl'));
+                            $isPnd    = $isAltaMember && (auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('pnd'));
+                            $isIe     = $isAltaMember && (auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('ie'));
+                            $isComdis = $isAltaMember && (auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('comdis'));
                         @endphp
                         @if($canSeePortal)
                         <div class="relative group">
                             <button class="inline-flex items-center gap-1.5 h-9 px-3 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-lg border border-white/20 transition-all duration-200 whitespace-nowrap">
                                 <i class="fas fa-hospital-alt text-sm text-rose-300"></i>
-                                <span>Portal</span>
+                                <span>Portal Alta</span>
                                 <i class="fas fa-chevron-down text-[9px] opacity-60"></i>
                             </button>
                             <div class="absolute right-0 top-full mt-2 w-60 bg-white rounded-xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-1 group-hover:translate-y-0 transition-all duration-200 z-[9999] overflow-hidden">
@@ -1502,7 +1508,7 @@
                                     <a href="{{ route('portal.leave.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-rose-50 hover:text-rose-700 transition-colors">
                                         <i class="fas fa-calendar-check w-4 text-rose-400 text-sm"></i> Pengajuan Cuti
                                     </a>
-                                    <a href="{{ route('portal.resignation.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors">
+                                    <a href="{{ route('portal.resignation.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors">ion-colors">
                                         <i class="fas fa-file-signature w-4 text-orange-400 text-sm"></i> Pengajuan Resign
                                     </a>
                                     <a href="{{ route('portal.stase.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
@@ -1808,13 +1814,48 @@
                                     <span>Staf Tidak Aktif</span>
                                 </a>
                             @endif
-                            @if(auth()->user()->isExecutiveOrAbove())
+                            @php
+                                $userHospitalMobile = strtolower(trim(auth()->user()->hospital ?? 'alta'));
+                                $isAltaMobile = ($userHospitalMobile === 'alta') || (auth()->user()->isAdmin() && $userHospitalMobile !== 'roxwood');
+                            @endphp
+                            @if(auth()->user()->isExecutiveOrAbove() && $isAltaMobile)
                                 <a href="{{ route('admin.sub-roles.index') }}"
                                     class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
                                     <i class="fas fa-layer-group w-5 text-indigo-400 text-sm"></i>
-                                    <span>Sub-Jabatan / Divisi</span>
+                                    <span>Sub-Jabatan / Divisi (Alta)</span>
                                 </a>
                             @endif
+                        </div>
+                    @endif
+
+                    {{-- Portal Alta Hospital (Khusus Alta) --}}
+                    @php
+                        $userHospitalMob = strtolower(trim(auth()->user()->hospital ?? 'alta'));
+                        $isAltaUserMob   = ($userHospitalMob === 'alta') || (auth()->user()->isAdmin() && $userHospitalMob !== 'roxwood');
+                    @endphp
+                    @if($isAltaUserMob)
+                        <div class="space-y-1 pt-2 border-t border-white/10">
+                            <div class="px-2 pt-1 text-[10px] font-black tracking-widest uppercase text-rose-300/80">Portal Alta Hospital</div>
+                            <a href="{{ route('portal.leave.index') }}"
+                                class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                <i class="fas fa-calendar-check w-5 text-rose-400 text-sm"></i>
+                                <span>Pengajuan Cuti</span>
+                            </a>
+                            <a href="{{ route('portal.resignation.index') }}"
+                                class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                <i class="fas fa-file-signature w-5 text-orange-400 text-sm"></i>
+                                <span>Pengajuan Resign</span>
+                            </a>
+                            <a href="{{ route('portal.stase.index') }}"
+                                class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                <i class="fas fa-graduation-cap w-5 text-blue-400 text-sm"></i>
+                                <span>Pengajuan Stase</span>
+                            </a>
+                            <a href="{{ route('credit-score.index') }}"
+                                class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                <i class="fas fa-star-half-alt w-5 text-teal-400 text-sm"></i>
+                                <span>Credit Score Alta</span>
+                            </a>
                         </div>
                     @endif
                 @endauth

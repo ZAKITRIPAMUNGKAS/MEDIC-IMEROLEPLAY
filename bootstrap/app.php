@@ -48,6 +48,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => EnsureUserIsAdmin::class,
             'staff' => EnsureUserIsStaff::class,
             'permission' => \App\Http\Middleware\CheckPermission::class,
+            'alta_only' => \App\Http\Middleware\EnsureAltaHospital::class,
             'api.auth' => \App\Http\Middleware\ApiKeyAuth::class,
             'api.rate_limit' => \App\Http\Middleware\ApiRateLimit::class,
         ]);
