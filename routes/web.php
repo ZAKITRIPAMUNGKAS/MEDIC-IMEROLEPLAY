@@ -764,6 +764,14 @@ Route::get('/auto-setup-db', function () {
             $logs[] = 'ℹ️ Tabel recruitment_applications sudah ada.';
         }
 
+        // 17. Kolom is_interviewer pada users
+        if (\Illuminate\Support\Facades\Schema::hasTable('users') && !\Illuminate\Support\Facades\Schema::hasColumn('users', 'is_interviewer')) {
+            \Illuminate\Support\Facades\Schema::table('users', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->boolean('is_interviewer')->default(false)->after('is_active');
+            });
+            $logs[] = '✅ Kolom is_interviewer berhasil ditambahkan ke tabel users.';
+        }
+
         // Jalankan migrasi resmi jika tersedia
         try {
             \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);

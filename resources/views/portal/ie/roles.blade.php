@@ -147,17 +147,24 @@
                                 @endif
                             </td>
                             <td class="px-5 py-3.5">
-                                @if($staf->subRole)
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                                        [{{ $staf->subRole->short_name }}] {{ $staf->subRole->display_name }}
-                                    </span>
-                                @else
-                                    <span class="text-slate-500 text-xs">—</span>
-                                @endif
+                                <div class="flex flex-wrap items-center gap-1.5">
+                                    @if($staf->subRole)
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                                            [{{ $staf->subRole->short_name }}] {{ $staf->subRole->display_name }}
+                                        </span>
+                                    @else
+                                        <span class="text-slate-500 text-xs">—</span>
+                                    @endif
+                                    @if($staf->isInterviewer())
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                                            <i class="fas fa-user-tie text-[9px]"></i> Interviewer
+                                        </span>
+                                    @endif
+                                </div>
                             </td>
                             <td class="px-5 py-3.5 text-center">
                                 <button type="button"
-                                        onclick="openEditRoleModal({{ $staf->id }}, '{{ addslashes($staf->name) }}', {{ $staf->role_id ?? 'null' }}, {{ $staf->medic_role_id ?? 'null' }}, {{ $staf->sub_role_id ?? 'null' }})"
+                                        onclick="openEditRoleModal({{ $staf->id }}, '{{ addslashes($staf->name) }}', {{ $staf->role_id ?? 'null' }}, {{ $staf->medic_role_id ?? 'null' }}, {{ $staf->sub_role_id ?? 'null' }}, {{ $staf->isInterviewer() ? 'true' : 'false' }})"
                                         class="px-3 py-1.5 bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white rounded-xl text-xs font-semibold shadow-md transition-all flex items-center gap-1.5 mx-auto">
                                     <i class="fas fa-edit text-[10px]"></i> Ubah Jabatan
                                 </button>
@@ -239,6 +246,18 @@
                 </select>
             </div>
 
+            <div class="p-3.5 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-between gap-3">
+                <div>
+                    <span class="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
+                        <i class="fas fa-user-tie text-indigo-400"></i> Hak Akses Role Interviewer Calon Medis
+                    </span>
+                    <span class="text-[11px] text-slate-400 block mt-0.5">
+                        Centang untuk memberikan wewenang melakukan wawancara &amp; evaluasi calon anggota medis baru.
+                    </span>
+                </div>
+                <input type="checkbox" name="is_interviewer" id="modalIsInterviewer" value="1" class="w-5 h-5 rounded text-indigo-500 focus:ring-indigo-400 border-white/20 bg-slate-800 shrink-0">
+            </div>
+
             <div class="pt-4 border-t border-white/10 flex justify-end gap-2">
                 <button type="button" onclick="closeModal('editRoleModal')" class="px-4 py-2 bg-white/10 hover:bg-white/15 text-slate-300 rounded-xl text-xs font-semibold transition-all">
                     Batal
@@ -252,12 +271,13 @@
 </div>
 
 <script>
-function openEditRoleModal(id, name, roleId, medicRoleId, subRoleId) {
+function openEditRoleModal(id, name, roleId, medicRoleId, subRoleId, isInterviewer) {
     document.getElementById('modalStaffName').textContent = 'Anggota: ' + name;
     document.getElementById('editRoleForm').action = '/portal/ie/roles/' + id + '/update';
     document.getElementById('modalRoleId').value = roleId || '';
     document.getElementById('modalMedicRoleId').value = medicRoleId || '';
     document.getElementById('modalSubRoleId').value = subRoleId || '';
+    document.getElementById('modalIsInterviewer').checked = !!isInterviewer;
     document.getElementById('editRoleModal').classList.remove('hidden');
 }
 

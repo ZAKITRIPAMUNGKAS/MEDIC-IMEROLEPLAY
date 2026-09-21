@@ -28,6 +28,7 @@ class User extends Authenticatable
         'citizen_id',
         'hospital',
         'is_active',
+        'is_interviewer',
         'profile_image',
         'custom_permissions',
         'custom_salary',
@@ -56,6 +57,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'is_interviewer' => 'boolean',
             'custom_permissions' => 'array',
             'last_seen_at' => 'datetime',
         ];
@@ -150,6 +152,7 @@ class User extends Authenticatable
      */
     public function isInterviewer(): bool
     {
+        if ($this->is_interviewer) return true;
         if ($this->isAdmin() || $this->isExecutiveOrAbove()) return true;
         if ($this->isInDivision('ie', 'pnd')) return true;
         if ($this->role && $this->role->level >= 4) return true; // Level supervisor/dokter ke atas

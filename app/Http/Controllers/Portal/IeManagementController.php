@@ -86,9 +86,10 @@ class IeManagementController extends Controller
         $oldMedic = $user->medicRole?->display_name;
 
         $user->update([
-            'role_id'       => $validated['role_id'],
-            'medic_role_id' => $validated['medic_role_id'] ?? null,
-            'sub_role_id'   => $validated['sub_role_id'] ?? null,
+            'role_id'        => $validated['role_id'],
+            'medic_role_id'  => $validated['medic_role_id'] ?? null,
+            'sub_role_id'    => $validated['sub_role_id'] ?? null,
+            'is_interviewer' => $request->boolean('is_interviewer'),
         ]);
 
         $newRole = $user->fresh()->role?->display_name;
