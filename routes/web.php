@@ -1352,3 +1352,11 @@ Route::middleware('auth')->prefix('credit-score')->name('credit-score.')->group(
     Route::get('/{user}/input',  [\App\Http\Controllers\CreditScoreController::class, 'inputForm'])->name('input');
     Route::post('/{user}/input', [\App\Http\Controllers\CreditScoreController::class, 'inputStore'])->name('input.store');
 });
+
+// Alias jika diakses melalui /portal/credit-score
+Route::middleware('auth')->prefix('portal/credit-score')->group(function () {
+    Route::get('/',              [\App\Http\Controllers\CreditScoreController::class, 'index']);
+    Route::get('/{user}',        [\App\Http\Controllers\CreditScoreController::class, 'show']);
+    Route::get('/{user}/input',  [\App\Http\Controllers\CreditScoreController::class, 'inputForm']);
+    Route::post('/{user}/input', [\App\Http\Controllers\CreditScoreController::class, 'inputStore']);
+});

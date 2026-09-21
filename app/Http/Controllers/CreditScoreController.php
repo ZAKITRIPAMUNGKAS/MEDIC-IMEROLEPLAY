@@ -32,13 +32,41 @@ class CreditScoreController extends Controller
             || $user->isInDivision('comdis', 'pnd', 'ie');
     }
 
+    private function ensureTablesExist(): void
+    {
+        if (!\Illuminate\Support\Facades\Schema::hasTable('credit_scores')) {
+            \Illuminate\Support\Facades\Schema::create('credit_scores', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+                $table->integer('balance')->default(100);
+                $table->timestamps();
+                $table->unique('user_id');
+            });
+        }
+        if (!\Illuminate\Support\Facades\Schema::hasTable('credit_score_logs')) {
+            \Illuminate\Support\Facades\Schema::create('credit_score_logs', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+                $table->foreignId('issued_by')->constrained('users')->cascadeOnDelete();
+                $table->integer('amount');
+                $table->integer('balance_after');
+                $table->string('reason');
+                $table->enum('type', ['add', 'deduct'])->default('add');
+                $table->timestamps();
+                $table->index(['user_id', 'created_at']);
+            });
+        }
+    }
+
     /**
      * GET /credit-score
      * Halaman utama — Comdis/PND/IE lihat semua, anggota lain lihat skor sendiri.
      */
     public function index(Request $request)
     {
+        $this->ensureTablesExist();
         $user = auth()->user();
+
 
         if ($this->canViewAll()) {
             // Tampilkan semua anggota aktif + skor mereka
@@ -79,6 +107,7 @@ class CreditScoreController extends Controller
      */
     public function show(User $user)
     {
+        $this->ensureTablesExist();
         if (!$this->canViewAll()) {
             // Anggota biasa hanya boleh lihat milik sendiri
             if ($user->id !== auth()->id()) {
@@ -101,6 +130,7 @@ class CreditScoreController extends Controller
      */
     public function inputForm(User $user)
     {
+        $this->ensureTablesExist();
         if (!$this->canManage()) {
             abort(403, 'Hanya Divisi Comdis yang dapat menginput Credit Score.');
         }
@@ -115,6 +145,7 @@ class CreditScoreController extends Controller
      */
     public function inputStore(Request $request, User $user)
     {
+        $this->ensureTablesExist();
         if (!$this->canManage()) {
             abort(403, 'Hanya Divisi Comdis yang dapat menginput Credit Score.');
         }
