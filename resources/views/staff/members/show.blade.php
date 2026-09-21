@@ -318,13 +318,20 @@
                 {{-- Checklist Grid --}}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-1">
                     @foreach($promotionChecklist as $item)
+                        @php
+                            $itemLabel = $item['label'];
+                            // Jaga privasi Credit Score jika dilihat oleh anggota lain (bukan pemilik akun, admin, PND, IE, Comdis)
+                            if (str_starts_with($item['key'] ?? '', 'credit_score') && !$canSeeCreditScore) {
+                                $itemLabel = preg_replace('/\s*\(saat ini:.*?\)/i', ' (Skor Privat)', $item['label']);
+                            }
+                        @endphp
                         <div class="flex items-start gap-3 p-3.5 rounded-xl border transition-all {{ $item['met'] ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-white/5 border-white/10' }}">
                             <div class="mt-0.5 w-6 h-6 rounded-lg flex items-center justify-center text-xs shrink-0 {{ $item['met'] ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30' }}">
                                 <i class="fas {{ $item['met'] ? 'fa-check' : 'fa-times' }}"></i>
                             </div>
                             <div class="min-w-0 flex-1">
                                 <p class="text-xs font-semibold {{ $item['met'] ? 'text-emerald-200' : 'text-slate-300' }}">
-                                    {{ $item['label'] }}
+                                    {{ $itemLabel }}
                                 </p>
                                 <span class="text-[10px] font-bold uppercase tracking-wider mt-1 inline-block {{ $item['met'] ? 'text-emerald-400' : 'text-rose-400' }}">
                                     {{ $item['met'] ? '✓ Memenuhi Syarat' : '✗ Belum Memenuhi' }}
