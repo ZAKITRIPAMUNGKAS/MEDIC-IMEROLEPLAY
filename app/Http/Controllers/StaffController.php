@@ -178,6 +178,7 @@ class StaffController extends Controller
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|min:8|confirmed',
                 'staff_id' => 'nullable|string|max:50|unique:users,staff_id',
+                'citizen_id' => 'required|string|max:50|unique:users,citizen_id',
                 'role_id' => [
                     'required',
                     'exists:staff_roles,id',
@@ -197,6 +198,8 @@ class StaffController extends Controller
                 'password.min' => 'Password minimal harus 8 karakter.',
                 'password.confirmed' => 'Konfirmasi password tidak cocok.',
                 'staff_id.unique' => 'Staff ID sudah digunakan. Gunakan ID yang berbeda.',
+                'citizen_id.required' => 'Citizen ID (CID) FiveM wajib diisi.',
+                'citizen_id.unique' => 'Citizen ID (CID) tersebut sudah terdaftar di sistem.',
                 'name.required' => 'Nama lengkap wajib diisi.',
                 'role_id.required' => 'Role wajib dipilih.',
                 'hospital.required' => 'Rumah sakit wajib dipilih.',
@@ -213,11 +216,14 @@ class StaffController extends Controller
             $profileImagePath = $request->file('profile_image')->store('profile-images', 'public');
         }
 
+        $citizenId = trim(str_replace(['#'], '', (string)$request->citizen_id));
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'staff_id' => $request->staff_id,
+            'citizen_id' => $citizenId,
             'role_id' => $request->role_id,
             'hospital' => $request->hospital,
             'is_active' => false,

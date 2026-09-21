@@ -94,12 +94,23 @@ class ResignationRequest extends Model
 
     /**
      * Hitung denda otomatis berdasarkan jabatan.
-     * Dokter Umum: 25%, Jabatan Lain: 30%.
+     * Perawat – Co-Ass: 30% dari Total Gaji Pokok
+     * Dokter Umum: 25% dari Total Gaji Pokok
      */
     public function calculateFine(): void
     {
-        $pct = (strtolower($this->position) === 'dokter umum' || strtolower($this->position) === 'dokter_umum')
-            ? 25 : 30;
+        // Prioritaskan cek jabatan medis klinis jika ada
+        $userMedic = $this->user?->effective_medic_role?->name ?? $this->user?->role?->name ?? '';
+        $posName = strtolower(trim(str_replace([' ', '-'], '_', (string) ($userMedic ?: $this->position))));
+
+        if (str_contains($posName, 'dokter_umum') || str_contains($posName, 'dokter umum')) {
+            $pct = 25.0;
+        } elseif (str_contains($posName, 'perawat') || str_contains($posName, 'co_ass') || str_contains($posName, 'coass') || str_contains($posName, 'trainee')) {
+            $pct = 30.0;
+        } else {
+            $pct = 30.0;
+        }
+
         $this->fine_percentage = $pct;
         $this->fine_amount     = (int) round($this->base_salary * $pct / 100);
     }

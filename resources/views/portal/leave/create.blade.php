@@ -54,13 +54,15 @@
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label for="start_date" class="block text-sm text-white/70 font-medium mb-1.5">Tanggal Mulai Cuti <span class="text-rose-400">*</span></label>
-                        <input type="date" id="start_date" name="start_date" value="{{ old('start_date') }}" required
+                        <input type="date" id="start_date" name="start_date" min="{{ date('Y-m-d') }}" value="{{ old('start_date') }}" required
                                class="w-full px-3 py-2.5 bg-white/10 border border-white/20 rounded-xl text-white text-sm focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition-all">
+                        <p class="text-[11px] text-white/40 mt-1">Tidak dapat dimulai sebelum hari ini.</p>
                     </div>
                     <div>
                         <label for="end_date" class="block text-sm text-white/70 font-medium mb-1.5">Tanggal Selesai Cuti <span class="text-rose-400">*</span></label>
-                        <input type="date" id="end_date" name="end_date" value="{{ old('end_date') }}" required
+                        <input type="date" id="end_date" name="end_date" min="{{ date('Y-m-d') }}" value="{{ old('end_date') }}" required
                                class="w-full px-3 py-2.5 bg-white/10 border border-white/20 rounded-xl text-white text-sm focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition-all">
+                        <p class="text-[11px] text-amber-300/80 mt-1"><i class="fas fa-info-circle mr-1"></i>Maksimal 30 hari.</p>
                     </div>
                 </div>
 

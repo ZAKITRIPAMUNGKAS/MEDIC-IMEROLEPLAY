@@ -14,10 +14,16 @@
                 </h1>
                 <p class="text-white/60 text-sm mt-0.5">Kelola permohonan cuti Anda</p>
             </div>
-            <a href="{{ route('portal.leave.create') }}"
-               class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-400 hover:to-pink-500 text-white text-sm font-semibold rounded-xl shadow-lg shadow-rose-900/30 transition-all duration-200">
-                <i class="fas fa-plus"></i> Ajukan Cuti Baru
-            </a>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('portal.leave.public-list') }}"
+                   class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/15 text-rose-300 hover:text-white text-sm font-semibold rounded-xl border border-rose-500/30 transition-all duration-200">
+                    <i class="fas fa-users"></i> Lihat Jadwal Cuti Medis
+                </a>
+                <a href="{{ route('portal.leave.create') }}"
+                   class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-400 hover:to-pink-500 text-white text-sm font-semibold rounded-xl shadow-lg shadow-rose-900/30 transition-all duration-200">
+                    <i class="fas fa-plus"></i> Ajukan Cuti Baru
+                </a>
+            </div>
         </div>
 
         {{-- Flash messages --}}

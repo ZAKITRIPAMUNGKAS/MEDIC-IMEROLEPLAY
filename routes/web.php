@@ -668,6 +668,42 @@ Route::get('/auto-setup-db', function () {
             $logs[] = 'ℹ️ Tabel certificate_applications sudah ada.';
         }
 
+        // 13. Tabel candidate_interviews
+        if (!\Illuminate\Support\Facades\Schema::hasTable('candidate_interviews')) {
+            \Illuminate\Support\Facades\Schema::create('candidate_interviews', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+                $table->foreignId('interviewer_id')->constrained('users')->cascadeOnDelete();
+                $table->string('recommendation', 20); // recommended, not_recommended
+                $table->string('recommended_role', 50)->nullable(); // trainee, perawat, co_ass, dokter_umum
+                $table->text('notes')->nullable();
+                $table->timestamps();
+
+                $table->index(['user_id', 'interviewer_id']);
+            });
+            $logs[] = '✅ Tabel candidate_interviews berhasil dibuat.';
+        } else {
+            $logs[] = 'ℹ️ Tabel candidate_interviews sudah ada.';
+        }
+
+        // 14. Tabel duty_exemptions
+        if (!\Illuminate\Support\Facades\Schema::hasTable('duty_exemptions')) {
+            \Illuminate\Support\Facades\Schema::create('duty_exemptions', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+                $table->foreignId('leave_request_id')->nullable()->constrained('leave_requests')->nullOnDelete();
+                $table->foreignId('exempted_by')->constrained('users')->cascadeOnDelete();
+                $table->string('period', 7); // format: YYYY-MM
+                $table->text('reason')->nullable();
+                $table->timestamps();
+
+                $table->unique(['user_id', 'period']);
+            });
+            $logs[] = '✅ Tabel duty_exemptions berhasil dibuat.';
+        } else {
+            $logs[] = 'ℹ️ Tabel duty_exemptions sudah ada.';
+        }
+
         // Jalankan migrasi resmi jika tersedia
         try {
             \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
@@ -1288,7 +1324,7 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
 });
 
 // ═══════════════════════════════════════════════════════════════════════════
-// PORTAL MANAJEMEN ALTA HOSPITAL — Cuti, Resign, Sertifikasi, Stase, Promosi
+// PORTAL MANAJEMEN ALTA HOSPITAL — Cuti, Resign, Sertifikasi, Stase, Promosi, IE, Interview
 // Fitur ini khusus anggota Alta Hospital (bukan Roxwood).
 // ═══════════════════════════════════════════════════════════════════════════
 Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->group(function () {
@@ -1299,6 +1335,7 @@ Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->gro
     // ── Pengajuan Cuti (Semua Anggota) ───────────────────────────────────────
     Route::prefix('leave')->name('leave.')->group(function () {
         Route::get('/',           [\App\Http\Controllers\Portal\LeaveRequestController::class, 'index'])->name('index');
+        Route::get('/public-list',[\App\Http\Controllers\Portal\LeaveRequestController::class, 'publicList'])->name('public-list');
         Route::get('/create',     [\App\Http\Controllers\Portal\LeaveRequestController::class, 'create'])->name('create');
         Route::post('/',          [\App\Http\Controllers\Portal\LeaveRequestController::class, 'store'])->name('store');
         Route::get('/{leave}',    [\App\Http\Controllers\Portal\LeaveRequestController::class, 'show'])->name('show');
@@ -1316,7 +1353,7 @@ Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->gro
         Route::post('/cancel-own', [\App\Http\Controllers\Portal\ResignationController::class, 'cancelOwn'])->name('cancel-own');
         // PND
         Route::get('/manage/pnd',                       [\App\Http\Controllers\Portal\ResignationController::class, 'managePnd'])->name('manage.pnd');
-        Route::post('/{resignation}/pnd-approve',       [\App\Http\Controllers\Portal\ResignationController::class, 'pndApprove'])->name('pnd-approve');
+        Route::post('/{resignation}/pnd-approve',        [\App\Http\Controllers\Portal\ResignationController::class, 'pndApprove'])->name('pnd-approve');
         Route::post('/{resignation}/pnd-reject',        [\App\Http\Controllers\Portal\ResignationController::class, 'pndReject'])->name('pnd-reject');
         Route::post('/{resignation}/pnd-cancel',        [\App\Http\Controllers\Portal\ResignationController::class, 'pndCancel'])->name('pnd-cancel');
         // IE
@@ -1361,11 +1398,25 @@ Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->gro
         Route::post('/stase/{stase}/complete',    [\App\Http\Controllers\Portal\MslCertificationController::class, 'staseComplete'])->name('stase.complete');
     });
 
-    // ── IE: Surat Perjanjian Kontrak Medis ────────────────────────────────────
+    // ── IE: Fitur & Kebutuhan Sistem Lengkap ──────────────────────────────────
     Route::prefix('ie')->name('ie.')->group(function () {
-        Route::get('/',                           [\App\Http\Controllers\Portal\IeContractController::class, 'index'])->name('index');
-        Route::post('/',                          [\App\Http\Controllers\Portal\IeContractController::class, 'store'])->name('store');
-        Route::post('/{certification}/revoke',    [\App\Http\Controllers\Portal\IeContractController::class, 'revoke'])->name('revoke');
+        // Kontrak Medis
+        Route::get('/',                                   [\App\Http\Controllers\Portal\IeContractController::class, 'index'])->name('index');
+        Route::post('/',                                  [\App\Http\Controllers\Portal\IeContractController::class, 'store'])->name('store');
+        Route::post('/{certification}/revoke',            [\App\Http\Controllers\Portal\IeContractController::class, 'revoke'])->name('revoke');
+        // Manajemen Jabatan Medis & Manajerial
+        Route::get('/roles',                              [\App\Http\Controllers\Portal\IeManagementController::class, 'rolesIndex'])->name('roles.index');
+        Route::post('/roles/{user}/update',               [\App\Http\Controllers\Portal\IeManagementController::class, 'updateRole'])->name('roles.update');
+        // Pemutihan Duty & Pengecualian Cuti
+        Route::get('/pemutihan',                          [\App\Http\Controllers\Portal\IeManagementController::class, 'pemutihanIndex'])->name('pemutihan.index');
+        Route::post('/pemutihan/{user}/toggle-exemption', [\App\Http\Controllers\Portal\IeManagementController::class, 'toggleExemption'])->name('pemutihan.toggle-exemption');
+    });
+
+    // ── Role Interview: Wawancara Calon Medis ─────────────────────────────────
+    Route::prefix('interview')->name('interview.')->group(function () {
+        Route::get('/',                   [\App\Http\Controllers\Portal\InterviewController::class, 'index'])->name('index');
+        Route::get('/{candidate}/form',   [\App\Http\Controllers\Portal\InterviewController::class, 'showForm'])->name('form');
+        Route::post('/{candidate}/store', [\App\Http\Controllers\Portal\InterviewController::class, 'storeEvaluation'])->name('store');
     });
 
     // ── Pengajuan Stase (Anggota & Konsulen) ──────────────────────────────────

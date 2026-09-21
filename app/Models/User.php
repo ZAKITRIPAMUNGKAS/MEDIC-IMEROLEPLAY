@@ -145,6 +145,32 @@ class User extends Authenticatable
         return (bool) ($this->role && $this->role->level >= 7);
     }
 
+    /**
+     * Cek apakah user memiliki hak akses sebagai Interviewer
+     */
+    public function isInterviewer(): bool
+    {
+        if ($this->isAdmin() || $this->isExecutiveOrAbove()) return true;
+        if ($this->isInDivision('ie', 'pnd')) return true;
+        if ($this->role && $this->role->level >= 4) return true; // Level supervisor/dokter ke atas
+        return false;
+    }
+
+    public function candidateInterviews()
+    {
+        return $this->hasMany(CandidateInterview::class, 'user_id');
+    }
+
+    public function conductedInterviews()
+    {
+        return $this->hasMany(CandidateInterview::class, 'interviewer_id');
+    }
+
+    public function dutyExemptions()
+    {
+        return $this->hasMany(DutyExemption::class, 'user_id');
+    }
+
     public function organizationalPositions()
     {
         return $this->hasMany(OrganizationalPosition::class);

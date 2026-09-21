@@ -161,7 +161,73 @@ class ResignationController extends Controller
         $resignation->calculateFine();
         $resignation->save();
 
-        return back()->with('success', 'Resign disetujui PND. Berkas diteruskan ke IE untuk kalkulasi denda.');
+        // Kirim Notifikasi Discord Webhook dengan mention role I&E
+        $this->sendDiscordIeResignationAlert($resignation);
+
+        return back()->with('success', 'Resign disetujui PND. Berkas diteruskan ke IE untuk verifikasi denda.');
+    }
+
+    /**
+     * Kirim notifikasi ke Discord Webhook untuk Divisi I&E
+     */
+    private function sendDiscordIeResignationAlert(ResignationRequest $resignation): void
+    {
+        try {
+            $webhookUrl = env('DISCORD_WEBHOOK_IE', env('DISCORD_WEBHOOK_ABSENSI'));
+            if (!$webhookUrl) return;
+
+            $ieRoleId = env('DISCORD_ROLE_IE_ID', '');
+            $mentionText = $ieRoleId ? "<@&{$ieRoleId}> " : "**[DIVISI I&E]** ";
+
+            $embed = [
+                'title'       => '📋 PEMBERITAHUAN RESIGN ANGGOTA — TAHAP I&E',
+                'description' => "Pengajuan pengunduran diri staf telah **DISETUJUI OLEH PnD** dan siap diproses perhitungan dendanya oleh Divisi I&E.",
+                'color'       => 0xF59E0B, // Amber/Orange
+                'fields'      => [
+                    [
+                        'name'   => '👤 Nama Staf',
+                        'value'  => $resignation->applicant_name ?? $resignation->user?->name ?? '-',
+                        'inline' => true,
+                    ],
+                    [
+                        'name'   => '🏷️ Jabatan / Role',
+                        'value'  => $resignation->position ?? '-',
+                        'inline' => true,
+                    ],
+                    [
+                        'name'   => '💰 Gaji Pokok',
+                        'value'  => 'Rp ' . number_format($resignation->base_salary, 0, ',', '.'),
+                        'inline' => true,
+                    ],
+                    [
+                        'name'   => '📊 Persentase Denda',
+                        'value'  => $resignation->fine_percentage . '%',
+                        'inline' => true,
+                    ],
+                    [
+                        'name'   => '💵 Total Denda Resign',
+                        'value'  => 'Rp ' . number_format($resignation->fine_amount, 0, ',', '.'),
+                        'inline' => true,
+                    ],
+                    [
+                        'name'   => '✅ Disetujui PnD Oleh',
+                        'value'  => Auth::user()->name,
+                        'inline' => true,
+                    ],
+                ],
+                'footer'      => [
+                    'text' => 'Alta Hospital — Industrial & Employee Relations (IE)',
+                ],
+                'timestamp'   => now()->toISOString(),
+            ];
+
+            \Illuminate\Support\Facades\Http::timeout(5)->post($webhookUrl, [
+                'content' => $mentionText . 'Terdapat pengajuan resign yang telah disetujui PnD dan membutuhkan konfirmasi perhitungan denda oleh I&E.',
+                'embeds'  => [$embed],
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('[Discord-IE-Resign] Gagal kirim webhook: ' . $e->getMessage());
+        }
     }
 
     public function pndReject(Request $request, ResignationRequest $resignation)

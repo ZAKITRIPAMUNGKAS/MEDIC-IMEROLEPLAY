@@ -153,13 +153,13 @@
                                 @elseif($stage === 'ie')
                                     @if($req->status === 'pending_ie')
                                     <div class="flex items-center justify-end gap-1.5 flex-wrap">
-                                        {{-- Lunas & Nonaktifkan --}}
+                                        {{-- Confirm Denda & Selesaikan Resign (IE) --}}
                                         <form method="POST" action="{{ route('portal.resignation.ie-verify', $req) }}">
                                             @csrf
                                             <button type="submit"
-                                                    onclick="return confirm('Konfirmasi denda sebesar ${{ number_format($req->fine_amount, 0, ',', '.') }} sudah dilunasi? Akun {{ addslashes($req->applicant_name) }} akan dinonaktifkan.')"
-                                                    class="px-2.5 py-1.5 bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 text-xs font-semibold rounded-lg border border-sky-500/30 transition-all flex items-center gap-1">
-                                                <i class="fas fa-check-double"></i> Lunas &amp; Nonaktifkan
+                                                    onclick="return confirm('Confirm hasil perhitungan denda sebesar ${{ number_format($req->fine_amount, 0, ',', '.') }}? Proses resign {{ addslashes($req->applicant_name) }} akan dinyatakan selesai dan akun otomatis dinonaktifkan.')"
+                                                    class="px-2.5 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-xs font-semibold rounded-lg border border-emerald-500/30 transition-all flex items-center gap-1">
+                                                <i class="fas fa-check-double"></i> Confirm Denda &amp; Selesai
                                             </button>
                                         </form>
                                         {{-- Batalkan & Hapus Resign (IE) --}}

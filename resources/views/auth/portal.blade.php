@@ -582,6 +582,16 @@
                         <div class="relative group">
                             <div
                                 class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-sky-500 transition-colors">
+                                <i class="fas fa-id-card"></i>
+                            </div>
+                            <input type="text" name="citizen_id" autocomplete="off" value="{{ old('citizen_id') }}"
+                                class="form-input w-full pl-11 pr-4 py-3 rounded-xl text-sm bg-slate-100 border-transparent focus:bg-white"
+                                placeholder="Citizen ID (CID) FiveM *" required>
+                        </div>
+
+                        <div class="relative group">
+                            <div
+                                class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-sky-500 transition-colors">
                                 <i class="fas fa-user-tag"></i>
                             </div>
                             <select name="role_id" required

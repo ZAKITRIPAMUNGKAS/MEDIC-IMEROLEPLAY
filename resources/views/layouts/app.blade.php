@@ -1508,6 +1508,9 @@
                                     <a href="{{ route('portal.leave.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-rose-50 hover:text-rose-700 transition-colors">
                                         <i class="fas fa-calendar-check w-4 text-rose-400 text-sm"></i> Pengajuan Cuti
                                     </a>
+                                    <a href="{{ route('portal.leave.public-list') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-rose-50 hover:text-rose-700 transition-colors">
+                                        <i class="fas fa-users-slash w-4 text-rose-400 text-sm"></i> Jadwal Cuti Medis
+                                    </a>
                                     <a href="{{ route('portal.resignation.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors">
                                         <i class="fas fa-file-signature w-4 text-orange-400 text-sm"></i> Pengajuan Resign
                                     </a>
@@ -1557,6 +1560,12 @@
                                     </a>
                                     @endif
                                     @if($isIe)
+                                    <a href="{{ route('portal.ie.roles.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-700 transition-colors">
+                                        <i class="fas fa-user-tag w-4 text-sky-500 text-sm"></i> IE: Manajemen Jabatan
+                                    </a>
+                                    <a href="{{ route('portal.ie.pemutihan.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-700 transition-colors">
+                                        <i class="fas fa-calendar-times w-4 text-sky-500 text-sm"></i> IE: Pemutihan Duty
+                                    </a>
                                     <a href="{{ route('portal.ie.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-700 transition-colors">
                                         <i class="fas fa-file-contract w-4 text-sky-500 text-sm"></i> IE: Kontrak Medis
                                     </a>
@@ -1589,6 +1598,15 @@
                                 <div class="py-1 border-t border-gray-100">
                                     <a href="{{ route('portal.stase.konsulen.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
                                         <i class="fas fa-user-check w-4 text-blue-400 text-sm"></i> Konsulen: Setujui Stase
+                                    </a>
+                                </div>
+                                @endif
+
+                                {{-- Interviewer --}}
+                                @if(auth()->user()->isInterviewer())
+                                <div class="py-1 border-t border-gray-100">
+                                    <a href="{{ route('portal.interview.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors">
+                                        <i class="fas fa-user-tie w-4 text-indigo-500 text-sm"></i> Interviewer: Calon Medis
                                     </a>
                                 </div>
                                 @endif
@@ -1841,6 +1859,11 @@
                                 <i class="fas fa-calendar-check w-5 text-rose-400 text-sm"></i>
                                 <span>Pengajuan Cuti</span>
                             </a>
+                            <a href="{{ route('portal.leave.public-list') }}"
+                                class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                <i class="fas fa-users-slash w-5 text-rose-400 text-sm"></i>
+                                <span>Jadwal Cuti Medis</span>
+                            </a>
                             <a href="{{ route('portal.resignation.index') }}"
                                 class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
                                 <i class="fas fa-file-signature w-5 text-orange-400 text-sm"></i>
@@ -1866,6 +1889,34 @@
                                 <i class="fas fa-star-half-alt w-5 text-teal-400 text-sm"></i>
                                 <span>Credit Score Alta</span>
                             </a>
+
+                            @if(auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('ie'))
+                            <div class="px-2 pt-2 text-[10px] font-black tracking-widest uppercase text-sky-300/80 border-t border-white/5">IE Menu</div>
+                            <a href="{{ route('portal.ie.roles.index') }}"
+                                class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                <i class="fas fa-user-tag w-5 text-sky-400 text-sm"></i>
+                                <span>IE: Manajemen Jabatan</span>
+                            </a>
+                            <a href="{{ route('portal.ie.pemutihan.index') }}"
+                                class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                <i class="fas fa-calendar-times w-5 text-sky-400 text-sm"></i>
+                                <span>IE: Pemutihan Duty</span>
+                            </a>
+                            <a href="{{ route('portal.resignation.manage.ie') }}"
+                                class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                <i class="fas fa-hand-holding-usd w-5 text-orange-400 text-sm"></i>
+                                <span>IE: Denda Resign</span>
+                            </a>
+                            @endif
+
+                            @if(auth()->user()->isInterviewer())
+                            <div class="px-2 pt-2 text-[10px] font-black tracking-widest uppercase text-indigo-300/80 border-t border-white/5">Interviewer</div>
+                            <a href="{{ route('portal.interview.index') }}"
+                                class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                <i class="fas fa-user-tie w-5 text-indigo-400 text-sm"></i>
+                                <span>Interviewer: Calon Medis</span>
+                            </a>
+                            @endif
                         </div>
                     @endif
                 @endauth

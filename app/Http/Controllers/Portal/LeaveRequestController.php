@@ -38,17 +38,27 @@ class LeaveRequestController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
+        $today = Carbon::today()->toDateString();
 
         $validated = $request->validate([
-            'start_date' => 'required|date',
+            'start_date' => 'required|date|after_or_equal:' . $today,
             'end_date'   => 'required|date|after_or_equal:start_date',
             'reason_ic'  => 'required|string|max:1000',
             'reason_ooc' => 'required|string|max:1000',
+        ], [
+            'start_date.after_or_equal' => 'Pengajuan cuti tidak dapat dimulai sebelum tanggal hari ini / tanggal pengajuan dibuat.',
+            'end_date.after_or_equal'   => 'Tanggal selesai cuti harus sama atau setelah tanggal mulai cuti.',
         ]);
 
-        $start   = Carbon::parse($validated['start_date']);
-        $end     = Carbon::parse($validated['end_date']);
+        $start    = Carbon::parse($validated['start_date']);
+        $end      = Carbon::parse($validated['end_date']);
         $duration = $start->diffInDays($end) + 1;
+
+        if ($duration > 30) {
+            return back()->withInput()->withErrors([
+                'end_date' => 'Maksimal periode cuti yang dapat diajukan adalah 30 hari. (Pengajuan Anda: ' . $duration . ' hari).',
+            ]);
+        }
 
         LeaveRequest::create([
             'user_id'        => $user->id,
@@ -67,6 +77,31 @@ class LeaveRequestController extends Controller
 
         return redirect()->route('portal.leave.index')
             ->with('success', 'Pengajuan cuti berhasil dikirim.');
+    }
+
+    /**
+     * Daftar cuti seluruh staf medis yang sedang/akan cuti (dapat dilihat seluruh anggota medis).
+     */
+    public function publicList(Request $request)
+    {
+        $user = Auth::user();
+        $sortBy  = $request->get('sort_by', 'start_date');
+        $sortDir = strtolower($request->get('sort_dir', 'asc')) === 'desc' ? 'desc' : 'asc';
+
+        // Hanya kolom yang diizinkan untuk di-sort
+        if (!in_array($sortBy, ['start_date', 'end_date'])) {
+            $sortBy = 'start_date';
+        }
+
+        $query = LeaveRequest::with(['user:id,name,staff_id,hospital', 'approvedBy:id,name'])
+            ->where('status', 'approved')
+            ->where('end_date', '>=', Carbon::today()->subDays(7)) // Tampilkan yang baru saja/sedang/akan cuti
+            ->whereHas('user', fn($q) => $q->where('hospital', $user->hospital ?? 'alta'))
+            ->orderBy($sortBy, $sortDir);
+
+        $leaves = $query->paginate(25)->withQueryString();
+
+        return view('portal.leave.public-list', compact('leaves', 'sortBy', 'sortDir'));
     }
 
     public function show(LeaveRequest $leave)
