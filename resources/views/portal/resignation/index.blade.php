@@ -13,7 +13,7 @@
                 </h1>
                 <p class="text-white/50 text-sm mt-0.5">Status permohonan pengunduran diri Anda</p>
             </div>
-            @if(!$request || in_array($request?->status, ['completed', 'rejected']))
+            @if(!$request || in_array($request?->status, ['completed', 'rejected', 'cancelled']))
             <a href="{{ route('portal.resignation.create') }}"
                class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-400 hover:to-red-500 text-white text-sm font-semibold rounded-xl shadow-lg shadow-red-900/30 transition-all duration-200">
                 <i class="fas fa-plus"></i> Ajukan Resign
@@ -63,11 +63,13 @@
 
         {{-- Detail Card --}}
         <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
-            @php $color = ['pending_pnd'=>'yellow','approved_pnd'=>'blue','pending_ie'=>'orange','completed'=>'green','rejected'=>'red'][$request->status] ?? 'gray'; @endphp
+            @php $color = ['pending_pnd'=>'yellow','approved_pnd'=>'blue','pending_ie'=>'orange','completed'=>'green','rejected'=>'red','cancelled'=>'gray'][$request->status] ?? 'gray'; @endphp
             <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-white/3">
                 <span class="text-white font-semibold">{{ $request->status_label }}</span>
                 @if($request->status === 'completed')
                 <span class="text-xs text-emerald-300 font-medium">✅ Akun dinonaktifkan setelah pelunasan denda</span>
+                @elseif($request->status === 'cancelled')
+                <span class="text-xs text-amber-300 font-medium">⚠️ Pengajuan resign telah dibatalkan</span>
                 @endif
             </div>
             <div class="p-6 space-y-4 text-sm">

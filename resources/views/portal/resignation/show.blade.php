@@ -20,6 +20,10 @@
                     <span class="inline-flex items-center gap-1 px-3 py-1 bg-rose-500/20 text-rose-300 border border-rose-500/30 rounded-full text-xs font-semibold">
                         <i class="fas fa-times-circle"></i> Ditolak
                     </span>
+                @elseif($resignation->status === 'cancelled')
+                    <span class="inline-flex items-center gap-1 px-3 py-1 bg-gray-500/20 text-gray-300 border border-gray-500/30 rounded-full text-xs font-semibold">
+                        <i class="fas fa-ban"></i> Dibatalkan (Resign Batal)
+                    </span>
                 @elseif($resignation->status === 'pending_pnd')
                     <span class="inline-flex items-center gap-1 px-3 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-full text-xs font-semibold">
                         <i class="fas fa-clock"></i> Tahap 1: Verifikasi PND

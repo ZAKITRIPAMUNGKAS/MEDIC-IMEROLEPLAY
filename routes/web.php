@@ -1275,9 +1275,11 @@ Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->gro
         Route::get('/manage/pnd',                       [\App\Http\Controllers\Portal\ResignationController::class, 'managePnd'])->name('manage.pnd');
         Route::post('/{resignation}/pnd-approve',       [\App\Http\Controllers\Portal\ResignationController::class, 'pndApprove'])->name('pnd-approve');
         Route::post('/{resignation}/pnd-reject',        [\App\Http\Controllers\Portal\ResignationController::class, 'pndReject'])->name('pnd-reject');
+        Route::post('/{resignation}/pnd-cancel',        [\App\Http\Controllers\Portal\ResignationController::class, 'pndCancel'])->name('pnd-cancel');
         // IE
         Route::get('/manage/ie',                        [\App\Http\Controllers\Portal\ResignationController::class, 'manageIe'])->name('manage.ie');
         Route::post('/{resignation}/ie-verify-payment', [\App\Http\Controllers\Portal\ResignationController::class, 'ieVerifyPayment'])->name('ie-verify');
+        Route::post('/{resignation}/ie-cancel',         [\App\Http\Controllers\Portal\ResignationController::class, 'ieCancel'])->name('ie-cancel');
     });
 
     // ── GA: Sertifikasi Kendaraan ─────────────────────────────────────────────

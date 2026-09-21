@@ -158,6 +158,24 @@ class ResignationController extends Controller
         return back()->with('success', 'Permohonan resign ' . $resignation->user->name . ' ditolak oleh PND.');
     }
 
+    public function pndCancel(Request $request, ResignationRequest $resignation)
+    {
+        $this->checkIsPnd();
+        $request->validate(['pnd_notes' => 'required|string|max:500']);
+
+        $resignation->update([
+            'status'          => ResignationRequest::STATUS_CANCELLED,
+            'pnd_approved_by' => Auth::id(),
+            'pnd_approved_at' => now(),
+            'pnd_notes'       => '[Dibatalkan PND] ' . $request->pnd_notes,
+        ]);
+
+        // Pastikan akun staf tetap aktif
+        $resignation->user?->update(['is_active' => true]);
+
+        return back()->with('success', 'Permohonan resign ' . ($resignation->applicant_name ?? 'anggota') . ' berhasil dibatalkan oleh PND.');
+    }
+
     // ─── IE: Daftar & Verifikasi Tahap 2 (Denda) ─────────────────────────────
 
     public function manageIe(Request $request)
@@ -165,8 +183,18 @@ class ResignationController extends Controller
         $this->checkIsIe();
 
         $query = ResignationRequest::with(['user:id,name,staff_id,hospital', 'pndApprovedBy:id,name', 'ieVerifiedBy:id,name'])
-            ->where('status', ResignationRequest::STATUS_PENDING_IE)
+            ->whereHas('user', fn($q) => $q->where('hospital', Auth::user()->hospital ?? 'alta'))
             ->latest();
+
+        if ($status = $request->get('status')) {
+            $query->where('status', $status);
+        } else {
+            $query->whereIn('status', [
+                ResignationRequest::STATUS_PENDING_IE,
+                ResignationRequest::STATUS_COMPLETED,
+                ResignationRequest::STATUS_CANCELLED,
+            ]);
+        }
 
         $requests = $query->paginate(30)->withQueryString();
         $stage    = 'ie';
@@ -195,6 +223,24 @@ class ResignationController extends Controller
         $resignation->user->update(['is_active' => false]);
 
         return back()->with('success', 'Denda lunas. Akun ' . $resignation->user->name . ' telah dinonaktifkan.');
+    }
+
+    public function ieCancel(Request $request, ResignationRequest $resignation)
+    {
+        $this->checkIsIe();
+        $request->validate(['ie_notes' => 'required|string|max:500']);
+
+        $resignation->update([
+            'status'         => ResignationRequest::STATUS_CANCELLED,
+            'ie_verified_by' => Auth::id(),
+            'ie_verified_at' => now(),
+            'ie_notes'       => '[Dibatalkan IE] ' . $request->ie_notes,
+        ]);
+
+        // Pastikan akun staf tetap aktif
+        $resignation->user?->update(['is_active' => true]);
+
+        return back()->with('success', 'Permohonan resign ' . ($resignation->applicant_name ?? 'anggota') . ' berhasil dibatalkan oleh IE.');
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────

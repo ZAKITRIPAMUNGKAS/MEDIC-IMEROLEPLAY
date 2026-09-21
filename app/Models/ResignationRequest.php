@@ -47,6 +47,7 @@ class ResignationRequest extends Model
     const STATUS_PENDING_IE    = 'pending_ie';
     const STATUS_COMPLETED     = 'completed';
     const STATUS_REJECTED      = 'rejected';
+    const STATUS_CANCELLED     = 'cancelled';
 
     // ─── Relations ────────────────────────────────────────────────────────────
 
@@ -75,6 +76,7 @@ class ResignationRequest extends Model
             'pending_ie'   => 'Kalkulasi Denda oleh IE',
             'completed'    => 'Selesai (Akun Dinonaktifkan)',
             'rejected'     => 'Ditolak',
+            'cancelled'    => 'Dibatalkan',
             default        => $this->status,
         };
     }
@@ -82,10 +84,11 @@ class ResignationRequest extends Model
     public function getStatusColorAttribute(): string
     {
         return match($this->status) {
-            'completed' => 'green',
-            'rejected'  => 'red',
+            'completed'   => 'green',
+            'rejected'    => 'red',
+            'cancelled'   => 'gray',
             'pending_pnd' => 'yellow',
-            default     => 'blue',
+            default       => 'blue',
         };
     }
 
