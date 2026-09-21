@@ -170,7 +170,7 @@ class CertificateGeneratorService
 
     <!-- Staff ID & Unit -->
     <text x="600" y="415" font-family="'Courier New', monospace" font-size="13" font-weight="700" letter-spacing="2" fill="#38bdf8" text-anchor="middle">
-        NO. INDUK STAF: {$safeStaffId} &bull; {$safeDivLabel}
+        NO. INDUK STAF: {$safeStaffId} &#8226; {$safeDivLabel}
     </text>
 
     <!-- ═══ CERTIFICATE DESIGNATION BOX ═══ -->
@@ -238,7 +238,7 @@ class CertificateGeneratorService
             {$safeDivLabel}
         </text>
         <text x="0" y="100" font-family="'Courier New', monospace" font-size="10" fill="#10b981" font-weight="700" text-anchor="end">
-            &bull; SECURE DIGITAL VERIFICATION &bull;
+            &#8226; SECURE DIGITAL VERIFICATION &#8226;
         </text>
     </g>
 </svg>
