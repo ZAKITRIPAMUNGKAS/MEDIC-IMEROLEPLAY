@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\StaffRole;
 use App\Models\CandidateInterview;
 use App\Models\RecruitmentApplication;
+use App\Models\InterviewerApplication;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,14 +22,21 @@ class InterviewController extends Controller
     }
 
     /**
-     * Tampilkan antrean calon medis yang mendaftar melalui recruitment Alta Hospital
+     * Tampilkan modul interview:
+     * - Jika user belum memiliki role interviewer (dan bukan PND/IE/Admin), tampilkan halaman form pengajuan role.
+     * - Jika user berwenang, tampilkan antrean calon medis dan daftar pengajuan role dari anggota lain.
      */
     public function index(Request $request)
     {
-        $this->checkIsInterviewer();
         $user = Auth::user();
 
-        // Ambil data calon medis langsung dari hasil pengajuan formulir Recruitment Alta Hospital
+        // Jika bukan interviewer, bukan IE, bukan PND, bukan Admin: tampilkan form pengajuan diri
+        if (!$user->isInterviewer()) {
+            $myApplication = InterviewerApplication::where('user_id', $user->id)->latest()->first();
+            return view('portal.interview.request', compact('user', 'myApplication'));
+        }
+
+        // Ambil data calon medis langsung dari hasil formulir Recruitment Alta Hospital
         $query = RecruitmentApplication::with(['period', 'latestInterview.interviewer', 'user'])
             ->where('hospital', $user->hospital ?? 'alta');
 
@@ -46,21 +54,40 @@ class InterviewController extends Controller
 
         $candidates = $query->latest()->paginate(20)->withQueryString();
 
-        // Daftar riwayat evaluasi interview yang telah dilakukan
+        // Riwayat evaluasi interview yang telah selesai
         $completedInterviews = CandidateInterview::with(['application', 'candidate', 'interviewer'])
             ->latest('interviewed_at')
             ->paginate(15, ['*'], 'completed_page');
 
-        // Hak kelola penugasan interviewer sementara (khusus IE, PND, & Admin)
+        // Hak kelola penugasan interviewer (khusus PND, IE, & Admin)
         $canManageInterviewers = $user->isAdmin() || $user->isInDivision('ie', 'pnd');
 
-        // Daftar staf aktif yang sedang ditugaskan sebagai interviewer sementara
+        // Daftar pengajuan role interviewer yang menunggu persetujuan (ACC) dari anggota lain
+        $pendingApplications = $canManageInterviewers
+            ? InterviewerApplication::with(['user.role', 'user.medicRole', 'user.subRole'])
+                ->where('hospital', $user->hospital ?? 'alta')
+                ->where('status', 'pending')
+                ->latest()
+                ->get()
+            : collect();
+
+        // Riwayat keputusan pengajuan role interviewer terakhir
+        $recentDecisions = $canManageInterviewers
+            ? InterviewerApplication::with(['user', 'actionBy'])
+                ->where('hospital', $user->hospital ?? 'alta')
+                ->whereIn('status', ['approved', 'rejected'])
+                ->latest('action_at')
+                ->take(8)
+                ->get()
+            : collect();
+
+        // Daftar staf aktif yang saat ini memegang tugas interviewer sementara
         $activeInterviewers = User::with(['role', 'medicRole', 'subRole'])
             ->where('hospital', $user->hospital ?? 'alta')
             ->where('is_interviewer', true)
             ->get();
 
-        // Daftar staf aktif yang belum ditugaskan untuk dropdown assign
+        // Staf aktif untuk opsi assign manual
         $availableStaff = $canManageInterviewers
             ? User::with(['role', 'medicRole', 'subRole'])
                 ->where('hospital', $user->hospital ?? 'alta')
@@ -73,6 +100,8 @@ class InterviewController extends Controller
         return view('portal.interview.index', compact(
             'candidates',
             'completedInterviews',
+            'pendingApplications',
+            'recentDecisions',
             'activeInterviewers',
             'availableStaff',
             'canManageInterviewers'
@@ -80,7 +109,84 @@ class InterviewController extends Controller
     }
 
     /**
-     * Tampilkan form interview untuk calon tertentu berdasarkan pengajuan recruitment
+     * Staf mengajukan diri untuk mendapatkan Role Interviewer sementara
+     */
+    public function submitApplication(Request $request)
+    {
+        $user = Auth::user();
+
+        if ($user->is_interviewer) {
+            return back()->with('info', 'Anda saat ini sudah memiliki wewenang sebagai Petugas Interviewer aktif.');
+        }
+
+        $existingPending = InterviewerApplication::where('user_id', $user->id)
+            ->where('status', 'pending')
+            ->first();
+
+        if ($existingPending) {
+            return back()->with('info', 'Pengajuan Anda sebelumnya masih dalam antrean peninjauan oleh tim PND / IE.');
+        }
+
+        $validated = $request->validate([
+            'reason' => 'nullable|string|max:1000',
+        ]);
+
+        InterviewerApplication::create([
+            'user_id'  => $user->id,
+            'hospital' => $user->hospital ?? 'alta',
+            'reason'   => $validated['reason'] ?? 'Mengajukan diri untuk membantu wawancara calon staf medis pada periode recruitment ini.',
+            'status'   => 'pending',
+        ]);
+
+        return back()->with('success', 'Pengajuan role Interviewer berhasil dikirim! Menunggu persetujuan (ACC) dari tim PND atau IE.');
+    }
+
+    /**
+     * PND / IE menyetujui (ACC) pengajuan role interviewer dari staf
+     */
+    public function approveApplication(InterviewerApplication $application)
+    {
+        $user = Auth::user();
+        if (!$user->isAdmin() && !$user->isInDivision('ie', 'pnd')) {
+            abort(403, 'Hanya divisi IE, PND, atau Admin yang dapat menyetujui pengajuan role Interviewer.');
+        }
+
+        $application->update([
+            'status'    => 'approved',
+            'action_by' => $user->id,
+            'action_at' => now(),
+        ]);
+
+        // Otomatis aktifkan status interviewer pada user
+        $application->user->update([
+            'is_interviewer' => true,
+        ]);
+
+        return back()->with('success', "Pengajuan untuk {$application->user->name} berhasil di-ACC! Staf otomatis mendapatkan hak akses Interviewer.");
+    }
+
+    /**
+     * PND / IE menolak pengajuan role interviewer
+     */
+    public function rejectApplication(Request $request, InterviewerApplication $application)
+    {
+        $user = Auth::user();
+        if (!$user->isAdmin() && !$user->isInDivision('ie', 'pnd')) {
+            abort(403, 'Hanya divisi IE, PND, atau Admin yang dapat menolak pengajuan role Interviewer.');
+        }
+
+        $application->update([
+            'status'       => 'rejected',
+            'action_by'    => $user->id,
+            'action_at'    => now(),
+            'action_notes' => $request->notes ?? 'Belum memenuhi kualifikasi atau kuota interviewer saat ini telah mencukupi.',
+        ]);
+
+        return back()->with('success', "Pengajuan role interviewer untuk {$application->user->name} telah ditolak.");
+    }
+
+    /**
+     * Tampilkan form interview untuk calon tertentu berdasarkan pendaftaran recruitment
      */
     public function showForm(RecruitmentApplication $candidate)
     {
@@ -99,7 +205,7 @@ class InterviewController extends Controller
     }
 
     /**
-     * Simpan hasil interview calon medis
+     * Simpan hasil evaluasi interview calon medis
      */
     public function storeEvaluation(Request $request, RecruitmentApplication $candidate)
     {
@@ -163,7 +269,7 @@ class InterviewController extends Controller
     }
 
     /**
-     * Penugasan staf sebagai Interviewer Sementara (Hanya PND, IE, atau Admin)
+     * Penugasan staf langsung sebagai Interviewer Sementara (Khusus PND, IE, atau Admin)
      */
     public function assignInterviewer(Request $request)
     {
@@ -185,7 +291,7 @@ class InterviewController extends Controller
     }
 
     /**
-     * Cabut penugasan staf sebagai Interviewer Sementara (Hanya PND, IE, atau Admin)
+     * Cabut penugasan staf sebagai Interviewer Sementara (Khusus PND, IE, atau Admin)
      */
     public function revokeInterviewer(User $user)
     {
@@ -195,6 +301,11 @@ class InterviewController extends Controller
         }
 
         $user->update(['is_interviewer' => false]);
+
+        // Tandai permohonan sebagai revoked
+        InterviewerApplication::where('user_id', $user->id)
+            ->where('status', 'approved')
+            ->update(['status' => 'revoked']);
 
         return back()->with('success', "Penugasan Interviewer sementara untuk {$user->name} berhasil dicabut.");
     }

@@ -52,46 +52,54 @@
                 <i class="fas fa-exclamation-circle text-rose-400"></i>
                 <span>{{ session('error') }}</span>
             </div>
-        @endif
+        @endif        {{-- Filter Box --}}
+        <div class="glass-effect rounded-2xl p-5 border border-white/10 shadow-xl space-y-4">
+            <form method="GET" action="{{ route('portal.ie.roles.index') }}" class="space-y-3">
+                {{-- Row 1: Search and Action Buttons --}}
+                <div class="flex flex-col sm:flex-row gap-3 items-center">
+                    <div class="relative flex-1 w-full">
+                        <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                        <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama anggota, Staff ID, CID..."
+                               class="w-full bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded-xl pl-9 pr-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-sky-400">
+                    </div>
+                    <div class="flex items-center gap-2 w-full sm:w-auto shrink-0">
+                        <button type="submit" class="px-5 py-2.5 bg-sky-500 hover:bg-sky-400 text-white rounded-xl text-xs font-semibold shadow-md transition-all flex items-center gap-2">
+                            <i class="fas fa-filter"></i> Terapkan Filter
+                        </button>
+                        @if(request()->hasAny(['q', 'role_id', 'medic_role_id', 'sub_role_id']))
+                            <a href="{{ route('portal.ie.roles.index') }}" class="px-3.5 py-2.5 bg-white/10 hover:bg-white/15 text-white/70 hover:text-white rounded-xl text-xs flex items-center gap-1.5 transition-all">
+                                <i class="fas fa-undo text-[10px]"></i> Reset
+                            </a>
+                        @endif
+                    </div>
+                </div>
 
-        {{-- Filter Box --}}
-        <div class="glass-effect rounded-2xl p-5 border border-white/10">
-            <form method="GET" action="{{ route('portal.ie.roles.index') }}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-                <div>
-                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama, Staff ID, CID..."
-                           class="w-full bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-sky-400">
-                </div>
-                <div>
-                    <select name="role_id" class="w-full bg-slate-900 text-white border border-white/20 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-sky-400">
-                        <option value="">— Filter Jabatan Utama —</option>
-                        @foreach($allRoles as $r)
-                            <option value="{{ $r->id }}" @selected(request('role_id') == $r->id)>{{ $r->display_name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
-                    <select name="medic_role_id" class="w-full bg-slate-900 text-emerald-300 border border-emerald-500/30 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-400">
-                        <option value="" class="text-white">— Filter Jabatan Medis —</option>
-                        @foreach($medicalRoles as $mr)
-                            <option value="{{ $mr->id }}" @selected(request('medic_role_id') == $mr->id)>🩺 {{ $mr->display_name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="flex gap-2">
-                    <select name="sub_role_id" class="flex-1 bg-slate-900 text-purple-300 border border-purple-500/30 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-purple-400">
-                        <option value="" class="text-white">— Filter Divisi —</option>
-                        @foreach($subRoles as $sub)
-                            <option value="{{ $sub->id }}" @selected(request('sub_role_id') == $sub->id)>[{{ $sub->short_name }}] {{ $sub->display_name }}</option>
-                        @endforeach
-                    </select>
-                    <button type="submit" class="px-4 py-2.5 bg-sky-500 hover:bg-sky-400 text-white rounded-xl text-xs font-semibold shadow-md transition-all">
-                        <i class="fas fa-search"></i>
-                    </button>
-                    @if(request()->hasAny(['q', 'role_id', 'medic_role_id', 'sub_role_id']))
-                        <a href="{{ route('portal.ie.roles.index') }}" class="px-3 py-2.5 bg-white/10 hover:bg-white/15 text-white/70 rounded-xl text-xs flex items-center">
-                            <i class="fas fa-times"></i>
-                        </a>
-                    @endif
+                {{-- Row 2: 3 Filter Dropdowns --}}
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                    <div>
+                        <select name="role_id" onchange="this.form.submit()" class="w-full bg-slate-900 text-white border border-white/20 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-sky-400">
+                            <option value="">— Filter Jabatan Utama —</option>
+                            @foreach($allRoles as $r)
+                                <option value="{{ $r->id }}" @selected(request('role_id') == $r->id)>{{ $r->display_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <select name="medic_role_id" onchange="this.form.submit()" class="w-full bg-slate-900 text-emerald-300 border border-emerald-500/30 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-400">
+                            <option value="" class="text-white">— Filter Jabatan Medis —</option>
+                            @foreach($medicalRoles as $mr)
+                                <option value="{{ $mr->id }}" @selected(request('medic_role_id') == $mr->id)>🩺 {{ $mr->display_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <select name="sub_role_id" onchange="this.form.submit()" class="w-full bg-slate-900 text-purple-300 border border-purple-500/30 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-purple-400">
+                            <option value="" class="text-white">— Filter Divisi (Sub-Role) —</option>
+                            @foreach($subRoles as $sub)
+                                <option value="{{ $sub->id }}" @selected(request('sub_role_id') == $sub->id)>[{{ $sub->short_name }}] {{ $sub->display_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
             </form>
         </div>
@@ -114,36 +122,40 @@
                         <tr class="hover:bg-white/5 transition-colors">
                             <td class="px-5 py-3.5">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-sky-500/30 to-blue-500/30 border border-white/20 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
+                                    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-sky-500/30 to-blue-500/30 border border-white/20 flex items-center justify-center text-white font-bold text-xs flex-shrink-0 shadow">
                                         {{ strtoupper(substr($staf->name, 0, 2)) }}
                                     </div>
                                     <div>
                                         <p class="text-white font-semibold text-sm">{{ $staf->name }}</p>
-                                        <div class="flex items-center gap-2 text-xs text-slate-400">
+                                        <div class="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
                                             @if($staf->staff_id)
-                                                <span class="font-mono text-sky-300">{{ $staf->staff_id }}</span>
+                                                <span class="font-mono text-sky-300 bg-sky-500/10 px-1.5 py-0.5 rounded border border-sky-500/20 text-[11px]">{{ $staf->staff_id }}</span>
                                             @endif
-                                            @if($staf->citizen_id)
-                                                <span class="font-mono text-emerald-300">CID: {{ $staf->citizen_id }}</span>
+                                            @if($staf->citizen_id && !str_contains($staf->citizen_id, '@'))
+                                                <span class="font-mono text-emerald-300 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20 text-[11px]">CID: {{ $staf->citizen_id }}</span>
+                                            @else
+                                                <span class="font-mono text-slate-500 text-[11px]">CID: Belum Diatur</span>
                                             @endif
                                         </div>
                                     </div>
                                 </div>
                             </td>
                             <td class="px-5 py-3.5">
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/30">
                                     {{ $staf->role?->display_name ?? '-' }}
                                 </span>
                             </td>
                             <td class="px-5 py-3.5">
                                 @if($staf->medicRole)
-                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                                        🩺 {{ $staf->medicRole->display_name }}
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                        <i class="fas fa-stethoscope text-[10px]"></i> {{ $staf->medicRole->display_name }}
+                                    </span>
+                                @elseif($staf->role)
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-xs text-slate-300 bg-white/5 border border-white/10">
+                                        <span class="text-slate-400 text-[10px] uppercase font-bold">Klinis:</span> {{ $staf->role->display_name }}
                                     </span>
                                 @else
-                                    <span class="text-slate-400 text-xs italic">
-                                        (Sesuai peran utama: {{ $staf->role?->display_name }})
-                                    </span>
+                                    <span class="text-slate-500 text-xs">—</span>
                                 @endif
                             </td>
                             <td class="px-5 py-3.5">

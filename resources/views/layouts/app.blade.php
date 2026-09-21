@@ -1615,6 +1615,12 @@
                                         <i class="fas fa-user-tie w-4 text-indigo-500 text-sm"></i> Interviewer: Calon Medis
                                     </a>
                                 </div>
+                                @else
+                                <div class="py-1 border-t border-gray-100">
+                                    <a href="{{ route('portal.interview.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-xs text-gray-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors">
+                                        <i class="fas fa-user-plus w-4 text-indigo-400 text-xs"></i> Ajukan Jadi Interviewer
+                                    </a>
+                                </div>
                                 @endif
                             </div>
                         </div>
@@ -1926,6 +1932,12 @@
                                 class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
                                 <i class="fas fa-user-tie w-5 text-indigo-400 text-sm"></i>
                                 <span>Interviewer: Calon Medis</span>
+                            </a>
+                            @else
+                            <a href="{{ route('portal.interview.index') }}"
+                                class="flex items-center gap-3 text-slate-300 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-xs font-medium transition-colors">
+                                <i class="fas fa-user-plus w-5 text-indigo-400 text-xs"></i>
+                                <span>Ajukan Jadi Interviewer</span>
                             </a>
                             @endif
                         </div>

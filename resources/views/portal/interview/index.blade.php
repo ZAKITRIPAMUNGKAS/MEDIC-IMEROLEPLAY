@@ -34,8 +34,12 @@
             <div class="flex flex-col sm:flex-row items-end sm:items-center gap-3">
                 @if($canManageInterviewers)
                 <button type="button" onclick="document.getElementById('interviewerManagementCard').classList.toggle('hidden')"
-                        class="px-4 py-2 bg-indigo-600/30 hover:bg-indigo-600/50 border border-indigo-500/40 text-indigo-200 hover:text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition-all shadow-md">
+                        class="relative px-4 py-2 bg-indigo-600/30 hover:bg-indigo-600/50 border border-indigo-500/40 text-indigo-200 hover:text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition-all shadow-md">
                     <i class="fas fa-user-shield text-indigo-400"></i> Kelola Tim Interviewer ({{ $activeInterviewers->count() }})
+                    @if($pendingApplications->isNotEmpty())
+                        <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping absolute -top-1 -right-1"></span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-amber-400 absolute -top-1 -right-1"></span>
+                    @endif
                 </button>
                 @endif
                 <div class="text-right bg-white/5 border border-white/10 px-4 py-2 rounded-xl">
@@ -62,14 +66,14 @@
 
         {{-- Panel Kelola Petugas Interviewer Sementara (Khusus PND, IE, Admin) --}}
         @if($canManageInterviewers)
-        <div id="interviewerManagementCard" class="glass-effect rounded-2xl p-6 border border-indigo-500/30 shadow-2xl space-y-5 {{ $activeInterviewers->isEmpty() ? '' : 'hidden' }}">
+        <div id="interviewerManagementCard" class="glass-effect rounded-2xl p-6 border border-indigo-500/30 shadow-2xl space-y-6 {{ $pendingApplications->isNotEmpty() ? '' : ($activeInterviewers->isEmpty() ? '' : 'hidden') }}">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/10">
                 <div>
                     <h3 class="font-bold text-white text-base flex items-center gap-2">
                         <i class="fas fa-users-cog text-indigo-400"></i> Manajemen Tim Interviewer (Tugas Sementara)
                     </h3>
                     <p class="text-xs text-slate-300 mt-0.5">
-                        Role Interviewer bersifat penugasan ad-hoc selama periode recruitment aktif, bukan jabatan struktural selamanya. PND &amp; IE dapat menugaskan dan mencabut akses kapan saja.
+                        Role Interviewer bersifat penugasan ad-hoc selama masa rekrutmen. Anggota staf dapat mengajukan diri dan Anda cukup klik <strong>ACC (Setujui)</strong> untuk mengaktifkannya secara otomatis.
                     </p>
                 </div>
                 <button type="button" onclick="document.getElementById('interviewerManagementCard').classList.add('hidden')" class="text-slate-400 hover:text-white text-xs self-start sm:self-center">
@@ -77,28 +81,89 @@
                 </button>
             </div>
 
-            {{-- Form Tugaskan Interviewer Baru --}}
-            <form method="POST" action="{{ route('portal.interview.assign') }}" class="flex flex-col sm:flex-row gap-3 items-end bg-white/5 p-4 rounded-xl border border-white/10">
-                @csrf
-                <div class="w-full sm:flex-1">
-                    <label for="assign_user_id" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
-                        <i class="fas fa-user-plus text-indigo-400 mr-1"></i> Tambah Anggota Staf Sebagai Interviewer Sementara
-                    </label>
-                    <select name="user_id" id="assign_user_id" required
-                            class="w-full bg-slate-800 text-white border border-white/20 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-400">
-                        <option value="">-- Pilih Anggota Medis yang Ditugaskan --</option>
-                        @foreach($availableStaff as $staf)
-                        <option value="{{ $staf->id }}">
-                            {{ $staf->name }} — {{ $staf->medicRole?->display_name ?? $staf->role?->display_name ?? 'Staf' }} {{ $staf->subRole ? '('.$staf->subRole->display_name.')' : '' }}
-                        </option>
-                        @endforeach
-                    </select>
+            {{-- Bagian 1: Pengajuan Role Interviewer dari Anggota Staf (Menunggu ACC) --}}
+            <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-amber-300 flex items-center gap-1.5">
+                        <i class="fas fa-inbox text-amber-400"></i> Pengajuan Role Interviewer dari Anggota Staf
+                    </h4>
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold {{ $pendingApplications->isNotEmpty() ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30 animate-pulse' : 'bg-white/10 text-slate-400' }}">
+                        {{ $pendingApplications->count() }} Menunggu ACC
+                    </span>
                 </div>
-                <button type="submit"
-                        class="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-bold shadow-md transition-all whitespace-nowrap">
-                    <i class="fas fa-check mr-1.5"></i> Tugaskan Interviewer
-                </button>
-            </form>
+
+                @if($pendingApplications->isEmpty())
+                    <div class="p-3.5 rounded-xl bg-white/5 border border-white/10 text-xs text-slate-400 text-center">
+                        <i class="fas fa-check-circle text-emerald-400 mr-1"></i> Tidak ada pengajuan baru yang menunggu persetujuan. Anggota staf dapat mengajukan diri melalui portal interview.
+                    </div>
+                @else
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        @foreach($pendingApplications as $app)
+                        <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-3 shadow-md">
+                            <div class="flex items-start justify-between gap-3">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-amber-500/30 to-indigo-500/30 border border-white/20 flex items-center justify-center text-white font-bold text-xs shrink-0">
+                                        {{ strtoupper(substr($app->user->name, 0, 2)) }}
+                                    </div>
+                                    <div>
+                                        <h5 class="text-white font-bold text-xs">{{ $app->user->name }}</h5>
+                                        <p class="text-[11px] text-sky-300">{{ $app->user->medicRole?->display_name ?? $app->user->role?->display_name ?? 'Staf' }} {{ $app->user->subRole ? '('.$app->user->subRole->display_name.')' : '' }}</p>
+                                    </div>
+                                </div>
+                                <span class="text-[10px] text-slate-400">{{ $app->created_at->diffForHumans() }}</span>
+                            </div>
+
+                            @if($app->reason)
+                            <div class="text-[11px] text-slate-300 bg-black/30 p-2.5 rounded-lg border border-white/5 italic">
+                                "{{ $app->reason }}"
+                            </div>
+                            @endif
+
+                            <div class="flex items-center justify-end gap-2 pt-1 border-t border-white/10">
+                                <form method="POST" action="{{ route('portal.interview.reject-application', $app->id) }}" onsubmit="return confirm('Tolak permohonan role interviewer dari {{ addslashes($app->user->name) }}?')">
+                                    @csrf
+                                    <button type="submit" class="px-3 py-1.5 bg-rose-600/30 hover:bg-rose-600 text-rose-300 hover:text-white rounded-lg text-xs font-semibold transition-colors flex items-center gap-1">
+                                        <i class="fas fa-times"></i> Tolak
+                                    </button>
+                                </form>
+                                <form method="POST" action="{{ route('portal.interview.approve-application', $app->id) }}" onsubmit="return confirm('ACC dan aktifkan role Interviewer untuk {{ addslashes($app->user->name) }}?')">
+                                    @csrf
+                                    <button type="submit" class="px-4 py-1.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-lg text-xs font-bold shadow-md transition-all flex items-center gap-1.5">
+                                        <i class="fas fa-check-circle"></i> Setujui (ACC)
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+
+            {{-- Bagian 2: Form Tugaskan Interviewer Manual (Opsi Tambahan) --}}
+            <details class="bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+                <summary class="px-4 py-3 text-xs font-semibold text-slate-300 cursor-pointer hover:bg-white/5 flex items-center justify-between">
+                    <span class="flex items-center gap-1.5"><i class="fas fa-user-plus text-indigo-400"></i> Opsi Manual: Tugaskan Staf Tanpa Pengajuan</span>
+                    <span class="text-[11px] text-slate-400">Klik untuk buka form &darr;</span>
+                </summary>
+                <form method="POST" action="{{ route('portal.interview.assign') }}" class="p-4 pt-2 flex flex-col sm:flex-row gap-3 items-end border-t border-white/10">
+                    @csrf
+                    <div class="w-full sm:flex-1">
+                        <select name="user_id" required
+                                class="w-full bg-slate-800 text-white border border-white/20 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                            <option value="">-- Pilih Anggota Medis yang Ditugaskan --</option>
+                            @foreach($availableStaff as $staf)
+                            <option value="{{ $staf->id }}">
+                                {{ $staf->name }} — {{ $staf->medicRole?->display_name ?? $staf->role?->display_name ?? 'Staf' }} {{ $staf->subRole ? '('.$staf->subRole->display_name.')' : '' }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <button type="submit"
+                            class="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-bold shadow-md transition-all whitespace-nowrap">
+                        <i class="fas fa-check mr-1.5"></i> Tugaskan Langsung
+                    </button>
+                </form>
+            </details>
 
             {{-- Tabel Daftar Interviewer Aktif Saat Ini --}}
             <div>

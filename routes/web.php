@@ -807,6 +807,26 @@ Route::get('/auto-setup-db', function () {
             $logs[] = '✅ Kolom is_interviewer berhasil ditambahkan ke tabel users.';
         }
 
+        // 18. Tabel interviewer_applications (Pengajuan Role Interviewer oleh Anggota)
+        if (!\Illuminate\Support\Facades\Schema::hasTable('interviewer_applications')) {
+            \Illuminate\Support\Facades\Schema::create('interviewer_applications', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+                $table->string('hospital', 50)->default('alta');
+                $table->text('reason')->nullable();
+                $table->string('status', 30)->default('pending');
+                $table->foreignId('action_by')->nullable()->constrained('users')->nullOnDelete();
+                $table->timestamp('action_at')->nullable();
+                $table->text('action_notes')->nullable();
+                $table->timestamps();
+
+                $table->index(['user_id', 'status']);
+            });
+            $logs[] = '✅ Tabel interviewer_applications berhasil dibuat.';
+        } else {
+            $logs[] = 'ℹ️ Tabel interviewer_applications sudah ada.';
+        }
+
         // Jalankan migrasi resmi jika tersedia
         try {
             \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
@@ -1538,13 +1558,16 @@ Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->gro
         Route::post('/{application}/convert',         [\App\Http\Controllers\Portal\RecruitmentManagementController::class, 'convertCandidate'])->name('convert');
     });
 
-    // ── Role Interview: Wawancara Calon Medis ─────────────────────────────────
+    // ── Role Interview: Wawancara Calon Medis & Pengajuan Role ─────────────────
     Route::prefix('interview')->name('interview.')->group(function () {
-        Route::get('/',                                  [\App\Http\Controllers\Portal\InterviewController::class, 'index'])->name('index');
-        Route::get('/{candidate}/form',                  [\App\Http\Controllers\Portal\InterviewController::class, 'showForm'])->name('form');
-        Route::post('/{candidate}/store',                [\App\Http\Controllers\Portal\InterviewController::class, 'storeEvaluation'])->name('store');
-        Route::post('/assign-interviewer',               [\App\Http\Controllers\Portal\InterviewController::class, 'assignInterviewer'])->name('assign');
-        Route::post('/{user}/revoke-interviewer',         [\App\Http\Controllers\Portal\InterviewController::class, 'revokeInterviewer'])->name('revoke');
+        Route::get('/',                                                   [\App\Http\Controllers\Portal\InterviewController::class, 'index'])->name('index');
+        Route::post('/apply',                                             [\App\Http\Controllers\Portal\InterviewController::class, 'submitApplication'])->name('apply');
+        Route::post('/applications/{application}/approve',                [\App\Http\Controllers\Portal\InterviewController::class, 'approveApplication'])->name('approve-application');
+        Route::post('/applications/{application}/reject',                 [\App\Http\Controllers\Portal\InterviewController::class, 'rejectApplication'])->name('reject-application');
+        Route::get('/{candidate}/form',                                   [\App\Http\Controllers\Portal\InterviewController::class, 'showForm'])->name('form');
+        Route::post('/{candidate}/store',                                 [\App\Http\Controllers\Portal\InterviewController::class, 'storeEvaluation'])->name('store');
+        Route::post('/assign-interviewer',                                [\App\Http\Controllers\Portal\InterviewController::class, 'assignInterviewer'])->name('assign');
+        Route::post('/{user}/revoke-interviewer',                          [\App\Http\Controllers\Portal\InterviewController::class, 'revokeInterviewer'])->name('revoke');
     });
 
     // ── Pengajuan Stase (Anggota & Konsulen) ──────────────────────────────────
