@@ -40,33 +40,39 @@ class OperationCertApplicationController extends Controller
         $user = Auth::user();
 
         $validated = $request->validate([
-            'title'  => 'required|string|max:255',
+            'title'  => 'nullable|string|max:255',
             'reason' => 'nullable|string|max:1000',
             'notes'  => 'nullable|string|max:500',
         ]);
 
-        // Cek apakah ada pengajuan yang masih pending
+        $title = trim((string)$request->input('title'));
+        if (empty($title)) {
+            $title = 'Sertifikasi Asistensi Bedah Minor & Penjahitan Luka';
+        }
+
+        // Cek apakah ada pengajuan yang masih pending untuk judul yang sama
         $existing = CertificateApplication::where('user_id', $user->id)
-            ->where('type', 'operation_cert')
+            ->where('division', 'pnd')
+            ->where('title', $title)
             ->where('status', 'pending')
             ->first();
 
         if ($existing) {
-            return back()->with('error', 'Anda masih memiliki permohonan sertifikasi operasi yang sedang menunggu verifikasi PND.');
+            return back()->with('error', 'Anda masih memiliki permohonan ' . $title . ' yang sedang menunggu verifikasi PND.');
         }
 
         CertificateApplication::create([
             'user_id'  => $user->id,
             'type'     => 'operation_cert',
             'division' => 'pnd',
-            'title'    => $validated['title'],
+            'title'    => $title,
             'reason'   => $validated['notes'] ?? $validated['reason'] ?? null,
             'notes'    => $validated['notes'] ?? null,
             'status'   => CertificateApplication::STATUS_PENDING,
         ]);
 
         return redirect()->route('portal.operation-cert.index')
-            ->with('success', 'Permohonan Sertifikasi Operasi berhasil dikirim ke Divisi PND.');
+            ->with('success', 'Permohonan ' . $title . ' berhasil dikirim ke Divisi PND.');
     }
 
     public function cancel(CertificateApplication $application)

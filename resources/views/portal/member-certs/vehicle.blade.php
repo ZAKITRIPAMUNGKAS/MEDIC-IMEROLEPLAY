@@ -96,20 +96,43 @@
             <form action="{{ route('portal.vehicle-cert.store') }}" method="POST" class="space-y-4">
                 @csrf
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-white/70 uppercase mb-1.5">Jenis Sertifikasi <span class="text-rose-400">*</span></label>
-                        <select name="type" required class="w-full px-3.5 py-2.5 bg-white/10 border border-white/20 rounded-xl text-white text-sm focus:outline-none focus:border-amber-400">
-                            <option value="vehicle_land" class="bg-gray-800 text-white">Ambulans / Kendaraan Darat Operasional</option>
-                            <option value="vehicle_heli" class="bg-gray-800 text-white">Helikopter Medis / Pilot Rescue EMS</option>
-                        </select>
-                    </div>
+                <div>
+                    <label class="block text-xs font-semibold text-white/70 uppercase mb-1.5">Pilih Template Sertifikat Kendaraan <span class="text-rose-400">*</span></label>
+                    <select id="vehicleTemplateSelect" class="w-full px-3.5 py-2.5 bg-white/10 border border-white/20 rounded-xl text-white text-sm focus:outline-none focus:border-amber-400">
+                        <option value="Sertifikasi Izin Mengemudi Ambulans Medis" data-type="vehicle_land" data-cat="Ambulans Medis Operasional" class="bg-gray-800 text-white" selected>
+                            🚑 Ambulans Medis Operasional (Izin Mengemudi Ambulans Cepat)
+                        </option>
+                        <option value="Sertifikasi Pengemudi Kendaraan Taktis & Rescue Medis" data-type="vehicle_land" data-cat="Kendaraan Taktis & SUV Darat" class="bg-gray-800 text-white">
+                            🚙 Kendaraan Taktis &amp; Rescue Medis (SUV Operasional)
+                        </option>
+                        <option value="Sertifikasi Penerbang Helikopter Medis & Air Ambulance" data-type="vehicle_heli" data-cat="Helikopter & Evakuasi Udara" class="bg-gray-800 text-white">
+                            🚁 Helikopter Medis &amp; Air Ambulance (Pilot Rescue EMS)
+                        </option>
+                        <option value="Sertifikasi Pengemudi Operasional Staf Medis" data-type="vehicle_land" data-cat="Mobil Dinas & Operasional Staf" class="bg-gray-800 text-white">
+                            🚗 Transportasi Operasional Staf Medis (Mobil Dinas)
+                        </option>
+                    </select>
+                    {{-- Hidden inputs to store type and title automatically --}}
+                    <input type="hidden" name="type" id="vehicleTypeInput" value="vehicle_land">
+                    <input type="hidden" name="title" id="vehicleTitleInput" value="Sertifikasi Izin Mengemudi Ambulans Medis">
+                </div>
 
+                {{-- Live Selected Template Preview --}}
+                <div class="p-3.5 bg-amber-500/10 border border-amber-500/30 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                     <div>
-                        <label class="block text-xs font-semibold text-white/70 uppercase mb-1.5">Kualifikasi / Nama Sertifikat <span class="text-rose-400">*</span></label>
-                        <input type="text" name="title" required placeholder="Contoh: Sertifikasi Izin Mengemudi Ambulans Cepat"
-                               class="w-full px-3.5 py-2.5 bg-white/10 border border-white/20 rounded-xl text-white text-sm focus:outline-none focus:border-amber-400">
+                        <div class="text-[10px] uppercase font-bold text-amber-300 tracking-wider flex items-center gap-1.5">
+                            <i class="fas fa-certificate text-amber-400"></i> Judul Sertifikat Otomatis (Template Terpilih)
+                        </div>
+                        <div id="vehicleTitlePreview" class="text-white font-bold text-sm mt-0.5">
+                            Sertifikasi Izin Mengemudi Ambulans Medis
+                        </div>
+                        <div id="vehicleCategoryPreview" class="text-xs text-slate-300 mt-0.5">
+                            <i class="fas fa-tag mr-1 text-amber-400"></i> Kategori: Ambulans Medis Operasional (Divisi GA)
+                        </div>
                     </div>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/20 text-amber-300 text-xs font-semibold rounded-lg border border-amber-500/30 whitespace-nowrap self-start sm:self-center">
+                        <i class="fas fa-magic text-xs text-amber-300"></i> Otomatis
+                    </span>
                 </div>
 
                 <div>
@@ -219,4 +242,28 @@
 
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var select = document.getElementById('vehicleTemplateSelect');
+    var typeInput = document.getElementById('vehicleTypeInput');
+    var titleInput = document.getElementById('vehicleTitleInput');
+    var titlePreview = document.getElementById('vehicleTitlePreview');
+    var categoryPreview = document.getElementById('vehicleCategoryPreview');
+
+    if (select) {
+        select.addEventListener('change', function () {
+            var opt = select.options[select.selectedIndex];
+            var title = opt.value;
+            var type = opt.getAttribute('data-type') || 'vehicle_land';
+            var cat = opt.getAttribute('data-cat') || 'Kendaraan Operasional';
+
+            if (typeInput) typeInput.value = type;
+            if (titleInput) titleInput.value = title;
+            if (titlePreview) titlePreview.textContent = title;
+            if (categoryPreview) categoryPreview.innerHTML = '<i class="fas fa-tag mr-1 text-amber-400"></i> Kategori: ' + cat + ' (Divisi GA)';
+        });
+    }
+});
+</script>
 @endsection

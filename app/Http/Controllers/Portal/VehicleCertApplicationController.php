@@ -40,19 +40,26 @@ class VehicleCertApplicationController extends Controller
         $user = Auth::user();
 
         $validated = $request->validate([
-            'type'   => 'required|in:vehicle_land,vehicle_heli',
-            'title'  => 'required|string|max:255',
+            'type'   => 'nullable|string|in:vehicle_land,vehicle_heli',
+            'title'  => 'nullable|string|max:255',
             'reason' => 'nullable|string|max:1000',
             'notes'  => 'nullable|string|max:500',
         ]);
 
-        $title = $validated['title'] ?? ($validated['type'] === 'vehicle_land' 
-            ? 'Sertifikat Kelayakan Kendaraan Darat' 
-            : 'Sertifikat Kelayakan Helikopter Medis');
+        $type = in_array($request->input('type'), ['vehicle_land', 'vehicle_heli'])
+            ? $request->input('type')
+            : 'vehicle_land';
 
-        // Cek apakah ada pengajuan sejenis yang masih pending
+        $title = trim((string)$request->input('title'));
+        if (empty($title)) {
+            $title = $type === 'vehicle_heli'
+                ? 'Sertifikasi Penerbang Helikopter Medis & Air Ambulance'
+                : 'Sertifikasi Izin Mengemudi Ambulans Medis';
+        }
+
+        // Cek apakah ada pengajuan sejenis dengan judul yang sama yang masih pending
         $existing = CertificateApplication::where('user_id', $user->id)
-            ->where('type', $validated['type'])
+            ->where('title', $title)
             ->where('status', 'pending')
             ->first();
 
@@ -62,7 +69,7 @@ class VehicleCertApplicationController extends Controller
 
         CertificateApplication::create([
             'user_id'  => $user->id,
-            'type'     => $validated['type'],
+            'type'     => $type,
             'division' => 'ga',
             'title'    => $title,
             'reason'   => $validated['notes'] ?? $validated['reason'] ?? null,
