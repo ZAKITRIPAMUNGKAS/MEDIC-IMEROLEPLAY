@@ -54,6 +54,34 @@
                             <span class="px-2 py-0.5 rounded-full text-xs font-semibold {{ $app->status === 'approved' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : ($app->status === 'rejected' ? 'bg-red-500/20 text-red-300 border border-red-500/30' : 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30') }}">
                                 {{ $app->status_label }}
                             </span>
+
+                            {{-- Berkas Upload Link --}}
+                            <div class="mt-2 flex flex-wrap gap-1">
+                                @if($app->case_study_file)
+                                    <a href="{{ asset('storage/' . $app->case_study_file) }}" target="_blank"
+                                       class="inline-flex items-center gap-1 px-2 py-0.5 bg-violet-500/20 hover:bg-violet-500/30 text-violet-300 border border-violet-500/30 rounded text-[11px] font-medium transition-all" title="Buka Dokumen Studi Kasus">
+                                        <i class="fas fa-file-pdf text-rose-400 text-[10px]"></i> Studi Kasus
+                                    </a>
+                                @endif
+                                @if($app->recommendation_letter_1)
+                                    <a href="{{ asset('storage/' . $app->recommendation_letter_1) }}" target="_blank"
+                                       class="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/30 rounded text-[11px] font-medium transition-all" title="Buka Rekomendasi 1">
+                                        <i class="fas fa-file-alt text-sky-400 text-[10px]"></i> Rekom 1
+                                    </a>
+                                @endif
+                                @if($app->recommendation_letter_2)
+                                    <a href="{{ asset('storage/' . $app->recommendation_letter_2) }}" target="_blank"
+                                       class="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 border border-blue-500/30 rounded text-[11px] font-medium transition-all" title="Buka Rekomendasi 2">
+                                        <i class="fas fa-file-alt text-sky-400 text-[10px]"></i> Rekom 2
+                                    </a>
+                                @endif
+                                @if($app->supporting_document)
+                                    <a href="{{ asset('storage/' . $app->supporting_document) }}" target="_blank"
+                                       class="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 rounded text-[11px] font-medium transition-all" title="Buka Berkas Pendukung">
+                                        <i class="fas fa-folder-open text-amber-400 text-[10px]"></i> Berkas Pendukung
+                                    </a>
+                                @endif
+                            </div>
                         </td>
                         <td class="px-5 py-3.5">
                             @if($app->status === 'pending')

@@ -59,25 +59,68 @@
                 </div>
             </div>
 
+            {{-- Catatan Khusus Pengajuan Dokspel (Dokter Spesialis) --}}
+            <div id="dokspel-notice" class="p-4 bg-gradient-to-r from-amber-500/15 via-violet-500/15 to-amber-500/15 border border-amber-500/30 rounded-2xl shadow-lg">
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0 mt-0.5">
+                        <i class="fas fa-stethoscope text-base"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h4 class="text-sm font-bold text-amber-300">Catatan Khusus Pengajuan Dokter Spesialis (Dokspel)</h4>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-200 border border-amber-500/30 uppercase tracking-wider">Perhatian</span>
+                        </div>
+                        <p class="text-xs text-white/80 mt-1 leading-relaxed">
+                            Bagi anggota yang mengajukan kenaikan ke jenjang <strong>Dokter Spesialis (Dokspel)</strong>, harap memperhatikan ketentuan berkas berikut:
+                        </p>
+                        <ul class="mt-2 space-y-1 text-xs text-white/70 list-disc list-inside">
+                            <li><strong class="text-white">Laporan Studi Kasus (Wajib PDF):</strong> Berkas laporan ilmiah / kasus bedah / penanganan klinis spesialistik.</li>
+                            <li><strong class="text-white">Surat Rekomendasi Konsulen:</strong> Minimal 2 surat rekomendasi resmi dari Konsulen/Dokter Spesialis senior.</li>
+                            <li><strong class="text-white">Berkas Pendukung / Portofolio:</strong> Lampirkan bukti sertifikat stase kelulusan MSL, sertifikat operasi PND, atau rekap logbook pelayanan pasien.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
             {{-- Upload Berkas --}}
             <div class="space-y-4 pt-2 border-t border-white/10">
-                <p class="text-white/60 text-xs uppercase tracking-wider font-semibold">Berkas Pendukung</p>
+                <div class="flex items-center justify-between">
+                    <p class="text-white/80 text-xs uppercase tracking-wider font-bold">Unggah Berkas Pendukung (Format PDF / Dokumen Resmi)</p>
+                    <span class="text-[11px] text-white/40"><i class="fas fa-file-pdf text-rose-400 mr-1"></i> Format PDF diutamakan</span>
+                </div>
+
                 <div>
-                    <label class="block text-sm text-white/70 font-medium mb-1.5">Laporan Studi Kasus (PDF/DOC, max 10MB)</label>
+                    <label class="block text-sm text-white/70 font-medium mb-1.5">
+                        Laporan Studi Kasus <span class="text-xs text-white/40">(PDF/DOC/DOCX, max 10MB)</span>
+                    </label>
                     <input type="file" name="case_study_file" accept=".pdf,.doc,.docx"
                            class="w-full px-3 py-2.5 bg-white/10 border border-white/20 border-dashed rounded-xl text-white/70 text-sm file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-violet-500/20 file:text-violet-300 hover:file:bg-violet-500/30">
                 </div>
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm text-white/70 font-medium mb-1.5">Surat Rekomendasi Konsulen 1</label>
+                        <label class="block text-sm text-white/70 font-medium mb-1.5">
+                            Surat Rekomendasi Konsulen 1 <span class="text-xs text-white/40">(PDF/Foto)</span>
+                        </label>
                         <input type="file" name="recommendation_letter_1" accept=".pdf,.jpg,.jpeg,.png"
                                class="w-full px-3 py-2.5 bg-white/10 border border-white/20 border-dashed rounded-xl text-white/70 text-sm file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-violet-500/20 file:text-violet-300">
                     </div>
                     <div>
-                        <label class="block text-sm text-white/70 font-medium mb-1.5">Surat Rekomendasi Konsulen 2</label>
+                        <label class="block text-sm text-white/70 font-medium mb-1.5">
+                            Surat Rekomendasi Konsulen 2 <span class="text-xs text-white/40">(PDF/Foto)</span>
+                        </label>
                         <input type="file" name="recommendation_letter_2" accept=".pdf,.jpg,.jpeg,.png"
                                class="w-full px-3 py-2.5 bg-white/10 border border-white/20 border-dashed rounded-xl text-white/70 text-sm file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-violet-500/20 file:text-violet-300">
                     </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm text-white/70 font-medium mb-1.5">
+                        Berkas Pendukung Tambahan / Portofolio / Sertifikat <span class="text-xs text-white/40">(PDF/DOC/Gambar, max 10MB)</span>
+                    </label>
+                    <input type="file" name="supporting_document" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                           class="w-full px-3 py-2.5 bg-white/10 border border-white/20 border-dashed rounded-xl text-white/70 text-sm file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-amber-500/20 file:text-amber-300 hover:file:bg-amber-500/30">
+                    <p class="text-[11px] text-white/40 mt-1">Lampirkan sertifikat kelulusan stase, sertifikat operasi, logbook tindakan, atau berkas pendukung kualifikasi lainnya.</p>
                 </div>
             </div>
 

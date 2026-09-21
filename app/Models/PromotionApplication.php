@@ -18,6 +18,7 @@ class PromotionApplication extends Model
         'case_study_file',
         'recommendation_letter_1',
         'recommendation_letter_2',
+        'supporting_document',
         'status',
         'approved_by_pnd',
         'pnd_reviewed_at',

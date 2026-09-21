@@ -1368,7 +1368,8 @@ Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->gro
         Route::post('/periods/open',               [\App\Http\Controllers\Portal\PromotionController::class, 'openPeriod'])->name('period.open');
         Route::post('/periods/{period}/close',     [\App\Http\Controllers\Portal\PromotionController::class, 'closePeriod'])->name('period.close');
         // PND: Review Pengajuan
-        Route::get('/applications',                [\App\Http\Controllers\Portal\PromotionController::class, 'manageApplications'])->name('applications');
+        Route::get('/applications',                         [\App\Http\Controllers\Portal\PromotionController::class, 'manageApplications'])->name('applications');
+        Route::post('/applications/{application}/review',   [\App\Http\Controllers\Portal\PromotionController::class, 'reviewApplication'])->name('applications.review');
     });
 });
 

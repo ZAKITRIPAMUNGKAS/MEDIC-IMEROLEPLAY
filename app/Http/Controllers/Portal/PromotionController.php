@@ -105,6 +105,7 @@ class PromotionController extends Controller
             'case_study_file'         => 'nullable|file|mimes:pdf,doc,docx|max:10240',
             'recommendation_letter_1' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
             'recommendation_letter_2' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'supporting_document'     => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
         ]);
 
         $targetRole = StaffRole::findOrFail($request->target_role_id);
@@ -121,6 +122,10 @@ class PromotionController extends Controller
 
         $rec2 = $request->hasFile('recommendation_letter_2')
             ? $request->file('recommendation_letter_2')->store('promotions/recommendations', 'public')
+            : null;
+
+        $supportingDoc = $request->hasFile('supporting_document')
+            ? $request->file('supporting_document')->store('promotions/supporting', 'public')
             : null;
 
         // Update checklist untuk item yang membutuhkan file upload
@@ -146,6 +151,7 @@ class PromotionController extends Controller
             'case_study_file'            => $caseStudy,
             'recommendation_letter_1'    => $rec1,
             'recommendation_letter_2'    => $rec2,
+            'supporting_document'        => $supportingDoc,
             'status'                     => PromotionApplication::STATUS_PENDING,
         ]);
 
