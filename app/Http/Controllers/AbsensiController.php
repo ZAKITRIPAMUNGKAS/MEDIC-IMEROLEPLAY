@@ -20,25 +20,24 @@ class AbsensiController extends Controller
     {
         // Validasi input dengan sanitasi
         $validator = Validator::make($request->all(), [
-    'action'      => 'nullable|string|in:clock_in,clock_out', // ← tambah ini
-    'job'         => 'nullable|string|max:100',               // ← tambah ini
-    'player_id'   => 'required|string|max:255|regex:/^[a-zA-Z0-9_:]+$/',
-    'player_name' => 'required|string|max:255|regex:/^[a-zA-Z0-9\s_-]+$/',
-    'clock_in'    => 'required|date|before_or_equal:now',
-    'clock_out'   => 'nullable|date|after:clock_in',
-    'time_on_duty' => 'nullable|string|regex:/^\d{2}:\d{2}:\d{2}$/'
+            'action'       => 'nullable|string|in:clock_in,clock_out',
+            'job'          => 'nullable|string|max:100',
+            'player_id'    => 'required|string|max:255|regex:/^[a-zA-Z0-9_:#.\s-]+$/',
+            'player_name'  => 'required|string|max:255',
+            'clock_in'     => 'required|date|before_or_equal:now',
+            'clock_out'    => 'nullable|date|after:clock_in',
+            'time_on_duty' => 'nullable|string|regex:/^\d{2}:\d{2}:\d{2}$/'
         ], [
-            'player_id.required' => 'Player ID wajib diisi',
-            'player_id.regex' => 'Player ID hanya boleh berisi huruf, angka, underscore, dan colon',
-            'player_name.required' => 'Player Name wajib diisi',
-            'player_name.regex' => 'Player Name hanya boleh berisi huruf, angka, spasi, underscore, dan dash',
-            'clock_in.required' => 'Clock In wajib diisi',
-            'clock_in.date' => 'Format Clock In tidak valid',
+            'player_id.required'       => 'Player ID wajib diisi',
+            'player_id.regex'          => 'Format Player ID tidak valid',
+            'player_name.required'     => 'Player Name wajib diisi',
+            'clock_in.required'        => 'Clock In wajib diisi',
+            'clock_in.date'            => 'Format Clock In tidak valid',
             'clock_in.before_or_equal' => 'Clock In tidak boleh di masa depan',
-            'clock_out.date' => 'Format Clock Out tidak valid',
-            'clock_out.after' => 'Clock Out harus setelah Clock In',
-            'clock_out.before_or_equal' => 'Clock Out tidak boleh di masa depan',
-            'time_on_duty.regex' => 'Format Time On Duty harus HH:MM:SS'
+            'clock_out.date'           => 'Format Clock Out tidak valid',
+            'clock_out.after'          => 'Clock Out harus setelah Clock In',
+            'clock_out.before_or_equal'=> 'Clock Out tidak boleh di masa depan',
+            'time_on_duty.regex'       => 'Format Time On Duty harus HH:MM:SS'
         ]);
 
         if ($validator->fails()) {

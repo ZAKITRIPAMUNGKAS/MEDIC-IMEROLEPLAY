@@ -237,6 +237,12 @@ class StaffManagementController extends Controller
 
     public function update(Request $request, User $user)
     {
+        if ($request->filled('citizen_id')) {
+            $request->merge([
+                'citizen_id' => trim(str_replace(['#'], '', (string)$request->citizen_id))
+            ]);
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
@@ -253,7 +259,7 @@ class StaffManagementController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'hospital' => $validated['hospital'],
-            'citizen_id' => $validated['citizen_id'],
+            'citizen_id' => !empty($validated['citizen_id']) ? trim((string)$validated['citizen_id']) : null,
             'role_id' => $validated['role_id'],
             'is_active' => $request->boolean('is_active', true),
         ];

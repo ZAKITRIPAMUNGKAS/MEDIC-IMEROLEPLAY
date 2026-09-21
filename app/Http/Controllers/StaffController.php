@@ -243,6 +243,12 @@ class StaffController extends Controller
             'upload_error_message' => $request->hasFile('profile_image') ? $request->file('profile_image')->getErrorMessage() : 'No file'
         ]);
 
+        if ($request->filled('citizen_id')) {
+            $request->merge([
+                'citizen_id' => trim(str_replace(['#'], '', (string)$request->citizen_id))
+            ]);
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'hospital' => 'required|in:alta,roxwood',
@@ -255,7 +261,7 @@ class StaffController extends Controller
         // Update name, hospital, and citizen_id
         $user->name = $validated['name'];
         $user->hospital = $validated['hospital'];
-        $user->citizen_id = $validated['citizen_id'];
+        $user->citizen_id = trim((string)$validated['citizen_id']);
 
         // If user wants to change password, verify current password (if set) then update
         if (!empty($validated['password'])) {

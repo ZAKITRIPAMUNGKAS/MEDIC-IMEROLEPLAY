@@ -55,12 +55,16 @@ class FiveMService
     public function isPlayerOnlineByIdentifier(string $playerId, array $players): bool
     {
         $normalizedId = strtolower(trim($playerId));
+        $strippedId = preg_replace('/^(char\d+:|citizen:|cid:|id:|license:)/i', '', $normalizedId);
+        $strippedId = trim(str_replace(['#', ' ', '-', '.'], '', $strippedId));
         
         foreach ($players as $player) {
             if (isset($player['identifiers']) && is_array($player['identifiers'])) {
                 foreach ($player['identifiers'] as $onlineId) {
                     $onlineIdLower = strtolower($onlineId);
-                    if ($onlineIdLower === $normalizedId || str_contains($onlineIdLower, ":$normalizedId")) {
+                    if ($onlineIdLower === $normalizedId || 
+                        (!empty($strippedId) && str_contains($onlineIdLower, $strippedId)) ||
+                        str_contains($onlineIdLower, ":$normalizedId")) {
                         return true;
                     }
                 }

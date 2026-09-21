@@ -70,11 +70,11 @@
                                         class="text-red-400">*</span></label>
                                 <input type="text" name="citizen_id"
                                     value="{{ old('citizen_id', auth()->user()->citizen_id) }}"
-                                    class="w-full px-4 py-3 rounded-xl bg-white/30 text-white border-2 border-white/50 focus:outline-none focus:ring-2 focus:ring-sky-500 shadow-xl"
-                                    placeholder="Contoh: JDN12345" required />
+                                    class="w-full px-4 py-3 rounded-xl bg-white/30 text-white border-2 border-white/50 focus:outline-none focus:ring-2 focus:ring-sky-500 shadow-xl font-mono uppercase"
+                                    placeholder="Contoh: T84K5Z77" required />
                                 <p class="text-sky-200 text-xs mt-2">
-                                    <i class="fas fa-id-card mr-1"></i>
-                                    Wajib diisi untuk integrasi absensi kota
+                                    <i class="fas fa-id-card mr-1 text-cyan-300"></i>
+                                    Wajib diisi sesuai Citizen ID karakter in-game (cek KTP / menu karakter in-game). Sistem otomatis membersihkan spasi atau prefix seperti <code class="bg-black/30 px-1 rounded text-cyan-200">char1:</code>.
                                 </p>
                             </div>
                             <div>

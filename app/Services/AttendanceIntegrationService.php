@@ -72,33 +72,102 @@ class AttendanceIntegrationService
 
     /**
      * Cari user berdasarkan player_id atau player_name
+     * Mendukung pembersihan prefix FiveM (char1:, citizen:, license:, #), whitespace tolerance,
+     * serta smart name matching.
      */
     private function findUserByPlayerId($playerId, $playerName)
     {
-        $normalizedPlayerId = trim(strtolower($playerId));
+        if (empty($playerId) && empty($playerName)) {
+            return null;
+        }
 
-        // 1. Coba cari berdasarkan citizen_id (FiveM ID) - Prioritas utama
-        // Gunakan whereRaw untuk case-insensitive yang konsisten antar database drivers
-        $user = User::whereRaw('LOWER(citizen_id) = ?', [$normalizedPlayerId])->first();
+        $rawPlayerId = (string) $playerId;
+        $normalizedPlayerId = trim(strtolower($rawPlayerId));
+        
+        // Bersihkan prefix umum FiveM (char1:, char2:, citizen:, cid:, id:, license:)
+        // Contoh: "char1:t84k5z77" -> "t84k5z77", "citizen:t84k5z77" -> "t84k5z77"
+        $strippedPlayerId = preg_replace('/^(char\d+:|citizen:|cid:|id:|license:)/i', '', $normalizedPlayerId);
+        $strippedPlayerId = trim(str_replace(['#', ' ', '-', '.'], '', $strippedPlayerId));
+
+        // 1. Coba cari berdasarkan citizen_id (FiveM ID) - Exact Match Case-Insensitive
+        $user = User::whereRaw('LOWER(TRIM(citizen_id)) = ?', [$normalizedPlayerId])
+            ->orWhereRaw('LOWER(TRIM(citizen_id)) = ?', [$strippedPlayerId])
+            ->first();
 
         if ($user) {
             return $user;
         }
 
-        // 2. Coba cari berdasarkan staff_id (Legacy / Badge Number)
-        $user = User::whereRaw('LOWER(staff_id) = ?', [$normalizedPlayerId])->first();
+        // 2. Coba jika di DB ada prefix atau kebalikannya (Stripped DB citizen_id = strippedPlayerId)
+        // Contoh: user di DB input "char1:T84K5Z77" atau FiveM kirim "T84K5Z77"
+        if (!empty($strippedPlayerId)) {
+            $user = User::whereNotNull('citizen_id')
+                ->where(function ($q) use ($strippedPlayerId) {
+                    $q->whereRaw("LOWER(REPLACE(REPLACE(REPLACE(TRIM(citizen_id), ' ', ''), '#', ''), '-', '')) = ?", [$strippedPlayerId])
+                      ->orWhereRaw("LOWER(REPLACE(citizen_id, 'char1:', '')) = ?", [$strippedPlayerId])
+                      ->orWhereRaw("LOWER(REPLACE(citizen_id, 'char2:', '')) = ?", [$strippedPlayerId])
+                      ->orWhereRaw("LOWER(REPLACE(citizen_id, 'citizen:', '')) = ?", [$strippedPlayerId]);
+                })
+                ->first();
+
+            if ($user) {
+                return $user;
+            }
+        }
+
+        // 3. Coba cari jika salah satu mengandung yang lain (Substring match untuk ID >= 4 karakter)
+        if (strlen($strippedPlayerId) >= 4) {
+            $user = User::whereNotNull('citizen_id')
+                ->where(function ($q) use ($strippedPlayerId) {
+                    $q->whereRaw('LOWER(citizen_id) LIKE ?', ['%' . $strippedPlayerId . '%'])
+                      ->orWhereRaw('? LIKE CONCAT("%", LOWER(TRIM(citizen_id)), "%")', [$strippedPlayerId]);
+                })
+                ->first();
+
+            if ($user) {
+                return $user;
+            }
+        }
+
+        // 4. Coba cari berdasarkan staff_id (Badge Number)
+        $user = User::whereRaw('LOWER(TRIM(staff_id)) = ?', [$normalizedPlayerId])
+            ->orWhereRaw('LOWER(TRIM(staff_id)) = ?', [$strippedPlayerId])
+            ->first();
 
         if ($user) {
             return $user;
         }
 
-        // 3. Coba cari berdasarkan nama yang mirip (Last resort)
-        // Hanya jika nama cukup panjang untuk menghindari false positive pendek
-        if (strlen($playerName) > 3) {
-            $user = User::where('name', 'LIKE', '%' . $playerName . '%')->first();
+        // 5. Coba cari berdasarkan nama (Smart Name Matching Fallback)
+        if (!empty($playerName)) {
+            $cleanPlayerName = trim(preg_replace('/^(\[[^\]]+\]|\bdr\.?|\bdokter\b)/i', '', (string)$playerName));
+            $cleanPlayerName = trim(str_replace('_', ' ', $cleanPlayerName));
+
+            if (strlen($cleanPlayerName) >= 3) {
+                $user = User::where('name', 'LIKE', '%' . $cleanPlayerName . '%')
+                    ->orWhereRaw('? LIKE CONCAT("%", name, "%")', [$cleanPlayerName])
+                    ->first();
+
+                if ($user) {
+                    Log::info('[AttendanceIntegration] User matched via playerName fallback', [
+                        'player_id'    => $playerId,
+                        'player_name'  => $playerName,
+                        'matched_user' => $user->name,
+                        'user_cit_id'  => $user->citizen_id,
+                    ]);
+                    return $user;
+                }
+            }
         }
 
-        return $user ?? null;
+        Log::warning('[AttendanceIntegration] User NOT found for FiveM player', [
+            'player_id'     => $playerId,
+            'player_name'   => $playerName,
+            'normalized_id' => $normalizedPlayerId,
+            'stripped_id'   => $strippedPlayerId,
+        ]);
+
+        return null;
     }
 
     /**
