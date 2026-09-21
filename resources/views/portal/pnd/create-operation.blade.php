@@ -92,8 +92,17 @@
                         <select name="dpjp_id" class="w-full px-3.5 py-2.5 bg-white/10 border border-white/20 rounded-xl text-white text-sm focus:outline-none focus:border-emerald-400">
                             <option value="" class="bg-gray-800 text-white">-- Pilih Dokter DPJP --</option>
                             @foreach($doctors as $doc)
+                                @php
+                                    $roleLabel = $doc->role?->display_name ?? 'Staf';
+                                    if ($doc->medicRole && $doc->medicRole->id !== $doc->role_id) {
+                                        $roleLabel .= ' — Medis: ' . $doc->medicRole->display_name;
+                                    }
+                                    if ($doc->subRole) {
+                                        $roleLabel .= ' [' . $doc->subRole->short_name . ']';
+                                    }
+                                @endphp
                                 <option value="{{ $doc->id }}" {{ old('dpjp_id') == $doc->id ? 'selected' : '' }} class="bg-gray-800 text-white">
-                                    {{ $doc->name }} ({{ $doc->role?->display_name ?? 'Dokter' }})
+                                    {{ $doc->name }} ({{ $roleLabel }})
                                 </option>
                             @endforeach
                         </select>
@@ -107,11 +116,20 @@
                     </label>
                     <div class="max-h-40 overflow-y-auto p-3 bg-white/5 border border-white/15 rounded-xl space-y-2">
                         @forelse($doctors as $doc)
+                            @php
+                                $roleLabel = $doc->role?->display_name ?? 'Staf';
+                                if ($doc->medicRole && $doc->medicRole->id !== $doc->role_id) {
+                                    $roleLabel .= ' — Medis: ' . $doc->medicRole->display_name;
+                                }
+                                if ($doc->subRole) {
+                                    $roleLabel .= ' [' . $doc->subRole->short_name . ']';
+                                }
+                            @endphp
                             <label class="flex items-center gap-2.5 text-xs text-white/80 hover:text-white cursor-pointer select-none">
                                 <input type="checkbox" name="assistant_ids[]" value="{{ $doc->id }}"
                                        {{ is_array(old('assistant_ids')) && in_array($doc->id, old('assistant_ids')) ? 'checked' : '' }}
                                        class="rounded bg-white/10 border-white/20 text-emerald-500 focus:ring-0 focus:ring-offset-0">
-                                <span>{{ $doc->name }} <span class="text-white/40">({{ $doc->role?->display_name ?? 'Dokter' }})</span></span>
+                                <span>{{ $doc->name }} <span class="text-white/40">({{ $roleLabel }})</span></span>
                             </label>
                         @empty
                             <p class="text-xs text-white/40 italic">Tidak ada staf dokter tersedia.</p>

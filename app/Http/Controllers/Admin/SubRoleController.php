@@ -105,8 +105,11 @@ class SubRoleController extends Controller
         }
 
         $staffList = $staffQuery->orderByRoleLevel()->get();
+        $medicalRoles = \App\Models\StaffRole::whereIn('name', ['trainee', 'perawat', 'co_ass', 'dokter_umum', 'dokter_spesialis'])
+            ->orderBy('level')
+            ->get();
 
-        return view('admin.sub-roles.assign', compact('subRoles', 'staffList', 'hospital', 'search'));
+        return view('admin.sub-roles.assign', compact('subRoles', 'staffList', 'hospital', 'search', 'medicalRoles'));
     }
 
     /**
@@ -118,8 +121,9 @@ class SubRoleController extends Controller
         $this->checkAccess();
 
         $validator = Validator::make($request->all(), [
-            'user_id'     => 'required|exists:users,id',
-            'sub_role_id' => 'nullable|exists:staff_sub_roles,id',
+            'user_id'       => 'required|exists:users,id',
+            'sub_role_id'   => 'nullable|exists:staff_sub_roles,id',
+            'medic_role_id' => 'nullable|exists:staff_roles,id',
         ]);
 
         if ($validator->fails()) {
@@ -143,11 +147,14 @@ class SubRoleController extends Controller
         }
 
         $oldSubRole = $user->subRole?->short_name ?? 'Tidak ada';
-        $user->update(['sub_role_id' => $request->sub_role_id]);
+        $user->update([
+            'sub_role_id'   => $request->sub_role_id,
+            'medic_role_id' => $request->medic_role_id,
+        ]);
 
         $newLabel = $newSubRole ? $newSubRole->short_name : 'Tidak ada';
 
-        return back()->with('success', "Sub-jabatan {$user->name} berhasil diubah dari {$oldSubRole} menjadi {$newLabel}.");
+        return back()->with('success', "Data peran {$user->name} berhasil diperbarui (Divisi: {$newLabel}).");
     }
 
     /**
@@ -159,9 +166,10 @@ class SubRoleController extends Controller
         $this->checkAccess();
 
         $validator = Validator::make($request->all(), [
-            'assignments'           => 'required|array|min:1',
-            'assignments.*.user_id' => 'required|exists:users,id',
-            'assignments.*.sub_role_id' => 'nullable|exists:staff_sub_roles,id',
+            'assignments'                 => 'required|array|min:1',
+            'assignments.*.user_id'       => 'required|exists:users,id',
+            'assignments.*.sub_role_id'   => 'nullable|exists:staff_sub_roles,id',
+            'assignments.*.medic_role_id' => 'nullable|exists:staff_roles,id',
         ]);
 
         if ($validator->fails()) {
@@ -173,11 +181,14 @@ class SubRoleController extends Controller
             // Hanya perbarui jika anggota Alta
             User::where('id', $item['user_id'])
                 ->where('hospital', 'alta')
-                ->update(['sub_role_id' => $item['sub_role_id'] ?? null]);
+                ->update([
+                    'sub_role_id'   => $item['sub_role_id'] ?? null,
+                    'medic_role_id' => $item['medic_role_id'] ?? null,
+                ]);
             $count++;
         }
 
-        return back()->with('success', "{$count} staf Alta berhasil diperbarui sub-jabatannya.");
+        return back()->with('success', "{$count} staf Alta berhasil diperbarui sub-jabatan dan jabatan medisnya.");
     }
 
     /**

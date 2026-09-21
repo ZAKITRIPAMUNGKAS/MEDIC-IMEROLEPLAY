@@ -23,6 +23,7 @@ class User extends Authenticatable
         'password',
         'role_id',
         'sub_role_id',
+        'medic_role_id',
         'staff_id',
         'citizen_id',
         'hospital',
@@ -71,6 +72,49 @@ class User extends Authenticatable
     public function subRole()
     {
         return $this->belongsTo(StaffSubRole::class, 'sub_role_id');
+    }
+
+    /**
+     * Jabatan Medis / Jenjang Klinis (Trainee, Perawat, Co-Ass, Dokter Umum, Dokter Spesialis)
+     */
+    public function medicRole()
+    {
+        return $this->belongsTo(StaffRole::class, 'medic_role_id');
+    }
+
+    /**
+     * Jabatan Medis efektif:
+     * - Jika medic_role_id terisi, gunakan itu (misal Staff Manager yang secara klinis adalah Co-Ass / Dokter).
+     * - Jika tidak, dan role_id utama merupakan role medis, gunakan role_id tersebut.
+     */
+    public function getEffectiveMedicRoleAttribute(): ?StaffRole
+    {
+        if ($this->medic_role_id) {
+            return $this->relationLoaded('medicRole') ? $this->medicRole : $this->medicRole()->first();
+        }
+        if ($this->role && in_array(strtolower($this->role->name), ['dokter_spesialis', 'dokter_umum', 'co_ass', 'perawat', 'trainee'])) {
+            return $this->role;
+        }
+        return null;
+    }
+
+    /**
+     * Label tampilan peran lengkap (Manajemen + Divisi + Medis)
+     */
+    public function getFullRoleTitleAttribute(): string
+    {
+        $parts = [];
+        if ($this->role) {
+            $parts[] = $this->role->display_name;
+        }
+        if ($this->subRole) {
+            $parts[] = 'Divisi ' . $this->subRole->short_name;
+        }
+        $effMedic = $this->effective_medic_role;
+        if ($effMedic && (!$this->role || $effMedic->id !== $this->role->id)) {
+            $parts[] = 'Medis: ' . $effMedic->display_name;
+        }
+        return implode(' | ', $parts) ?: 'Staff';
     }
 
     /**
@@ -605,10 +649,11 @@ class User extends Authenticatable
      */
     public function buildPromotionChecklist(\App\Models\StaffRole $targetRole): array
     {
-        $targetName  = strtolower($targetRole->name);
-        $currentName = strtolower($this->role?->name ?? '');
-        $creditScore = $this->getCreditBalance();
-        $checklist   = [];
+        $targetName   = strtolower($targetRole->name);
+        $currentMedic = $this->effective_medic_role ?? $this->role;
+        $currentName  = strtolower($currentMedic?->name ?? '');
+        $creditScore  = $this->getCreditBalance();
+        $checklist    = [];
 
         // ── Trainee ke jenjang awal ───────────────────────────────────────────
         if ($currentName === 'trainee') {

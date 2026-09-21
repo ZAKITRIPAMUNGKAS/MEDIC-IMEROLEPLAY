@@ -232,7 +232,11 @@ class StaffManagementController extends Controller
     public function edit(User $user)
     {
         $roles = StaffRole::orderBy('display_name')->get();
-        return view('admin.staff.edit', compact('user', 'roles'));
+        $medicalRoles = StaffRole::whereIn('name', ['trainee', 'perawat', 'co_ass', 'dokter_umum', 'dokter_spesialis'])
+            ->orderBy('level')
+            ->get();
+        $subRoles = \App\Models\StaffSubRole::orderBy('sort_order')->get();
+        return view('admin.staff.edit', compact('user', 'roles', 'medicalRoles', 'subRoles'));
     }
 
     public function update(Request $request, User $user)
@@ -250,6 +254,8 @@ class StaffManagementController extends Controller
             'citizen_id' => 'nullable|string|max:50|unique:users,citizen_id,' . $user->id,
             'password' => 'nullable|string|min:6|confirmed',
             'role_id' => 'required|exists:staff_roles,id',
+            'medic_role_id' => 'nullable|exists:staff_roles,id',
+            'sub_role_id' => 'nullable|exists:staff_sub_roles,id',
             'is_active' => 'nullable|boolean',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'custom_salary' => 'nullable|numeric|min:0|max:9999999999',
@@ -261,6 +267,8 @@ class StaffManagementController extends Controller
             'hospital' => $validated['hospital'],
             'citizen_id' => !empty($validated['citizen_id']) ? trim((string)$validated['citizen_id']) : null,
             'role_id' => $validated['role_id'],
+            'medic_role_id' => $request->filled('medic_role_id') ? $request->medic_role_id : null,
+            'sub_role_id' => $request->filled('sub_role_id') ? $request->sub_role_id : null,
             'is_active' => $request->boolean('is_active', true),
         ];
 

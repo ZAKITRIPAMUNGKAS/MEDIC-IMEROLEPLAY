@@ -60,10 +60,11 @@ class PromotionController extends Controller
                 ->with('info', 'Pengajuan kenaikan jabatan Anda sedang dalam proses tinjauan PND.');
         }
 
-        // Ambil semua jabatan sebagai target promosi (lebih tinggi dari jabatan sekarang)
-        $currentLevel = $user->role?->level ?? 0;
-        $targetRoles  = StaffRole::where('level', '>', $currentLevel)
-            ->where('level', '<', 5) // Maks Supervisor / Dokter Spesialis
+        // Ambil semua jabatan medis sebagai target promosi (lebih tinggi dari jabatan medis sekarang)
+        $currentMedic = $user->effective_medic_role ?? $user->role;
+        $currentLevel = $currentMedic?->level ?? 0;
+        $targetRoles  = StaffRole::whereIn('name', ['perawat', 'co_ass', 'dokter_umum', 'dokter_spesialis'])
+            ->where('level', '>', $currentLevel)
             ->orderBy('level')
             ->get();
 
@@ -142,10 +143,12 @@ class PromotionController extends Controller
             return $item;
         }, $checklist);
 
+        $currentMedic = $user->effective_medic_role ?? $user->role;
+
         $payload = [
             'user_id'                    => $user->id,
             'period_id'                  => $period->id,
-            'current_role_id'            => $user->role_id,
+            'current_role_id'            => $currentMedic?->id ?? $user->role_id,
             'target_role_id'             => $targetRole->id,
             'credit_score_at_submission' => $user->getCreditBalance(),
             'training_days'              => $user->getDaysActiveSinceJoining(),
@@ -270,9 +273,19 @@ class PromotionController extends Controller
             'pnd_notes'       => $request->pnd_notes,
         ]);
 
-        // Jika disetujui, naikkan jabatan user
+        // Jika disetujui, naikkan jabatan medis user
         if ($isApproved) {
-            $application->user->update(['role_id' => $application->target_role_id]);
+            $userRoleName = strtolower($application->user->role?->name ?? '');
+            $isManagement = in_array($userRoleName, ['admin', 'executive', 'manajer', 'staff_manager', 'supervisor']);
+            if ($isManagement) {
+                // Pertahankan jabatan manajemennya (misal Staff Manager / Manajer), perbarui jabatan medisnya
+                $application->user->update(['medic_role_id' => $application->target_role_id]);
+            } else {
+                $application->user->update([
+                    'role_id'       => $application->target_role_id,
+                    'medic_role_id' => $application->target_role_id,
+                ]);
+            }
         }
 
         $msg = $isApproved

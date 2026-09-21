@@ -210,7 +210,9 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-sm font-medium text-gray-300 mb-3">Peran</label>
+                                <label class="block text-sm font-medium text-gray-300 mb-3">
+                                    <i class="fas fa-briefcase mr-1 text-sky-400"></i>Peran / Jabatan Struktural
+                                </label>
                                 <select name="role_id"
                                     class="w-full bg-white/10 text-white border border-white/20 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 transition-all duration-300 appearance-none"
                                     required>
@@ -221,7 +223,52 @@
                                         </option>
                                     @endforeach
                                 </select>
+                                <p class="text-gray-400 text-xs mt-1.5">Jabatan utama dalam sistem / tingkatan manajemen.</p>
                                 @error('role_id')
+                                    <p class="text-red-300 text-sm mt-2 flex items-center">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-emerald-300 mb-3">
+                                    <i class="fas fa-stethoscope mr-1 text-emerald-400"></i>Jabatan Medis (Jenjang Klinis)
+                                </label>
+                                <select name="medic_role_id"
+                                    class="w-full bg-white/10 text-white border border-emerald-500/30 rounded-lg px-4 py-3 focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 transition-all duration-300 appearance-none">
+                                    <option value="" class="bg-slate-800 text-gray-400">— Otomatis Sesuai Peran Utama —</option>
+                                    @foreach($medicalRoles as $mRole)
+                                        <option value="{{ $mRole->id }}" @selected(old('medic_role_id', $user->medic_role_id) == $mRole->id)
+                                            class="bg-slate-800 text-emerald-300 font-semibold">
+                                            🩺 {{ $mRole->display_name }} (Level {{ $mRole->level }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <p class="text-gray-400 text-xs mt-1.5">Pilih jika staf menjabat di Manajemen (Staff Manager, dll) tapi tetap bertugas klinis (Co-Ass/Dokter).</p>
+                                @error('medic_role_id')
+                                    <p class="text-red-300 text-sm mt-2 flex items-center">
+                                        <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
+                                    </p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-purple-300 mb-3">
+                                    <i class="fas fa-layer-group mr-1 text-purple-400"></i>Sub-Jabatan / Divisi (Alta Hospital)
+                                </label>
+                                <select name="sub_role_id"
+                                    class="w-full bg-white/10 text-white border border-purple-500/30 rounded-lg px-4 py-3 focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all duration-300 appearance-none">
+                                    <option value="" class="bg-slate-800 text-gray-400">— Tanpa Divisi Khusus —</option>
+                                    @foreach($subRoles as $sRole)
+                                        <option value="{{ $sRole->id }}" @selected(old('sub_role_id', $user->sub_role_id) == $sRole->id)
+                                            class="bg-slate-800 text-purple-300 font-semibold">
+                                            [{{ $sRole->short_name }}] {{ $sRole->display_name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <p class="text-gray-400 text-xs mt-1.5">Divisi operasional internal (IE, PND, MSL, GA, Comdis).</p>
+                                @error('sub_role_id')
                                     <p class="text-red-300 text-sm mt-2 flex items-center">
                                         <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
                                     </p>

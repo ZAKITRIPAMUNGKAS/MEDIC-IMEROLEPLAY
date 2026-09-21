@@ -87,6 +87,7 @@
                             <tr class="border-b border-white/10 bg-white/5">
                                 <th class="text-left px-5 py-3 text-gray-300 text-xs uppercase tracking-wide font-semibold">Staf</th>
                                 <th class="text-left px-5 py-3 text-gray-300 text-xs uppercase tracking-wide font-semibold">Jabatan Utama</th>
+                                <th class="text-left px-5 py-3 text-gray-300 text-xs uppercase tracking-wide font-semibold w-56">Jabatan Medis (Klinis)</th>
                                 <th class="text-left px-5 py-3 text-gray-300 text-xs uppercase tracking-wide font-semibold w-64">Sub-Jabatan / Divisi</th>
                             </tr>
                         </thead>
@@ -116,6 +117,18 @@
                                     </span>
                                 </td>
                                 <td class="px-5 py-3">
+                                    <select name="assignments[{{ $idx }}][medic_role_id]"
+                                            class="w-full bg-white/10 text-white border border-white/20 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-400 appearance-none cursor-pointer">
+                                        <option value="" class="bg-slate-900 text-gray-400">— Ikuti Jabatan Utama —</option>
+                                        @foreach($medicalRoles as $mRole)
+                                            <option value="{{ $mRole->id }}" class="bg-slate-900 text-emerald-300 font-semibold"
+                                                {{ $staf->medic_role_id == $mRole->id ? 'selected' : '' }}>
+                                                🩺 {{ $mRole->display_name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                                <td class="px-5 py-3">
                                     <select name="assignments[{{ $idx }}][sub_role_id]"
                                             class="w-full bg-white/10 text-white border border-white/20 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-sky-400 appearance-none cursor-pointer">
                                         <option value="" class="bg-slate-900 text-gray-400">— Tanpa Sub-Jabatan —</option>
@@ -130,14 +143,14 @@
                             </tr>
                             @empty
                             <tr id="emptyRow">
-                                <td colspan="3" class="px-5 py-8 text-center text-gray-400">
+                                <td colspan="4" class="px-5 py-8 text-center text-gray-400">
                                     <i class="fas fa-user-slash text-2xl mb-2 text-gray-500 block"></i>
                                     Tidak ada data staf yang ditemukan.
                                 </td>
                             </tr>
                             @endforelse
                             <tr id="noResultsRow" class="hidden">
-                                <td colspan="3" class="px-5 py-8 text-center text-gray-400">
+                                <td colspan="4" class="px-5 py-8 text-center text-gray-400">
                                     <i class="fas fa-search text-2xl mb-2 text-gray-500 block"></i>
                                     Tidak ada staf yang sesuai dengan kata kunci pencarian.
                                 </td>

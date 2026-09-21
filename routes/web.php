@@ -389,7 +389,7 @@ Route::get('/auto-setup-db', function () {
             $logs[] = 'ℹ️ Tabel staff_sub_roles sudah ada.';
         }
 
-        // Kolom sub_role_id di tabel users
+        // Kolom sub_role_id & medic_role_id di tabel users
         if (!\Illuminate\Support\Facades\Schema::hasColumn('users', 'sub_role_id')) {
             \Illuminate\Support\Facades\Schema::table('users', function (\Illuminate\Database\Schema\Blueprint $table) {
                 $table->unsignedBigInteger('sub_role_id')->nullable()->after('role_id');
@@ -397,6 +397,15 @@ Route::get('/auto-setup-db', function () {
             $logs[] = '✅ Kolom sub_role_id berhasil ditambahkan ke tabel users.';
         } else {
             $logs[] = 'ℹ️ Kolom sub_role_id sudah ada di tabel users.';
+        }
+
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('users', 'medic_role_id')) {
+            \Illuminate\Support\Facades\Schema::table('users', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->unsignedBigInteger('medic_role_id')->nullable()->after('sub_role_id');
+            });
+            $logs[] = '✅ Kolom medic_role_id (Jabatan Medis) berhasil ditambahkan ke tabel users.';
+        } else {
+            $logs[] = 'ℹ️ Kolom medic_role_id sudah ada di tabel users.';
         }
 
         // Seed data 5 divisi

@@ -119,9 +119,24 @@
                                             $badgeColor = 'bg-sky-500 bg-opacity-20 text-sky-300 border-sky-500 border-opacity-30';
                                         }
                                     @endphp
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-semibold border {{ $badgeColor }}">
-                                        {{ $member->role->display_name ?? 'Staff' }}
-                                    </span>
+                                    <div class="flex flex-wrap gap-1.5 items-center">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-xs font-semibold border {{ $badgeColor }}">
+                                            {{ $member->role->display_name ?? 'Staff' }}
+                                        </span>
+                                        @if($member->subRole)
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] font-bold border bg-purple-500/20 text-purple-300 border-purple-500/30">
+                                                {{ $member->subRole->short_name }}
+                                            </span>
+                                        @endif
+                                        @php
+                                            $mRole = $member->effective_medic_role;
+                                        @endphp
+                                        @if($mRole && (!$member->role || $mRole->id !== $member->role_id))
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-lg text-[10px] font-bold border bg-emerald-500/20 text-emerald-300 border-emerald-500/30" title="Jabatan Medis">
+                                                🩺 {{ $mRole->display_name }}
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>

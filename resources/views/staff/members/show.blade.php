@@ -101,6 +101,16 @@
                         </span>
                     @endif
 
+                    {{-- Jabatan Medis / Jenjang Klinis --}}
+                    @php
+                        $medicRole = $user->effective_medic_role;
+                    @endphp
+                    @if($medicRole && (!$user->role || $medicRole->id !== $user->role_id))
+                        <span class="inline-flex items-center px-3.5 py-1.5 rounded-xl text-xs font-bold border shadow-md bg-emerald-500/20 text-emerald-300 border-emerald-500/30" title="Jabatan Medis / Jenjang Tindakan Klinis">
+                            <i class="fas fa-stethoscope mr-1.5"></i> Medis: {{ $medicRole->display_name }}
+                        </span>
+                    @endif
+
                     {{-- Credit Score Badge (Alta Hospital - Sifatnya Pribadi) --}}
                     @php
                         $viewer = auth()->user();
