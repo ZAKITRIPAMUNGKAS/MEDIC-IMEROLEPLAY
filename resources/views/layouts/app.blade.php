@@ -251,6 +251,25 @@
             background-clip: text;
         }
 
+        /* Scrollable Dropdown Styling */
+        .dropdown-scrollable {
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 transparent;
+        }
+        .dropdown-scrollable::-webkit-scrollbar {
+            width: 5px;
+        }
+        .dropdown-scrollable::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .dropdown-scrollable::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        .dropdown-scrollable::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
         /* Buttons */
         .btn {
             display: inline-flex;
@@ -1394,7 +1413,7 @@
                                     <i class="fas fa-chevron-down text-[9px] opacity-60"></i>
                                 @endif
                             </button>
-                            <div class="absolute left-0 top-full mt-2 w-52 bg-white rounded-xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-1 group-hover:translate-y-0 transition-all duration-200 z-[9999] overflow-hidden">
+                            <div class="absolute left-0 top-full mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-1 group-hover:translate-y-0 transition-all duration-200 z-[9999] max-h-[75vh] overflow-y-auto overscroll-contain dropdown-scrollable">
                                 <div class="px-3 pt-2.5 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400 border-b border-gray-100">Fitur Staf</div>
                                 <div class="py-1">
                                     <a href="{{ route('staff.members.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
@@ -1432,7 +1451,7 @@
                                 <span>Admin</span>
                                 <i class="fas fa-chevron-down text-[9px] opacity-60"></i>
                             </button>
-                            <div class="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-1 group-hover:translate-y-0 transition-all duration-200 z-[9999] overflow-hidden">
+                            <div class="absolute right-0 top-full mt-2 w-60 bg-white rounded-xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-1 group-hover:translate-y-0 transition-all duration-200 z-[9999] max-h-[75vh] overflow-y-auto overscroll-contain dropdown-scrollable">
                                 <div class="px-3 pt-2.5 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400 border-b border-gray-100">Panel Admin</div>
                                 <div class="py-1">
                                     @if(auth()->user()->hasPermission('manage_users'))
@@ -1501,7 +1520,7 @@
                                 <span>Portal Alta</span>
                                 <i class="fas fa-chevron-down text-[9px] opacity-60"></i>
                             </button>
-                            <div class="absolute right-0 top-full mt-2 w-60 bg-white rounded-xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-1 group-hover:translate-y-0 transition-all duration-200 z-[9999] overflow-hidden">
+                            <div class="absolute right-0 top-full mt-2 w-64 bg-white rounded-xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-1 group-hover:translate-y-0 transition-all duration-200 z-[9999] max-h-[75vh] overflow-y-auto overscroll-contain dropdown-scrollable">
                                 {{-- Semua Anggota --}}
                                 <div class="px-3 pt-2.5 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400 border-b border-gray-100">Pengajuan Saya</div>
                                 <div class="py-1">
@@ -1637,7 +1656,7 @@
                                 <span>Gaji</span>
                                 <i class="fas fa-chevron-down text-[9px] opacity-60"></i>
                             </button>
-                            <div class="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-1 group-hover:translate-y-0 transition-all duration-200 z-[9999] overflow-hidden">
+                            <div class="absolute right-0 top-full mt-2 w-52 bg-white rounded-xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-1 group-hover:translate-y-0 transition-all duration-200 z-[9999] max-h-[75vh] overflow-y-auto overscroll-contain dropdown-scrollable">
                                 <div class="px-3 pt-2.5 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400 border-b border-gray-100">Penggajian</div>
                                 <div class="py-1">
                                     @if(auth()->user()->hasPermission('manage_payroll'))
