@@ -2135,8 +2135,7 @@
                     </div>
                 </div>
                 <div class="mt-6 pt-4 border-t border-white border-opacity-10">
-                    <p class="text-gray-400 text-xs">&copy; 2026 Portal Medis iMe. Semua hak dilindungi develop
-                        by tepe-dev.</p>
+                    <p class="text-gray-400 text-xs">&copy; {{ date('Y') }} Portal Medis iMe. Semua hak dilindungi oleh <span class="text-gray-300 font-medium">tepe-dev</span> dan di-support by <a href="https://affdigital.my.id" target="_blank" rel="noopener noreferrer" class="text-sky-300 hover:text-sky-200 underline transition-colors">affdigital.my.id</a>.</p>
                 </div>
             </div>
         </div>
