@@ -28,7 +28,11 @@
                 </p>
             </div>
 
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 flex-wrap">
+                <button type="button" onclick="openDiscordModal()"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-semibold rounded-xl shadow-lg shadow-indigo-900/40 border border-indigo-500/30 transition-all">
+                    <i class="fab fa-discord text-sm"></i> Export Teks Discord
+                </button>
                 <a href="{{ route('portal.ie.roles.index') }}"
                    class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/15 text-sky-300 text-xs font-semibold rounded-xl border border-sky-500/30 transition-all">
                     <i class="fas fa-user-tag"></i> Manajemen Jabatan
@@ -232,8 +236,103 @@ function openExemptionModal(userId, name, leaveId) {
     document.getElementById('exemptionModal').classList.remove('hidden');
 }
 
+function openDiscordModal() {
+    document.getElementById('discordModal').classList.remove('hidden');
+}
+
 function closeModal(id) {
     document.getElementById(id).classList.add('hidden');
 }
+
+function copyDiscordText() {
+    const textarea = document.getElementById('discordExportTextarea');
+    if (!textarea) return;
+
+    const text = textarea.value;
+    const btn = document.getElementById('btnCopyDiscord');
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+            showCopiedState(btn);
+        }).catch(() => {
+            fallbackCopy(textarea, btn);
+        });
+    } else {
+        fallbackCopy(textarea, btn);
+    }
+}
+
+function fallbackCopy(textarea, btn) {
+    textarea.focus();
+    textarea.select();
+    try {
+        document.execCommand('copy');
+        showCopiedState(btn);
+    } catch (err) {
+        alert('Gagal menyalin otomatis. Silakan salin teks manual dari kotak di atas.');
+    }
+}
+
+function showCopiedState(btn) {
+    if (!btn) return;
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-check"></i> <span>Berhasil Disalin!</span>';
+    btn.classList.remove('from-indigo-600', 'to-purple-600', 'hover:from-indigo-500', 'hover:to-purple-500', 'bg-indigo-600');
+    btn.classList.add('bg-emerald-600', 'hover:bg-emerald-500');
+
+    setTimeout(() => {
+        btn.innerHTML = originalHTML;
+        btn.classList.remove('bg-emerald-600', 'hover:bg-emerald-500');
+        btn.classList.add('from-indigo-600', 'to-purple-600', 'hover:from-indigo-500', 'hover:to-purple-500', 'bg-indigo-600');
+    }, 2500);
+}
 </script>
+
+{{-- Modal Export Teks Discord --}}
+<div id="discordModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden p-4">
+    <div class="glass-effect bg-slate-900 border border-indigo-500/30 rounded-2xl max-w-2xl w-full p-6 text-white shadow-2xl space-y-4">
+        <div class="flex items-start justify-between pb-3 border-b border-white/10">
+            <div>
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-base">
+                        <i class="fab fa-discord"></i>
+                    </span>
+                    Export Format Pengumuman Discord
+                </h3>
+                <p class="text-xs text-slate-400 mt-1">
+                    Teks ini siap di-copy paste langsung ke channel Discord pengumuman untuk periode <strong>{{ \Carbon\Carbon::parse($startOfMonth)->locale('id')->translatedFormat('F Y') }}</strong>.
+                </p>
+            </div>
+            <button type="button" onclick="closeModal('discordModal')" class="text-slate-400 hover:text-white p-1">
+                <i class="fas fa-times text-base"></i>
+            </button>
+        </div>
+
+        <div>
+            <label class="block text-xs font-semibold text-slate-300 uppercase mb-1.5 flex items-center justify-between">
+                <span>Isi Teks Pengumuman (Markdown Discord):</span>
+                <span class="text-[11px] text-slate-400 lowercase font-normal">klik tombol di bawah untuk salin otomatis</span>
+            </label>
+            <textarea id="discordExportTextarea" rows="13" readonly
+                      class="w-full bg-slate-950 text-slate-200 border border-white/20 rounded-xl p-3.5 font-mono text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 leading-relaxed select-all">{{ $discordText }}</textarea>
+        </div>
+
+        <div class="pt-3 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="text-[11px] text-slate-400 flex items-center gap-1.5">
+                <i class="fas fa-info-circle text-indigo-400"></i>
+                Hanya staf dengan status <strong>"Masuk Pemutihan"</strong> yang disertakan.
+            </div>
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+                <button type="button" onclick="closeModal('discordModal')" class="px-4 py-2 bg-white/10 hover:bg-white/15 text-slate-300 rounded-xl text-xs font-semibold transition-all">
+                    Tutup
+                </button>
+                <button type="button" id="btnCopyDiscord" onclick="copyDiscordText()"
+                        class="flex-1 sm:flex-initial px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-900/40 transition-all flex items-center justify-center gap-2">
+                    <i class="fas fa-copy"></i>
+                    <span>Salin Format Discord</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection

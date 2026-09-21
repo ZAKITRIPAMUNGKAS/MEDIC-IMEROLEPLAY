@@ -19,10 +19,18 @@
                    class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/15 text-rose-300 hover:text-white text-sm font-semibold rounded-xl border border-rose-500/30 transition-all duration-200">
                     <i class="fas fa-users"></i> Lihat Jadwal Cuti Medis
                 </a>
-                <a href="{{ route('portal.leave.create') }}"
-                   class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-400 hover:to-pink-500 text-white text-sm font-semibold rounded-xl shadow-lg shadow-rose-900/30 transition-all duration-200">
-                    <i class="fas fa-plus"></i> Ajukan Cuti Baru
-                </a>
+                @if($activeLeave)
+                    <button type="button" disabled
+                            title="Masa cuti Anda masih aktif sampai {{ \Carbon\Carbon::parse($activeLeave->end_date)->format('d M Y') }}"
+                            class="inline-flex items-center gap-2 px-4 py-2 bg-gray-600/40 border border-white/10 text-white/40 text-sm font-semibold rounded-xl cursor-not-allowed shadow-none">
+                        <i class="fas fa-lock"></i> Masa Cuti Aktif
+                    </button>
+                @else
+                    <a href="{{ route('portal.leave.create') }}"
+                       class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-400 hover:to-pink-500 text-white text-sm font-semibold rounded-xl shadow-lg shadow-rose-900/30 transition-all duration-200">
+                        <i class="fas fa-plus"></i> Ajukan Cuti Baru
+                    </a>
+                @endif
             </div>
         </div>
 
@@ -33,13 +41,42 @@
         </div>
         @endif
 
+        @if(session('error'))
+        <div class="mb-4 p-4 bg-rose-500/20 border border-rose-500/40 rounded-xl text-rose-300 text-sm flex items-center gap-2">
+            <i class="fas fa-exclamation-circle text-rose-400"></i> {{ session('error') }}
+        </div>
+        @endif
+
+        {{-- Active Leave Info Banner --}}
+        @if($activeLeave)
+        <div class="mb-5 p-4 bg-amber-500/20 border border-amber-500/40 rounded-2xl text-amber-200 text-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xl">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-500/30 border border-amber-500/50 flex items-center justify-center text-amber-300 text-lg flex-shrink-0">
+                    <i class="fas fa-umbrella-beach"></i>
+                </div>
+                <div>
+                    <div class="font-bold text-white flex items-center gap-2">
+                        <span>Masa Cuti Anda Masih Aktif</span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400/20 text-amber-300 border border-amber-400/40 uppercase">Aktif</span>
+                    </div>
+                    <p class="text-xs text-amber-200/80 mt-0.5">
+                        Periode: <strong>{{ \Carbon\Carbon::parse($activeLeave->start_date)->locale('id')->translatedFormat('d F Y') }}</strong> s/d <strong>{{ \Carbon\Carbon::parse($activeLeave->end_date)->locale('id')->translatedFormat('d F Y') }}</strong> ({{ $activeLeave->duration_days }} hari).
+                        Pengajuan cuti baru tidak dapat dikirim sampai masa cuti selesai.
+                    </p>
+                </div>
+            </div>
+        </div>
+        @endif
+
         {{-- Tabel daftar pengajuan --}}
         <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
             @if($requests->isEmpty())
             <div class="flex flex-col items-center justify-center py-16 text-white/40">
                 <i class="fas fa-calendar-times text-4xl mb-3"></i>
                 <p class="text-sm">Belum ada pengajuan cuti.</p>
+                @if(!$activeLeave)
                 <a href="{{ route('portal.leave.create') }}" class="mt-4 text-rose-400 hover:text-rose-300 text-sm underline underline-offset-2">Ajukan sekarang</a>
+                @endif
             </div>
             @else
             <div class="overflow-x-auto">

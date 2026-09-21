@@ -17,17 +17,51 @@ class LeaveRequestController extends Controller
     public function index()
     {
         $user     = Auth::user();
+        $today    = Carbon::today()->toDateString();
         $requests = LeaveRequest::with('approvedBy:id,name,staff_id')
             ->where('user_id', $user->id)
             ->latest()
             ->paginate(20);
 
-        return view('portal.leave.index', compact('requests'));
+        // Cari apakah ada cuti yang sedang aktif (disetujui dan tanggal selesai >= hari ini)
+        $activeLeave = LeaveRequest::where('user_id', $user->id)
+            ->where('status', 'approved')
+            ->where('end_date', '>=', $today)
+            ->orderBy('end_date', 'desc')
+            ->first();
+
+        return view('portal.leave.index', compact('requests', 'activeLeave'));
     }
 
     public function create()
     {
-        $user = Auth::user();
+        $user  = Auth::user();
+        $today = Carbon::today()->toDateString();
+
+        // Cek apakah ada cuti yang masih aktif
+        $activeLeave = LeaveRequest::where('user_id', $user->id)
+            ->where('status', 'approved')
+            ->where('end_date', '>=', $today)
+            ->orderBy('end_date', 'desc')
+            ->first();
+
+        if ($activeLeave) {
+            $startFormatted = Carbon::parse($activeLeave->start_date)->locale('id')->translatedFormat('d M Y');
+            $endFormatted   = Carbon::parse($activeLeave->end_date)->locale('id')->translatedFormat('d M Y');
+            return redirect()->route('portal.leave.index')
+                ->with('error', "Masa cuti Anda masih aktif ({$startFormatted} s/d {$endFormatted}). Anda tidak dapat mengajukan permohonan cuti baru sampai masa cuti berakhir.");
+        }
+
+        // Cek juga jika masih ada permohonan cuti yang berstatus pending
+        $pendingLeave = LeaveRequest::where('user_id', $user->id)
+            ->where('status', 'pending')
+            ->first();
+
+        if ($pendingLeave) {
+            return redirect()->route('portal.leave.index')
+                ->with('error', 'Anda masih memiliki permohonan cuti yang sedang menunggu verifikasi.');
+        }
+
         return view('portal.leave.create', [
             'user'        => $user,
             'letterDate'  => Carbon::today()->format('d/m/Y'),
@@ -37,8 +71,32 @@ class LeaveRequestController extends Controller
 
     public function store(Request $request)
     {
-        $user = Auth::user();
+        $user  = Auth::user();
         $today = Carbon::today()->toDateString();
+
+        // Validasi: Cek apakah masa cuti masih aktif
+        $activeLeave = LeaveRequest::where('user_id', $user->id)
+            ->where('status', 'approved')
+            ->where('end_date', '>=', $today)
+            ->orderBy('end_date', 'desc')
+            ->first();
+
+        if ($activeLeave) {
+            $startFormatted = Carbon::parse($activeLeave->start_date)->locale('id')->translatedFormat('d M Y');
+            $endFormatted   = Carbon::parse($activeLeave->end_date)->locale('id')->translatedFormat('d M Y');
+            return redirect()->route('portal.leave.index')
+                ->with('error', "Pengajuan cuti ditolak: Anda masih memiliki masa cuti aktif ({$startFormatted} s/d {$endFormatted}). Anda tidak dapat mengajukan cuti baru sampai masa cuti selesai.");
+        }
+
+        // Cek juga jika masih ada permohonan cuti yang berstatus pending
+        $pendingLeave = LeaveRequest::where('user_id', $user->id)
+            ->where('status', 'pending')
+            ->first();
+
+        if ($pendingLeave) {
+            return redirect()->route('portal.leave.index')
+                ->with('error', 'Pengajuan cuti ditolak: Anda masih memiliki permohonan cuti yang sedang menunggu verifikasi.');
+        }
 
         $validated = $request->validate([
             'start_date' => 'required|date|after_or_equal:' . $today,

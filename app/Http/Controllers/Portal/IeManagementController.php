@@ -178,7 +178,44 @@ class IeManagementController extends Controller
             }
         }
 
-        return view('portal.ie.pemutihan', compact('pemutihanList', 'period', 'startOfMonth', 'endOfMonth'));
+        // Siapkan format teks Discord untuk pengumuman pemutihan sesuai template IE
+        $monthCarbon = \Carbon\Carbon::parse($startOfMonth)->locale('id');
+        $monthUpper  = strtoupper($monthCarbon->translatedFormat('F Y'));
+        $monthNormal = $monthCarbon->translatedFormat('F Y');
+
+        $discordListLines = [];
+        $num = 1;
+        foreach ($pemutihanList as $item) {
+            if (!$item['is_exempted']) {
+                $staf = $item['user'];
+                $roleName = $staf->medicRole?->display_name ?? $staf->role?->display_name ?? '-';
+                $subRole = $staf->subRole ? " ({$staf->subRole->short_name})" : '';
+                $cid = $staf->citizen_id ? " [CID: {$staf->citizen_id}]" : '';
+                $hoursText = $item['total_hours'] . ' Jam';
+                $discordListLines[] = "{$num}. {$staf->name}{$cid} - {$roleName}{$subRole} (Total Duty: {$hoursText})";
+                $num++;
+            }
+        }
+
+        $membersListText = !empty($discordListLines)
+            ? implode("\n", $discordListLines)
+            : "(Tidak ada anggota medis dalam daftar pemutihan)";
+
+        $discordText = "# 📢 PENGUMUMAN PENGHAPUSAN ANGGOTA EMS TIDAK AKTIF PERIODE {$monthUpper}\n"
+            . "**Selamat malam rekan-rekan**\n"
+            . "**Berikut ini saya kirimkan nama-nama Anggota yang berdasarkan Absensi Bulan {$monthNormal} selama 4 Minggu berturut-turut tanpa adanya konfirmasi Cuti sementara, tidak mengajukan perubahan nama dan jam duty tidak lebih dari 10 jam dalam 4 Minggu.**\n"
+            . "```\n"
+            . $membersListText . "\n"
+            . "```\n"
+            . "**Jika yang bersangkutan tidak ada konfirmasi kepada tim dibawah ini dalam 5 Hari:**\n\n"
+            . "**Maka akan dilakukan pemutusan hubungan kerja secara sepihak & dikenakan denda sesuai SOP pasal 8.4.**\n"
+            . "**Demikian informasi ini kami sampaikan.**\n\n"
+            . "*Regards,\n"
+            . "dr. Billy McCartney\n"
+            . "Head of Industrial & Employee Relations*\n"
+            . "**IME Medical Center**";
+
+        return view('portal.ie.pemutihan', compact('pemutihanList', 'period', 'startOfMonth', 'endOfMonth', 'discordText'));
     }
 
     /**
