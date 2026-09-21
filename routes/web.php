@@ -1597,6 +1597,20 @@ Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->gro
         Route::delete('/certs/{certification}',        [\App\Http\Controllers\Portal\PndOperationController::class, 'certDestroy'])->name('cert-destroy');
         Route::post('/cert-applications/{application}/approve', [\App\Http\Controllers\Portal\PndOperationController::class, 'approveApplication'])->name('cert-application.approve');
         Route::post('/cert-applications/{application}/reject',  [\App\Http\Controllers\Portal\PndOperationController::class, 'rejectApplication'])->name('cert-application.reject');
+
+        // Kelola Formulir Pendaftaran Pelatihan (Operasi, Surat Menyurat, Visum Hidup)
+        Route::get('/training',                         [\App\Http\Controllers\Portal\PndTrainingController::class, 'index'])->name('training.index');
+        Route::post('/training/{application}/status',   [\App\Http\Controllers\Portal\PndTrainingController::class, 'updateStatus'])->name('training.status');
+        Route::post('/training/bulk',                   [\App\Http\Controllers\Portal\PndTrainingController::class, 'bulkAction'])->name('training.bulk');
+        Route::delete('/training/{application}',        [\App\Http\Controllers\Portal\PndTrainingController::class, 'destroy'])->name('training.destroy');
+        Route::get('/training/export-discord',          [\App\Http\Controllers\Portal\PndTrainingController::class, 'exportDiscord'])->name('training.export-discord');
+    });
+
+    // ── Pendaftaran Pelatihan (Operasi, Surat Menyurat, Visum Hidup) ────────
+    Route::prefix('pelatihan')->name('training.')->group(function () {
+        Route::get('/',               [\App\Http\Controllers\Portal\TrainingController::class, 'index'])->name('index');
+        Route::get('/{type}',         [\App\Http\Controllers\Portal\TrainingController::class, 'showForm'])->name('form');
+        Route::post('/{type}',        [\App\Http\Controllers\Portal\TrainingController::class, 'submitForm'])->name('submit');
     });
 
     // ── Kenaikan Jabatan / Promosi (PND kontrol, Anggota submit) ─────────────

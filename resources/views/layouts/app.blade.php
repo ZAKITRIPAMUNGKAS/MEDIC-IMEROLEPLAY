@@ -1561,6 +1561,9 @@
                                     <a href="{{ route('portal.interview.apply-form') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 transition-colors">
                                         <i class="fas fa-user-plus w-4 text-indigo-500 text-sm"></i> Pengajuan Role Interviewer
                                     </a>
+                                    <a href="{{ route('portal.training.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+                                        <i class="fas fa-graduation-cap w-4 text-emerald-500 text-sm"></i> Pendaftaran Pelatihan
+                                    </a>
                                 </div>
 
                                 {{-- Divisi-specific --}}
@@ -1592,6 +1595,9 @@
                                     </a>
                                     <a href="{{ route('portal.promotion.applications') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-violet-50 hover:text-violet-700 transition-colors">
                                         <i class="fas fa-clipboard-list w-4 text-violet-400 text-sm"></i> PND: Review Kenaikan
+                                    </a>
+                                    <a href="{{ route('portal.pnd.training.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+                                        <i class="fas fa-tasks w-4 text-emerald-500 text-sm"></i> PND: Kelola Pelatihan
                                     </a>
                                     @endif
                                     @if($isIe)
@@ -1938,6 +1944,11 @@
                                 <i class="fas fa-user-plus w-5 text-indigo-400 text-sm"></i>
                                 <span>Pengajuan Role Interviewer</span>
                             </a>
+                            <a href="{{ route('portal.training.index') }}"
+                                class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                <i class="fas fa-graduation-cap w-5 text-emerald-400 text-sm"></i>
+                                <span>Pendaftaran Pelatihan</span>
+                            </a>
 
                             @if(auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('ie') || auth()->user()->isInDivision('pnd'))
                             <div class="px-2 pt-2 text-[10px] font-black tracking-widest uppercase text-emerald-300/80 border-t border-white/5">IE & PND Menu</div>
@@ -1961,6 +1972,13 @@
                                 <i class="fas fa-hand-holding-usd w-5 text-orange-400 text-sm"></i>
                                 <span>IE: Denda Resign</span>
                             </a>
+                            @if(auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('pnd'))
+                            <a href="{{ route('portal.pnd.training.index') }}"
+                                class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                <i class="fas fa-tasks w-5 text-emerald-400 text-sm"></i>
+                                <span>PND: Kelola Pelatihan</span>
+                            </a>
+                            @endif
                             @endif
 
                             @if(auth()->user()->isInterviewer())
