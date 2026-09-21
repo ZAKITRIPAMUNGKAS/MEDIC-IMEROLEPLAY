@@ -103,6 +103,14 @@
                                     <p class="text-sky-200 text-sm">
                                         {{ auth()->user()->role->display_name ?? auth()->user()->role->name ?? 'Staff' }}
                                     </p>
+                                    @if(auth()->user()->subRole)
+                                    @php $sr = auth()->user()->subRole; @endphp
+                                    <span class="inline-flex items-center gap-1.5 mt-1.5 px-2.5 py-1 rounded-full text-xs font-bold"
+                                          style="{{ $sr->badge_style }}">
+                                        <i class="fas fa-layer-group text-[10px]"></i>
+                                        {{ $sr->short_name }} — {{ $sr->display_name }}
+                                    </span>
+                                    @endif
                                 </div>
                             </div>
 

@@ -1425,7 +1425,7 @@
                         </div>
 
                         {{-- Admin Dropdown --}}
-                        @if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('manage_doctor_schedules') || auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('view_attendance_reports') || auth()->user()->hasPermission('access_live_chat') || auth()->user()->hasPermission('access_feedback'))
+                        @if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('manage_doctor_schedules') || auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('view_attendance_reports') || auth()->user()->hasPermission('access_live_chat') || auth()->user()->hasPermission('access_feedback') || auth()->user()->isExecutiveOrAbove() || auth()->user()->isManagerOrAbove())
                         <div class="relative group">
                             <button class="inline-flex items-center gap-1.5 h-9 px-3 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-lg border border-white/20 transition-all duration-200 whitespace-nowrap">
                                 <i class="fas fa-user-shield text-sm text-amber-300"></i>
@@ -1470,12 +1470,119 @@
                                     @if(auth()->user()->isAdmin() || auth()->user()->isManagerOrAbove())
                                         <a href="{{ route('admin.inactive-staff.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-user-slash w-4 text-red-500 text-sm"></i> Staf Tidak Aktif</a>
                                     @endif
+                                    @if(auth()->user()->isExecutiveOrAbove())
+                                        <div class="my-1 border-t border-gray-100"></div>
+                                        <a href="{{ route('admin.sub-roles.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-layer-group w-4 text-indigo-500 text-sm"></i> Sub-Jabatan / Divisi</a>
+                                    @endif
                                 </div>
                             </div>
                         </div>
                         @endif
 
+                        {{-- ═══ PORTAL MANAJEMEN (RBAC-Aware) ═══ --}}
+                        @php
+                            $canSeePortal = auth()->user()->isStaff();
+                            $isGa    = auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('ga');
+                            $isMsl   = auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('msl');
+                            $isPnd   = auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('pnd');
+                            $isIe    = auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('ie');
+                        @endphp
+                        @if($canSeePortal)
+                        <div class="relative group">
+                            <button class="inline-flex items-center gap-1.5 h-9 px-3 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-lg border border-white/20 transition-all duration-200 whitespace-nowrap">
+                                <i class="fas fa-hospital-alt text-sm text-rose-300"></i>
+                                <span>Portal</span>
+                                <i class="fas fa-chevron-down text-[9px] opacity-60"></i>
+                            </button>
+                            <div class="absolute right-0 top-full mt-2 w-60 bg-white rounded-xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-1 group-hover:translate-y-0 transition-all duration-200 z-[9999] overflow-hidden">
+                                {{-- Semua Anggota --}}
+                                <div class="px-3 pt-2.5 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400 border-b border-gray-100">Pengajuan Saya</div>
+                                <div class="py-1">
+                                    <a href="{{ route('portal.leave.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-rose-50 hover:text-rose-700 transition-colors">
+                                        <i class="fas fa-calendar-check w-4 text-rose-400 text-sm"></i> Pengajuan Cuti
+                                    </a>
+                                    <a href="{{ route('portal.resignation.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors">
+                                        <i class="fas fa-file-signature w-4 text-orange-400 text-sm"></i> Pengajuan Resign
+                                    </a>
+                                    <a href="{{ route('portal.stase.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+                                        <i class="fas fa-graduation-cap w-4 text-blue-400 text-sm"></i> Pengajuan Stase
+                                    </a>
+                                    <a href="{{ route('portal.pnd.my-operations') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+                                        <i class="fas fa-procedures w-4 text-emerald-400 text-sm"></i> Pengajuan Operasi
+                                    </a>
+                                    <a href="{{ route('portal.promotion.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-violet-50 hover:text-violet-700 transition-colors">
+                                        <i class="fas fa-level-up-alt w-4 text-violet-400 text-sm"></i> Kenaikan Jabatan
+                                    </a>
+                                </div>
+
+                                {{-- Divisi-specific --}}
+                                @if($isGa || $isMsl || $isPnd || $isIe)
+                                <div class="px-3 pt-2.5 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400 border-b border-t border-gray-100 mt-1">Kelola Divisi</div>
+                                <div class="py-1">
+                                    @if($isGa)
+                                    <a href="{{ route('portal.ga.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-700 transition-colors">
+                                        <i class="fas fa-car w-4 text-amber-500 text-sm"></i> GA: Sertifikat Kendaraan
+                                    </a>
+                                    @endif
+                                    @if($isMsl)
+                                    <a href="{{ route('portal.msl.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 transition-colors">
+                                        <i class="fas fa-stethoscope w-4 text-teal-500 text-sm"></i> MSL: Sertifikat Visum
+                                    </a>
+                                    <a href="{{ route('portal.msl.stase.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 transition-colors">
+                                        <i class="fas fa-book-medical w-4 text-teal-400 text-sm"></i> MSL: Kelola Stase
+                                    </a>
+                                    @endif
+                                    @if($isPnd)
+                                    <a href="{{ route('portal.pnd.operations') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors">
+                                        <i class="fas fa-hospital w-4 text-green-500 text-sm"></i> PND: Verifikasi Operasi
+                                    </a>
+                                    <a href="{{ route('portal.pnd.cert-index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors">
+                                        <i class="fas fa-award w-4 text-green-400 text-sm"></i> PND: Sertifikat Operasi
+                                    </a>
+                                    <a href="{{ route('portal.promotion.period.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-violet-50 hover:text-violet-700 transition-colors">
+                                        <i class="fas fa-toggle-on w-4 text-violet-500 text-sm"></i> PND: Periode Kenaikan
+                                    </a>
+                                    <a href="{{ route('portal.promotion.applications') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-violet-50 hover:text-violet-700 transition-colors">
+                                        <i class="fas fa-clipboard-list w-4 text-violet-400 text-sm"></i> PND: Review Kenaikan
+                                    </a>
+                                    @endif
+                                    @if($isIe)
+                                    <a href="{{ route('portal.ie.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-700 transition-colors">
+                                        <i class="fas fa-file-contract w-4 text-sky-500 text-sm"></i> IE: Kontrak Medis
+                                    </a>
+                                    <a href="{{ route('portal.resignation.manage.ie') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors">
+                                        <i class="fas fa-hand-holding-usd w-4 text-orange-400 text-sm"></i> IE: Denda Resign
+                                    </a>
+                                    @endif
+                                </div>
+                                @endif
+
+                                {{-- PND: Verifikasi Resign --}}
+                                @if($isPnd)
+                                <div class="py-1 border-t border-gray-100">
+                                    <a href="{{ route('portal.resignation.manage.pnd') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors">
+                                        <i class="fas fa-check-circle w-4 text-orange-400 text-sm"></i> PND: Verifikasi Resign
+                                    </a>
+                                    <a href="{{ route('portal.leave.manage') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-rose-50 hover:text-rose-700 transition-colors">
+                                        <i class="fas fa-calendar-alt w-4 text-rose-400 text-sm"></i> PND: Kelola Cuti
+                                    </a>
+                                </div>
+                                @endif
+
+                                {{-- Konsulen --}}
+                                @if(auth()->user()->role?->level >= 4)
+                                <div class="py-1 border-t border-gray-100">
+                                    <a href="{{ route('portal.stase.konsulen.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+                                        <i class="fas fa-user-check w-4 text-blue-400 text-sm"></i> Konsulen: Setujui Stase
+                                    </a>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                        @endif
+
                         {{-- Gaji Dropdown --}}
+
                         <div class="relative group">
                             <button class="inline-flex items-center gap-1.5 h-9 px-3 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-lg border border-white/20 transition-all duration-200 whitespace-nowrap">
                                 <i class="fas fa-wallet text-sm text-emerald-300"></i>
@@ -1628,7 +1735,7 @@
                     </div>
 
                     <!-- Section: Admin Panel (if permitted) -->
-                    @if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('manage_doctor_schedules') || auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('view_attendance_reports') || auth()->user()->hasPermission('access_live_chat') || auth()->user()->hasPermission('access_feedback'))
+                    @if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('manage_doctor_schedules') || auth()->user()->hasPermission('view_reports') || auth()->user()->hasPermission('view_attendance_reports') || auth()->user()->hasPermission('access_live_chat') || auth()->user()->hasPermission('access_feedback') || auth()->user()->isExecutiveOrAbove() || auth()->user()->isManagerOrAbove())
                         <div class="space-y-1 pt-2 border-t border-white/10">
                             <div class="px-2 pt-1 text-[10px] font-black tracking-widest uppercase text-amber-300/80">Menu Administrator</div>
                             
@@ -1690,6 +1797,13 @@
                                     class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
                                     <i class="fas fa-user-slash w-5 text-red-400 text-sm"></i>
                                     <span>Staf Tidak Aktif</span>
+                                </a>
+                            @endif
+                            @if(auth()->user()->isExecutiveOrAbove())
+                                <a href="{{ route('admin.sub-roles.index') }}"
+                                    class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                    <i class="fas fa-layer-group w-5 text-indigo-400 text-sm"></i>
+                                    <span>Sub-Jabatan / Divisi</span>
                                 </a>
                             @endif
                         </div>

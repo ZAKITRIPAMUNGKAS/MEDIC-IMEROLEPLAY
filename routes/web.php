@@ -864,6 +864,16 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/inactive-staff', [\App\Http\Controllers\Admin\InactiveStaffController::class, 'index'])
         ->name('inactive-staff.index');
 
+    // Sub-Jabatan / Divisi (Executive ke atas)
+    Route::prefix('sub-roles')->name('sub-roles.')->group(function () {
+        Route::get('/',                  [\App\Http\Controllers\Admin\SubRoleController::class, 'index'])->name('index');
+        Route::get('/assign',            [\App\Http\Controllers\Admin\SubRoleController::class, 'assignForm'])->name('assign');
+        Route::post('/assign',           [\App\Http\Controllers\Admin\SubRoleController::class, 'assignStore'])->name('assign.store');
+        Route::post('/assign-bulk',      [\App\Http\Controllers\Admin\SubRoleController::class, 'assignBulk'])->name('assign-bulk');
+        Route::get('/{subRole}/members', [\App\Http\Controllers\Admin\SubRoleController::class, 'members'])->name('members');
+        Route::post('/{subRole}/toggle-active', [\App\Http\Controllers\Admin\SubRoleController::class, 'toggleActive'])->name('toggle-active');
+    });
+
     // Structural/Organizational Management (Admin only - no specific permission check yet)
     Route::resource('structural', \App\Http\Controllers\Admin\StructuralManagementController::class)
         ->middleware('admin');
@@ -959,4 +969,167 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/voting/{id}', [VotingController::class, 'update'])->middleware('permission:manage_users')->name('voting.update');
     Route::post('/voting/{id}/toggle-status', [VotingController::class, 'toggleStatus'])->middleware('permission:manage_users')->name('voting.toggle-status');
     Route::delete('/voting/{id}', [VotingController::class, 'destroy'])->middleware('permission:manage_users')->name('voting.destroy');
+});
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PORTAL MANAJEMEN ALTA HOSPITAL — Cuti, Resign, Sertifikasi, Stase, Promosi
+// Semua route di sini memerlukan autentikasi (middleware 'auth').
+// ═══════════════════════════════════════════════════════════════════════════
+Route::middleware('auth')->prefix('portal')->name('portal.')->group(function () {
+
+    // ── Pengajuan Cuti (Semua Anggota) ───────────────────────────────────────
+    Route::prefix('leave')->name('leave.')->group(function () {
+        Route::get('/',           [\App\Http\Controllers\Portal\LeaveRequestController::class, 'index'])->name('index');
+        Route::get('/create',     [\App\Http\Controllers\Portal\LeaveRequestController::class, 'create'])->name('create');
+        Route::post('/',          [\App\Http\Controllers\Portal\LeaveRequestController::class, 'store'])->name('store');
+        Route::get('/{leave}',    [\App\Http\Controllers\Portal\LeaveRequestController::class, 'show'])->name('show');
+        // Manager ke atas: manage all
+        Route::get('/manage/all', [\App\Http\Controllers\Portal\LeaveRequestController::class, 'manage'])->name('manage');
+        Route::post('/{leave}/approve', [\App\Http\Controllers\Portal\LeaveRequestController::class, 'approve'])->name('approve');
+        Route::post('/{leave}/reject',  [\App\Http\Controllers\Portal\LeaveRequestController::class, 'reject'])->name('reject');
+    });
+
+    // ── Pengajuan Resign (Semua Anggota; PND & IE untuk approval) ─────────────
+    Route::prefix('resignation')->name('resignation.')->group(function () {
+        Route::get('/',        [\App\Http\Controllers\Portal\ResignationController::class, 'index'])->name('index');
+        Route::get('/create',  [\App\Http\Controllers\Portal\ResignationController::class, 'create'])->name('create');
+        Route::post('/',       [\App\Http\Controllers\Portal\ResignationController::class, 'store'])->name('store');
+        Route::get('/{resignation}', [\App\Http\Controllers\Portal\ResignationController::class, 'show'])->name('show');
+        // PND
+        Route::get('/manage/pnd',                       [\App\Http\Controllers\Portal\ResignationController::class, 'managePnd'])->name('manage.pnd');
+        Route::post('/{resignation}/pnd-approve',       [\App\Http\Controllers\Portal\ResignationController::class, 'pndApprove'])->name('pnd-approve');
+        Route::post('/{resignation}/pnd-reject',        [\App\Http\Controllers\Portal\ResignationController::class, 'pndReject'])->name('pnd-reject');
+        // IE
+        Route::get('/manage/ie',                        [\App\Http\Controllers\Portal\ResignationController::class, 'manageIe'])->name('manage.ie');
+        Route::post('/{resignation}/ie-verify-payment', [\App\Http\Controllers\Portal\ResignationController::class, 'ieVerifyPayment'])->name('ie-verify');
+    });
+
+    // ── GA: Sertifikasi Kendaraan ─────────────────────────────────────────────
+    Route::prefix('ga')->name('ga.')->group(function () {
+        Route::get('/',                          [\App\Http\Controllers\Portal\GaCertificationController::class, 'index'])->name('index');
+        Route::get('/create',                    [\App\Http\Controllers\Portal\GaCertificationController::class, 'create'])->name('create');
+        Route::post('/',                         [\App\Http\Controllers\Portal\GaCertificationController::class, 'store'])->name('store');
+        Route::post('/{certification}/revoke',   [\App\Http\Controllers\Portal\GaCertificationController::class, 'revoke'])->name('revoke');
+    });
+
+    // ── MSL: Sertifikasi Visum & Stase ────────────────────────────────────────
+    Route::prefix('msl')->name('msl.')->group(function () {
+        Route::get('/',                           [\App\Http\Controllers\Portal\MslCertificationController::class, 'index'])->name('index');
+        Route::post('/visum',                     [\App\Http\Controllers\Portal\MslCertificationController::class, 'storeVisum'])->name('visum.store');
+        Route::get('/stase',                      [\App\Http\Controllers\Portal\MslCertificationController::class, 'staseIndex'])->name('stase.index');
+        Route::post('/stase/{stase}/approve',     [\App\Http\Controllers\Portal\MslCertificationController::class, 'staseApprove'])->name('stase.approve');
+        Route::post('/stase/{stase}/complete',    [\App\Http\Controllers\Portal\MslCertificationController::class, 'staseComplete'])->name('stase.complete');
+    });
+
+    // ── IE: Surat Perjanjian Kontrak Medis ────────────────────────────────────
+    Route::prefix('ie')->name('ie.')->group(function () {
+        Route::get('/',                           [\App\Http\Controllers\Portal\IeContractController::class, 'index'])->name('index');
+        Route::post('/',                          [\App\Http\Controllers\Portal\IeContractController::class, 'store'])->name('store');
+        Route::post('/{certification}/revoke',    [\App\Http\Controllers\Portal\IeContractController::class, 'revoke'])->name('revoke');
+    });
+
+    // ── Pengajuan Stase (Anggota & Konsulen) ──────────────────────────────────
+    Route::prefix('stase')->name('stase.')->group(function () {
+        Route::get('/',                           [\App\Http\Controllers\Portal\StaseController::class, 'index'])->name('index');
+        Route::get('/create',                     [\App\Http\Controllers\Portal\StaseController::class, 'create'])->name('create');
+        Route::post('/',                          [\App\Http\Controllers\Portal\StaseController::class, 'store'])->name('store');
+        Route::get('/konsulen/approvals',         [\App\Http\Controllers\Portal\StaseController::class, 'myApprovals'])->name('konsulen.index');
+        Route::post('/{stase}/konsulen-approve',  [\App\Http\Controllers\Portal\StaseController::class, 'konsulenApprove'])->name('konsulen.approve');
+        Route::post('/{stase}/konsulen-reject',   [\App\Http\Controllers\Portal\StaseController::class, 'konsulenReject'])->name('konsulen.reject');
+    });
+
+    // ── PND: Pengajuan Operasi & Sertifikat Operasi ──────────────────────────
+    Route::prefix('pnd')->name('pnd.')->group(function () {
+        // Anggota
+        Route::get('/operations/my',             [\App\Http\Controllers\Portal\PndOperationController::class, 'myOperations'])->name('my-operations');
+        Route::get('/operations/create',         [\App\Http\Controllers\Portal\PndOperationController::class, 'createOperation'])->name('operation.create');
+        Route::post('/operations',               [\App\Http\Controllers\Portal\PndOperationController::class, 'storeOperation'])->name('operation.store');
+        // PND Staff
+        Route::get('/operations',                [\App\Http\Controllers\Portal\PndOperationController::class, 'index'])->name('operations');
+        Route::post('/operations/{opRequest}/approve', [\App\Http\Controllers\Portal\PndOperationController::class, 'approve'])->name('operation.approve');
+        Route::post('/operations/{opRequest}/reject',  [\App\Http\Controllers\Portal\PndOperationController::class, 'reject'])->name('operation.reject');
+        // Sertifikat Operasi
+        Route::get('/certs',                     [\App\Http\Controllers\Portal\PndOperationController::class, 'certIndex'])->name('cert-index');
+        Route::post('/certs',                    [\App\Http\Controllers\Portal\PndOperationController::class, 'certStore'])->name('cert-store');
+    });
+
+    // ── Kenaikan Jabatan / Promosi (PND kontrol, Anggota submit) ─────────────
+    Route::prefix('promotion')->name('promotion.')->group(function () {
+        // Anggota
+        Route::get('/',                            [\App\Http\Controllers\Portal\PromotionController::class, 'index'])->name('index');
+        Route::get('/create',                      [\App\Http\Controllers\Portal\PromotionController::class, 'create'])->name('create');
+        Route::post('/',                           [\App\Http\Controllers\Portal\PromotionController::class, 'store'])->name('store');
+        Route::get('/checklist',                   [\App\Http\Controllers\Portal\PromotionController::class, 'checklistApi'])->name('checklist');
+        // PND: Kelola Periode
+        Route::get('/periods',                     [\App\Http\Controllers\Portal\PromotionController::class, 'periodIndex'])->name('period.index');
+        Route::post('/periods/open',               [\App\Http\Controllers\Portal\PromotionController::class, 'openPeriod'])->name('period.open');
+        Route::post('/periods/{period}/close',     [\App\Http\Controllers\Portal\PromotionController::class, 'closePeriod'])->name('period.close');
+        // PND: Review Pengajuan
+        Route::get('/applications',                [\App\Http\Controllers\Portal\PromotionController::class, 'manageApplications'])->name('applications');
+        Route::post('/applications/{application}/review', [\App\Http\Controllers\Portal\PromotionController::class, 'reviewApplication'])->name('applications.review');
+    });
+
+    // ── Route untuk Install Portal Tables (via browser, hapus setelah dipakai!) ─
+    Route::get('/install-tables', function () {
+        try {
+            $pdo = new \PDO(
+                'mysql:host=' . env('DB_HOST') . ';port=' . env('DB_PORT') . ';dbname=' . env('DB_DATABASE'),
+                env('DB_USERNAME'),
+                env('DB_PASSWORD')
+            );
+        } catch (\Exception $e) {
+            return '❌ DB Connection Error: ' . $e->getMessage();
+        }
+
+        $results = [];
+
+        // Jalankan migrasi yang belum berjalan
+        $migrationFiles = [
+            '2026_09_21_000001_create_staff_sub_roles_table',
+            '2026_09_21_000002_create_credit_scores_table',
+            '2026_09_21_000003_create_portal_hospital_tables',
+        ];
+
+        // Cek tabel migrations untuk melihat mana yang belum dijalankan
+        try {
+            $ran = $pdo->query("SELECT migration FROM migrations")->fetchAll(\PDO::FETCH_COLUMN);
+        } catch (\Exception $e) {
+            $ran = [];
+        }
+
+        foreach ($migrationFiles as $mig) {
+            if (in_array($mig, $ran)) {
+                $results[] = "⚠️ $mig: sudah pernah dijalankan, skip.";
+                continue;
+            }
+            try {
+                $path = database_path("migrations/{$mig}.php");
+                if (!file_exists($path)) {
+                    $results[] = "❌ $mig: file tidak ditemukan.";
+                    continue;
+                }
+                $migObj = require $path;
+                $migObj->up();
+                $pdo->exec("INSERT INTO migrations (migration, batch) VALUES ('" . $pdo->quote($mig) . "', 1)");
+                $results[] = "✅ $mig: berhasil dijalankan.";
+            } catch (\Exception $e) {
+                $results[] = "❌ $mig: ERROR — " . $e->getMessage();
+            }
+        }
+
+        // Seed data divisi jika belum ada
+        $subRoleCount = $pdo->query("SELECT COUNT(*) FROM staff_sub_roles")->fetchColumn();
+        if ($subRoleCount == 0) {
+            $seeder = new \Database\Seeders\StaffSubRoleSeeder();
+            $seeder->run();
+            $results[] = "✅ StaffSubRoleSeeder: 5 divisi berhasil di-seed.";
+        } else {
+            $results[] = "⚠️ StaffSubRoleSeeder: sudah ada {$subRoleCount} divisi, skip.";
+        }
+
+        $results[] = '';
+        $results[] = '🎉 Selesai! Hapus route /portal/install-tables dari routes/web.php setelah ini.';
+
+        return implode('<br>', $results);
+    })->name('install-tables');
 });

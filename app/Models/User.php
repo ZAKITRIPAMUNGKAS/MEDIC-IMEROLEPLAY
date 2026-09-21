@@ -22,6 +22,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role_id',
+        'sub_role_id',
         'staff_id',
         'citizen_id',
         'hospital',
@@ -62,6 +63,42 @@ class User extends Authenticatable
     public function role()
     {
         return $this->belongsTo(StaffRole::class, 'role_id');
+    }
+
+    /**
+     * Sub-jabatan / divisi (IE, PND, MSL, GA, Comdis)
+     */
+    public function subRole()
+    {
+        return $this->belongsTo(StaffSubRole::class, 'sub_role_id');
+    }
+
+    /**
+     * Cek apakah user punya sub-jabatan tertentu (berdasarkan name/slug).
+     * Contoh: $user->hasSubRole('pnd')
+     */
+    public function hasSubRole(string $subRoleName): bool
+    {
+        return $this->subRole && strtolower($this->subRole->name) === strtolower($subRoleName);
+    }
+
+    /**
+     * Cek apakah user adalah anggota divisi tertentu (bisa cek beberapa sekaligus).
+     * Contoh: $user->isInDivision('pnd', 'ie')
+     */
+    public function isInDivision(string ...$divisions): bool
+    {
+        if (!$this->subRole) return false;
+        return in_array(strtolower($this->subRole->name), array_map('strtolower', $divisions));
+    }
+
+    /**
+     * Cek apakah user adalah Executive atau Admin (bisa assign sub-jabatan).
+     */
+    public function isExecutiveOrAbove(): bool
+    {
+        if ($this->isAdmin()) return true;
+        return (bool) ($this->role && $this->role->level >= 7);
     }
 
     public function organizationalPositions()
@@ -397,12 +434,317 @@ class User extends Authenticatable
     }
 
     /**
+     * Credit Score anggota
+     */
+    public function creditScore()
+    {
+        return $this->hasOne(CreditScore::class);
+    }
+
+    /**
+     * Ambil saldo credit score (buat baru jika belum ada, default 100)
+     */
+    public function getCreditBalance(): int
+    {
+        return CreditScore::getOrCreate($this->id)->balance;
+    }
+
+    /**
      * Get private messages received by this user
      */
     public function receivedMessages()
     {
         return $this->hasMany(MemberMessage::class, 'receiver_id');
     }
+
+    // ─── Portal: Cuti ─────────────────────────────────────────────────────────
+
+    public function leaveRequests()
+    {
+        return $this->hasMany(LeaveRequest::class);
+    }
+
+    // ─── Portal: Resign ───────────────────────────────────────────────────────
+
+    public function resignationRequests()
+    {
+        return $this->hasMany(ResignationRequest::class);
+    }
+
+    // ─── Portal: Sertifikasi Profil ───────────────────────────────────────────
+
+    public function certifications()
+    {
+        return $this->hasMany(MemberCertification::class);
+    }
+
+    /**
+     * Cek apakah user memiliki sertifikat aktif dari divisi/tipe tertentu.
+     * Contoh: $user->hasCertification('vehicle_land')
+     */
+    public function hasCertification(string $type): bool
+    {
+        return $this->certifications()->where('type', $type)->where('status', 'active')->exists();
+    }
+
+    // ─── Portal: Stase ────────────────────────────────────────────────────────
+
+    public function staseApplications()
+    {
+        return $this->hasMany(StaseApplication::class);
+    }
+
+    /**
+     * Cek apakah user sudah lulus stase tertentu (ada entry completed di StaseApplication).
+     */
+    public function hasCompletedStase(string $staseName = null): bool
+    {
+        $q = $this->staseApplications()->where('passed', true);
+        if ($staseName) $q->where('stase_name', 'like', "%{$staseName}%");
+        return $q->exists();
+    }
+
+    // ─── Portal: Pengajuan Operasi ────────────────────────────────────────────
+
+    public function operationRequests()
+    {
+        return $this->hasMany(OperationRequest::class);
+    }
+
+    // ─── Portal: Kenaikan Jabatan (Promosi) ───────────────────────────────────
+
+    public function promotionApplications()
+    {
+        return $this->hasMany(PromotionApplication::class);
+    }
+
+    /**
+     * Hitung jumlah hari aktif sejak joining (berdasarkan created_at).
+     */
+    public function getDaysActiveSinceJoining(): int
+    {
+        return (int) \Carbon\Carbon::parse($this->created_at)->diffInDays(now());
+    }
+
+    /**
+     * Hitung jumlah hari aktif sebagai jabatan tertentu (berdasarkan log kenaikan jabatan terakhir).
+     * Fallback ke days since joining jika tidak ada data.
+     */
+    public function getDaysInCurrentRole(): int
+    {
+        // Gunakan created_at sebagai fallback
+        $lastPromotion = $this->promotionApplications()
+            ->where('status', 'approved')
+            ->where('target_role_id', $this->role_id)
+            ->latest('pnd_reviewed_at')
+            ->first();
+
+        if ($lastPromotion && $lastPromotion->pnd_reviewed_at) {
+            return (int) \Carbon\Carbon::parse($lastPromotion->pnd_reviewed_at)->diffInDays(now());
+        }
+
+        return $this->getDaysActiveSinceJoining();
+    }
+
+    /**
+     * Hitung total jam on-duty (from attendances).
+     */
+    public function getTotalDutyHours(): float
+    {
+        $seconds = $this->getTotalDutySeconds();
+        return round($seconds / 3600, 2);
+    }
+
+    /**
+     * Hitung jumlah tindakan operasi sebagai DPJP (minor).
+     */
+    public function getDpjpMinorOperationCount(): int
+    {
+        return \App\Models\OperationRecord::where('dpjp_id', $this->id)
+            ->where('jenis_operasi', 'Operasi Minor')
+            ->where('hospital', $this->hospital ?? 'alta')
+            ->count();
+    }
+
+    /**
+     * Hitung jumlah tindakan operasi sebagai asisten (minor).
+     */
+    public function getAssistantMinorOperationCount(): int
+    {
+        return \App\Models\OperationRecord::whereHas('members', fn($q) => $q->where('user_id', $this->id))
+            ->where('jenis_operasi', 'Operasi Minor')
+            ->where('hospital', $this->hospital ?? 'alta')
+            ->count();
+    }
+
+    /**
+     * Hitung jumlah tindakan operasi sebagai asisten (mayor).
+     */
+    public function getAssistantMayorOperationCount(): int
+    {
+        return \App\Models\OperationRecord::whereHas('members', fn($q) => $q->where('user_id', $this->id))
+            ->where('jenis_operasi', 'Operasi Mayor')
+            ->where('hospital', $this->hospital ?? 'alta')
+            ->count();
+    }
+
+    /**
+     * Hitung jumlah tindakan operasi sebagai DPJP (mayor).
+     */
+    public function getDpjpMayorOperationCount(): int
+    {
+        return \App\Models\OperationRecord::where('dpjp_id', $this->id)
+            ->where('jenis_operasi', 'Operasi Mayor')
+            ->where('hospital', $this->hospital ?? 'alta')
+            ->count();
+    }
+
+    /**
+     * Build checklist persyaratan kenaikan jabatan ke target role tertentu.
+     * Return array: [['key'=>, 'label'=>, 'met'=>bool], ...]
+     */
+    public function buildPromotionChecklist(\App\Models\StaffRole $targetRole): array
+    {
+        $targetName  = strtolower($targetRole->name);
+        $currentName = strtolower($this->role?->name ?? '');
+        $creditScore = $this->getCreditBalance();
+        $checklist   = [];
+
+        // ── Trainee ke jenjang awal ───────────────────────────────────────────
+        if ($currentName === 'trainee') {
+            $checklist[] = [
+                'key'   => 'credit_score_80',
+                'label' => 'Credit Score minimal 80 poin (saat ini: ' . $creditScore . ')',
+                'met'   => $creditScore >= 80,
+            ];
+            $trainingDays = $this->getDaysActiveSinceJoining();
+            $checklist[] = [
+                'key'   => 'training_days_7',
+                'label' => 'Masa training minimal 7 hari (saat ini: ' . $trainingDays . ' hari)',
+                'met'   => $trainingDays >= 7,
+            ];
+            $dutyHours = $this->getTotalDutyHours();
+            $checklist[] = [
+                'key'   => 'duty_hours_15',
+                'label' => 'Jam terbang on-duty minimal 15 jam (saat ini: ' . $dutyHours . ' jam)',
+                'met'   => $dutyHours >= 15,
+            ];
+            $hasVehicle = $this->hasCertification('vehicle_land') || $this->hasCertification('vehicle_heli');
+            $checklist[] = [
+                'key'   => 'vehicle_cert',
+                'label' => 'Memiliki sertifikat kendaraan (GA)',
+                'met'   => $hasVehicle,
+            ];
+            return $checklist;
+        }
+
+        // ── Perawat & Co-ass ke tingkat berikutnya ────────────────────────────
+        if (in_array($currentName, ['perawat', 'co_ass'])) {
+            $checklist[] = [
+                'key'   => 'credit_score_80',
+                'label' => 'Credit Score minimal 80 poin (saat ini: ' . $creditScore . ')',
+                'met'   => $creditScore >= 80,
+            ];
+            $checklist[] = [
+                'key'   => 'operation_cert',
+                'label' => 'Memiliki sertifikat operasi (PND)',
+                'met'   => $this->hasCertification('operation_cert'),
+            ];
+            $assistantMinor = $this->getAssistantMinorOperationCount();
+            $checklist[] = [
+                'key'   => 'assistant_minor_5',
+                'label' => 'Asisten Operasi Minor minimal 5x (saat ini: ' . $assistantMinor . 'x)',
+                'met'   => $assistantMinor >= 5,
+            ];
+            $assistantMayor = $this->getAssistantMayorOperationCount();
+            $checklist[] = [
+                'key'   => 'assistant_mayor_1',
+                'label' => 'Pernah menjadi Asisten Operasi Mayor (saat ini: ' . $assistantMayor . 'x)',
+                'met'   => $assistantMayor >= 1,
+            ];
+            $checklist[] = [
+                'key'   => 'medical_contract',
+                'label' => 'Memiliki Surat Perjanjian Kontrak Medis (IE)',
+                'met'   => $this->hasCertification('medical_contract'),
+            ];
+            return $checklist;
+        }
+
+        // ── Co-ass ke Dokter Umum ─────────────────────────────────────────────
+        if ($currentName === 'co_ass' && in_array($targetName, ['dokter_umum', 'dokter umum'])) {
+            // (dihandle blok di atas, tapi kita override khusus jika target = dokter_umum)
+            // Reset dan rebuild
+            $checklist = [];
+            $checklist[] = [
+                'key'   => 'credit_score_80',
+                'label' => 'Credit Score minimal 80 poin (saat ini: ' . $creditScore . ')',
+                'met'   => $creditScore >= 80,
+            ];
+            $checklist[] = [
+                'key'   => 'operation_cert',
+                'label' => 'Memiliki sertifikat operasi (PND)',
+                'met'   => $this->hasCertification('operation_cert'),
+            ];
+            $checklist[] = [
+                'key'   => 'medical_contract',
+                'label' => 'Memiliki Surat Perjanjian Kontrak Medis (IE)',
+                'met'   => $this->hasCertification('medical_contract'),
+            ];
+            $dpjpMinor = $this->getDpjpMinorOperationCount();
+            $checklist[] = [
+                'key'   => 'dpjp_minor_5',
+                'label' => 'DPJP Operasi Minor minimal 5x (saat ini: ' . $dpjpMinor . 'x)',
+                'met'   => $dpjpMinor >= 5,
+            ];
+            $assistantMayor = $this->getAssistantMayorOperationCount();
+            $checklist[] = [
+                'key'   => 'assistant_mayor_5',
+                'label' => 'Asisten Operasi Mayor minimal 5x (saat ini: ' . $assistantMayor . 'x)',
+                'met'   => $assistantMayor >= 5,
+            ];
+            // Surat rekomendasi konsulen diupload manual — cek file
+            $checklist[] = [
+                'key'   => 'recommendation_letter',
+                'label' => '2 surat rekomendasi dari Konsulen stase (dilampirkan saat submit)',
+                'met'   => false, // selalu false di sini, dicek saat submit
+            ];
+            return $checklist;
+        }
+
+        // ── Dokter Umum ke Dokter Spesialis ───────────────────────────────────
+        if (in_array($currentName, ['dokter_umum', 'dokter umum'])) {
+            $checklist[] = [
+                'key'   => 'credit_score_85',
+                'label' => 'Credit Score minimal 85 poin (saat ini: ' . $creditScore . ')',
+                'met'   => $creditScore >= 85,
+            ];
+            $daysInRole = $this->getDaysInCurrentRole();
+            $checklist[] = [
+                'key'   => 'role_active_20_days',
+                'label' => 'Masa aktif Dokter Umum minimal 20 hari (saat ini: ' . $daysInRole . ' hari)',
+                'met'   => $daysInRole >= 20,
+            ];
+            // Terdaftar aktif dalam Dokter Residen — cek stase aktif / completed
+            $isResiden = $this->staseApplications()
+                ->where('passed', true)
+                ->exists();
+            $checklist[] = [
+                'key'   => 'residen_active',
+                'label' => 'Terdaftar aktif dalam program Dokter Residen (lulus minimal 1 stase)',
+                'met'   => $isResiden,
+            ];
+            $checklist[] = [
+                'key'   => 'case_study_file',
+                'label' => 'Laporan Studi Kasus spesialisasi (dilampirkan saat submit)',
+                'met'   => false, // dicek saat submit
+            ];
+            return $checklist;
+        }
+
+        return $checklist;
+    }
+
+    // ─── Existing: Online Status & Duty Seconds ───────────────────────────────
 
     /**
      * Check if user is currently online on the dashboard
