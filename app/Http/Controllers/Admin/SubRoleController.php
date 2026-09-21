@@ -80,22 +80,34 @@ class SubRoleController extends Controller
         $this->checkAccess();
 
         $hospital = $request->get('hospital', 'alta');
+        $search   = trim($request->get('q', ''));
 
-        $subRoles = StaffSubRole::active()
-            ->forHospital($hospital)
-            ->orderBy('sort_order')
-            ->get();
+        $subRolesQuery = StaffSubRole::active()->orderBy('sort_order');
+        if ($hospital && $hospital !== 'all') {
+            $subRolesQuery->forHospital($hospital);
+        }
+        $subRoles = $subRolesQuery->get();
 
         // Staf aktif sesuai hospital, urutkan by level
-        $staffList = User::with(['role:id,name,display_name,level', 'subRole:id,name,short_name,color'])
+        $staffQuery = User::with(['role:id,name,display_name,level', 'subRole:id,name,short_name,color'])
             ->where('is_active', true)
             ->whereNotNull('role_id')
-            ->where('hospital', $hospital)
-            ->whereHas('role', fn($q) => $q->where('name', '!=', 'admin'))
-            ->orderByRoleLevel()
-            ->get();
+            ->whereHas('role', fn($q) => $q->where('name', '!=', 'admin'));
 
-        return view('admin.sub-roles.assign', compact('subRoles', 'staffList', 'hospital'));
+        if ($hospital && $hospital !== 'all') {
+            $staffQuery->where('hospital', $hospital);
+        }
+
+        if ($search) {
+            $staffQuery->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('staff_id', 'like', "%{$search}%");
+            });
+        }
+
+        $staffList = $staffQuery->orderByRoleLevel()->get();
+
+        return view('admin.sub-roles.assign', compact('subRoles', 'staffList', 'hospital', 'search'));
     }
 
     /**

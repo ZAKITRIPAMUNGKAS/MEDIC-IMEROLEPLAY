@@ -71,18 +71,24 @@ class CreditScoreController extends Controller
         if ($this->canViewAll()) {
             // Tampilkan semua anggota aktif + skor mereka
             $search = trim($request->get('q', ''));
-            $hospital = $request->get('hospital', $user->hospital ?? 'alta');
+            $hospital = $request->get('hospital', 'alta');
 
             $query = User::with(['role:id,name,display_name,level', 'subRole:id,name,short_name,color', 'creditScore'])
                 ->where('is_active', true)
                 ->whereNotNull('role_id')
-                ->where('hospital', $hospital)
                 ->whereHas('role', fn($q) => $q->where('name', '!=', 'admin'));
+
+            if ($hospital && $hospital !== 'all') {
+                $query->where('hospital', $hospital);
+            }
 
             if ($search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('staff_id', 'like', "%{$search}%");
+                      ->orWhere('staff_id', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%")
+                      ->orWhereHas('subRole', fn($sr) => $sr->where('name', 'like', "%{$search}%")->orWhere('short_name', 'like', "%{$search}%"))
+                      ->orWhereHas('role', fn($r) => $r->where('display_name', 'like', "%{$search}%")->orWhere('name', 'like', "%{$search}%"));
                 });
             }
 

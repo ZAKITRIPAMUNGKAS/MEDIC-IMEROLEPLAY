@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Credit Score Anggota')
+@section('title', 'Credit Score Anggota — Alta Hospital')
 
 @section('content')
 <div class="relative min-h-screen py-8 px-4 sm:px-6 lg:px-8">
@@ -13,24 +13,39 @@
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                     <h1 class="text-2xl sm:text-3xl font-bold text-white mb-1">Credit Score Anggota</h1>
-                    <p class="text-sky-200 text-sm">Kelola dan pantau Credit Score seluruh anggota {{ ucfirst($hospital) }}</p>
+                    <p class="text-sky-200 text-sm">Kelola dan pantau Credit Score seluruh anggota Alta Hospital</p>
                 </div>
                 <div class="text-right">
                     <p class="text-xs text-gray-400">Total Anggota</p>
-                    <p class="text-2xl font-bold text-white">{{ $members->total() }}</p>
+                    <p class="text-2xl font-bold text-white" id="displayed-count">{{ $members->total() }}</p>
                 </div>
             </div>
 
-            {{-- Filter --}}
-            <form method="GET" class="mt-4 flex flex-wrap gap-3">
-                <input type="text" name="q" value="{{ $search }}" placeholder="Cari nama / staff ID..."
-                       class="flex-1 min-w-[200px] bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-sky-400">
-                <select name="hospital" class="bg-white/10 text-white border border-white/20 rounded-lg px-4 py-2.5 text-sm appearance-none focus:ring-2 focus:ring-sky-400">
-                    <option value="alta" {{ $hospital==='alta'?'selected':'' }} class="bg-sky-900">Alta</option>
-                    <option value="roxwood" {{ $hospital==='roxwood'?'selected':'' }} class="bg-sky-900">Roxwood</option>
+            {{-- Filter & Search Form --}}
+            <form method="GET" action="{{ route('credit-score.index') }}" class="mt-5 flex flex-wrap items-center gap-3">
+                <div class="relative flex-1 min-w-[220px]">
+                    <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="text" id="csSearchInput" name="q" value="{{ $search }}"
+                           placeholder="Cari nama anggota, Staff ID, divisi, jabatan..."
+                           class="w-full bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded-xl pl-10 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all">
+                    @if(!empty($search))
+                    <a href="{{ route('credit-score.index', ['hospital' => $hospital]) }}"
+                       class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs" title="Reset pencarian">
+                        <i class="fas fa-times-circle"></i>
+                    </a>
+                    @endif
+                </div>
+
+                <select name="hospital" onchange="this.form.submit()"
+                        class="bg-white/10 text-white border border-white/20 rounded-xl px-4 py-2.5 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-sky-400 cursor-pointer">
+                    <option value="alta" {{ ($hospital ?? 'alta') === 'alta' ? 'selected' : '' }} class="bg-sky-900">Alta Hospital</option>
+                    <option value="roxwood" {{ ($hospital ?? '') === 'roxwood' ? 'selected' : '' }} class="bg-sky-900">Roxwood</option>
+                    <option value="all" {{ ($hospital ?? '') === 'all' ? 'selected' : '' }} class="bg-sky-900">Semua Rumah Sakit</option>
                 </select>
-                <button type="submit" class="px-4 py-2.5 bg-sky-500 hover:bg-sky-400 text-white rounded-lg font-semibold text-sm transition-all">
-                    <i class="fas fa-filter mr-1"></i> Filter
+
+                <button type="submit"
+                        class="px-5 py-2.5 bg-sky-500 hover:bg-sky-400 text-white rounded-xl font-semibold text-sm transition-all shadow-md flex items-center gap-2">
+                    <i class="fas fa-filter text-xs"></i> Cari
                 </button>
             </form>
         </div>
@@ -42,8 +57,8 @@
         @endif
 
         {{-- Tabel --}}
-        <div class="glass-effect rounded-2xl overflow-hidden">
-            <table class="w-full text-sm hidden sm:table">
+        <div class="glass-effect rounded-2xl overflow-hidden shadow-2xl">
+            <table class="w-full text-sm hidden sm:table" id="csTable">
                 <thead>
                     <tr class="border-b border-white/10 bg-white/5">
                         <th class="text-left px-5 py-4 text-gray-300 text-xs uppercase tracking-wide font-semibold">#</th>
@@ -54,23 +69,27 @@
                         <th class="text-center px-5 py-4 text-gray-300 text-xs uppercase tracking-wide font-semibold">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-white/5">
-                    @foreach($members as $member)
+                <tbody class="divide-y divide-white/5" id="csTableBody">
+                    @forelse($members as $member)
                     @php
                         $balance = $member->creditScore?->balance ?? 100;
                         $scoreColor = $balance >= 85 ? 'text-green-400' : ($balance >= 80 ? 'text-yellow-400' : 'text-red-400');
                         $scoreBg   = $balance >= 85 ? 'bg-green-500/20 border-green-500/30' : ($balance >= 80 ? 'bg-yellow-500/20 border-yellow-500/30' : 'bg-red-500/20 border-red-500/30');
                     @endphp
-                    <tr class="hover:bg-white/5 transition-colors">
+                    <tr class="hover:bg-white/5 transition-colors cs-row"
+                        data-name="{{ strtolower($member->name) }}"
+                        data-id="{{ strtolower($member->staff_id ?? '') }}"
+                        data-role="{{ strtolower($member->role?->display_name ?? '') }}"
+                        data-divisi="{{ strtolower($member->subRole?->short_name ?? '') }}">
                         <td class="px-5 py-3 text-gray-500 text-xs">{{ ($members->currentPage()-1)*$members->perPage()+$loop->iteration }}</td>
                         <td class="px-5 py-3">
                             <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-sky-500/30 to-cyan-500/30 flex items-center justify-center border border-white/20 text-white text-xs font-bold flex-shrink-0">
+                                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-sky-500/30 to-cyan-500/30 flex items-center justify-center border border-white/20 text-white text-xs font-bold flex-shrink-0">
                                     {{ strtoupper(substr($member->name,0,2)) }}
                                 </div>
                                 <div>
                                     <p class="text-white font-medium">{{ $member->name }}</p>
-                                    @if($member->staff_id)<p class="text-gray-400 text-xs">{{ $member->staff_id }}</p>@endif
+                                    @if($member->staff_id)<p class="text-sky-300 font-mono text-xs">{{ $member->staff_id }}</p>@endif
                                 </div>
                             </div>
                         </td>
@@ -108,38 +127,75 @@
                             </div>
                         </td>
                     </tr>
-                    @endforeach
+                    @empty
+                    <tr>
+                        <td colspan="6" class="px-5 py-8 text-center text-gray-400">
+                            <i class="fas fa-user-slash text-2xl mb-2 text-gray-500 block"></i>
+                            Tidak ada data anggota ditemukan.
+                        </td>
+                    </tr>
+                    @endforelse
+                    <tr id="noResultsDesktop" class="hidden">
+                        <td colspan="6" class="px-5 py-8 text-center text-gray-400">
+                            <i class="fas fa-search text-2xl mb-2 text-gray-500 block"></i>
+                            Tidak ada anggota yang sesuai dengan kata kunci pencarian.
+                        </td>
+                    </tr>
                 </tbody>
             </table>
 
             {{-- Mobile cards --}}
-            <div class="sm:hidden divide-y divide-white/10">
-                @foreach($members as $member)
-                @php $balance = $member->creditScore?->balance ?? 100; $scoreColor = $balance >= 85 ? 'text-green-400' : ($balance >= 80 ? 'text-yellow-400' : 'text-red-400'); @endphp
-                <div class="p-4 flex items-center justify-between gap-3">
+            <div class="sm:hidden divide-y divide-white/10" id="csMobileCards">
+                @forelse($members as $member)
+                @php
+                    $balance = $member->creditScore?->balance ?? 100;
+                    $scoreColor = $balance >= 85 ? 'text-green-400' : ($balance >= 80 ? 'text-yellow-400' : 'text-red-400');
+                @endphp
+                <div class="p-4 flex items-center justify-between gap-3 cs-row-mobile"
+                     data-name="{{ strtolower($member->name) }}"
+                     data-id="{{ strtolower($member->staff_id ?? '') }}"
+                     data-role="{{ strtolower($member->role?->display_name ?? '') }}"
+                     data-divisi="{{ strtolower($member->subRole?->short_name ?? '') }}">
                     <div class="flex items-center gap-3">
                         <div class="w-9 h-9 rounded-full bg-gradient-to-br from-sky-500/30 to-cyan-500/30 flex items-center justify-center border border-white/20 text-white text-xs font-bold flex-shrink-0">
                             {{ strtoupper(substr($member->name,0,2)) }}
                         </div>
                         <div>
                             <p class="text-white font-medium text-sm">{{ $member->name }}</p>
-                            <p class="text-gray-400 text-xs">{{ $member->role?->display_name ?? '-' }}</p>
+                            <p class="text-gray-400 text-xs">
+                                {{ $member->role?->display_name ?? '-' }}
+                                @if($member->subRole) &bull; <span class="font-bold text-sky-300">{{ $member->subRole->short_name }}</span>@endif
+                            </p>
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="font-black text-lg {{ $scoreColor }}">{{ $balance }}</span>
-                        <a href="{{ route('credit-score.show', $member) }}" class="px-2 py-1 bg-sky-500/20 text-sky-300 rounded-lg text-xs font-semibold border border-sky-500/30">→</a>
+                        <a href="{{ route('credit-score.show', $member) }}" class="px-2.5 py-1.5 bg-sky-500/20 text-sky-300 rounded-lg text-xs font-semibold border border-sky-500/30">
+                            Detail
+                        </a>
+                        @if(auth()->user()->isInDivision('comdis') || auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove())
+                        <a href="{{ route('credit-score.input', $member) }}" class="px-2.5 py-1.5 bg-amber-500/20 text-amber-300 rounded-lg text-xs font-semibold border border-amber-500/30">
+                            Input
+                        </a>
+                        @endif
                     </div>
                 </div>
-                @endforeach
+                @empty
+                <div class="p-6 text-center text-gray-400 text-sm">
+                    Tidak ada data anggota ditemukan.
+                </div>
+                @endforelse
+                <div id="noResultsMobile" class="hidden p-6 text-center text-gray-400 text-sm">
+                    <i class="fas fa-search text-xl mb-1 text-gray-500 block"></i>
+                    Tidak ada anggota yang sesuai dengan kata kunci pencarian.
+                </div>
             </div>
 
             @if($members->hasPages())
-            <div class="px-5 py-4 border-t border-white/10 flex items-center justify-between text-xs text-gray-400">
-                <span>{{ $members->firstItem() }}–{{ $members->lastItem() }} dari {{ $members->total() }}</span>
+            <div class="px-5 py-4 border-t border-white/10 flex items-center justify-between text-xs text-gray-400 bg-white/5">
+                <span>Menampilkan {{ $members->firstItem() }}–{{ $members->lastItem() }} dari {{ $members->total() }} anggota</span>
                 <div class="flex gap-1">
-                    @if(!$members->onFirstPage())<a href="{{ $members->previousPageUrl() }}" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-white">‹</a>@endif
-                    @if($members->hasMorePages())<a href="{{ $members->nextPageUrl() }}" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-lg text-white">›</a>@endif
+                    {{ $members->links() }}
                 </div>
             </div>
             @endif
@@ -147,4 +203,72 @@
 
     </div>
 </div>
+
+{{-- Real-time instant search script --}}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const input = document.getElementById('csSearchInput');
+    const desktopRows = document.querySelectorAll('.cs-row');
+    const mobileCards = document.querySelectorAll('.cs-row-mobile');
+    const countDisplay = document.getElementById('displayed-count');
+    const noResultsDesktop = document.getElementById('noResultsDesktop');
+    const noResultsMobile = document.getElementById('noResultsMobile');
+
+    if (input) {
+        input.addEventListener('input', function () {
+            const query = this.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            // Filter Desktop
+            desktopRows.forEach(function (row) {
+                const name = row.getAttribute('data-name') || '';
+                const staffId = row.getAttribute('data-id') || '';
+                const role = row.getAttribute('data-role') || '';
+                const divisi = row.getAttribute('data-divisi') || '';
+
+                if (name.includes(query) || staffId.includes(query) || role.includes(query) || divisi.includes(query)) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Filter Mobile
+            mobileCards.forEach(function (card) {
+                const name = card.getAttribute('data-name') || '';
+                const staffId = card.getAttribute('data-id') || '';
+                const role = card.getAttribute('data-role') || '';
+                const divisi = card.getAttribute('data-divisi') || '';
+
+                if (name.includes(query) || staffId.includes(query) || role.includes(query) || divisi.includes(query)) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            if (countDisplay) {
+                countDisplay.textContent = visibleCount;
+            }
+
+            if (noResultsDesktop) {
+                if (visibleCount === 0 && desktopRows.length > 0) {
+                    noResultsDesktop.classList.remove('hidden');
+                } else {
+                    noResultsDesktop.classList.add('hidden');
+                }
+            }
+
+            if (noResultsMobile) {
+                if (visibleCount === 0 && mobileCards.length > 0) {
+                    noResultsMobile.classList.remove('hidden');
+                } else {
+                    noResultsMobile.classList.add('hidden');
+                }
+            }
+        });
+    }
+});
+</script>
 @endsection

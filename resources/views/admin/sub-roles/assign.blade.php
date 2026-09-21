@@ -11,10 +11,48 @@
         {{-- Header --}}
         <div class="glass-effect rounded-2xl p-6 mb-6">
             <div class="flex items-center gap-3 mb-1">
-                <a href="{{ route('admin.sub-roles.index') }}" class="text-sky-400 hover:text-sky-300 text-sm">← Kembali</a>
+                <a href="{{ route('admin.sub-roles.index') }}" class="text-sky-400 hover:text-sky-300 text-sm">
+                    <i class="fas fa-arrow-left mr-1"></i> Kembali ke Divisi
+                </a>
             </div>
-            <h1 class="text-2xl font-bold text-white">Assign Sub-Jabatan ke Staf</h1>
-            <p class="text-sky-200 text-sm mt-1">Setiap staf hanya dapat memegang satu sub-jabatan (divisi).</p>
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mt-2">
+                <div>
+                    <h1 class="text-2xl font-bold text-white">Assign Sub-Jabatan ke Staf</h1>
+                    <p class="text-sky-200 text-sm mt-0.5">Pilih divisi (GA, MSL, PND, IE, Comdis) untuk setiap staf Alta Hospital.</p>
+                </div>
+                <div class="text-right">
+                    <span class="text-xs text-sky-300">Total Ditampilkan:</span>
+                    <span id="displayed-count" class="text-lg font-bold text-white ml-1">{{ $staffList->count() }}</span>
+                </div>
+            </div>
+
+            {{-- Filter & Search Form --}}
+            <form method="GET" action="{{ route('admin.sub-roles.assign') }}" class="mt-5 flex flex-wrap items-center gap-3">
+                <div class="relative flex-1 min-w-[220px]">
+                    <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="text" id="searchInput" name="q" value="{{ $search ?? '' }}"
+                           placeholder="Cari nama anggota / Staff ID..."
+                           class="w-full bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded-xl pl-10 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all">
+                    @if(!empty($search))
+                    <a href="{{ route('admin.sub-roles.assign', ['hospital' => $hospital]) }}"
+                       class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white text-xs">
+                        <i class="fas fa-times-circle"></i>
+                    </a>
+                    @endif
+                </div>
+
+                <select name="hospital" onchange="this.form.submit()"
+                        class="bg-white/10 text-white border border-white/20 rounded-xl px-4 py-2.5 text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-sky-400 cursor-pointer">
+                    <option value="alta" {{ ($hospital ?? 'alta') === 'alta' ? 'selected' : '' }} class="bg-sky-900">Alta Hospital</option>
+                    <option value="roxwood" {{ ($hospital ?? '') === 'roxwood' ? 'selected' : '' }} class="bg-sky-900">Roxwood</option>
+                    <option value="all" {{ ($hospital ?? '') === 'all' ? 'selected' : '' }} class="bg-sky-900">Semua Rumah Sakit</option>
+                </select>
+
+                <button type="submit"
+                        class="px-5 py-2.5 bg-sky-500 hover:bg-sky-400 text-white rounded-xl font-semibold text-sm transition-all shadow-md flex items-center gap-2">
+                    <i class="fas fa-filter text-xs"></i> Filter
+                </button>
+            </form>
         </div>
 
         @if(session('success'))
@@ -32,65 +70,87 @@
         {{-- Form Bulk Assign --}}
         <form method="POST" action="{{ route('admin.sub-roles.assign-bulk') }}">
             @csrf
-            <div class="glass-effect rounded-2xl overflow-hidden">
+            <div class="glass-effect rounded-2xl overflow-hidden shadow-2xl">
                 <div class="px-5 py-4 border-b border-white/10 bg-white/5 flex items-center justify-between">
-                    <p class="text-sm font-semibold text-white">{{ $staffList->count() }} Staf {{ ucfirst($hospital) }}</p>
+                    <div>
+                        <p class="text-sm font-semibold text-white">Daftar Anggota Staf</p>
+                        <p class="text-xs text-gray-400">Pilih sub-jabatan lalu klik simpan</p>
+                    </div>
                     <button type="submit"
-                        class="inline-flex items-center gap-2 px-4 py-2 bg-sky-500 hover:bg-sky-400 text-white rounded-lg font-semibold text-sm transition-all">
+                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white rounded-xl font-semibold text-sm transition-all shadow-lg shadow-sky-500/20">
                         <i class="fas fa-save"></i> Simpan Semua
                     </button>
                 </div>
 
-                <table class="w-full text-sm">
-                    <thead>
-                        <tr class="border-b border-white/10 bg-white/5">
-                            <th class="text-left px-5 py-3 text-gray-300 text-xs uppercase tracking-wide font-semibold">Staf</th>
-                            <th class="text-left px-5 py-3 text-gray-300 text-xs uppercase tracking-wide font-semibold">Jabatan Utama</th>
-                            <th class="text-left px-5 py-3 text-gray-300 text-xs uppercase tracking-wide font-semibold w-56">Sub-Jabatan / Divisi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-white/5">
-                        @foreach($staffList as $idx => $staf)
-                        <input type="hidden" name="assignments[{{ $idx }}][user_id]" value="{{ $staf->id }}">
-                        <tr class="hover:bg-white/5 transition-colors">
-                            <td class="px-5 py-3">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-sky-500/30 to-cyan-500/30 flex items-center justify-center border border-white/20 text-white text-xs font-bold flex-shrink-0">
-                                        {{ strtoupper(substr($staf->name, 0, 2)) }}
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm" id="staffTable">
+                        <thead>
+                            <tr class="border-b border-white/10 bg-white/5">
+                                <th class="text-left px-5 py-3 text-gray-300 text-xs uppercase tracking-wide font-semibold">Staf</th>
+                                <th class="text-left px-5 py-3 text-gray-300 text-xs uppercase tracking-wide font-semibold">Jabatan Utama</th>
+                                <th class="text-left px-5 py-3 text-gray-300 text-xs uppercase tracking-wide font-semibold w-64">Sub-Jabatan / Divisi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-white/5" id="staffTableBody">
+                            @forelse($staffList as $idx => $staf)
+                            <input type="hidden" name="assignments[{{ $idx }}][user_id]" value="{{ $staf->id }}">
+                            <tr class="hover:bg-white/5 transition-colors staff-row"
+                                data-name="{{ strtolower($staf->name) }}"
+                                data-id="{{ strtolower($staf->staff_id ?? '') }}"
+                                data-role="{{ strtolower($staf->role?->display_name ?? '') }}">
+                                <td class="px-5 py-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-sky-500/30 to-cyan-500/30 flex items-center justify-center border border-white/20 text-white text-xs font-bold flex-shrink-0">
+                                            {{ strtoupper(substr($staf->name, 0, 2)) }}
+                                        </div>
+                                        <div>
+                                            <p class="text-white font-medium text-sm">{{ $staf->name }}</p>
+                                            @if($staf->staff_id)
+                                                <p class="text-sky-300 font-mono text-xs">{{ $staf->staff_id }}</p>
+                                            @endif
+                                        </div>
                                     </div>
-                                    <div>
-                                        <p class="text-white font-medium text-sm">{{ $staf->name }}</p>
-                                        @if($staf->staff_id)
-                                            <p class="text-gray-400 text-xs">{{ $staf->staff_id }}</p>
-                                        @endif
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-5 py-3">
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-sky-500/20 text-sky-300 border border-sky-500/30">
-                                    {{ $staf->role?->display_name ?? '-' }}
-                                </span>
-                            </td>
-                            <td class="px-5 py-3">
-                                <select name="assignments[{{ $idx }}][sub_role_id]"
-                                        class="w-full bg-white/10 text-white border border-white/20 rounded-lg px-3 py-2 text-xs focus:ring-2 focus:ring-sky-400 appearance-none">
-                                    <option value="" class="bg-sky-900">— Tidak ada —</option>
-                                    @foreach($subRoles as $sub)
-                                        <option value="{{ $sub->id }}" class="bg-sky-900"
-                                            {{ $staf->sub_role_id == $sub->id ? 'selected' : '' }}>
-                                            {{ $sub->short_name }} — {{ $sub->display_name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                                </td>
+                                <td class="px-5 py-3">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                                        {{ $staf->role?->display_name ?? '-' }}
+                                    </span>
+                                </td>
+                                <td class="px-5 py-3">
+                                    <select name="assignments[{{ $idx }}][sub_role_id]"
+                                            class="w-full bg-white/10 text-white border border-white/20 rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-sky-400 appearance-none cursor-pointer">
+                                        <option value="" class="bg-slate-900 text-gray-400">— Tanpa Sub-Jabatan —</option>
+                                        @foreach($subRoles as $sub)
+                                            <option value="{{ $sub->id }}" class="bg-slate-900 text-white font-semibold"
+                                                {{ $staf->sub_role_id == $sub->id ? 'selected' : '' }}>
+                                                [{{ $sub->short_name }}] {{ $sub->display_name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr id="emptyRow">
+                                <td colspan="3" class="px-5 py-8 text-center text-gray-400">
+                                    <i class="fas fa-user-slash text-2xl mb-2 text-gray-500 block"></i>
+                                    Tidak ada data staf yang ditemukan.
+                                </td>
+                            </tr>
+                            @endforelse
+                            <tr id="noResultsRow" class="hidden">
+                                <td colspan="3" class="px-5 py-8 text-center text-gray-400">
+                                    <i class="fas fa-search text-2xl mb-2 text-gray-500 block"></i>
+                                    Tidak ada staf yang sesuai dengan kata kunci pencarian.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-                <div class="px-5 py-4 border-t border-white/10 flex justify-end">
+                <div class="px-5 py-4 border-t border-white/10 flex items-center justify-between bg-white/5">
+                    <span class="text-xs text-gray-400">Pastikan memeriksa kembali penugasan sebelum klik simpan.</span>
                     <button type="submit"
-                        class="inline-flex items-center gap-2 px-6 py-2.5 bg-sky-500 hover:bg-sky-400 text-white rounded-lg font-semibold text-sm transition-all shadow-lg">
+                        class="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white rounded-xl font-semibold text-sm transition-all shadow-lg shadow-sky-500/20">
                         <i class="fas fa-save"></i> Simpan Perubahan
                     </button>
                 </div>
@@ -99,4 +159,46 @@
 
     </div>
 </div>
+
+{{-- Real-time instant search script --}}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const input = document.getElementById('searchInput');
+    const rows = document.querySelectorAll('.staff-row');
+    const countDisplay = document.getElementById('displayed-count');
+    const noResultsRow = document.getElementById('noResultsRow');
+
+    if (input) {
+        input.addEventListener('input', function () {
+            const query = this.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            rows.forEach(function (row) {
+                const name = row.getAttribute('data-name') || '';
+                const staffId = row.getAttribute('data-id') || '';
+                const role = row.getAttribute('data-role') || '';
+
+                if (name.includes(query) || staffId.includes(query) || role.includes(query)) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            if (countDisplay) {
+                countDisplay.textContent = visibleCount;
+            }
+
+            if (noResultsRow) {
+                if (visibleCount === 0 && rows.length > 0) {
+                    noResultsRow.classList.remove('hidden');
+                } else {
+                    noResultsRow.classList.add('hidden');
+                }
+            }
+        });
+    }
+});
+</script>
 @endsection
