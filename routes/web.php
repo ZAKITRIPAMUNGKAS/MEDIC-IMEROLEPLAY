@@ -1133,3 +1133,11 @@ Route::middleware('auth')->prefix('portal')->name('portal.')->group(function () 
         return implode('<br>', $results);
     })->name('install-tables');
 });
+
+// ── Komisi Disiplin (Comdis) & Credit Score ──────────────────────────────
+Route::middleware('auth')->prefix('credit-score')->name('credit-score.')->group(function () {
+    Route::get('/',              [\App\Http\Controllers\CreditScoreController::class, 'index'])->name('index');
+    Route::get('/{user}',        [\App\Http\Controllers\CreditScoreController::class, 'show'])->name('show');
+    Route::get('/{user}/input',  [\App\Http\Controllers\CreditScoreController::class, 'inputForm'])->name('input');
+    Route::post('/{user}/input', [\App\Http\Controllers\CreditScoreController::class, 'inputStore'])->name('input.store');
+});

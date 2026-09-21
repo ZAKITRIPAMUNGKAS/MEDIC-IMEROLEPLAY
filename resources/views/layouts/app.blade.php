@@ -1482,10 +1482,11 @@
                         {{-- ═══ PORTAL MANAJEMEN (RBAC-Aware) ═══ --}}
                         @php
                             $canSeePortal = auth()->user()->isStaff();
-                            $isGa    = auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('ga');
-                            $isMsl   = auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('msl');
-                            $isPnd   = auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('pnd');
-                            $isIe    = auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('ie');
+                            $isGa     = auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('ga');
+                            $isMsl    = auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('msl');
+                            $isPnd    = auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('pnd');
+                            $isIe     = auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('ie');
+                            $isComdis = auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('comdis');
                         @endphp
                         @if($canSeePortal)
                         <div class="relative group">
@@ -1513,10 +1514,13 @@
                                     <a href="{{ route('portal.promotion.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-violet-50 hover:text-violet-700 transition-colors">
                                         <i class="fas fa-level-up-alt w-4 text-violet-400 text-sm"></i> Kenaikan Jabatan
                                     </a>
+                                    <a href="{{ route('credit-score.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-teal-50 hover:text-teal-700 transition-colors">
+                                        <i class="fas fa-star-half-alt w-4 text-teal-400 text-sm"></i> Credit Score Saya
+                                    </a>
                                 </div>
 
                                 {{-- Divisi-specific --}}
-                                @if($isGa || $isMsl || $isPnd || $isIe)
+                                @if($isGa || $isMsl || $isPnd || $isIe || $isComdis)
                                 <div class="px-3 pt-2.5 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400 border-b border-t border-gray-100 mt-1">Kelola Divisi</div>
                                 <div class="py-1">
                                     @if($isGa)
@@ -1552,6 +1556,11 @@
                                     </a>
                                     <a href="{{ route('portal.resignation.manage.ie') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors">
                                         <i class="fas fa-hand-holding-usd w-4 text-orange-400 text-sm"></i> IE: Denda Resign
+                                    </a>
+                                    @endif
+                                    @if($isComdis)
+                                    <a href="{{ route('credit-score.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+                                        <i class="fas fa-balance-scale w-4 text-emerald-500 text-sm"></i> Comdis: Credit Score
                                     </a>
                                     @endif
                                 </div>

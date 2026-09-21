@@ -53,9 +53,9 @@ class StaffSubRole extends Model
 
     /**
      * Cek apakah divisi ini adalah divisi tertentu by slug.
-     * Contoh: $subRole->is('pnd')
+     * Contoh: $subRole->isDiv('pnd')
      */
-    public function is(string $slug): bool
+    public function isDiv(string $slug): bool
     {
         return strtolower($this->name) === strtolower($slug);
     }
