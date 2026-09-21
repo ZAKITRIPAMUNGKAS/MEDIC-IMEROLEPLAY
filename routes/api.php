@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AbsensiController;
+use App\Http\Controllers\Api\OperationRecordApiController;
+use App\Http\Controllers\Api\MedicalFormApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,4 +46,59 @@ Route::get('/test', function () {
         'timestamp' => now(),
         'version' => '1.0.0'
     ]);
+});
+
+/*
+|--------------------------------------------------------------------------
+| API Rekam Medis — Operation Records
+|--------------------------------------------------------------------------
+| Semua endpoint dilindungi dengan API Key (header X-API-Key).
+| Contoh: X-API-Key: <nilai API_KEY di .env>
+*/
+Route::middleware(['api.auth', 'api.rate_limit:60,1'])->prefix('rekam-medis')->group(function () {
+    // Daftar semua rekam operasi (dengan filter opsional)
+    Route::get('/',              [OperationRecordApiController::class, 'index']);
+
+    // Detail satu rekam operasi
+    Route::get('/{id}',         [OperationRecordApiController::class, 'show'])->where('id', '[0-9]+');
+
+    // Riwayat rekam operasi berdasarkan citizen_id pasien
+    Route::get('/pasien/{citizen_id}', [OperationRecordApiController::class, 'byPatient']);
+
+    // Buat rekam operasi baru
+    Route::post('/',             [OperationRecordApiController::class, 'store']);
+
+    // Update rekam operasi
+    Route::put('/{id}',         [OperationRecordApiController::class, 'update'])->where('id', '[0-9]+');
+
+    // Hapus rekam operasi
+    Route::delete('/{id}',      [OperationRecordApiController::class, 'destroy'])->where('id', '[0-9]+');
+});
+
+/*
+|--------------------------------------------------------------------------
+| API Form Medis / Rekam Medis Pasien — Medical Forms
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['api.auth', 'api.rate_limit:60,1'])->prefix('medical-forms')->group(function () {
+    // Daftar semua form medis (dengan filter opsional)
+    Route::get('/',                        [MedicalFormApiController::class, 'index']);
+
+    // Testimoni pasien yang sudah disetujui — letakkan SEBELUM /{id}
+    Route::get('/testimoni',               [MedicalFormApiController::class, 'testimoni']);
+
+    // Riwayat form medis berdasarkan citizen_id pasien — letakkan SEBELUM /{id}
+    Route::get('/pasien/{citizen_id}',     [MedicalFormApiController::class, 'byPatient']);
+
+    // Detail satu form medis
+    Route::get('/{id}',                    [MedicalFormApiController::class, 'show'])->where('id', '[0-9]+');
+
+    // Buat form medis baru (dari website lain)
+    Route::post('/',                       [MedicalFormApiController::class, 'store']);
+
+    // Update status form medis (approve / reject)
+    Route::patch('/{id}/status',           [MedicalFormApiController::class, 'updateStatus'])->where('id', '[0-9]+');
+
+    // Hapus form medis
+    Route::delete('/{id}',                 [MedicalFormApiController::class, 'destroy'])->where('id', '[0-9]+');
 });
