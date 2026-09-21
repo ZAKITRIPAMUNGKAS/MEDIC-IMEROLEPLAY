@@ -225,10 +225,29 @@ class MemberController extends Controller
             }
         }
 
+        // 5. Sertifikat & Lisensi Medis (GA, MSL, PND, IE)
+        $certifications = \App\Models\MemberCertification::with(['issuedBy:id,name'])
+            ->where('user_id', $user->id)
+            ->where('status', 'active')
+            ->latest('issue_date')
+            ->get();
+
+        foreach ($certifications as $cert) {
+            if (empty($cert->file_path) || !\Illuminate\Support\Facades\Storage::disk('public')->exists($cert->file_path)) {
+                try {
+                    $newPath = \App\Services\CertificateGeneratorService::generate($cert);
+                    $cert->update(['file_path' => $newPath]);
+                } catch (\Throwable $e) {
+                    // silent fallback
+                }
+            }
+        }
+
         return view('staff.members.show', compact(
             'user', 'stats', 'timeline', 'canViewMedical', 'canSeeAll',
             'operations', 'forms', 'managerEvaluations', 'evaluationsAvg', 'evaluationsCount',
-            'promotionTargetRole', 'promotionChecklist', 'promotionProgressPercent', 'promotionAllMet', 'isHighestLevel', 'creditScore'
+            'promotionTargetRole', 'promotionChecklist', 'promotionProgressPercent', 'promotionAllMet', 'isHighestLevel', 'creditScore',
+            'certifications'
         ));
     }
 }

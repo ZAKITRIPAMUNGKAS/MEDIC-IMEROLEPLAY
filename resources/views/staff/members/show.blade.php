@@ -340,6 +340,125 @@
         </div>
         @endif
 
+        {{-- ═══ SECTION: SERTIFIKAT & LISENSI RESMI ALTA (FOTO & DOKUMEN OTOMATIS) ═══ --}}
+        <div class="bg-white bg-opacity-10 backdrop-blur-md border border-white border-opacity-20 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500/30 to-yellow-500/30 border border-amber-400/40 text-amber-300 flex items-center justify-center text-xl shadow-lg shrink-0">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            Sertifikat &amp; Lisensi Resmi Alta
+                        </h2>
+                        <p class="text-xs sm:text-sm text-sky-200 mt-0.5">
+                            Dokumen kompetensi, sertifikasi spesialisasi, dan lisensi medis terverifikasi
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <span class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1.5 shadow-sm">
+                        <i class="fas fa-certificate text-amber-400"></i>
+                        {{ $certifications->count() }} Sertifikat Terdaftar
+                    </span>
+                </div>
+            </div>
+
+            @if($certifications->isEmpty())
+                <div class="py-12 text-center text-sky-200/60 border border-dashed border-white/15 rounded-xl bg-black/10">
+                    <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/30 text-2xl">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <p class="text-sm font-medium text-white/80">Belum ada sertifikat resmi yang diterbitkan untuk anggota ini.</p>
+                    <p class="text-xs text-white/40 mt-1">Sertifikat dari GA (Kendaraan), MSL (Visum), PND (Operasi), dan IE (Kontrak) akan otomatis di-generate fotonya dan tampil di sini.</p>
+                </div>
+            @else
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    @foreach($certifications as $cert)
+                        @php
+                            $div = strtolower($cert->division ?? 'pnd');
+                            $divColors = [
+                                'ga'  => ['bg' => 'bg-amber-500/20', 'border' => 'border-amber-500/30', 'text' => 'text-amber-300', 'icon' => 'fa-car', 'label' => 'GA Kendaraan'],
+                                'msl' => ['bg' => 'bg-teal-500/20', 'border' => 'border-teal-500/30', 'text' => 'text-teal-300', 'icon' => 'fa-stethoscope', 'label' => 'MSL Visum'],
+                                'pnd' => ['bg' => 'bg-emerald-500/20', 'border' => 'border-emerald-500/30', 'text' => 'text-emerald-300', 'icon' => 'fa-award', 'label' => 'PND Operasi'],
+                                'ie'  => ['bg' => 'bg-sky-500/20', 'border' => 'border-sky-500/30', 'text' => 'text-sky-300', 'icon' => 'fa-file-contract', 'label' => 'IE Kontrak'],
+                            ];
+                            $badge = $divColors[$div] ?? $divColors['pnd'];
+                            $fileUrl = $cert->file_path ? asset('storage/' . $cert->file_path) : null;
+                        @endphp
+                        <div class="group bg-black/30 hover:bg-black/40 border border-white/10 hover:border-amber-400/40 rounded-2xl overflow-hidden shadow-lg transition-all duration-300 flex flex-col">
+                            
+                            {{-- Image Preview with Lightbox trigger --}}
+                            <div class="relative aspect-[1.41/1] bg-slate-950/80 overflow-hidden cursor-pointer"
+                                 onclick="openCertPreview('{{ $fileUrl }}', '{{ addslashes($cert->title) }}', '{{ $cert->certificate_number ?? '-' }}', '{{ $cert->issue_date ? $cert->issue_date->translatedFormat('d F Y') : '-' }}', '{{ addslashes($cert->issuedBy?->name ?? 'Alta Hospital') }}')">
+                                @if($fileUrl)
+                                    <img src="{{ $fileUrl }}" alt="{{ $cert->title }}"
+                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                         loading="lazy">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
+                                        <span class="px-3 py-1.5 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs font-semibold flex items-center gap-1.5 shadow-lg">
+                                            <i class="fas fa-search-plus"></i> Lihat Foto Penuh
+                                        </span>
+                                    </div>
+                                @else
+                                    <div class="w-full h-full flex flex-col items-center justify-center text-white/30">
+                                        <i class="fas fa-file-image text-3xl mb-2"></i>
+                                        <span class="text-xs">Foto tidak tersedia</span>
+                                    </div>
+                                @endif
+
+                                {{-- Division Tag Pill --}}
+                                <div class="absolute top-3 left-3">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider backdrop-blur-md {{ $badge['bg'] }} {{ $badge['border'] }} {{ $badge['text'] }} border shadow-md">
+                                        <i class="fas {{ $badge['icon'] }}"></i> {{ $badge['label'] }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {{-- Card Details --}}
+                            <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
+                                <div>
+                                    <h3 class="text-white font-bold text-sm tracking-wide line-clamp-1 group-hover:text-amber-300 transition-colors" title="{{ $cert->title }}">
+                                        {{ $cert->title }}
+                                    </h3>
+                                    <div class="flex items-center justify-between text-[11px] text-sky-200/80 font-mono mt-1">
+                                        <span>{{ $cert->certificate_number ?? 'No Reg: -' }}</span>
+                                        <span class="text-white/40 font-sans">{{ $cert->issue_date ? $cert->issue_date->format('d/m/Y') : '-' }}</span>
+                                    </div>
+                                    @if($cert->notes)
+                                        <p class="text-[11px] text-white/50 line-clamp-2 mt-1 italic">
+                                            "{{ $cert->notes }}"
+                                        </p>
+                                    @endif
+                                </div>
+
+                                <div class="pt-2 border-t border-white/10 flex items-center justify-between gap-2">
+                                    <span class="text-[10px] text-white/40 truncate">
+                                        Oleh: {{ $cert->issuedBy?->name ?? 'Alta Hospital' }}
+                                    </span>
+
+                                    <div class="flex items-center gap-1.5 shrink-0">
+                                        @if($fileUrl)
+                                            <button type="button"
+                                                    onclick="openCertPreview('{{ $fileUrl }}', '{{ addslashes($cert->title) }}', '{{ $cert->certificate_number ?? '-' }}', '{{ $cert->issue_date ? $cert->issue_date->translatedFormat('d F Y') : '-' }}', '{{ addslashes($cert->issuedBy?->name ?? 'Alta Hospital') }}')"
+                                                    class="p-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs transition-colors" title="Lihat Foto">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            <a href="{{ $fileUrl }}" download
+                                               class="p-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/30 rounded-lg text-xs transition-colors" title="Unduh Berkas Foto">
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </div>
+
         <!-- Detail Section 1: Rekam Operasi -->
         <div x-show="activeTab === 'operations'" 
              x-transition:enter="transition ease-out duration-300 transform"
@@ -615,5 +734,56 @@
 
     </div>
 </div>
+
+{{-- ═══ LIGHTBOX MODAL PREVIEW FOTO SERTIFIKAT ═══ --}}
+<div id="certPreviewModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden transition-all">
+    <div class="relative bg-gray-900 border border-white/20 rounded-2xl w-full max-w-4xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden">
+        {{-- Modal Topbar --}}
+        <div class="px-5 py-3.5 bg-white/5 border-b border-white/10 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <i class="fas fa-award text-amber-400 text-lg"></i>
+                <div>
+                    <h3 id="modalCertTitle" class="text-sm font-bold text-white leading-tight">Sertifikat Resmi</h3>
+                    <p id="modalCertMeta" class="text-[11px] text-sky-300 font-mono">No: -</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <a id="modalCertDownloadBtn" href="#" download
+                   class="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 shadow-md">
+                    <i class="fas fa-download"></i> Unduh Foto
+                </a>
+                <button type="button" onclick="closeCertPreview()" class="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-sm transition-all">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+
+        {{-- Image Display Area --}}
+        <div class="flex-1 overflow-auto p-4 sm:p-6 flex items-center justify-center bg-black/40">
+            <img id="modalCertImage" src="" alt="Pratinjau Sertifikat" class="max-w-full max-h-[72vh] object-contain rounded-xl shadow-2xl border border-white/10">
+        </div>
+    </div>
+</div>
+
+<script>
+function openCertPreview(imageUrl, title, certNo, issueDate, issuer) {
+    if (!imageUrl) return;
+    document.getElementById('modalCertImage').src = imageUrl;
+    document.getElementById('modalCertTitle').textContent = title || 'Sertifikat Resmi Alta Hospital';
+    document.getElementById('modalCertMeta').textContent = 'No: ' + (certNo || '-') + ' • Terbit: ' + (issueDate || '-') + ' • Oleh: ' + (issuer || '-');
+    document.getElementById('modalCertDownloadBtn').href = imageUrl;
+    document.getElementById('certPreviewModal').classList.remove('hidden');
+}
+
+function closeCertPreview() {
+    document.getElementById('certPreviewModal').classList.add('hidden');
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeCertPreview();
+    }
+});
+</script>
 @endsection
 

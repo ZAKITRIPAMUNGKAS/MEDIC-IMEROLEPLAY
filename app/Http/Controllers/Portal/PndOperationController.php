@@ -165,7 +165,7 @@ class PndOperationController extends Controller
             $filePath = $request->file('file')->store('certifications/pnd', 'public');
         }
 
-        MemberCertification::create([
+        $cert = MemberCertification::create([
             'user_id'            => $validated['user_id'],
             'type'               => 'operation_cert',
             'division'           => 'pnd',
@@ -177,6 +177,11 @@ class PndOperationController extends Controller
             'notes'              => $validated['notes'] ?? null,
             'status'             => 'active',
         ]);
+
+        if (empty($filePath)) {
+            $filePath = \App\Services\CertificateGeneratorService::generate($cert);
+            $cert->update(['file_path' => $filePath]);
+        }
 
         return redirect()->route('portal.pnd.cert-index')
             ->with('success', 'Sertifikat operasi berhasil diterbitkan dan otomatis sinkron ke profil anggota.');

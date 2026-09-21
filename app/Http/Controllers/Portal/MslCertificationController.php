@@ -62,7 +62,7 @@ class MslCertificationController extends Controller
 
         $typeMap = ['visum_alive' => 'Sertifikat Visum Hidup', 'visum_dead' => 'Sertifikat Visum Mati'];
 
-        MemberCertification::create([
+        $cert = MemberCertification::create([
             'user_id'            => $validated['user_id'],
             'type'               => $validated['type'],
             'division'           => 'msl',
@@ -74,6 +74,11 @@ class MslCertificationController extends Controller
             'notes'              => $validated['notes'] ?? null,
             'status'             => 'active',
         ]);
+
+        if (empty($filePath)) {
+            $filePath = \App\Services\CertificateGeneratorService::generate($cert);
+            $cert->update(['file_path' => $filePath]);
+        }
 
         return redirect()->route('portal.msl.index')
             ->with('success', 'Sertifikat visum berhasil diterbitkan dan otomatis masuk ke profil anggota.');

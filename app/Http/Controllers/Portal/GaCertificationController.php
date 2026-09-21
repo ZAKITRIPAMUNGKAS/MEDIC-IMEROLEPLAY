@@ -96,7 +96,7 @@ class GaCertificationController extends Controller
             $filePath = $request->file('file')->store('certifications/ga', 'public');
         }
 
-        MemberCertification::create([
+        $cert = MemberCertification::create([
             'user_id'            => $validated['user_id'],
             'type'               => $validated['type'],
             'division'           => 'ga',
@@ -109,6 +109,11 @@ class GaCertificationController extends Controller
             'notes'              => $validated['notes'] ?? null,
             'status'             => 'active',
         ]);
+
+        if (empty($filePath)) {
+            $filePath = \App\Services\CertificateGeneratorService::generate($cert);
+            $cert->update(['file_path' => $filePath]);
+        }
 
         return redirect()->route('portal.ga.index')
             ->with('success', 'Sertifikat kendaraan berhasil diterbitkan dan otomatis sinkron ke profil anggota.');

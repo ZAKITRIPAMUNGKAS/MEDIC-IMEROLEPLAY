@@ -71,7 +71,7 @@ class IeContractController extends Controller
             $filePath = $request->file('file')->store('certifications/ie', 'public');
         }
 
-        MemberCertification::create([
+        $cert = MemberCertification::create([
             'user_id'            => $validated['user_id'],
             'type'               => 'medical_contract',
             'division'           => 'ie',
@@ -84,6 +84,11 @@ class IeContractController extends Controller
             'notes'              => $validated['notes'] ?? null,
             'status'             => 'active',
         ]);
+
+        if (empty($filePath)) {
+            $filePath = \App\Services\CertificateGeneratorService::generate($cert);
+            $cert->update(['file_path' => $filePath]);
+        }
 
         return redirect()->route('portal.ie.index')
             ->with('success', 'Surat Perjanjian Kontrak Medis berhasil diterbitkan dan otomatis sinkron ke profil anggota.');
