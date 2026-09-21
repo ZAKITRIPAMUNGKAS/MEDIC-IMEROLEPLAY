@@ -20,6 +20,34 @@ class CandidateInterview extends Model
         'interviewed_at' => 'datetime',
     ];
 
+    protected static bool $schemaChecked = false;
+
+    protected static function booted()
+    {
+        static::ensureSchema();
+    }
+
+    public static function ensureSchema(): void
+    {
+        if (static::$schemaChecked) {
+            return;
+        }
+        static::$schemaChecked = true;
+
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('candidate_interviews')) {
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('candidate_interviews', 'recruitment_application_id')) {
+                    \Illuminate\Support\Facades\Schema::table('candidate_interviews', function ($table) {
+                        $table->unsignedBigInteger('recruitment_application_id')->nullable()->after('user_id');
+                    });
+                }
+                try {
+                    \Illuminate\Support\Facades\DB::statement('ALTER TABLE candidate_interviews MODIFY user_id BIGINT UNSIGNED NULL');
+                } catch (\Throwable $e) {}
+            }
+        } catch (\Throwable $e) {}
+    }
+
     public function candidate()
     {
         return $this->belongsTo(User::class, 'user_id');

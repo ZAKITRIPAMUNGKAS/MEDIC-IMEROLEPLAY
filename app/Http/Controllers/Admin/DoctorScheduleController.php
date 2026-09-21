@@ -28,6 +28,7 @@ class DoctorScheduleController extends Controller
         '🩺 Spesialis Obstetri dan Ginekologi',
         '🩺 Spesialis Jantung dan Pembuluh Darah',
         '🩺 Spesialis Paru',
+        '🩺 Spesialis Dermatovenerologi',
         '🩺 Poli Kejiwaan',
     ];
 

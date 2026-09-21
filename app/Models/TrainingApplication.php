@@ -31,6 +31,48 @@ class TrainingApplication extends Model
         'reviewed_at'     => 'datetime',
     ];
 
+    protected static bool $schemaChecked = false;
+
+    protected static function booted()
+    {
+        static::ensureSchema();
+    }
+
+    public static function ensureSchema(): void
+    {
+        if (static::$schemaChecked) {
+            return;
+        }
+        static::$schemaChecked = true;
+
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('training_applications')) {
+                \Illuminate\Support\Facades\Schema::create('training_applications', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->id();
+                    $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+                    $table->string('training_type'); // 'operasi', 'surat_menyurat', 'visum_hidup'
+                    $table->string('nama_ic');
+                    $table->string('gender'); // 'Laki-laki', 'Perempuan'
+                    $table->string('phone_ic')->nullable();
+                    $table->string('jabatan')->nullable();
+                    $table->string('batch');
+                    $table->json('additional_data')->nullable();
+                    $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+                    $table->foreignId('reviewed_by')->nullable()->constrained('users')->nullOnDelete();
+                    $table->timestamp('reviewed_at')->nullable();
+                    $table->text('admin_notes')->nullable();
+                    $table->timestamps();
+
+                    $table->index(['training_type', 'status']);
+                    $table->index(['training_type', 'batch']);
+                    $table->index('user_id');
+                });
+            }
+        } catch (\Throwable $e) {
+            // Silently ignore or log
+        }
+    }
+
     const TYPE_OPERASI        = 'operasi';
     const TYPE_SURAT_MENYURAT = 'surat_menyurat';
     const TYPE_VISUM_HIDUP    = 'visum_hidup';
