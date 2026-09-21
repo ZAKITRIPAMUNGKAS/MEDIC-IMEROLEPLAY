@@ -217,15 +217,15 @@
 
         {{-- Search & Filter Form --}}
         <div class="glass-effect rounded-2xl p-4 border border-white/10">
-            <form method="GET" action="{{ route('portal.interview.index') }}" class="flex flex-col sm:flex-row gap-3">
-                <div class="relative flex-1">
+            <form method="GET" action="{{ route('portal.interview.index') }}" class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-center">
+                <div class="sm:col-span-6 relative">
                     <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
                     <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama calon medis (IC), CID, atau Discord..."
                            class="w-full bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded-xl pl-9 pr-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-400">
                 </div>
-                <div class="w-full sm:w-48">
+                <div class="sm:col-span-4">
                     <select name="status" onchange="this.form.submit()"
-                            class="w-full bg-slate-800 text-white border border-white/20 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                            class="w-full bg-slate-800 text-white border border-white/20 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-400 cursor-pointer">
                         <option value="">Semua Status Berkas</option>
                         <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Menunggu Review</option>
                         <option value="reviewed" {{ request('status') === 'reviewed' ? 'selected' : '' }}>Lolos Berkas</option>
@@ -234,14 +234,16 @@
                         <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Ditolak</option>
                     </select>
                 </div>
-                <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-md transition-all">
-                    Filter Calon
-                </button>
-                @if(request('q') || request('status'))
-                    <a href="{{ route('portal.interview.index') }}" class="px-3 py-2.5 bg-white/10 hover:bg-white/15 text-white/70 rounded-xl text-xs flex items-center justify-center">
-                        <i class="fas fa-times"></i>
-                    </a>
-                @endif
+                <div class="sm:col-span-2 flex items-center gap-2">
+                    <button type="submit" class="flex-1 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-md transition-all whitespace-nowrap text-center">
+                        Filter Calon
+                    </button>
+                    @if(request('q') || request('status'))
+                        <a href="{{ route('portal.interview.index') }}" class="px-3 py-2.5 bg-white/10 hover:bg-white/15 text-white/70 hover:text-white rounded-xl text-xs flex items-center justify-center transition-colors" title="Reset Filter">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    @endif
+                </div>
             </form>
         </div>
 

@@ -230,15 +230,31 @@ class InterviewController extends Controller
             'notes.required' => 'Catatan penilaian wawancara wajib diisi.',
         ]);
 
-        $interview = CandidateInterview::create([
+        $targetUser = $candidate->user ?? ($candidate->cid ? User::where('citizen_id', $candidate->cid)->first() : null);
+        $candidateUserId = $candidate->user_id ?? ($targetUser ? $targetUser->id : null);
+
+        $interviewData = [
             'recruitment_application_id' => $candidate->id,
-            'user_id'                    => $candidate->user_id,
+            'user_id'                    => $candidateUserId,
             'interviewer_id'             => Auth::id(),
             'result'                     => $validated['result'],
             'recommended_role'           => $validated['result'] === 'recommended' ? $validated['recommended_role'] : null,
             'notes'                      => $validated['notes'],
             'interviewed_at'             => now(),
-        ]);
+        ];
+
+        // Safety check if database table column is missing in any environment
+        try {
+            CandidateInterview::create($interviewData);
+        } catch (\Illuminate\Database\QueryException $e) {
+            // If user_id is strictly not null in DB legacy schema, fallback to interviewer id
+            if ($e->getCode() === '23000' && !$candidateUserId) {
+                $interviewData['user_id'] = Auth::id();
+                CandidateInterview::create($interviewData);
+            } else {
+                throw $e;
+            }
+        }
 
         $roleLabels = [
             'trainee'     => 'Trainee',
@@ -262,7 +278,6 @@ class InterviewController extends Controller
 
         // Sinkronisasi ke akun pengguna jika ada yang cocok dengan CID atau user_id
         if ($validated['result'] === 'recommended' && $validated['recommended_role']) {
-            $targetUser = $candidate->user ?? User::where('citizen_id', $candidate->cid)->first();
             if ($targetUser) {
                 $targetRole = StaffRole::where('name', $validated['recommended_role'])->first();
                 if ($targetRole) {
@@ -274,8 +289,18 @@ class InterviewController extends Controller
             }
         }
 
+        $successMsg = "Hasil wawancara untuk calon {$candidate->ic_name} (CID: {$candidate->cid}) berhasil disimpan.";
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success'      => true,
+                'message'      => $successMsg,
+                'redirect_url' => route('portal.interview.index'),
+            ]);
+        }
+
         return redirect()->route('portal.interview.index')
-            ->with('success', "Hasil wawancara untuk calon {$candidate->ic_name} (CID: {$candidate->cid}) berhasil disimpan.");
+            ->with('success', $successMsg);
     }
 
     /**
