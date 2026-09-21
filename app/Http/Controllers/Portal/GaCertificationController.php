@@ -52,7 +52,13 @@ class GaCertificationController extends Controller
             ->orderByRoleLevel()
             ->get(['id', 'name', 'staff_id', 'role_id']);
 
-        return view('portal.ga.index', compact('certifications', 'staffList'));
+        $pendingApplications = \App\Models\CertificateApplication::with('user')
+            ->where('division', 'ga')
+            ->where('status', 'pending')
+            ->latest()
+            ->get();
+
+        return view('portal.ga.index', compact('certifications', 'staffList', 'pendingApplications'));
     }
 
     /**
@@ -120,7 +126,7 @@ class GaCertificationController extends Controller
     }
 
     /**
-     * POST /portal/ga/certifications/{cert}/revoke
+     * POST /portal/ga/certifications/{certification}/revoke
      */
     public function revoke(Request $request, MemberCertification $certification)
     {
@@ -129,5 +135,73 @@ class GaCertificationController extends Controller
 
         $certification->update(['status' => 'revoked']);
         return back()->with('success', 'Sertifikat kendaraan ' . $certification->user->name . ' dicabut.');
+    }
+
+    /**
+     * DELETE /portal/ga/certifications/{certification}
+     */
+    public function destroy(MemberCertification $certification)
+    {
+        $this->checkIsGa();
+        abort_unless(in_array($certification->type, ['vehicle_land', 'vehicle_heli']), 404);
+
+        if ($certification->file_path && Storage::disk('public')->exists($certification->file_path)) {
+            Storage::disk('public')->delete($certification->file_path);
+        }
+
+        $certification->delete();
+
+        return back()->with('success', 'Sertifikat kendaraan berhasil dihapus dari sistem.');
+    }
+
+    /**
+     * POST /portal/ga/applications/{application}/approve
+     */
+    public function approveApplication(Request $request, \App\Models\CertificateApplication $application)
+    {
+        $this->checkIsGa();
+        abort_unless($application->division === 'ga', 403);
+
+        $cert = MemberCertification::create([
+            'user_id'           => $application->user_id,
+            'type'              => $application->type,
+            'division'          => 'ga',
+            'title'             => $application->title,
+            'issued_by_user_id' => Auth::id(),
+            'issue_date'        => now(),
+            'notes'             => $application->notes ?? 'Diterbitkan melalui pengajuan sertifikat kendaraan.',
+            'status'            => 'active',
+        ]);
+
+        $filePath = \App\Services\CertificateGeneratorService::generate($cert);
+        $cert->update(['file_path' => $filePath]);
+
+        $application->update([
+            'status'           => \App\Models\CertificateApplication::STATUS_APPROVED,
+            'verified_by'      => Auth::id(),
+            'verified_at'      => now(),
+            'certification_id' => $cert->id,
+            'admin_notes'      => $request->admin_notes ?? 'Disetujui oleh GA.',
+        ]);
+
+        return back()->with('success', 'Pengajuan disetujui dan sertifikat otomatis diterbitkan untuk ' . $application->user->name);
+    }
+
+    /**
+     * POST /portal/ga/applications/{application}/reject
+     */
+    public function rejectApplication(Request $request, \App\Models\CertificateApplication $application)
+    {
+        $this->checkIsGa();
+        abort_unless($application->division === 'ga', 403);
+
+        $application->update([
+            'status'      => \App\Models\CertificateApplication::STATUS_REJECTED,
+            'verified_by' => Auth::id(),
+            'verified_at' => now(),
+            'admin_notes' => $request->admin_notes ?? 'Ditolak oleh GA.',
+        ]);
+
+        return back()->with('success', 'Pengajuan sertifikat ditolak.');
     }
 }

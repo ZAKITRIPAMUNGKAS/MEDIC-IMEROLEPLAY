@@ -1286,12 +1286,29 @@ Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->gro
         Route::get('/{resignation}', [\App\Http\Controllers\Portal\ResignationController::class, 'show'])->where('resignation', '[0-9]+')->name('show');
     });
 
+    // ── Pengajuan Sertifikat Kendaraan (Anggota) ──────────────────────────────
+    Route::prefix('vehicle-cert')->name('vehicle-cert.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Portal\VehicleCertApplicationController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\Portal\VehicleCertApplicationController::class, 'store'])->name('store');
+        Route::post('/{application}/cancel', [\App\Http\Controllers\Portal\VehicleCertApplicationController::class, 'cancel'])->name('cancel');
+    });
+
+    // ── Pengajuan Sertifikat Operasi (Anggota) ────────────────────────────────
+    Route::prefix('operation-cert')->name('operation-cert.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Portal\OperationCertApplicationController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\Portal\OperationCertApplicationController::class, 'store'])->name('store');
+        Route::post('/{application}/cancel', [\App\Http\Controllers\Portal\OperationCertApplicationController::class, 'cancel'])->name('cancel');
+    });
+
     // ── GA: Sertifikasi Kendaraan ─────────────────────────────────────────────
     Route::prefix('ga')->name('ga.')->group(function () {
         Route::get('/',                          [\App\Http\Controllers\Portal\GaCertificationController::class, 'index'])->name('index');
         Route::get('/create',                    [\App\Http\Controllers\Portal\GaCertificationController::class, 'create'])->name('create');
         Route::post('/',                         [\App\Http\Controllers\Portal\GaCertificationController::class, 'store'])->name('store');
         Route::post('/{certification}/revoke',   [\App\Http\Controllers\Portal\GaCertificationController::class, 'revoke'])->name('revoke');
+        Route::delete('/{certification}',        [\App\Http\Controllers\Portal\GaCertificationController::class, 'destroy'])->name('destroy');
+        Route::post('/applications/{application}/approve', [\App\Http\Controllers\Portal\GaCertificationController::class, 'approveApplication'])->name('application.approve');
+        Route::post('/applications/{application}/reject',  [\App\Http\Controllers\Portal\GaCertificationController::class, 'rejectApplication'])->name('application.reject');
     });
 
     // ── MSL: Sertifikasi Visum & Stase ────────────────────────────────────────
@@ -1331,8 +1348,11 @@ Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->gro
         Route::post('/operations/{opRequest}/approve', [\App\Http\Controllers\Portal\PndOperationController::class, 'approve'])->name('operation.approve');
         Route::post('/operations/{opRequest}/reject',  [\App\Http\Controllers\Portal\PndOperationController::class, 'reject'])->name('operation.reject');
         // Sertifikat Operasi
-        Route::get('/certs',                     [\App\Http\Controllers\Portal\PndOperationController::class, 'certIndex'])->name('cert-index');
-        Route::post('/certs',                    [\App\Http\Controllers\Portal\PndOperationController::class, 'certStore'])->name('cert-store');
+        Route::get('/certs',                           [\App\Http\Controllers\Portal\PndOperationController::class, 'certIndex'])->name('cert-index');
+        Route::post('/certs',                          [\App\Http\Controllers\Portal\PndOperationController::class, 'certStore'])->name('cert-store');
+        Route::delete('/certs/{certification}',        [\App\Http\Controllers\Portal\PndOperationController::class, 'certDestroy'])->name('cert-destroy');
+        Route::post('/cert-applications/{application}/approve', [\App\Http\Controllers\Portal\PndOperationController::class, 'approveApplication'])->name('cert-application.approve');
+        Route::post('/cert-applications/{application}/reject',  [\App\Http\Controllers\Portal\PndOperationController::class, 'rejectApplication'])->name('cert-application.reject');
     });
 
     // ── Kenaikan Jabatan / Promosi (PND kontrol, Anggota submit) ─────────────

@@ -138,13 +138,20 @@ class PndOperationController extends Controller
             ->latest()
             ->paginate(30);
 
+        $pendingApplications = \App\Models\CertificateApplication::with('user:id,name,staff_id')
+            ->where('division', 'pnd')
+            ->where('status', 'pending')
+            ->whereHas('user', fn($q) => $q->where('hospital', $user->hospital ?? 'alta'))
+            ->latest()
+            ->get();
+
         $staffList = User::where('is_active', true)
             ->where('hospital', $user->hospital ?? 'alta')
             ->whereNotNull('role_id')
             ->orderByRoleLevel()
             ->get(['id', 'name', 'staff_id']);
 
-        return view('portal.pnd.certs', compact('certifications', 'staffList'));
+        return view('portal.pnd.certs', compact('certifications', 'staffList', 'pendingApplications'));
     }
 
     public function certStore(Request $request)
@@ -185,5 +192,64 @@ class PndOperationController extends Controller
 
         return redirect()->route('portal.pnd.cert-index')
             ->with('success', 'Sertifikat operasi berhasil diterbitkan dan otomatis sinkron ke profil anggota.');
+    }
+
+    public function certDestroy(MemberCertification $certification)
+    {
+        $this->checkIsPnd();
+        abort_unless($certification->type === 'operation_cert', 404);
+
+        if ($certification->file_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($certification->file_path)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($certification->file_path);
+        }
+
+        $certification->delete();
+
+        return back()->with('success', 'Sertifikat operasi berhasil dihapus dari sistem.');
+    }
+
+    public function approveApplication(Request $request, \App\Models\CertificateApplication $application)
+    {
+        $this->checkIsPnd();
+        abort_unless($application->division === 'pnd', 403);
+
+        $cert = MemberCertification::create([
+            'user_id'           => $application->user_id,
+            'type'              => 'operation_cert',
+            'division'          => 'pnd',
+            'title'             => $application->title,
+            'issued_by_user_id' => Auth::id(),
+            'issue_date'        => now(),
+            'notes'             => $application->notes ?? 'Diterbitkan melalui pengajuan sertifikat operasi.',
+            'status'            => 'active',
+        ]);
+
+        $filePath = \App\Services\CertificateGeneratorService::generate($cert);
+        $cert->update(['file_path' => $filePath]);
+
+        $application->update([
+            'status'           => \App\Models\CertificateApplication::STATUS_APPROVED,
+            'verified_by'      => Auth::id(),
+            'verified_at'      => now(),
+            'certification_id' => $cert->id,
+            'admin_notes'      => $request->admin_notes ?? 'Disetujui oleh PND.',
+        ]);
+
+        return back()->with('success', 'Pengajuan sertifikat operasi disetujui dan sertifikat resmi telah diterbitkan.');
+    }
+
+    public function rejectApplication(Request $request, \App\Models\CertificateApplication $application)
+    {
+        $this->checkIsPnd();
+        abort_unless($application->division === 'pnd', 403);
+
+        $application->update([
+            'status'      => \App\Models\CertificateApplication::STATUS_REJECTED,
+            'verified_by' => Auth::id(),
+            'verified_at' => now(),
+            'admin_notes' => $request->admin_notes ?? 'Pengajuan ditolak oleh PND.',
+        ]);
+
+        return back()->with('success', 'Pengajuan sertifikat operasi telah ditolak.');
     }
 }

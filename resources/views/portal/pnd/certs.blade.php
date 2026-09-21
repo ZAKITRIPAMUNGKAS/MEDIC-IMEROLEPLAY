@@ -44,6 +44,61 @@
         </div>
         @endif
 
+        {{-- Permohonan Masuk dari Anggota --}}
+        @if(isset($pendingApplications) && $pendingApplications->isNotEmpty())
+        <div class="mb-8 bg-amber-500/10 border border-amber-500/30 rounded-2xl p-5 shadow-2xl backdrop-blur-xl">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+                    </span>
+                    <h2 class="text-base font-bold text-white tracking-wide">Pengajuan Sertifikat Masuk (Menunggu Verifikasi PND)</h2>
+                </div>
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    {{ $pendingApplications->count() }} Permohonan
+                </span>
+            </div>
+
+            <div class="space-y-3">
+                @foreach($pendingApplications as $app)
+                <div class="bg-gray-900/60 border border-white/10 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-white font-bold">{{ $app->user?->name }}</span>
+                            <span class="text-xs text-emerald-400 font-mono">({{ $app->user?->staff_id ?? 'No ID' }})</span>
+                            <span class="text-xs text-white/40">• {{ $app->created_at->diffForHumans() }}</span>
+                        </div>
+                        <div class="text-sm text-emerald-300 font-semibold mt-1 flex items-center gap-1.5">
+                            <i class="fas fa-certificate text-xs"></i> {{ $app->title }}
+                        </div>
+                        @if($app->notes)
+                            <div class="text-xs text-white/60 mt-1 italic bg-white/5 px-2.5 py-1.5 rounded-lg border border-white/5">
+                                "{{ $app->notes }}"
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="flex items-center gap-2 shrink-0">
+                        <form action="{{ route('portal.pnd.cert-application.approve', $app->id) }}" method="POST" onsubmit="return confirm('Setujui pengajuan ini? Sertifikat resmi berstempel dan bertanda tangan digital akan otomatis di-generate untuk anggota ini.')">
+                            @csrf
+                            <button type="submit" class="px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-emerald-900/30 flex items-center gap-1.5 transition-all">
+                                <i class="fas fa-check"></i> Setujui &amp; Terbitkan Foto
+                            </button>
+                        </form>
+                        <form action="{{ route('portal.pnd.cert-application.reject', $app->id) }}" method="POST" onsubmit="return confirm('Tolak permohonan sertifikat ini?')">
+                            @csrf
+                            <button type="submit" class="px-3 py-2 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all">
+                                <i class="fas fa-times"></i> Tolak
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
         {{-- Table Card --}}
         <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
             @if($certifications->isEmpty())
@@ -62,7 +117,7 @@
                             <th class="text-left px-5 py-3.5">No. Sertifikat</th>
                             <th class="text-left px-5 py-3.5">Tanggal Terbit</th>
                             <th class="text-left px-5 py-3.5">Diterbitkan Oleh</th>
-                            <th class="text-right px-5 py-3.5">Dokumen / Bukti</th>
+                            <th class="text-right px-5 py-3.5">Aksi &amp; Berkas</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-white/5">
@@ -93,14 +148,25 @@
                                 {{ $cert->issuedBy?->name ?? 'Sistem' }}
                             </td>
                             <td class="px-5 py-4 text-right">
-                                @if($cert->file_path)
-                                    <a href="{{ asset('storage/' . $cert->file_path) }}" target="_blank"
-                                       class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 rounded-lg text-xs font-semibold transition-all">
-                                        <i class="fas fa-external-link-alt text-[10px]"></i> Lihat File
-                                    </a>
-                                @else
-                                    <span class="text-xs text-white/30 italic">Tanpa berkas</span>
-                                @endif
+                                <div class="flex items-center justify-end gap-2">
+                                    @if($cert->file_path)
+                                        <a href="{{ route('portal.cert.image', $cert->id) }}" target="_blank"
+                                           class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 rounded-lg text-xs font-semibold transition-all">
+                                            <i class="fas fa-eye text-[10px]"></i> Lihat Foto
+                                        </a>
+                                    @else
+                                        <span class="text-xs text-white/30 italic mr-1">Tanpa berkas</span>
+                                    @endif
+
+                                    <form action="{{ route('portal.pnd.cert-destroy', $cert->id) }}" method="POST"
+                                          onsubmit="return confirm('Hapus sertifikat operasi {{ addslashes($cert->title) }} milik {{ addslashes($cert->user?->name) }}? Tindakan ini tidak dapat dibatalkan.')" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 rounded-lg text-xs font-semibold transition-all" title="Hapus Sertifikat">
+                                            <i class="fas fa-trash-alt text-[10px]"></i> Hapus
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                         @endforeach

@@ -1514,8 +1514,11 @@
                                     <a href="{{ route('portal.stase.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
                                         <i class="fas fa-graduation-cap w-4 text-blue-400 text-sm"></i> Pengajuan Stase
                                     </a>
-                                    <a href="{{ route('portal.pnd.my-operations') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
-                                        <i class="fas fa-procedures w-4 text-emerald-400 text-sm"></i> Pengajuan Operasi
+                                    <a href="{{ route('portal.vehicle-cert.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-amber-50 hover:text-amber-700 transition-colors">
+                                        <i class="fas fa-car w-4 text-amber-500 text-sm"></i> Pengajuan Sertifikat Kendaraan
+                                    </a>
+                                    <a href="{{ route('portal.operation-cert.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+                                        <i class="fas fa-award w-4 text-emerald-500 text-sm"></i> Pengajuan Sertifikat Operasi
                                     </a>
                                     <a href="{{ route('portal.promotion.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-violet-50 hover:text-violet-700 transition-colors">
                                         <i class="fas fa-level-up-alt w-4 text-violet-400 text-sm"></i> Kenaikan Jabatan
@@ -1543,9 +1546,6 @@
                                     </a>
                                     @endif
                                     @if($isPnd)
-                                    <a href="{{ route('portal.pnd.operations') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors">
-                                        <i class="fas fa-hospital w-4 text-green-500 text-sm"></i> PND: Verifikasi Operasi
-                                    </a>
                                     <a href="{{ route('portal.pnd.cert-index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors">
                                         <i class="fas fa-award w-4 text-green-400 text-sm"></i> PND: Sertifikat Operasi
                                     </a>
@@ -1850,6 +1850,16 @@
                                 class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
                                 <i class="fas fa-graduation-cap w-5 text-blue-400 text-sm"></i>
                                 <span>Pengajuan Stase</span>
+                            </a>
+                            <a href="{{ route('portal.vehicle-cert.index') }}"
+                                class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                <i class="fas fa-car w-5 text-amber-400 text-sm"></i>
+                                <span>Pengajuan Sertifikat Kendaraan</span>
+                            </a>
+                            <a href="{{ route('portal.operation-cert.index') }}"
+                                class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                <i class="fas fa-award w-5 text-emerald-400 text-sm"></i>
+                                <span>Pengajuan Sertifikat Operasi</span>
                             </a>
                             <a href="{{ route('credit-score.index') }}"
                                 class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
