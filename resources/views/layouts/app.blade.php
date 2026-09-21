@@ -1616,6 +1616,9 @@
                                     <a href="{{ route('portal.resignation.manage.ie') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors">
                                         <i class="fas fa-hand-holding-usd w-4 text-orange-400 text-sm"></i> IE: Denda Resign
                                     </a>
+                                    <a href="{{ route('portal.resignation.logs') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+                                        <i class="fas fa-archive w-4 text-emerald-500 text-sm"></i> IE: Log Resign
+                                    </a>
                                     @endif
                                     @if($isComdis)
                                     <a href="{{ route('credit-score.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
@@ -1971,6 +1974,11 @@
                                 class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
                                 <i class="fas fa-hand-holding-usd w-5 text-orange-400 text-sm"></i>
                                 <span>IE: Denda Resign</span>
+                            </a>
+                            <a href="{{ route('portal.resignation.logs') }}"
+                                class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                <i class="fas fa-archive w-5 text-emerald-400 text-sm"></i>
+                                <span>IE: Log Resign</span>
                             </a>
                             @if(auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('pnd'))
                             <a href="{{ route('portal.pnd.training.index') }}"

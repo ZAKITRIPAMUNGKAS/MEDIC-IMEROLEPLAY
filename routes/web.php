@@ -1488,6 +1488,8 @@ Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->gro
         Route::get('/create',  [\App\Http\Controllers\Portal\ResignationController::class, 'create'])->name('create');
         Route::post('/',       [\App\Http\Controllers\Portal\ResignationController::class, 'store'])->name('store');
         Route::post('/cancel-own', [\App\Http\Controllers\Portal\ResignationController::class, 'cancelOwn'])->name('cancel-own');
+        // Anggota: Upload Bukti Resign (4 Berkas Wajib)
+        Route::post('/upload-proof', [\App\Http\Controllers\Portal\ResignationController::class, 'uploadProof'])->name('upload-proof');
         // PND
         Route::get('/manage/pnd',                       [\App\Http\Controllers\Portal\ResignationController::class, 'managePnd'])->name('manage.pnd');
         Route::post('/{resignation}/pnd-approve',        [\App\Http\Controllers\Portal\ResignationController::class, 'pndApprove'])->name('pnd-approve');
@@ -1496,7 +1498,11 @@ Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->gro
         // IE
         Route::get('/manage/ie',                        [\App\Http\Controllers\Portal\ResignationController::class, 'manageIe'])->name('manage.ie');
         Route::post('/{resignation}/ie-verify-payment', [\App\Http\Controllers\Portal\ResignationController::class, 'ieVerifyPayment'])->name('ie-verify');
+        Route::post('/{resignation}/ie-request-revision',[\App\Http\Controllers\Portal\ResignationController::class, 'ieRequestProofRevision'])->name('ie-request-revision');
+        Route::post('/{resignation}/ie-final-confirm',  [\App\Http\Controllers\Portal\ResignationController::class, 'ieFinalConfirm'])->name('ie-final-confirm');
         Route::post('/{resignation}/ie-cancel',         [\App\Http\Controllers\Portal\ResignationController::class, 'ieCancel'])->name('ie-cancel');
+        // Log Resign / Arsip Administrasi
+        Route::get('/logs',                             [\App\Http\Controllers\Portal\ResignationController::class, 'logs'])->name('logs');
         Route::get('/{resignation}', [\App\Http\Controllers\Portal\ResignationController::class, 'show'])->where('resignation', '[0-9]+')->name('show');
     });
 
