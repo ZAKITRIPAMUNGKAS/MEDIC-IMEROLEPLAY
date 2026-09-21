@@ -79,16 +79,16 @@ class CreditScoreController extends Controller
             $hospital = 'alta';
 
             $query = User::with(['role:id,name,display_name,level', 'subRole:id,name,short_name,color', 'creditScore'])
-                ->where('is_active', true)
-                ->whereNotNull('role_id')
-                ->where('hospital', 'alta')
+                ->where('users.is_active', true)
+                ->whereNotNull('users.role_id')
+                ->where('users.hospital', 'alta')
                 ->whereHas('role', fn($q) => $q->where('name', '!=', 'admin'));
 
             if ($search) {
                 $query->where(function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('staff_id', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%")
+                    $q->where('users.name', 'like', "%{$search}%")
+                      ->orWhere('users.staff_id', 'like', "%{$search}%")
+                      ->orWhere('users.email', 'like', "%{$search}%")
                       ->orWhereHas('subRole', fn($sr) => $sr->where('name', 'like', "%{$search}%")->orWhere('short_name', 'like', "%{$search}%"))
                       ->orWhereHas('role', fn($r) => $r->where('display_name', 'like', "%{$search}%")->orWhere('name', 'like', "%{$search}%"));
                 });

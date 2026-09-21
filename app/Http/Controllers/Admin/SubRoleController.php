@@ -92,15 +92,15 @@ class SubRoleController extends Controller
 
         // Staf aktif khusus Alta Hospital, urutkan by level
         $staffQuery = User::with(['role:id,name,display_name,level', 'subRole:id,name,short_name,color'])
-            ->where('is_active', true)
-            ->whereNotNull('role_id')
-            ->where('hospital', 'alta')
+            ->where('users.is_active', true)
+            ->whereNotNull('users.role_id')
+            ->where('users.hospital', 'alta')
             ->whereHas('role', fn($q) => $q->where('name', '!=', 'admin'));
 
         if ($search) {
             $staffQuery->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('staff_id', 'like', "%{$search}%");
+                $q->where('users.name', 'like', "%{$search}%")
+                  ->orWhere('users.staff_id', 'like', "%{$search}%");
             });
         }
 

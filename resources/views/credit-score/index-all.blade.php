@@ -55,139 +55,94 @@
             </div>
         @endif
 
-        {{-- Tabel --}}
+        {{-- Tabel Anggota --}}
         <div class="glass-effect rounded-2xl overflow-hidden shadow-2xl">
-            <table class="w-full text-sm hidden sm:table" id="csTable">
-                <thead>
-                    <tr class="border-b border-white/10 bg-white/5">
-                        <th class="text-left px-5 py-4 text-gray-300 text-xs uppercase tracking-wide font-semibold">#</th>
-                        <th class="text-left px-5 py-4 text-gray-300 text-xs uppercase tracking-wide font-semibold">Anggota</th>
-                        <th class="text-left px-5 py-4 text-gray-300 text-xs uppercase tracking-wide font-semibold">Jabatan</th>
-                        <th class="text-left px-5 py-4 text-gray-300 text-xs uppercase tracking-wide font-semibold">Divisi</th>
-                        <th class="text-center px-5 py-4 text-gray-300 text-xs uppercase tracking-wide font-semibold">Credit Score</th>
-                        <th class="text-center px-5 py-4 text-gray-300 text-xs uppercase tracking-wide font-semibold">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-white/5" id="csTableBody">
-                    @forelse($members as $member)
-                    @php
-                        $balance = $member->creditScore?->balance ?? 100;
-                        $scoreColor = $balance >= 85 ? 'text-green-400' : ($balance >= 80 ? 'text-yellow-400' : 'text-red-400');
-                        $scoreBg   = $balance >= 85 ? 'bg-green-500/20 border-green-500/30' : ($balance >= 80 ? 'bg-yellow-500/20 border-yellow-500/30' : 'bg-red-500/20 border-red-500/30');
-                    @endphp
-                    <tr class="hover:bg-white/5 transition-colors cs-row"
-                        data-name="{{ strtolower($member->name) }}"
-                        data-id="{{ strtolower($member->staff_id ?? '') }}"
-                        data-role="{{ strtolower($member->role?->display_name ?? '') }}"
-                        data-divisi="{{ strtolower($member->subRole?->short_name ?? '') }}">
-                        <td class="px-5 py-3 text-gray-500 text-xs">{{ ($members->currentPage()-1)*$members->perPage()+$loop->iteration }}</td>
-                        <td class="px-5 py-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-sky-500/30 to-cyan-500/30 flex items-center justify-center border border-white/20 text-white text-xs font-bold flex-shrink-0">
-                                    {{ strtoupper(substr($member->name,0,2)) }}
+            <div class="overflow-x-auto w-full">
+                <table class="w-full text-sm divide-y divide-white/10" id="csTable" style="display: table !important; min-width: 650px;">
+                    <thead>
+                        <tr class="border-b border-white/10 bg-white/5">
+                            <th class="text-left px-5 py-4 text-gray-300 text-xs uppercase tracking-wide font-semibold">#</th>
+                            <th class="text-left px-5 py-4 text-gray-300 text-xs uppercase tracking-wide font-semibold">Anggota</th>
+                            <th class="text-left px-5 py-4 text-gray-300 text-xs uppercase tracking-wide font-semibold">Jabatan</th>
+                            <th class="text-left px-5 py-4 text-gray-300 text-xs uppercase tracking-wide font-semibold">Divisi</th>
+                            <th class="text-center px-5 py-4 text-gray-300 text-xs uppercase tracking-wide font-semibold">Credit Score</th>
+                            <th class="text-center px-5 py-4 text-gray-300 text-xs uppercase tracking-wide font-semibold">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5" id="csTableBody">
+                        @forelse($members as $member)
+                        @php
+                            $balance = $member->creditScore?->balance ?? 100;
+                            $scoreColor = $balance >= 85 ? 'text-green-400' : ($balance >= 80 ? 'text-yellow-400' : 'text-red-400');
+                            $scoreBg   = $balance >= 85 ? 'bg-green-500/20 border-green-500/30' : ($balance >= 80 ? 'bg-yellow-500/20 border-yellow-500/30' : 'bg-red-500/20 border-red-500/30');
+                        @endphp
+                        <tr class="hover:bg-white/5 transition-colors cs-row"
+                            data-name="{{ strtolower($member->name) }}"
+                            data-id="{{ strtolower($member->staff_id ?? '') }}"
+                            data-role="{{ strtolower($member->role?->display_name ?? '') }}"
+                            data-divisi="{{ strtolower($member->subRole?->short_name ?? '') }}">
+                            <td class="px-5 py-3 text-gray-500 text-xs">{{ ($members->currentPage()-1)*$members->perPage()+$loop->iteration }}</td>
+                            <td class="px-5 py-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-sky-500/30 to-cyan-500/30 flex items-center justify-center border border-white/20 text-white text-xs font-bold flex-shrink-0">
+                                        {{ strtoupper(substr($member->name,0,2)) }}
+                                    </div>
+                                    <div>
+                                        <p class="text-white font-medium">{{ $member->name }}</p>
+                                        @if($member->staff_id)<p class="text-sky-300 font-mono text-xs">{{ $member->staff_id }}</p>@endif
+                                    </div>
                                 </div>
-                                <div>
-                                    <p class="text-white font-medium">{{ $member->name }}</p>
-                                    @if($member->staff_id)<p class="text-sky-300 font-mono text-xs">{{ $member->staff_id }}</p>@endif
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-5 py-3">
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-sky-500/20 text-sky-300 border border-sky-500/30">
-                                {{ $member->role?->display_name ?? '-' }}
-                            </span>
-                        </td>
-                        <td class="px-5 py-3">
-                            @if($member->subRole)
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold" style="{{ $member->subRole->badge_style }}">
-                                    {{ $member->subRole->short_name }}
+                            </td>
+                            <td class="px-5 py-3">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                                    {{ $member->role?->display_name ?? '-' }}
                                 </span>
-                            @else
-                                <span class="text-gray-500 text-xs">-</span>
-                            @endif
-                        </td>
-                        <td class="px-5 py-3 text-center">
-                            <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-black border {{ $scoreBg }} {{ $scoreColor }}">
-                                <i class="fas fa-star text-xs"></i> {{ $balance }}
-                            </span>
-                        </td>
-                        <td class="px-5 py-3 text-center">
-                            <div class="flex items-center justify-center gap-2">
-                                <a href="{{ route('credit-score.show', $member) }}"
-                                   class="px-3 py-1.5 bg-sky-500/20 hover:bg-sky-500/40 text-sky-300 rounded-lg text-xs font-semibold transition-all border border-sky-500/30">
-                                    Detail
-                                </a>
-                                @if(auth()->user()->isInDivision('comdis') || auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove())
-                                <a href="{{ route('credit-score.input', $member) }}"
-                                   class="px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 rounded-lg text-xs font-semibold transition-all border border-amber-500/30">
-                                    Input
-                                </a>
+                            </td>
+                            <td class="px-5 py-3">
+                                @if($member->subRole)
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold" style="{{ $member->subRole->badge_style }}">
+                                        {{ $member->subRole->short_name }}
+                                    </span>
+                                @else
+                                    <span class="text-gray-500 text-xs">-</span>
                                 @endif
-                            </div>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="6" class="px-5 py-8 text-center text-gray-400">
-                            <i class="fas fa-user-slash text-2xl mb-2 text-gray-500 block"></i>
-                            Tidak ada data anggota ditemukan.
-                        </td>
-                    </tr>
-                    @endforelse
-                    <tr id="noResultsDesktop" class="hidden">
-                        <td colspan="6" class="px-5 py-8 text-center text-gray-400">
-                            <i class="fas fa-search text-2xl mb-2 text-gray-500 block"></i>
-                            Tidak ada anggota yang sesuai dengan kata kunci pencarian.
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
-            {{-- Mobile cards --}}
-            <div class="sm:hidden divide-y divide-white/10" id="csMobileCards">
-                @forelse($members as $member)
-                @php
-                    $balance = $member->creditScore?->balance ?? 100;
-                    $scoreColor = $balance >= 85 ? 'text-green-400' : ($balance >= 80 ? 'text-yellow-400' : 'text-red-400');
-                @endphp
-                <div class="p-4 flex items-center justify-between gap-3 cs-row-mobile"
-                     data-name="{{ strtolower($member->name) }}"
-                     data-id="{{ strtolower($member->staff_id ?? '') }}"
-                     data-role="{{ strtolower($member->role?->display_name ?? '') }}"
-                     data-divisi="{{ strtolower($member->subRole?->short_name ?? '') }}">
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-sky-500/30 to-cyan-500/30 flex items-center justify-center border border-white/20 text-white text-xs font-bold flex-shrink-0">
-                            {{ strtoupper(substr($member->name,0,2)) }}
-                        </div>
-                        <div>
-                            <p class="text-white font-medium text-sm">{{ $member->name }}</p>
-                            <p class="text-gray-400 text-xs">
-                                {{ $member->role?->display_name ?? '-' }}
-                                @if($member->subRole) &bull; <span class="font-bold text-sky-300">{{ $member->subRole->short_name }}</span>@endif
-                            </p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="font-black text-lg {{ $scoreColor }}">{{ $balance }}</span>
-                        <a href="{{ route('credit-score.show', $member) }}" class="px-2.5 py-1.5 bg-sky-500/20 text-sky-300 rounded-lg text-xs font-semibold border border-sky-500/30">
-                            Detail
-                        </a>
-                        @if(auth()->user()->isInDivision('comdis') || auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove())
-                        <a href="{{ route('credit-score.input', $member) }}" class="px-2.5 py-1.5 bg-amber-500/20 text-amber-300 rounded-lg text-xs font-semibold border border-amber-500/30">
-                            Input
-                        </a>
-                        @endif
-                    </div>
-                </div>
-                @empty
-                <div class="p-6 text-center text-gray-400 text-sm">
-                    Tidak ada data anggota ditemukan.
-                </div>
-                @endforelse
-                <div id="noResultsMobile" class="hidden p-6 text-center text-gray-400 text-sm">
-                    <i class="fas fa-search text-xl mb-1 text-gray-500 block"></i>
-                    Tidak ada anggota yang sesuai dengan kata kunci pencarian.
-                </div>
+                            </td>
+                            <td class="px-5 py-3 text-center">
+                                <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm font-black border {{ $scoreBg }} {{ $scoreColor }}">
+                                    <i class="fas fa-star text-xs"></i> {{ $balance }}
+                                </span>
+                            </td>
+                            <td class="px-5 py-3 text-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    <a href="{{ route('credit-score.show', $member) }}"
+                                       class="px-3 py-1.5 bg-sky-500/20 hover:bg-sky-500/40 text-sky-300 rounded-lg text-xs font-semibold transition-all border border-sky-500/30">
+                                        Detail
+                                    </a>
+                                    @if(auth()->user()->isInDivision('comdis') || auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove())
+                                    <a href="{{ route('credit-score.input', $member) }}"
+                                       class="px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 rounded-lg text-xs font-semibold transition-all border border-amber-500/30">
+                                        Input
+                                    </a>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="6" class="px-5 py-8 text-center text-gray-400">
+                                <i class="fas fa-user-slash text-2xl mb-2 text-gray-500 block"></i>
+                                Tidak ada data anggota ditemukan.
+                            </td>
+                        </tr>
+                        @endforelse
+                        <tr id="noResultsDesktop" class="hidden">
+                            <td colspan="6" class="px-5 py-8 text-center text-gray-400">
+                                <i class="fas fa-search text-2xl mb-2 text-gray-500 block"></i>
+                                Tidak ada anggota yang sesuai dengan kata kunci pencarian.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
             @if($members->hasPages())
@@ -208,17 +163,14 @@
 document.addEventListener('DOMContentLoaded', function () {
     const input = document.getElementById('csSearchInput');
     const desktopRows = document.querySelectorAll('.cs-row');
-    const mobileCards = document.querySelectorAll('.cs-row-mobile');
     const countDisplay = document.getElementById('displayed-count');
     const noResultsDesktop = document.getElementById('noResultsDesktop');
-    const noResultsMobile = document.getElementById('noResultsMobile');
 
     if (input) {
         input.addEventListener('input', function () {
             const query = this.value.toLowerCase().trim();
             let visibleCount = 0;
 
-            // Filter Desktop
             desktopRows.forEach(function (row) {
                 const name = row.getAttribute('data-name') || '';
                 const staffId = row.getAttribute('data-id') || '';
@@ -233,20 +185,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
-            // Filter Mobile
-            mobileCards.forEach(function (card) {
-                const name = card.getAttribute('data-name') || '';
-                const staffId = card.getAttribute('data-id') || '';
-                const role = card.getAttribute('data-role') || '';
-                const divisi = card.getAttribute('data-divisi') || '';
-
-                if (name.includes(query) || staffId.includes(query) || role.includes(query) || divisi.includes(query)) {
-                    card.style.display = '';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-
             if (countDisplay) {
                 countDisplay.textContent = visibleCount;
             }
@@ -256,14 +194,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     noResultsDesktop.classList.remove('hidden');
                 } else {
                     noResultsDesktop.classList.add('hidden');
-                }
-            }
-
-            if (noResultsMobile) {
-                if (visibleCount === 0 && mobileCards.length > 0) {
-                    noResultsMobile.classList.remove('hidden');
-                } else {
-                    noResultsMobile.classList.add('hidden');
                 }
             }
         });
