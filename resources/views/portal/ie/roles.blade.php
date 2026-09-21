@@ -155,9 +155,9 @@
                                     @else
                                         <span class="text-slate-500 text-xs">—</span>
                                     @endif
-                                    @if($staf->isInterviewer())
-                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                                            <i class="fas fa-user-tie text-[9px]"></i> Interviewer
+                                    @if($staf->is_interviewer)
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30" title="Penugasan Sementara sebagai Petugas Interviewer">
+                                            <i class="fas fa-user-tie text-[9px]"></i> Interviewer (Sementara)
                                         </span>
                                     @endif
                                 </div>
@@ -249,10 +249,10 @@
             <div class="p-3.5 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-between gap-3">
                 <div>
                     <span class="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
-                        <i class="fas fa-user-tie text-indigo-400"></i> Hak Akses Role Interviewer Calon Medis
+                        <i class="fas fa-user-tie text-indigo-400"></i> Role Interviewer Calon Medis (Tugas Sementara)
                     </span>
                     <span class="text-[11px] text-slate-400 block mt-0.5">
-                        Centang untuk memberikan wewenang melakukan wawancara &amp; evaluasi calon anggota medis baru.
+                        Centang untuk menugaskan staf sebagai Interviewer selama periode recruitment. Bersifat ad-hoc (sementara) dan dapat dicabut kembali sewaktu-waktu.
                     </span>
                 </div>
                 <input type="checkbox" name="is_interviewer" id="modalIsInterviewer" value="1" class="w-5 h-5 rounded text-indigo-500 focus:ring-indigo-400 border-white/20 bg-slate-800 shrink-0">

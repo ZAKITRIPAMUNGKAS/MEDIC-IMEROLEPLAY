@@ -14,7 +14,10 @@
             <div>
                 <div class="flex items-center gap-2 mb-2">
                     <span class="px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-semibold">
-                        <i class="fas fa-id-badge mr-1"></i> Role Interviewer Alta Hospital
+                        <i class="fas fa-id-badge mr-1"></i> Khusus PND, IE &amp; Petugas Interviewer
+                    </span>
+                    <span class="px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-semibold">
+                        <i class="fas fa-hourglass-half mr-1"></i> Tugas Sementara
                     </span>
                 </div>
                 <h1 class="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
@@ -24,13 +27,21 @@
                     Wawancara Calon Staf Medis
                 </h1>
                 <p class="text-slate-300 text-sm mt-1">
-                    Kelola antrean interview pendaftar baru, input hasil evaluasi wawancara, dan tetapkan rekomendasi jenjang jabatan medis awal.
+                    Kelola antrean wawancara calon anggota medis dari hasil formulir recruitment, input evaluasi interview, dan tetapkan rekomendasi jenjang jabatan awal.
                 </p>
             </div>
 
-            <div class="text-right">
-                <span class="text-xs text-indigo-300">Antrean Siap Interview:</span>
-                <span class="text-xl font-bold text-white ml-1.5">{{ $candidates->total() }}</span>
+            <div class="flex flex-col sm:flex-row items-end sm:items-center gap-3">
+                @if($canManageInterviewers)
+                <button type="button" onclick="document.getElementById('interviewerManagementCard').classList.toggle('hidden')"
+                        class="px-4 py-2 bg-indigo-600/30 hover:bg-indigo-600/50 border border-indigo-500/40 text-indigo-200 hover:text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition-all shadow-md">
+                    <i class="fas fa-user-shield text-indigo-400"></i> Kelola Tim Interviewer ({{ $activeInterviewers->count() }})
+                </button>
+                @endif
+                <div class="text-right bg-white/5 border border-white/10 px-4 py-2 rounded-xl">
+                    <span class="text-xs text-indigo-300 block">Antrean Siap Interview:</span>
+                    <span class="text-xl font-bold text-white">{{ $candidates->total() }}</span>
+                </div>
             </div>
         </div>
 
@@ -42,70 +53,183 @@
             </div>
         @endif
 
-        {{-- Search Filter --}}
+        @if(session('error'))
+            <div class="bg-rose-500/20 border border-rose-500/40 rounded-xl px-4 py-3 text-rose-300 text-sm flex items-center gap-2 shadow-lg">
+                <i class="fas fa-exclamation-circle text-rose-400"></i>
+                <span>{{ session('error') }}</span>
+            </div>
+        @endif
+
+        {{-- Panel Kelola Petugas Interviewer Sementara (Khusus PND, IE, Admin) --}}
+        @if($canManageInterviewers)
+        <div id="interviewerManagementCard" class="glass-effect rounded-2xl p-6 border border-indigo-500/30 shadow-2xl space-y-5 {{ $activeInterviewers->isEmpty() ? '' : 'hidden' }}">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/10">
+                <div>
+                    <h3 class="font-bold text-white text-base flex items-center gap-2">
+                        <i class="fas fa-users-cog text-indigo-400"></i> Manajemen Tim Interviewer (Tugas Sementara)
+                    </h3>
+                    <p class="text-xs text-slate-300 mt-0.5">
+                        Role Interviewer bersifat penugasan ad-hoc selama periode recruitment aktif, bukan jabatan struktural selamanya. PND &amp; IE dapat menugaskan dan mencabut akses kapan saja.
+                    </p>
+                </div>
+                <button type="button" onclick="document.getElementById('interviewerManagementCard').classList.add('hidden')" class="text-slate-400 hover:text-white text-xs self-start sm:self-center">
+                    <i class="fas fa-chevron-up mr-1"></i> Tutup Panel
+                </button>
+            </div>
+
+            {{-- Form Tugaskan Interviewer Baru --}}
+            <form method="POST" action="{{ route('portal.interview.assign') }}" class="flex flex-col sm:flex-row gap-3 items-end bg-white/5 p-4 rounded-xl border border-white/10">
+                @csrf
+                <div class="w-full sm:flex-1">
+                    <label for="assign_user_id" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">
+                        <i class="fas fa-user-plus text-indigo-400 mr-1"></i> Tambah Anggota Staf Sebagai Interviewer Sementara
+                    </label>
+                    <select name="user_id" id="assign_user_id" required
+                            class="w-full bg-slate-800 text-white border border-white/20 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                        <option value="">-- Pilih Anggota Medis yang Ditugaskan --</option>
+                        @foreach($availableStaff as $staf)
+                        <option value="{{ $staf->id }}">
+                            {{ $staf->name }} — {{ $staf->medicRole?->display_name ?? $staf->role?->display_name ?? 'Staf' }} {{ $staf->subRole ? '('.$staf->subRole->display_name.')' : '' }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+                <button type="submit"
+                        class="px-5 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-bold shadow-md transition-all whitespace-nowrap">
+                    <i class="fas fa-check mr-1.5"></i> Tugaskan Interviewer
+                </button>
+            </form>
+
+            {{-- Tabel Daftar Interviewer Aktif Saat Ini --}}
+            <div>
+                <h4 class="text-xs font-bold uppercase tracking-wider text-indigo-300 mb-2.5">
+                    Petugas Interviewer Sementara Saat Ini ({{ $activeInterviewers->count() }})
+                </h4>
+                @if($activeInterviewers->isEmpty())
+                    <p class="text-xs text-slate-400 italic bg-white/5 p-3 rounded-xl">
+                        Belum ada staf yang ditugaskan sebagai interviewer sementara. (Anggota divisi IE &amp; PND tetap memiliki hak akses otomatis).
+                    </p>
+                @else
+                    <div class="overflow-x-auto rounded-xl border border-white/10">
+                        <table class="w-full text-xs">
+                            <thead>
+                                <tr class="bg-white/5 border-b border-white/10 text-slate-300 text-left font-semibold">
+                                    <th class="px-4 py-2.5">Nama Petugas</th>
+                                    <th class="px-4 py-2.5">Jabatan Medis</th>
+                                    <th class="px-4 py-2.5">Divisi Manajerial</th>
+                                    <th class="px-4 py-2.5 text-center">Status Akses</th>
+                                    <th class="px-4 py-2.5 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-white/5 text-slate-200">
+                                @foreach($activeInterviewers as $ai)
+                                <tr class="hover:bg-white/5">
+                                    <td class="px-4 py-2.5 font-medium text-white">{{ $ai->name }}</td>
+                                    <td class="px-4 py-2.5 text-sky-300">{{ $ai->medicRole?->display_name ?? $ai->role?->display_name ?? '-' }}</td>
+                                    <td class="px-4 py-2.5 text-purple-300">{{ $ai->subRole?->display_name ?? 'Tidak Ada' }}</td>
+                                    <td class="px-4 py-2.5 text-center">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                                            Aktif Sementara
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-2.5 text-center">
+                                        <form method="POST" action="{{ route('portal.interview.revoke', $ai->id) }}" onsubmit="return confirm('Cabut tugas interviewer sementara untuk {{ $ai->name }}?')">
+                                            @csrf
+                                            <button type="submit" class="px-2.5 py-1 bg-rose-600/30 hover:bg-rose-600 text-rose-300 hover:text-white rounded-lg text-[11px] font-medium transition-colors">
+                                                <i class="fas fa-user-minus mr-1"></i> Cabut Tugas
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @endif
+            </div>
+        </div>
+        @endif
+
+        {{-- Search & Filter Form --}}
         <div class="glass-effect rounded-2xl p-4 border border-white/10">
-            <form method="GET" action="{{ route('portal.interview.index') }}" class="flex gap-3">
+            <form method="GET" action="{{ route('portal.interview.index') }}" class="flex flex-col sm:flex-row gap-3">
                 <div class="relative flex-1">
                     <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama calon medis, email, atau Citizen ID (CID)..."
+                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama calon medis (IC), CID, atau Discord..."
                            class="w-full bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded-xl pl-9 pr-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-400">
                 </div>
+                <div class="w-full sm:w-48">
+                    <select name="status" onchange="this.form.submit()"
+                            class="w-full bg-slate-800 text-white border border-white/20 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                        <option value="">Semua Status Berkas</option>
+                        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Menunggu Review</option>
+                        <option value="reviewed" {{ request('status') === 'reviewed' ? 'selected' : '' }}>Lolos Berkas</option>
+                        <option value="interview" {{ request('status') === 'interview' ? 'selected' : '' }}>Tahap Wawancara</option>
+                        <option value="accepted" {{ request('status') === 'accepted' ? 'selected' : '' }}>Diterima</option>
+                        <option value="rejected" {{ request('status') === 'rejected' ? 'selected' : '' }}>Ditolak</option>
+                    </select>
+                </div>
                 <button type="submit" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-md transition-all">
-                    Cari Calon
+                    Filter Calon
                 </button>
-                @if(request('q'))
-                    <a href="{{ route('portal.interview.index') }}" class="px-3 py-2.5 bg-white/10 hover:bg-white/15 text-white/70 rounded-xl text-xs flex items-center">
+                @if(request('q') || request('status'))
+                    <a href="{{ route('portal.interview.index') }}" class="px-3 py-2.5 bg-white/10 hover:bg-white/15 text-white/70 rounded-xl text-xs flex items-center justify-center">
                         <i class="fas fa-times"></i>
                     </a>
                 @endif
             </form>
         </div>
 
-        {{-- Tabel Antrean Calon Medis --}}
+        {{-- Tabel Antrean Calon Medis Dari Hasil Recruitment --}}
         <div class="glass-effect rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
             <div class="px-5 py-4 border-b border-white/10 bg-white/5 flex items-center justify-between">
                 <div>
-                    <h3 class="font-bold text-white text-sm">Antrean Calon Medis Baru</h3>
-                    <p class="text-xs text-slate-400">Daftar pendaftar akun yang menunggu sesi wawancara</p>
+                    <h3 class="font-bold text-white text-sm">Antrean Calon Medis Baru (Hasil Recruitment)</h3>
+                    <p class="text-xs text-slate-400">Daftar calon staf yang mendaftar via formulir recruitment Alta Hospital</p>
                 </div>
+                <span class="text-xs px-2.5 py-1 rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                    <i class="fas fa-database mr-1"></i> Data Recruitment Form
+                </span>
             </div>
 
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>
                         <tr class="bg-white/5 border-b border-white/10 text-slate-300 text-xs font-semibold uppercase tracking-wider">
-                            <th class="px-5 py-3.5 text-left">Nama Pendaftar</th>
+                            <th class="px-5 py-3.5 text-left">Nama Pendaftar (IC)</th>
                             <th class="px-5 py-3.5 text-left">Citizen ID (CID)</th>
-                            <th class="px-5 py-3.5 text-left">Pilihan Role Awal</th>
-                            <th class="px-5 py-3.5 text-left">Tanggal Daftar</th>
-                            <th class="px-5 py-3.5 text-center">Status Interview</th>
+                            <th class="px-5 py-3.5 text-left">Discord</th>
+                            <th class="px-5 py-3.5 text-left">Status Berkas</th>
+                            <th class="px-5 py-3.5 text-left">Tanggal Mendaftar</th>
+                            <th class="px-5 py-3.5 text-center">Status Wawancara</th>
                             <th class="px-5 py-3.5 text-center">Aksi Interview</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-white/5 text-slate-200">
                         @forelse($candidates as $candidate)
                         @php
-                            $latestInterview = $candidate->candidateInterviews->last();
+                            $latestInterview = $candidate->latestInterview ?? $candidate->candidateInterviews->last();
                         @endphp
                         <tr class="hover:bg-white/5 transition-colors">
                             <td class="px-5 py-3.5">
                                 <div class="flex items-center gap-3">
                                     <div class="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-500/30 to-purple-500/30 border border-white/20 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
-                                        {{ strtoupper(substr($candidate->name, 0, 2)) }}
+                                        {{ strtoupper(substr($candidate->ic_name, 0, 2)) }}
                                     </div>
                                     <div>
-                                        <p class="text-white font-semibold text-sm">{{ $candidate->name }}</p>
-                                        <p class="text-xs text-slate-400">{{ $candidate->email }}</p>
+                                        <p class="text-white font-semibold text-sm">{{ $candidate->ic_name }}</p>
+                                        <p class="text-xs text-slate-400">{{ $candidate->period?->batch_name ?? 'Batch Recruitment' }}</p>
                                     </div>
                                 </div>
                             </td>
                             <td class="px-5 py-3.5 font-mono text-emerald-300 font-semibold">
-                                {{ $candidate->citizen_id ?? 'CID Belum Ada' }}
+                                {{ $candidate->cid }}
+                            </td>
+                            <td class="px-5 py-3.5 text-indigo-300 text-xs font-mono">
+                                {{ $candidate->discord_username ? '@' . $candidate->discord_username : '-' }}
                             </td>
                             <td class="px-5 py-3.5">
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-sky-500/20 text-sky-300 border border-sky-500/30">
-                                    {{ $candidate->role?->display_name ?? 'Pendaftar' }}
-                                </span>
+                                {!! $candidate->status_badge !!}
                             </td>
                             <td class="px-5 py-3.5 text-slate-300 text-xs">
                                 {{ $candidate->created_at->format('d M Y H:i') }}
@@ -128,7 +252,7 @@
                                 @endif
                             </td>
                             <td class="px-5 py-3.5 text-center">
-                                <a href="{{ route('portal.interview.form', $candidate) }}"
+                                <a href="{{ route('portal.interview.form', $candidate->id) }}"
                                    class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-xl text-xs font-semibold shadow-md transition-all">
                                     <i class="fas fa-clipboard-check"></i> Form Evaluasi Interview
                                 </a>
@@ -136,9 +260,14 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="px-5 py-10 text-center text-slate-400">
-                                <i class="fas fa-inbox text-3xl mb-2 text-slate-500 block"></i>
-                                Tidak ada pendaftar baru yang menunggu interview saat ini.
+                            <td colspan="7" class="px-5 py-12 text-center text-slate-400">
+                                <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 text-2xl">
+                                    <i class="fas fa-inbox"></i>
+                                </div>
+                                <h4 class="text-white font-semibold text-sm mb-1">Belum Ada Calon Pendaftar Recruitment</h4>
+                                <p class="text-xs text-slate-400 max-w-md mx-auto">
+                                    Data pada halaman ini bersumber langsung dari formulir pendaftaran recruitment Alta Hospital. Saat ada calon medis yang mendaftar via web recruitment, berkas mereka akan otomatis masuk ke dalam antrean ini.
+                                </p>
                             </td>
                         </tr>
                         @endforelse
@@ -158,6 +287,7 @@
         <div class="glass-effect rounded-2xl overflow-hidden border border-white/10 shadow-2xl mt-8">
             <div class="px-5 py-4 border-b border-white/10 bg-white/5">
                 <h3 class="font-bold text-white text-sm">Riwayat Hasil Interview Terakhir</h3>
+                <p class="text-xs text-slate-400">Catatan penilaian dan rekomendasi yang telah disimpan oleh tim interviewer</p>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-xs">
@@ -175,8 +305,8 @@
                         @foreach($completedInterviews as $ci)
                         <tr class="hover:bg-white/5 transition-colors">
                             <td class="px-5 py-3 font-semibold text-white">
-                                {{ $ci->candidate?->name ?? '-' }}
-                                <span class="block text-[11px] text-slate-400 font-mono">CID: {{ $ci->candidate?->citizen_id ?? '-' }}</span>
+                                {{ $ci->application?->ic_name ?? $ci->candidate?->name ?? '-' }}
+                                <span class="block text-[11px] text-slate-400 font-mono">CID: {{ $ci->application?->cid ?? $ci->candidate?->citizen_id ?? '-' }}</span>
                             </td>
                             <td class="px-5 py-3 text-indigo-300 font-medium">
                                 {{ $ci->interviewer?->name ?? 'Interviewer' }}

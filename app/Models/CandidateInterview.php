@@ -8,6 +8,7 @@ class CandidateInterview extends Model
 {
     protected $fillable = [
         'user_id',
+        'recruitment_application_id',
         'interviewer_id',
         'result',
         'recommended_role',
@@ -22,6 +23,11 @@ class CandidateInterview extends Model
     public function candidate()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function application()
+    {
+        return $this->belongsTo(RecruitmentApplication::class, 'recruitment_application_id');
     }
 
     public function interviewer()

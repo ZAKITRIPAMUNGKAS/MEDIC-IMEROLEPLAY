@@ -60,6 +60,16 @@ class RecruitmentApplication extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function candidateInterviews()
+    {
+        return $this->hasMany(CandidateInterview::class, 'recruitment_application_id');
+    }
+
+    public function latestInterview()
+    {
+        return $this->hasOne(CandidateInterview::class, 'recruitment_application_id')->latestOfMany();
+    }
+
     // ─── Accessors / Helpers ──────────────────────────────────────────────────
 
     public function getStatusBadgeAttribute(): string

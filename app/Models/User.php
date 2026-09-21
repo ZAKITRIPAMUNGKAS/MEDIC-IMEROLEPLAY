@@ -149,13 +149,14 @@ class User extends Authenticatable
 
     /**
      * Cek apakah user memiliki hak akses sebagai Interviewer
+     * Hanya staf dengan penugasan interviewer sementara (is_interviewer),
+     * anggota divisi PND, divisi IE, atau super admin.
      */
     public function isInterviewer(): bool
     {
         if ($this->is_interviewer) return true;
-        if ($this->isAdmin() || $this->isExecutiveOrAbove()) return true;
+        if ($this->isAdmin()) return true;
         if ($this->isInDivision('ie', 'pnd')) return true;
-        if ($this->role && $this->role->level >= 4) return true; // Level supervisor/dokter ke atas
         return false;
     }
 

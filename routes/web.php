@@ -717,7 +717,7 @@ Route::get('/auto-setup-db', function () {
             }
         }
 
-        // Sinkronisasi kolom candidate_interviews (result vs recommendation)
+        // Sinkronisasi kolom candidate_interviews
         if (\Illuminate\Support\Facades\Schema::hasTable('candidate_interviews')) {
             if (!\Illuminate\Support\Facades\Schema::hasColumn('candidate_interviews', 'result')) {
                 \Illuminate\Support\Facades\Schema::table('candidate_interviews', function (\Illuminate\Database\Schema\Blueprint $table) {
@@ -728,6 +728,15 @@ Route::get('/auto-setup-db', function () {
                 }
                 $logs[] = '✅ Kolom result berhasil disinkronkan pada tabel candidate_interviews.';
             }
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('candidate_interviews', 'recruitment_application_id')) {
+                \Illuminate\Support\Facades\Schema::table('candidate_interviews', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->unsignedBigInteger('recruitment_application_id')->nullable()->after('user_id');
+                });
+                $logs[] = '✅ Kolom recruitment_application_id berhasil ditambahkan ke candidate_interviews.';
+            }
+            try {
+                \Illuminate\Support\Facades\DB::statement("ALTER TABLE candidate_interviews MODIFY user_id BIGINT UNSIGNED NULL");
+            } catch (\Throwable $e) {}
         }
 
         // 15. Tabel recruitment_periods
@@ -1531,9 +1540,11 @@ Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->gro
 
     // ── Role Interview: Wawancara Calon Medis ─────────────────────────────────
     Route::prefix('interview')->name('interview.')->group(function () {
-        Route::get('/',                   [\App\Http\Controllers\Portal\InterviewController::class, 'index'])->name('index');
-        Route::get('/{candidate}/form',   [\App\Http\Controllers\Portal\InterviewController::class, 'showForm'])->name('form');
-        Route::post('/{candidate}/store', [\App\Http\Controllers\Portal\InterviewController::class, 'storeEvaluation'])->name('store');
+        Route::get('/',                                  [\App\Http\Controllers\Portal\InterviewController::class, 'index'])->name('index');
+        Route::get('/{candidate}/form',                  [\App\Http\Controllers\Portal\InterviewController::class, 'showForm'])->name('form');
+        Route::post('/{candidate}/store',                [\App\Http\Controllers\Portal\InterviewController::class, 'storeEvaluation'])->name('store');
+        Route::post('/assign-interviewer',               [\App\Http\Controllers\Portal\InterviewController::class, 'assignInterviewer'])->name('assign');
+        Route::post('/{user}/revoke-interviewer',         [\App\Http\Controllers\Portal\InterviewController::class, 'revokeInterviewer'])->name('revoke');
     });
 
     // ── Pengajuan Stase (Anggota & Konsulen) ──────────────────────────────────
