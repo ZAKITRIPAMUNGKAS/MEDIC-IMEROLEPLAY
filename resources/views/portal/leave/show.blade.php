@@ -80,9 +80,9 @@
                     @endif
                 </div>
 
-                @if($leave->approvedBy)
+                @if($leave->approvedBy || $leave->status === 'approved')
                 <div class="text-xs text-white/40 pt-2 border-t border-white/10">
-                    Diproses oleh <span class="text-white/60 font-medium">{{ $leave->approvedBy->name }}</span>
+                    Diproses oleh <span class="text-white/60 font-medium">{{ $leave->approvedBy?->name ?? 'Sistem (Otomatis Disetujui)' }}</span>
                     pada {{ $leave->approved_at?->format('d M Y H:i') }}
                 </div>
                 @endif

@@ -110,7 +110,7 @@
                                     {{ $req->status_label }}
                                 </span>
                             </td>
-                            <td class="px-5 py-3.5 text-white/60">{{ $req->approvedBy?->name ?? '—' }}</td>
+                            <td class="px-5 py-3.5 text-white/60">{{ $req->approvedBy?->name ?? ($req->status === 'approved' ? 'Sistem (Otomatis)' : '—') }}</td>
                             <td class="px-5 py-3.5">
                                 <a href="{{ route('portal.leave.show', $req) }}"
                                    class="text-sky-400 hover:text-sky-300 text-xs font-medium transition-colors">

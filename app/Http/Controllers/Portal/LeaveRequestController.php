@@ -52,16 +52,6 @@ class LeaveRequestController extends Controller
                 ->with('error', "Masa cuti Anda masih aktif ({$startFormatted} s/d {$endFormatted}). Anda tidak dapat mengajukan permohonan cuti baru sampai masa cuti berakhir.");
         }
 
-        // Cek juga jika masih ada permohonan cuti yang berstatus pending
-        $pendingLeave = LeaveRequest::where('user_id', $user->id)
-            ->where('status', 'pending')
-            ->first();
-
-        if ($pendingLeave) {
-            return redirect()->route('portal.leave.index')
-                ->with('error', 'Anda masih memiliki permohonan cuti yang sedang menunggu verifikasi.');
-        }
-
         return view('portal.leave.create', [
             'user'        => $user,
             'letterDate'  => Carbon::today()->format('d/m/Y'),
@@ -86,16 +76,6 @@ class LeaveRequestController extends Controller
             $endFormatted   = Carbon::parse($activeLeave->end_date)->locale('id')->translatedFormat('d M Y');
             return redirect()->route('portal.leave.index')
                 ->with('error', "Pengajuan cuti ditolak: Anda masih memiliki masa cuti aktif ({$startFormatted} s/d {$endFormatted}). Anda tidak dapat mengajukan cuti baru sampai masa cuti selesai.");
-        }
-
-        // Cek juga jika masih ada permohonan cuti yang berstatus pending
-        $pendingLeave = LeaveRequest::where('user_id', $user->id)
-            ->where('status', 'pending')
-            ->first();
-
-        if ($pendingLeave) {
-            return redirect()->route('portal.leave.index')
-                ->with('error', 'Pengajuan cuti ditolak: Anda masih memiliki permohonan cuti yang sedang menunggu verifikasi.');
         }
 
         $validated = $request->validate([
@@ -130,11 +110,12 @@ class LeaveRequestController extends Controller
             'duration_days'  => $duration,
             'reason_ic'      => $validated['reason_ic'],
             'reason_ooc'     => $validated['reason_ooc'],
-            'status'         => 'pending',
+            'status'         => 'approved', // Otomatis disetujui tanpa perlu menunggu ACC manual
+            'approved_at'    => now(),
         ]);
 
         return redirect()->route('portal.leave.index')
-            ->with('success', 'Pengajuan cuti berhasil dikirim.');
+            ->with('success', 'Pengajuan cuti berhasil dikirim dan otomatis disetujui.');
     }
 
     /**
