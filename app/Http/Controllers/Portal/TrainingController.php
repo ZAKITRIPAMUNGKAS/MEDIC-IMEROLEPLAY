@@ -13,8 +13,10 @@ class TrainingController extends Controller
     {
         return match ($type) {
             'operasi'        => TrainingApplication::TYPE_OPERASI,
-            'surat-menyurat', 'surat_menyurat' => TrainingApplication::TYPE_SURAT_MENYURAT,
-            'visum-hidup', 'visum_hidup'       => TrainingApplication::TYPE_VISUM_HIDUP,
+            'surat-menyurat', 'surat_menyurat'            => TrainingApplication::TYPE_SURAT_MENYURAT,
+            'visum-hidup', 'visum_hidup'                  => TrainingApplication::TYPE_VISUM_HIDUP,
+            'rekam-medis', 'rekam_medis'                  => TrainingApplication::TYPE_REKAM_MEDIS,
+            'pemulsaran-jenazah', 'pemulsaran_jenazah'    => TrainingApplication::TYPE_PEMULSARAN_JENAZAH,
             default          => abort(404, 'Jenis pelatihan tidak ditemukan.'),
         };
     }
@@ -65,6 +67,30 @@ class TrainingController extends Controller
                 'badge_color' => 'purple',
                 'icon'        => 'fa-notes-medical',
                 'route'       => route('portal.training.form', 'visum-hidup'),
+            ],
+            [
+                'key'         => 'rekam-medis',
+                'title'       => 'PENDAFTARAN PELATIHAN REKAM MEDIS',
+                'short_title' => 'Pelatihan Rekam Medis',
+                'organizer'   => 'Medical Science & Laboratory (MSL) – IME Medical Center',
+                'desc'        => 'Pelatihan Rekam Medis diselenggarakan oleh divisi Medical Science & Laboratory (MSL) IME Medical Center. Pelatihan ini mencakup tata cara pengisian rekam medis, pengarsipan data klinis pasien, dan standar dokumentasi medis sesuai prosedur rumah sakit.',
+                'requirement' => 'Semua Staf Medis',
+                'badge'       => 'MSL',
+                'badge_color' => 'cyan',
+                'icon'        => 'fa-file-medical-alt',
+                'route'       => route('portal.training.form', 'rekam-medis'),
+            ],
+            [
+                'key'         => 'pemulsaran-jenazah',
+                'title'       => 'PENDAFTARAN PELATIHAN PEMULSARAN JENAZAH',
+                'short_title' => 'Pelatihan Pemulsaran Jenazah',
+                'organizer'   => 'People & Development Department – IME Medical Center',
+                'desc'        => 'Pelatihan Pemulsaran Jenazah diselenggarakan oleh Divisi People & Development IME Medical Center. Peserta akan mempelajari prosedur penanganan jenazah secara profesional sesuai dengan standar medis dan etika yang berlaku.',
+                'requirement' => 'Semua Staf Medis',
+                'badge'       => 'PND',
+                'badge_color' => 'amber',
+                'icon'        => 'fa-ribbon',
+                'route'       => route('portal.training.form', 'pemulsaran-jenazah'),
             ],
         ];
 
@@ -205,6 +231,62 @@ class TrainingController extends Controller
 
             return redirect()->route('portal.training.index')
                 ->with('success', 'Pendaftaran Pelatihan Visum Hidup berhasil dikirim! Silakan menunggu konfirmasi dari Divisi PND.');
+
+        } elseif ($normalizedType === TrainingApplication::TYPE_REKAM_MEDIS) {
+            $validated = $request->validate([
+                'nama_ic'  => ['required', 'string', 'max:255'],
+                'gender'   => ['required', 'string', 'in:Laki-Laki,Laki-laki,Perempuan'],
+                'phone_ic' => ['required', 'string', 'max:50'],
+                'batch'    => ['required', 'string', 'max:50'],
+            ], [
+                'nama_ic.required'  => 'NAMA (IC) wajib diisi.',
+                'gender.required'   => 'Jenis Kelamin wajib dipilih.',
+                'phone_ic.required' => 'Nomor Telepon (IC) wajib diisi.',
+                'batch.required'    => 'BATCH wajib dipilih.',
+            ]);
+
+            $gender = (strcasecmp($validated['gender'], 'laki-laki') === 0) ? 'Laki-Laki' : 'Perempuan';
+
+            TrainingApplication::create([
+                'user_id'       => $user->id,
+                'training_type' => $normalizedType,
+                'nama_ic'       => trim($validated['nama_ic']),
+                'gender'        => $gender,
+                'phone_ic'      => trim($validated['phone_ic']),
+                'batch'         => trim($validated['batch']),
+                'status'        => TrainingApplication::STATUS_PENDING,
+            ]);
+
+            return redirect()->route('portal.training.index')
+                ->with('success', 'Pendaftaran Pelatihan Rekam Medis berhasil dikirim! Silakan menunggu konfirmasi dari Divisi PND.');
+
+        } elseif ($normalizedType === TrainingApplication::TYPE_PEMULSARAN_JENAZAH) {
+            $validated = $request->validate([
+                'nama_ic'  => ['required', 'string', 'max:255'],
+                'gender'   => ['required', 'string', 'in:Laki-Laki,Laki-laki,Perempuan'],
+                'phone_ic' => ['required', 'string', 'max:50'],
+                'batch'    => ['required', 'string', 'max:50'],
+            ], [
+                'nama_ic.required'  => 'NAMA (IC) wajib diisi.',
+                'gender.required'   => 'Jenis Kelamin wajib dipilih.',
+                'phone_ic.required' => 'Nomor Telepon (IC) wajib diisi.',
+                'batch.required'    => 'BATCH wajib dipilih.',
+            ]);
+
+            $gender = (strcasecmp($validated['gender'], 'laki-laki') === 0) ? 'Laki-Laki' : 'Perempuan';
+
+            TrainingApplication::create([
+                'user_id'       => $user->id,
+                'training_type' => $normalizedType,
+                'nama_ic'       => trim($validated['nama_ic']),
+                'gender'        => $gender,
+                'phone_ic'      => trim($validated['phone_ic']),
+                'batch'         => trim($validated['batch']),
+                'status'        => TrainingApplication::STATUS_PENDING,
+            ]);
+
+            return redirect()->route('portal.training.index')
+                ->with('success', 'Pendaftaran Pelatihan Pemulsaran Jenazah berhasil dikirim! Silakan menunggu konfirmasi dari Divisi PND.');
         }
 
         abort(400, 'Tipe pelatihan tidak valid.');

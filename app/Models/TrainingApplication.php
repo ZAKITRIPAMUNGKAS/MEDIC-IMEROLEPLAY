@@ -73,9 +73,11 @@ class TrainingApplication extends Model
         }
     }
 
-    const TYPE_OPERASI        = 'operasi';
-    const TYPE_SURAT_MENYURAT = 'surat_menyurat';
-    const TYPE_VISUM_HIDUP    = 'visum_hidup';
+    const TYPE_OPERASI           = 'operasi';
+    const TYPE_SURAT_MENYURAT    = 'surat_menyurat';
+    const TYPE_VISUM_HIDUP       = 'visum_hidup';
+    const TYPE_REKAM_MEDIS       = 'rekam_medis';
+    const TYPE_PEMULSARAN_JENAZAH = 'pemulsaran_jenazah';
 
     const STATUS_PENDING  = 'pending';
     const STATUS_APPROVED = 'approved';
@@ -84,18 +86,22 @@ class TrainingApplication extends Model
     public static function typeLabels(): array
     {
         return [
-            self::TYPE_OPERASI        => 'Pelatihan Operasi',
-            self::TYPE_SURAT_MENYURAT => 'Pelatihan Surat Menyurat',
-            self::TYPE_VISUM_HIDUP    => 'Pelatihan Visum Hidup',
+            self::TYPE_OPERASI            => 'Pelatihan Operasi',
+            self::TYPE_SURAT_MENYURAT     => 'Pelatihan Surat Menyurat',
+            self::TYPE_VISUM_HIDUP        => 'Pelatihan Visum Hidup',
+            self::TYPE_REKAM_MEDIS        => 'Pelatihan Rekam Medis',
+            self::TYPE_PEMULSARAN_JENAZAH => 'Pelatihan Pemulsaran Jenazah',
         ];
     }
 
     public static function typeFullTitles(): array
     {
         return [
-            self::TYPE_OPERASI        => 'FORMULIR PENDAFTARAN PELATIHAN OPERASI FASE XIII',
-            self::TYPE_SURAT_MENYURAT => 'Formulir Pendaftaran Surat Menyurat',
-            self::TYPE_VISUM_HIDUP    => 'PENDAFTARAN PELATIHAN VISUM HIDUP',
+            self::TYPE_OPERASI            => 'FORMULIR PENDAFTARAN PELATIHAN OPERASI FASE XIII',
+            self::TYPE_SURAT_MENYURAT     => 'Formulir Pendaftaran Surat Menyurat',
+            self::TYPE_VISUM_HIDUP        => 'PENDAFTARAN PELATIHAN VISUM HIDUP',
+            self::TYPE_REKAM_MEDIS        => 'PENDAFTARAN PELATIHAN REKAM MEDIS',
+            self::TYPE_PEMULSARAN_JENAZAH => 'PENDAFTARAN PELATIHAN PEMULSARAN JENAZAH',
         ];
     }
 

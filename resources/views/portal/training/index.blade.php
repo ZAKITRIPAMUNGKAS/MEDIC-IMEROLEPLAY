@@ -63,7 +63,7 @@
         </div>
         @endif
 
-        {{-- 3 Program Pelatihan Cards --}}
+        {{-- Program Pelatihan Cards --}}
         <div class="mb-10">
             <div class="flex items-center justify-between mb-4">
                 <h2 class="text-lg font-bold text-white flex items-center gap-2">
@@ -73,7 +73,7 @@
                 <span class="text-xs text-white/50">Pilih formulir pelatihan sesuai kualifikasi</span>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($trainings as $t)
                 <div class="group relative rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 p-6 flex flex-col justify-between transition-all duration-300 backdrop-blur-sm hover:-translate-y-1 hover:shadow-xl hover:shadow-black/40">
                     <div>
@@ -82,6 +82,8 @@
                             <div class="w-12 h-12 rounded-2xl 
                                 @if($t['key'] === 'operasi') bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 
                                 @elseif($t['key'] === 'surat-menyurat') bg-blue-500/20 text-blue-400 border border-blue-500/30 
+                                @elseif($t['key'] === 'rekam-medis') bg-cyan-500/20 text-cyan-400 border border-cyan-500/30
+                                @elseif($t['key'] === 'pemulsaran-jenazah') bg-amber-500/20 text-amber-400 border border-amber-500/30
                                 @else bg-purple-500/20 text-purple-400 border border-purple-500/30 @endif
                                 flex items-center justify-center text-xl shadow-inner">
                                 <i class="fas {{ $t['icon'] }}"></i>
@@ -89,6 +91,8 @@
                             <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider
                                 @if($t['key'] === 'operasi') bg-emerald-500/20 text-emerald-300 border border-emerald-500/30
                                 @elseif($t['key'] === 'surat-menyurat') bg-blue-500/20 text-blue-300 border border-blue-500/30
+                                @elseif($t['key'] === 'rekam-medis') bg-cyan-500/20 text-cyan-300 border border-cyan-500/30
+                                @elseif($t['key'] === 'pemulsaran-jenazah') bg-amber-500/20 text-amber-300 border border-amber-500/30
                                 @else bg-purple-500/20 text-purple-300 border border-purple-500/30 @endif">
                                 {{ $t['badge'] }}
                             </span>
@@ -113,6 +117,8 @@
                         <a href="{{ $t['route'] }}" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs tracking-wide transition-all shadow-md
                             @if($t['key'] === 'operasi') bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/20
                             @elseif($t['key'] === 'surat-menyurat') bg-blue-600 hover:bg-blue-500 text-white shadow-blue-600/20
+                            @elseif($t['key'] === 'rekam-medis') bg-cyan-600 hover:bg-cyan-500 text-white shadow-cyan-600/20
+                            @elseif($t['key'] === 'pemulsaran-jenazah') bg-amber-600 hover:bg-amber-500 text-white shadow-amber-600/20
                             @else bg-purple-600 hover:bg-purple-500 text-white shadow-purple-600/20 @endif">
                             <i class="fas fa-edit"></i>
                             <span>Isi Formulir Pendaftaran</span>
@@ -171,6 +177,10 @@
                                         <i class="fas fa-procedures text-emerald-400"></i>
                                     @elseif($app->training_type === 'surat_menyurat')
                                         <i class="fas fa-envelope-open-text text-blue-400"></i>
+                                    @elseif($app->training_type === 'rekam_medis')
+                                        <i class="fas fa-file-medical-alt text-cyan-400"></i>
+                                    @elseif($app->training_type === 'pemulsaran_jenazah')
+                                        <i class="fas fa-ribbon text-amber-400"></i>
                                     @else
                                         <i class="fas fa-notes-medical text-purple-400"></i>
                                     @endif

@@ -2,15 +2,19 @@
 
 @php
     $formTitles = [
-        'operasi'        => 'FORMULIR PENDAFTARAN PELATIHAN OPERASI FASE XIII',
-        'surat_menyurat' => 'Formulir Pendaftaran Surat Menyurat',
-        'visum_hidup'    => 'PENDAFTARAN PELATIHAN VISUM HIDUP',
+        'operasi'              => 'FORMULIR PENDAFTARAN PELATIHAN OPERASI FASE XIII',
+        'surat_menyurat'       => 'Formulir Pendaftaran Surat Menyurat',
+        'visum_hidup'          => 'PENDAFTARAN PELATIHAN VISUM HIDUP',
+        'rekam_medis'          => 'PENDAFTARAN PELATIHAN REKAM MEDIS',
+        'pemulsaran_jenazah'   => 'PENDAFTARAN PELATIHAN PEMULSARAN JENAZAH',
     ];
 
     $formDescriptions = [
-        'operasi' => 'Pendaftaran Pelatihan Operasi dibuka pada 5–7 September 2026. Kegiatan pelatihan akan dilaksanakan pada 8 September 2026 oleh Department People & Development bagian MOT (Medical of Trainer) sebagai upaya meningkatkan pengetahuan dan keterampilan peserta terkait prosedur operasi dan keselamatan pasien.',
-        'surat_menyurat' => '(Minimal Co-Ass) Pelatihan tata naskah dinas, penulisan surat resmi, dan korespondensi internal maupun eksternal IME Medical Center.',
-        'visum_hidup' => 'PELATIHAN VISUM HIDUP yang diselenggarakan oleh Medical Science & Laboratory bersama People & Development Department – IME Medical Center. Semua Dokter Umum WAJIB mengikuti dan opsional bagi dokter spesialis, nanti yang sudah ikut pelatihan bakal dapat sertifikat dan yang tidak mengikuti di periode sekarang wajib mengikuti di periode berikutnya bareng dengan dokter baru, Terimakasih',
+        'operasi'             => 'Pendaftaran Pelatihan Operasi dibuka pada 5–7 September 2026. Kegiatan pelatihan akan dilaksanakan pada 8 September 2026 oleh Department People & Development bagian MOT (Medical of Trainer) sebagai upaya meningkatkan pengetahuan dan keterampilan peserta terkait prosedur operasi dan keselamatan pasien.',
+        'surat_menyurat'      => '(Minimal Co-Ass) Pelatihan tata naskah dinas, penulisan surat resmi, dan korespondensi internal maupun eksternal IME Medical Center.',
+        'visum_hidup'         => 'PELATIHAN VISUM HIDUP yang diselenggarakan oleh Medical Science & Laboratory bersama People & Development Department – IME Medical Center. Semua Dokter Umum WAJIB mengikuti dan opsional bagi dokter spesialis, nanti yang sudah ikut pelatihan bakal dapat sertifikat dan yang tidak mengikuti di periode sekarang wajib mengikuti di periode berikutnya bareng dengan dokter baru, Terimakasih',
+        'rekam_medis'         => 'Pelatihan Rekam Medis diselenggarakan oleh divisi Medical Science & Laboratory (MSL) IME Medical Center. Pelatihan ini mencakup tata cara pengisian rekam medis, pengarsipan data klinis pasien, dan standar dokumentasi medis sesuai prosedur rumah sakit.',
+        'pemulsaran_jenazah'  => 'Pelatihan Pemulsaran Jenazah diselenggarakan oleh Divisi People & Development IME Medical Center. Peserta akan mempelajari prosedur penanganan jenazah secara profesional sesuai dengan standar medis dan etika yang berlaku.',
     ];
 
     $currentTitle = $formTitles[$normalizedType] ?? 'Formulir Pendaftaran Pelatihan';
@@ -53,6 +57,8 @@
             <div class="h-2.5 w-full 
                 @if($normalizedType === 'operasi') bg-gradient-to-r from-emerald-500 via-teal-400 to-cyan-500
                 @elseif($normalizedType === 'surat_menyurat') bg-gradient-to-r from-blue-500 via-indigo-400 to-violet-500
+                @elseif($normalizedType === 'rekam_medis') bg-gradient-to-r from-cyan-500 via-sky-400 to-blue-500
+                @elseif($normalizedType === 'pemulsaran_jenazah') bg-gradient-to-r from-amber-500 via-orange-400 to-yellow-400
                 @else bg-gradient-to-r from-purple-500 via-fuchsia-400 to-rose-500 @endif">
             </div>
 
@@ -60,6 +66,8 @@
                 <div class="flex items-center gap-2.5 text-xs font-bold uppercase tracking-wider mb-2
                     @if($normalizedType === 'operasi') text-emerald-400
                     @elseif($normalizedType === 'surat_menyurat') text-blue-400
+                    @elseif($normalizedType === 'rekam_medis') text-cyan-400
+                    @elseif($normalizedType === 'pemulsaran_jenazah') text-amber-400
                     @else text-purple-400 @endif">
                     <i class="fas fa-shield-alt"></i>
                     <span>Official Registration Form • Divisi PND</span>
@@ -164,8 +172,8 @@
                 @enderror
             </div>
 
-            {{-- 3. NOMOR TELEPON (IC) - Surat Menyurat & Visum Hidup --}}
-            @if($normalizedType === 'surat_menyurat' || $normalizedType === 'visum_hidup')
+            {{-- 3. NOMOR TELEPON (IC) - Surat Menyurat, Visum Hidup, Rekam Medis, Pemulsaran Jenazah --}}
+            @if(in_array($normalizedType, ['surat_menyurat', 'visum_hidup', 'rekam_medis', 'pemulsaran_jenazah']))
             <div class="rounded-2xl bg-white/[0.04] border border-white/10 p-6 shadow-xl backdrop-blur-sm transition-all focus-within:border-emerald-500/50 focus-within:bg-white/[0.06]">
                 <label for="phone_ic" class="block text-sm font-bold text-white mb-1">
                     Nomor Telepon (IC)
@@ -297,6 +305,8 @@
                 <button type="submit" class="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-sm tracking-wide text-white shadow-xl transition-all flex items-center justify-center gap-2.5
                     @if($normalizedType === 'operasi') bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-emerald-600/30
                     @elseif($normalizedType === 'surat_menyurat') bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-blue-600/30
+                    @elseif($normalizedType === 'rekam_medis') bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 shadow-cyan-600/30
+                    @elseif($normalizedType === 'pemulsaran_jenazah') bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 shadow-amber-600/30
                     @else bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 shadow-purple-600/30 @endif">
                     <i class="fas fa-paper-plane"></i>
                     <span>Kirim Formulir Pendaftaran</span>
