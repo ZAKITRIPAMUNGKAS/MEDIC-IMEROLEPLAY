@@ -98,24 +98,12 @@
                 <div>
                     <label class="block text-xs font-semibold text-white/70 uppercase mb-1.5">Pilih Template Sertifikat Operasi <span class="text-rose-400">*</span></label>
                     <select id="operationTemplateSelect" class="w-full px-3.5 py-2.5 bg-white/10 border border-white/20 rounded-xl text-white text-sm focus:outline-none focus:border-emerald-400">
-                        <option value="Sertifikasi Asistensi Bedah Minor & Penjahitan Luka" data-cat="Bedah Minor & Tindakan Dasar" class="bg-gray-800 text-white" selected>
-                            ✂️ Sertifikasi Asistensi Bedah Minor &amp; Penjahitan Luka
-                        </option>
-                        <option value="Sertifikasi Asistensi Bedah Mayor & Kasus Bedah Khusus" data-cat="Bedah Mayor & Spesialistik" class="bg-gray-800 text-white">
-                            🏥 Sertifikasi Asistensi Bedah Mayor &amp; Kasus Bedah Khusus
-                        </option>
-                        <option value="Sertifikasi Tindakan Bedah Mandiri (Operator Bedah)" data-cat="Bedah Mandiri (Dokter)" class="bg-gray-800 text-white">
-                            🩺 Sertifikasi Tindakan Bedah Mandiri (Operator Bedah)
-                        </option>
-                        <option value="Sertifikasi Operator Bedah Darurat & Trauma Cepat (ER/OR)" data-cat="Trauma & Emergency" class="bg-gray-800 text-white">
-                            🚨 Sertifikasi Operator Bedah Darurat &amp; Trauma Cepat (ER/OR)
-                        </option>
-                        <option value="Sertifikasi Manajemen Anestesi & Pemantauan Operasi" data-cat="Anestesiologi & Monitoring" class="bg-gray-800 text-white">
-                            💉 Sertifikasi Manajemen Anestesi &amp; Pemantauan Operasi
+                        <option value="Sertifikat Pelatihan Operasi" data-cat="Pendidikan & Pelatihan Operasi Medis" class="bg-gray-800 text-white" selected>
+                            🏥 Sertifikat Pelatihan Operasi
                         </option>
                     </select>
                     {{-- Hidden input for title --}}
-                    <input type="hidden" name="title" id="operationTitleInput" value="Sertifikasi Asistensi Bedah Minor & Penjahitan Luka">
+                    <input type="hidden" name="title" id="operationTitleInput" value="Sertifikat Pelatihan Operasi">
                 </div>
 
                 {{-- Live Selected Template Preview --}}
@@ -125,10 +113,10 @@
                             <i class="fas fa-certificate text-emerald-400"></i> Judul Sertifikat Otomatis (Template Terpilih)
                         </div>
                         <div id="operationTitlePreview" class="text-white font-bold text-sm mt-0.5">
-                            Sertifikasi Asistensi Bedah Minor & Penjahitan Luka
+                            Sertifikat Pelatihan Operasi
                         </div>
                         <div id="operationCategoryPreview" class="text-xs text-slate-300 mt-0.5">
-                            <i class="fas fa-tag mr-1 text-emerald-400"></i> Kategori: Bedah Minor &amp; Tindakan Dasar (Divisi PND)
+                            <i class="fas fa-tag mr-1 text-emerald-400"></i> Kategori: Pendidikan &amp; Pelatihan Operasi Medis (Divisi PND)
                         </div>
                     </div>
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/20 text-emerald-300 text-xs font-semibold rounded-lg border border-emerald-500/30 whitespace-nowrap self-start sm:self-center">

@@ -99,22 +99,16 @@
                 <div>
                     <label class="block text-xs font-semibold text-white/70 uppercase mb-1.5">Pilih Template Sertifikat Kendaraan <span class="text-rose-400">*</span></label>
                     <select id="vehicleTemplateSelect" class="w-full px-3.5 py-2.5 bg-white/10 border border-white/20 rounded-xl text-white text-sm focus:outline-none focus:border-amber-400">
-                        <option value="Sertifikasi Izin Mengemudi Ambulans Medis" data-type="vehicle_land" data-cat="Ambulans Medis Operasional" class="bg-gray-800 text-white" selected>
-                            🚑 Ambulans Medis Operasional (Izin Mengemudi Ambulans Cepat)
+                        <option value="Sertifikat Kendaraan Darat" data-type="vehicle_land" data-cat="Operasional Kendaraan Darat" class="bg-gray-800 text-white" selected>
+                            🚗 Sertifikat Kendaraan Darat
                         </option>
-                        <option value="Sertifikasi Pengemudi Kendaraan Taktis & Rescue Medis" data-type="vehicle_land" data-cat="Kendaraan Taktis & SUV Darat" class="bg-gray-800 text-white">
-                            🚙 Kendaraan Taktis &amp; Rescue Medis (SUV Operasional)
-                        </option>
-                        <option value="Sertifikasi Penerbang Helikopter Medis & Air Ambulance" data-type="vehicle_heli" data-cat="Helikopter & Evakuasi Udara" class="bg-gray-800 text-white">
-                            🚁 Helikopter Medis &amp; Air Ambulance (Pilot Rescue EMS)
-                        </option>
-                        <option value="Sertifikasi Pengemudi Operasional Staf Medis" data-type="vehicle_land" data-cat="Mobil Dinas & Operasional Staf" class="bg-gray-800 text-white">
-                            🚗 Transportasi Operasional Staf Medis (Mobil Dinas)
+                        <option value="Sertifikat Kendaraan Helikopter" data-type="vehicle_heli" data-cat="Operasional Helikopter & Evakuasi Udara" class="bg-gray-800 text-white">
+                            🚁 Sertifikat Kendaraan Helikopter
                         </option>
                     </select>
                     {{-- Hidden inputs to store type and title automatically --}}
                     <input type="hidden" name="type" id="vehicleTypeInput" value="vehicle_land">
-                    <input type="hidden" name="title" id="vehicleTitleInput" value="Sertifikasi Izin Mengemudi Ambulans Medis">
+                    <input type="hidden" name="title" id="vehicleTitleInput" value="Sertifikat Kendaraan Darat">
                 </div>
 
                 {{-- Live Selected Template Preview --}}
@@ -124,10 +118,10 @@
                             <i class="fas fa-certificate text-amber-400"></i> Judul Sertifikat Otomatis (Template Terpilih)
                         </div>
                         <div id="vehicleTitlePreview" class="text-white font-bold text-sm mt-0.5">
-                            Sertifikasi Izin Mengemudi Ambulans Medis
+                            Sertifikat Kendaraan Darat
                         </div>
                         <div id="vehicleCategoryPreview" class="text-xs text-slate-300 mt-0.5">
-                            <i class="fas fa-tag mr-1 text-amber-400"></i> Kategori: Ambulans Medis Operasional (Divisi GA)
+                            <i class="fas fa-tag mr-1 text-amber-400"></i> Kategori: Operasional Kendaraan Darat (Divisi GA)
                         </div>
                     </div>
                     <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-500/20 text-amber-300 text-xs font-semibold rounded-lg border border-amber-500/30 whitespace-nowrap self-start sm:self-center">

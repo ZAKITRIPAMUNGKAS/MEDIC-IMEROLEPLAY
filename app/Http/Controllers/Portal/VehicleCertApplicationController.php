@@ -53,8 +53,8 @@ class VehicleCertApplicationController extends Controller
         $title = trim((string)$request->input('title'));
         if (empty($title)) {
             $title = $type === 'vehicle_heli'
-                ? 'Sertifikasi Penerbang Helikopter Medis & Air Ambulance'
-                : 'Sertifikasi Izin Mengemudi Ambulans Medis';
+                ? 'Sertifikat Kendaraan Helikopter'
+                : 'Sertifikat Kendaraan Darat';
         }
 
         // Cek apakah ada pengajuan sejenis dengan judul yang sama yang masih pending

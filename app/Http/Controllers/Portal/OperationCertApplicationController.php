@@ -47,7 +47,7 @@ class OperationCertApplicationController extends Controller
 
         $title = trim((string)$request->input('title'));
         if (empty($title)) {
-            $title = 'Sertifikasi Asistensi Bedah Minor & Penjahitan Luka';
+            $title = 'Sertifikat Pelatihan Operasi';
         }
 
         // Cek apakah ada pengajuan yang masih pending untuk judul yang sama
