@@ -24,6 +24,43 @@
         </div>
     </div>
 
+    @php
+        $activeRecruitment = \App\Models\RecruitmentPeriod::currentOpen('alta');
+    @endphp
+
+    @if($activeRecruitment)
+    <!-- OFFICIAL OPEN RECRUITMENT BANNER (ALTA HOSPITAL) -->
+    <div class="relative overflow-hidden bg-gradient-to-r from-emerald-950 via-[#107c41] to-emerald-950 text-white py-3 px-4 shadow-xl border-b-2 border-amber-400/80">
+        <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+        <div class="max-w-[1240px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left relative z-10">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-black text-sm shrink-0 shadow-lg animate-bounce">
+                    <i class="fas fa-bullhorn"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2 justify-center sm:justify-start">
+                        <span class="inline-block bg-amber-400 text-slate-950 font-black text-[10px] uppercase px-2 py-0.5 rounded tracking-wider shadow-sm">
+                            OPEN RECRUITMENT
+                        </span>
+                        <span class="text-xs sm:text-sm font-bold text-amber-200">
+                            Medic IME Roleplay Sedang Buka Pendaftaran!
+                        </span>
+                    </div>
+                    <p class="text-xs text-white/90 font-medium">
+                        Bergabunglah bersama kami sebagai Paramedic IME Medical Center ({{ $activeRecruitment->batch_name }}). Pendaftaran online telah dibuka!
+                    </p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+                <a href="{{ route('public.recruitment') }}" class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black shadow-lg transition-all hover:scale-105">
+                    <span>Daftar Sekarang</span>
+                    <i class="fas fa-arrow-right text-[10px]"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <!-- DEFAULT THEME BLUE TOP ANNOUNCEMENT BANNER -->
     <div class="relative overflow-hidden bg-gradient-to-r from-sky-900 via-sky-800 to-sky-900 text-white py-2.5 sm:py-3 px-4 shadow-md border-b border-sky-700/40">
         <div class="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
@@ -72,6 +109,11 @@
                         </p>
 
                         <div class="flex flex-wrap items-center gap-2 sm:gap-3 pt-1 sm:pt-2">
+                            @if($activeRecruitment)
+                            <a href="{{ route('public.recruitment') }}" class="inline-flex items-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs sm:text-sm font-black shadow-lg shadow-emerald-600/30 transition-all hover:scale-105">
+                                <i class="fas fa-user-plus text-xs text-amber-300"></i> Daftar Paramedic (Open)
+                            </a>
+                            @endif
                             <a href="{{ route('public.cek-kesehatan') }}" class="inline-flex items-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-full bg-gradient-to-r from-sky-600 to-cyan-600 hover:from-sky-700 hover:to-cyan-700 text-white text-xs sm:text-sm font-bold shadow-lg shadow-sky-600/25 transition-all hover:scale-105">
                                 <i class="fas fa-file-medical text-xs"></i> Surat Kesehatan
                             </a>

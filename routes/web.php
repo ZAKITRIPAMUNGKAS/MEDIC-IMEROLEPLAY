@@ -704,6 +704,66 @@ Route::get('/auto-setup-db', function () {
             $logs[] = 'ℹ️ Tabel duty_exemptions sudah ada.';
         }
 
+        // 15. Tabel recruitment_periods
+        if (!\Illuminate\Support\Facades\Schema::hasTable('recruitment_periods')) {
+            \Illuminate\Support\Facades\Schema::create('recruitment_periods', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->id();
+                $table->string('hospital', 50)->default('alta');
+                $table->string('batch_name');
+                $table->boolean('is_open')->default(false);
+                $table->foreignId('opened_by')->nullable()->constrained('users')->nullOnDelete();
+                $table->foreignId('closed_by')->nullable()->constrained('users')->nullOnDelete();
+                $table->timestamp('opened_at')->nullable();
+                $table->timestamp('closed_at')->nullable();
+                $table->text('notes')->nullable();
+                $table->timestamps();
+
+                $table->index(['hospital', 'is_open']);
+            });
+            $logs[] = '✅ Tabel recruitment_periods berhasil dibuat.';
+        } else {
+            $logs[] = 'ℹ️ Tabel recruitment_periods sudah ada.';
+        }
+
+        // 16. Tabel recruitment_applications
+        if (!\Illuminate\Support\Facades\Schema::hasTable('recruitment_applications')) {
+            \Illuminate\Support\Facades\Schema::create('recruitment_applications', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->id();
+                $table->foreignId('period_id')->nullable()->constrained('recruitment_periods')->nullOnDelete();
+                $table->string('hospital', 50)->default('alta');
+                $table->boolean('agree_general_req')->default(false);
+                $table->boolean('agree_special_req')->default(false);
+                $table->string('ic_name');
+                $table->string('cid');
+                $table->enum('gender', ['Laki-laki', 'Perempuan'])->default('Laki-laki');
+                $table->date('birth_date');
+                $table->string('has_medical_exp', 20)->default('Tidak');
+                $table->text('medical_exp_desc')->nullable();
+                $table->text('reason_joining');
+                $table->text('rp_experience');
+                $table->string('ktp_file');
+                $table->string('skb_file');
+                $table->string('health_cert_file');
+                $table->string('psychology_cert_file')->nullable();
+                $table->text('other_city_responsibility')->nullable();
+                $table->json('online_hours')->nullable();
+                $table->json('online_days')->nullable();
+                $table->string('discord_username')->nullable();
+                $table->enum('status', ['pending', 'reviewed', 'interview', 'accepted', 'rejected'])->default('pending');
+                $table->foreignId('reviewed_by')->nullable()->constrained('users')->nullOnDelete();
+                $table->timestamp('reviewed_at')->nullable();
+                $table->text('reviewer_notes')->nullable();
+                $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+                $table->timestamps();
+
+                $table->index(['hospital', 'status', 'period_id']);
+                $table->index('cid');
+            });
+            $logs[] = '✅ Tabel recruitment_applications berhasil dibuat.';
+        } else {
+            $logs[] = 'ℹ️ Tabel recruitment_applications sudah ada.';
+        }
+
         // Jalankan migrasi resmi jika tersedia
         try {
             \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
@@ -921,6 +981,15 @@ Route::get('/cron/check-expired-sessions', function () {
 
 // Public routes
 Route::get('/', [PublicController::class, 'index'])->name('public.index');
+
+// Recruitment Paramedic Alta Hospital (Public Flow)
+Route::get('/recruitment', [\App\Http\Controllers\Public\RecruitmentController::class, 'index'])->name('public.recruitment');
+Route::post('/recruitment/submit', [\App\Http\Controllers\Public\RecruitmentController::class, 'store'])->name('public.recruitment.submit');
+Route::get('/recruitment/success/{id}', [\App\Http\Controllers\Public\RecruitmentController::class, 'success'])->name('public.recruitment.success');
+Route::get('/pendaftaran-medis', function () {
+    return redirect()->route('public.recruitment');
+})->name('public.pendaftaran-medis');
+
 Route::get('/form/{type?}', [PublicController::class, 'showForm'])->name('public.form');
 Route::post('/form/submit', [PublicController::class, 'submitForm'])->name('public.form.submit');
 Route::post('/appointment/create', [PublicController::class, 'createAppointment'])->name('public.appointment.create');
@@ -1410,6 +1479,15 @@ Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->gro
         // Pemutihan Duty & Pengecualian Cuti
         Route::get('/pemutihan',                          [\App\Http\Controllers\Portal\IeManagementController::class, 'pemutihanIndex'])->name('pemutihan.index');
         Route::post('/pemutihan/{user}/toggle-exemption', [\App\Http\Controllers\Portal\IeManagementController::class, 'toggleExemption'])->name('pemutihan.toggle-exemption');
+    });
+
+    // ── Recruitment Medis: Buka/Tutup & Verifikasi Berkas (PND & IE) ──────────
+    Route::prefix('recruitment')->name('recruitment.')->group(function () {
+        Route::get('/manage',                         [\App\Http\Controllers\Portal\RecruitmentManagementController::class, 'index'])->name('index');
+        Route::post('/toggle',                        [\App\Http\Controllers\Portal\RecruitmentManagementController::class, 'toggle'])->name('toggle');
+        Route::get('/{application}',                  [\App\Http\Controllers\Portal\RecruitmentManagementController::class, 'show'])->name('show');
+        Route::post('/{application}/status',          [\App\Http\Controllers\Portal\RecruitmentManagementController::class, 'updateStatus'])->name('status');
+        Route::post('/{application}/convert',         [\App\Http\Controllers\Portal\RecruitmentManagementController::class, 'convertCandidate'])->name('convert');
     });
 
     // ── Role Interview: Wawancara Calon Medis ─────────────────────────────────

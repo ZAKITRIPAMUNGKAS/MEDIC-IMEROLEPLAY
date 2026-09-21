@@ -1549,6 +1549,9 @@
                                     </a>
                                     @endif
                                     @if($isPnd)
+                                    <a href="{{ route('portal.recruitment.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+                                        <i class="fas fa-bullhorn w-4 text-emerald-500 text-sm"></i> PND: Kelola Recruitment
+                                    </a>
                                     <a href="{{ route('portal.pnd.cert-index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-700 transition-colors">
                                         <i class="fas fa-award w-4 text-green-400 text-sm"></i> PND: Sertifikat Operasi
                                     </a>
@@ -1560,6 +1563,9 @@
                                     </a>
                                     @endif
                                     @if($isIe)
+                                    <a href="{{ route('portal.recruitment.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors">
+                                        <i class="fas fa-bullhorn w-4 text-emerald-500 text-sm"></i> IE: Kelola Recruitment
+                                    </a>
                                     <a href="{{ route('portal.ie.roles.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-700 transition-colors">
                                         <i class="fas fa-user-tag w-4 text-sky-500 text-sm"></i> IE: Manajemen Jabatan
                                     </a>
@@ -1890,8 +1896,13 @@
                                 <span>Credit Score Alta</span>
                             </a>
 
-                            @if(auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('ie'))
-                            <div class="px-2 pt-2 text-[10px] font-black tracking-widest uppercase text-sky-300/80 border-t border-white/5">IE Menu</div>
+                            @if(auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('ie') || auth()->user()->isInDivision('pnd'))
+                            <div class="px-2 pt-2 text-[10px] font-black tracking-widest uppercase text-emerald-300/80 border-t border-white/5">IE & PND Menu</div>
+                            <a href="{{ route('portal.recruitment.index') }}"
+                                class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                <i class="fas fa-bullhorn w-5 text-emerald-400 text-sm"></i>
+                                <span>Kelola Recruitment</span>
+                            </a>
                             <a href="{{ route('portal.ie.roles.index') }}"
                                 class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
                                 <i class="fas fa-user-tag w-5 text-sky-400 text-sm"></i>
