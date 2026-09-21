@@ -366,13 +366,289 @@ Route::get('/auto-setup-db', function () {
             $logs[] = 'ℹ️ Tabel ai_settings sudah ada.';
         }
 
+        // ═════════════════════════════════════════════════════════════════════
+        // TABEL PORTAL MANAJEMEN ALTA HOSPITAL (RBAC, CUTI, RESIGN, DLL)
+        // ═════════════════════════════════════════════════════════════════════
+
+        // 1. Staff Sub Roles (Divisi: GA, MSL, PND, IE, Comdis)
+        if (!\Illuminate\Support\Facades\Schema::hasTable('staff_sub_roles')) {
+            \Illuminate\Support\Facades\Schema::create('staff_sub_roles', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->string('display_name');
+                $table->string('short_name')->nullable();
+                $table->string('hospital')->default('alta');
+                $table->text('description')->nullable();
+                $table->string('color')->default('#6366f1');
+                $table->boolean('is_active')->default(true);
+                $table->integer('sort_order')->default(0);
+                $table->timestamps();
+            });
+            $logs[] = '✅ Tabel staff_sub_roles berhasil dibuat.';
+        } else {
+            $logs[] = 'ℹ️ Tabel staff_sub_roles sudah ada.';
+        }
+
+        // Kolom sub_role_id di tabel users
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('users', 'sub_role_id')) {
+            \Illuminate\Support\Facades\Schema::table('users', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->unsignedBigInteger('sub_role_id')->nullable()->after('role_id');
+            });
+            $logs[] = '✅ Kolom sub_role_id berhasil ditambahkan ke tabel users.';
+        } else {
+            $logs[] = 'ℹ️ Kolom sub_role_id sudah ada di tabel users.';
+        }
+
+        // Seed data 5 divisi
+        try {
+            $subRoleCount = \Illuminate\Support\Facades\DB::table('staff_sub_roles')->count();
+            if ($subRoleCount == 0) {
+                $seeder = new \Database\Seeders\StaffSubRoleSeeder();
+                $seeder->run();
+                $logs[] = '✅ 5 Divisi (GA, MSL, PND, IE, Comdis) berhasil di-seed.';
+            } else {
+                $logs[] = "ℹ️ Sudah ada {$subRoleCount} divisi di staff_sub_roles.";
+            }
+        } catch (\Throwable $se) {
+            $logs[] = '⚠️ Seeder divisi: ' . $se->getMessage();
+        }
+
+        // 2. Credit Scores & Credit Score Logs (Comdis)
+        if (!\Illuminate\Support\Facades\Schema::hasTable('credit_scores')) {
+            \Illuminate\Support\Facades\Schema::create('credit_scores', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+                $table->integer('balance')->default(100);
+                $table->timestamps();
+                $table->unique('user_id');
+            });
+            $logs[] = '✅ Tabel credit_scores berhasil dibuat.';
+        } else {
+            $logs[] = 'ℹ️ Tabel credit_scores sudah ada.';
+        }
+
+        if (!\Illuminate\Support\Facades\Schema::hasTable('credit_score_logs')) {
+            \Illuminate\Support\Facades\Schema::create('credit_score_logs', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+                $table->foreignId('issued_by')->constrained('users')->cascadeOnDelete();
+                $table->integer('amount');
+                $table->integer('balance_after');
+                $table->string('reason');
+                $table->enum('type', ['add', 'deduct'])->default('add');
+                $table->timestamps();
+                $table->index(['user_id', 'created_at']);
+            });
+            $logs[] = '✅ Tabel credit_score_logs berhasil dibuat.';
+        } else {
+            $logs[] = 'ℹ️ Tabel credit_score_logs sudah ada.';
+        }
+
+        // 3. Leave Requests (Pengajuan Cuti)
+        if (!\Illuminate\Support\Facades\Schema::hasTable('leave_requests')) {
+            \Illuminate\Support\Facades\Schema::create('leave_requests', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+                $table->date('letter_date');
+                $table->string('subject')->default('Izin Cuti');
+                $table->string('recipient')->default('Yth. Direktur IME Medical Center di Tempat');
+                $table->string('applicant_name');
+                $table->string('position');
+                $table->date('start_date');
+                $table->date('end_date');
+                $table->unsignedInteger('duration_days')->default(1);
+                $table->text('reason_ic');
+                $table->text('reason_ooc');
+                $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+                $table->foreignId('approved_by')->nullable()->constrained('users')->nullOnDelete();
+                $table->timestamp('approved_at')->nullable();
+                $table->text('notes')->nullable();
+                $table->timestamps();
+                $table->index(['user_id', 'status']);
+            });
+            $logs[] = '✅ Tabel leave_requests berhasil dibuat.';
+        } else {
+            $logs[] = 'ℹ️ Tabel leave_requests sudah ada.';
+        }
+
+        // 4. Resignation Requests (Pengajuan Resign Multi-Step)
+        if (!\Illuminate\Support\Facades\Schema::hasTable('resignation_requests')) {
+            \Illuminate\Support\Facades\Schema::create('resignation_requests', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+                $table->date('letter_date');
+                $table->string('applicant_name');
+                $table->string('position');
+                $table->string('managerial_position')->nullable();
+                $table->string('batch')->nullable();
+                $table->text('reason_ic');
+                $table->text('reason_ooc');
+                $table->text('standard_text')->nullable();
+                $table->enum('status', ['pending_pnd', 'approved_pnd', 'pending_ie', 'completed', 'rejected'])->default('pending_pnd');
+                $table->foreignId('pnd_approved_by')->nullable()->constrained('users')->nullOnDelete();
+                $table->timestamp('pnd_approved_at')->nullable();
+                $table->text('pnd_notes')->nullable();
+                $table->unsignedBigInteger('base_salary')->default(0);
+                $table->decimal('fine_percentage', 5, 2)->default(30);
+                $table->unsignedBigInteger('fine_amount')->default(0);
+                $table->boolean('fine_paid')->default(false);
+                $table->foreignId('ie_verified_by')->nullable()->constrained('users')->nullOnDelete();
+                $table->timestamp('ie_verified_at')->nullable();
+                $table->text('ie_notes')->nullable();
+                $table->timestamps();
+                $table->index(['user_id', 'status']);
+            });
+            $logs[] = '✅ Tabel resignation_requests berhasil dibuat.';
+        } else {
+            $logs[] = 'ℹ️ Tabel resignation_requests sudah ada.';
+        }
+
+        // 5. Member Certifications (Auto-Sync Profil: GA, MSL, IE, PND)
+        if (!\Illuminate\Support\Facades\Schema::hasTable('member_certifications')) {
+            \Illuminate\Support\Facades\Schema::create('member_certifications', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+                $table->string('type');
+                $table->string('division');
+                $table->string('title');
+                $table->string('certificate_number')->nullable();
+                $table->foreignId('issued_by_user_id')->nullable()->constrained('users')->nullOnDelete();
+                $table->date('issue_date');
+                $table->date('expiry_date')->nullable();
+                $table->string('file_path')->nullable();
+                $table->text('notes')->nullable();
+                $table->enum('status', ['active', 'expired', 'revoked'])->default('active');
+                $table->timestamps();
+                $table->index(['user_id', 'type', 'status']);
+            });
+            $logs[] = '✅ Tabel member_certifications berhasil dibuat.';
+        } else {
+            $logs[] = 'ℹ️ Tabel member_certifications sudah ada.';
+        }
+
+        // 6. Stase Applications (MSL & Konsulen)
+        if (!\Illuminate\Support\Facades\Schema::hasTable('stase_applications')) {
+            \Illuminate\Support\Facades\Schema::create('stase_applications', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+                $table->foreignId('konsulen_id')->nullable()->constrained('users')->nullOnDelete();
+                $table->string('stase_name');
+                $table->string('department')->nullable();
+                $table->date('start_date')->nullable();
+                $table->date('end_date')->nullable();
+                $table->text('notes')->nullable();
+                $table->enum('status', ['pending_konsulen', 'approved_konsulen', 'pending_msl', 'approved', 'rejected', 'completed'])->default('pending_konsulen');
+                $table->foreignId('konsulen_approved_by')->nullable()->constrained('users')->nullOnDelete();
+                $table->timestamp('konsulen_approved_at')->nullable();
+                $table->text('konsulen_notes')->nullable();
+                $table->foreignId('msl_approved_by')->nullable()->constrained('users')->nullOnDelete();
+                $table->timestamp('msl_approved_at')->nullable();
+                $table->text('msl_notes')->nullable();
+                $table->boolean('passed')->nullable();
+                $table->string('grade')->nullable();
+                $table->unsignedBigInteger('certification_id')->nullable();
+                $table->timestamps();
+                $table->index(['user_id', 'status']);
+            });
+            $logs[] = '✅ Tabel stase_applications berhasil dibuat.';
+        } else {
+            $logs[] = 'ℹ️ Tabel stase_applications sudah ada.';
+        }
+
+        // 7. Operation Requests (PND)
+        if (!\Illuminate\Support\Facades\Schema::hasTable('operation_requests')) {
+            \Illuminate\Support\Facades\Schema::create('operation_requests', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+                $table->string('jenis_operasi');
+                $table->string('patient_name');
+                $table->text('diagnosis');
+                $table->text('planned_procedure');
+                $table->dateTime('scheduled_at')->nullable();
+                $table->foreignId('dpjp_id')->nullable()->constrained('users')->nullOnDelete();
+                $table->json('assistant_ids')->nullable();
+                $table->text('notes')->nullable();
+                $table->enum('status', ['pending', 'approved', 'rejected', 'completed'])->default('pending');
+                $table->foreignId('verified_by_pnd')->nullable()->constrained('users')->nullOnDelete();
+                $table->timestamp('pnd_verified_at')->nullable();
+                $table->text('pnd_notes')->nullable();
+                $table->unsignedBigInteger('operation_record_id')->nullable();
+                $table->timestamps();
+                $table->index(['user_id', 'status']);
+            });
+            $logs[] = '✅ Tabel operation_requests berhasil dibuat.';
+        } else {
+            $logs[] = 'ℹ️ Tabel operation_requests sudah ada.';
+        }
+
+        // 8. Promotion Periods & Applications (Kenaikan Jabatan)
+        if (!\Illuminate\Support\Facades\Schema::hasTable('promotion_periods')) {
+            \Illuminate\Support\Facades\Schema::create('promotion_periods', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->string('batch')->nullable();
+                $table->string('hospital')->default('alta');
+                $table->date('start_date')->nullable();
+                $table->date('end_date')->nullable();
+                $table->boolean('is_open')->default(false);
+                $table->foreignId('opened_by')->nullable()->constrained('users')->nullOnDelete();
+                $table->foreignId('closed_by')->nullable()->constrained('users')->nullOnDelete();
+                $table->text('notes')->nullable();
+                $table->timestamps();
+                $table->index(['hospital', 'is_open']);
+            });
+            $logs[] = '✅ Tabel promotion_periods berhasil dibuat.';
+        } else {
+            $logs[] = 'ℹ️ Tabel promotion_periods sudah ada.';
+        }
+
+        if (!\Illuminate\Support\Facades\Schema::hasTable('promotion_applications')) {
+            \Illuminate\Support\Facades\Schema::create('promotion_applications', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+                $table->foreignId('period_id')->constrained('promotion_periods')->cascadeOnDelete();
+                $table->unsignedBigInteger('current_role_id')->nullable();
+                $table->unsignedBigInteger('target_role_id')->nullable();
+                $table->integer('credit_score_at_submission')->default(0);
+                $table->integer('training_days')->default(0);
+                $table->float('duty_hours')->default(0);
+                $table->json('requirements_checklist')->nullable();
+                $table->string('case_study_file')->nullable();
+                $table->string('recommendation_letter_1')->nullable();
+                $table->string('recommendation_letter_2')->nullable();
+                $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+                $table->foreignId('approved_by_pnd')->nullable()->constrained('users')->nullOnDelete();
+                $table->timestamp('pnd_reviewed_at')->nullable();
+                $table->text('pnd_notes')->nullable();
+                $table->timestamps();
+                $table->index(['user_id', 'period_id', 'status']);
+            });
+            $logs[] = '✅ Tabel promotion_applications berhasil dibuat.';
+        } else {
+            $logs[] = 'ℹ️ Tabel promotion_applications sudah ada.';
+        }
+
+        // Jalankan migrasi resmi jika tersedia
+        try {
+            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+            $logs[] = 'ℹ️ Artisan Migrate output: ' . trim(\Illuminate\Support\Facades\Artisan::output());
+        } catch (\Throwable $me) {
+            $logs[] = '⚠️ Artisan Migrate: ' . $me->getMessage();
+        }
+
         $logs[] = '';
-        $logs[] = '🎉 DATABASE SETUP BERHASIL 100%! SILAKAN KEMBALI KE HALAMAN UTAMA / REFRESH WEBSITE ANDA.';
+        $logs[] = '🎉 DATABASE SETUP BERHASIL 100%! SEMUA TABEL PORTAL TELAH AKTIF. SILAKAN KEMBALI KE HALAMAN UTAMA / REFRESH WEBSITE ANDA.';
     } catch (\Exception $e) {
         $logs[] = '❌ Error: ' . $e->getMessage();
     }
     return implode('<br>', $logs);
 });
+
+// Route alternatif /install-portal-tables (bisa diakses publik tanpa login)
+Route::get('/install-portal-tables', function () {
+    return redirect('/auto-setup-db');
+});
+
 
 // DEBUG: Cek nilai last_seen_at di database
 Route::get('/debug-online', function () {
@@ -1066,72 +1342,7 @@ Route::middleware('auth')->prefix('portal')->name('portal.')->group(function () 
         Route::post('/periods/{period}/close',     [\App\Http\Controllers\Portal\PromotionController::class, 'closePeriod'])->name('period.close');
         // PND: Review Pengajuan
         Route::get('/applications',                [\App\Http\Controllers\Portal\PromotionController::class, 'manageApplications'])->name('applications');
-        Route::post('/applications/{application}/review', [\App\Http\Controllers\Portal\PromotionController::class, 'reviewApplication'])->name('applications.review');
     });
-
-    // ── Route untuk Install Portal Tables (via browser, hapus setelah dipakai!) ─
-    Route::get('/install-tables', function () {
-        try {
-            $pdo = new \PDO(
-                'mysql:host=' . env('DB_HOST') . ';port=' . env('DB_PORT') . ';dbname=' . env('DB_DATABASE'),
-                env('DB_USERNAME'),
-                env('DB_PASSWORD')
-            );
-        } catch (\Exception $e) {
-            return '❌ DB Connection Error: ' . $e->getMessage();
-        }
-
-        $results = [];
-
-        // Jalankan migrasi yang belum berjalan
-        $migrationFiles = [
-            '2026_09_21_000001_create_staff_sub_roles_table',
-            '2026_09_21_000002_create_credit_scores_table',
-            '2026_09_21_000003_create_portal_hospital_tables',
-        ];
-
-        // Cek tabel migrations untuk melihat mana yang belum dijalankan
-        try {
-            $ran = $pdo->query("SELECT migration FROM migrations")->fetchAll(\PDO::FETCH_COLUMN);
-        } catch (\Exception $e) {
-            $ran = [];
-        }
-
-        foreach ($migrationFiles as $mig) {
-            if (in_array($mig, $ran)) {
-                $results[] = "⚠️ $mig: sudah pernah dijalankan, skip.";
-                continue;
-            }
-            try {
-                $path = database_path("migrations/{$mig}.php");
-                if (!file_exists($path)) {
-                    $results[] = "❌ $mig: file tidak ditemukan.";
-                    continue;
-                }
-                $migObj = require $path;
-                $migObj->up();
-                $pdo->exec("INSERT INTO migrations (migration, batch) VALUES ('" . $pdo->quote($mig) . "', 1)");
-                $results[] = "✅ $mig: berhasil dijalankan.";
-            } catch (\Exception $e) {
-                $results[] = "❌ $mig: ERROR — " . $e->getMessage();
-            }
-        }
-
-        // Seed data divisi jika belum ada
-        $subRoleCount = $pdo->query("SELECT COUNT(*) FROM staff_sub_roles")->fetchColumn();
-        if ($subRoleCount == 0) {
-            $seeder = new \Database\Seeders\StaffSubRoleSeeder();
-            $seeder->run();
-            $results[] = "✅ StaffSubRoleSeeder: 5 divisi berhasil di-seed.";
-        } else {
-            $results[] = "⚠️ StaffSubRoleSeeder: sudah ada {$subRoleCount} divisi, skip.";
-        }
-
-        $results[] = '';
-        $results[] = '🎉 Selesai! Hapus route /portal/install-tables dari routes/web.php setelah ini.';
-
-        return implode('<br>', $results);
-    })->name('install-tables');
 });
 
 // ── Komisi Disiplin (Comdis) & Credit Score ──────────────────────────────
