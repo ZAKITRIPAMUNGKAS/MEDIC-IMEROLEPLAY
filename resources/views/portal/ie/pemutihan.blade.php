@@ -178,7 +178,7 @@
                         <tr>
                             <td colspan="6" class="px-5 py-12 text-center text-emerald-300">
                                 <i class="fas fa-check-circle text-3xl mb-2 text-emerald-400 block"></i>
-                                Hebat! Tidak ada staf medis yang memiliki duty di bawah 10 jam pada periode {{ $period }}.
+                                Hebat! Tidak ada staf medis yang masuk daftar pemutihan pada periode {{ $period }}. (Seluruh staf bertugas &ge; 10 jam atau memiliki izin cuti resmi yang telah disetujui).
                             </td>
                         </tr>
                         @endforelse

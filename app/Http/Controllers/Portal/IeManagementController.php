@@ -138,16 +138,10 @@ class IeManagementController extends Controller
             ->get()
             ->keyBy('user_id');
 
-        // Ambil izin cuti yang disetujui pada bulan tersebut
+        // Ambil izin cuti yang disetujui (ACC) pada bulan tersebut
         $approvedLeaves = LeaveRequest::where('status', 'approved')
-            ->where(function ($q) use ($startOfMonth, $endOfMonth) {
-                $q->whereBetween('start_date', [$startOfMonth, $endOfMonth])
-                  ->orWhereBetween('end_date', [$startOfMonth, $endOfMonth])
-                  ->orWhere(function ($sub) use ($startOfMonth, $endOfMonth) {
-                      $sub->where('start_date', '<=', $startOfMonth)
-                          ->where('end_date', '>=', $endOfMonth);
-                  });
-            })
+            ->where('start_date', '<=', $endOfMonth)
+            ->where('end_date', '>=', $startOfMonth)
             ->get()
             ->groupBy('user_id');
 
@@ -165,13 +159,15 @@ class IeManagementController extends Controller
             $exemption = $exemptions[$staf->id] ?? null;
             $isExempted = $exemption !== null;
 
-            if ($isUnder10Hours) {
+            // Jika staf memiliki cuti yang sudah di-ACC (disetujui) pada periode tersebut,
+            // maka staf dihilangkan dari data pemutihan.
+            if ($isUnder10Hours && !$hasApprovedLeave) {
                 $pemutihanList[] = [
                     'user'               => $staf,
                     'total_hours'        => $totalHours,
                     'total_seconds'      => $totalSeconds,
-                    'has_approved_leave' => $hasApprovedLeave,
-                    'leaves'             => $stafLeaves,
+                    'has_approved_leave' => false,
+                    'leaves'             => collect(),
                     'is_exempted'        => $isExempted,
                     'exemption'          => $exemption,
                 ];
@@ -186,7 +182,7 @@ class IeManagementController extends Controller
         $discordListLines = [];
         $num = 1;
         foreach ($pemutihanList as $item) {
-            if (!$item['is_exempted']) {
+            if (!$item['is_exempted'] && empty($item['has_approved_leave'])) {
                 $staf = $item['user'];
                 $discordListLines[] = "{$num}. {$staf->name}";
                 $num++;
