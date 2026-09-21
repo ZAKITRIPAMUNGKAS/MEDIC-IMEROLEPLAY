@@ -101,14 +101,23 @@
                         </span>
                     @endif
 
-                    {{-- Credit Score Badge (Alta Hospital) --}}
-                    @if(strtolower(trim($user->hospital ?? 'alta')) === 'alta')
+                    {{-- Credit Score Badge (Alta Hospital - Sifatnya Pribadi) --}}
+                    @php
+                        $viewer = auth()->user();
+                        $canSeeCreditScore = $viewer && (
+                            $viewer->id === $user->id ||
+                            $viewer->isAdmin() ||
+                            $viewer->isInDivision('pnd', 'ie', 'comdis')
+                        );
+                    @endphp
+                    @if(strtolower(trim($user->hospital ?? 'alta')) === 'alta' && $canSeeCreditScore)
                         @php
                             $csVal = $creditScore ?? 100;
                             $csColor = $csVal >= 85 ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : ($csVal >= 80 ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-rose-500/20 text-rose-300 border-rose-500/30');
                         @endphp
-                        <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold border shadow-md {{ $csColor }}">
+                        <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold border shadow-md {{ $csColor }}" title="Credit Score bersifat pribadi (Hanya dapat dilihat oleh pemilik akun, PND, IE, dan Comdis)">
                             <i class="fas fa-star text-[11px]"></i> Credit Score: {{ $csVal }}
+                            <span class="text-[9px] opacity-75 font-normal ml-0.5">(Privat)</span>
                         </span>
                     @endif
                 </div>
@@ -220,8 +229,16 @@
             </button>
         </div>
 
-        {{-- ═══ SECTION: PERSYARATAN & STATUS KENAIKAN JABATAN (ALTA HOSPITAL) ═══ --}}
-        @if(strtolower(trim($user->hospital ?? 'alta')) === 'alta')
+        {{-- ═══ SECTION: PERSYARATAN & STATUS KENAIKAN JABATAN (ALTA HOSPITAL - BERKAS PRIBADI) ═══ --}}
+        @php
+            $canSeePromotionDetails = $viewer && (
+                $viewer->id === $user->id ||
+                $viewer->isAdmin() ||
+                $viewer->isExecutiveOrAbove() ||
+                $viewer->isInDivision('pnd', 'ie', 'comdis')
+            );
+        @endphp
+        @if(strtolower(trim($user->hospital ?? 'alta')) === 'alta' && $canSeePromotionDetails)
         <div class="bg-white bg-opacity-10 backdrop-blur-md border border-white border-opacity-20 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
                 <div class="flex items-center gap-3.5">

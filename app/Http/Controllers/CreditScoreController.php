@@ -19,17 +19,13 @@ class CreditScoreController extends Controller
     private function canManage(): bool
     {
         $user = auth()->user();
-        return $user->isAdmin()
-            || $user->isExecutiveOrAbove()
-            || $user->isInDivision('comdis');
+        return $user && ($user->isAdmin() || $user->isInDivision('comdis'));
     }
 
     private function canViewAll(): bool
     {
         $user = auth()->user();
-        return $user->isAdmin()
-            || $user->isExecutiveOrAbove()
-            || $user->isInDivision('comdis', 'pnd', 'ie');
+        return $user && ($user->isAdmin() || $user->isInDivision('comdis', 'pnd', 'ie'));
     }
 
     private function ensureTablesExist(): void
@@ -125,7 +121,7 @@ class CreditScoreController extends Controller
         if (!$this->canViewAll()) {
             // Anggota biasa hanya boleh lihat milik sendiri
             if ($user->id !== auth()->id()) {
-                abort(403, 'Anda hanya dapat melihat Credit Score milik sendiri.');
+                abort(403, 'Credit Score bersifat pribadi dan hanya dapat dilihat oleh pemilik akun, Divisi PND, IE, atau Comdis.');
             }
         }
 
