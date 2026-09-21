@@ -87,15 +87,15 @@
                         </div>
                     </div>
 
-                    <!-- Alasan Bergabung (Check 50 Words) -->
+                    <!-- Alasan Bergabung (Check 50 Characters) -->
                     <div class="pt-3 border-t border-white/10 space-y-1.5">
                         @php
-                            $wordCount = count(preg_split('/\s+/u', trim($application->reason_joining), -1, PREG_SPLIT_NO_EMPTY));
+                            $charCount = mb_strlen(trim($application->reason_joining ?? ''));
                         @endphp
                         <div class="flex items-center justify-between text-xs">
                             <span class="text-slate-400 font-semibold">Alasan Ingin Bergabung dengan IME Medical Center:</span>
-                            <span class="px-2 py-0.5 rounded text-[11px] font-bold {{ $wordCount >= 50 ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300' }}">
-                                {{ $wordCount }} kata {{ $wordCount >= 50 ? '(Lolos min. 50 kata)' : '(Kurang dari 50 kata)' }}
+                            <span class="px-2 py-0.5 rounded text-[11px] font-bold {{ $charCount >= 50 ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300' }}">
+                                {{ $charCount }} huruf {{ $charCount >= 50 ? '(Lolos min. 50 huruf)' : '(Kurang dari 50 huruf)' }}
                             </span>
                         </div>
                         <div class="bg-slate-800/80 p-3.5 rounded-xl text-xs text-slate-200 leading-relaxed italic border border-white/5 whitespace-pre-line">

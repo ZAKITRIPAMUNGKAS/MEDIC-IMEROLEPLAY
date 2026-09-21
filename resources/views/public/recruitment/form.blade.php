@@ -234,21 +234,21 @@
                         </div>
                     </div>
 
-                    <!-- Field 7: Alasan Bergabung (Minimal 50 Kata) -->
+                    <!-- Field 7: Alasan Bergabung (Minimal 50 Huruf) -->
                     <div class="pt-2 border-t border-white/10 space-y-2">
                         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                             <label for="reason_joining" class="block text-xs font-semibold text-slate-200 uppercase tracking-wider">
                                 Mengapa Anda ingin bergabung dengan IME Medical Center? <span class="text-rose-400">*</span>
                             </label>
                             <span id="wordCountBadge" class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 self-start sm:self-center">
-                                0 / 50 kata
+                                0 / 50 huruf
                             </span>
                         </div>
                         <textarea id="reason_joining" name="reason_joining" rows="4"
-                                  placeholder="Jelaskan secara komprehensif motivasi, visi, dan alasan Anda ingin menjadi bagian dari tim medis IME Medical Center (Minimal 50 kata)..."
+                                  placeholder="Jelaskan secara komprehensif motivasi, visi, dan alasan Anda ingin menjadi bagian dari tim medis IME Medical Center (Minimal 50 huruf)..."
                                   class="w-full bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded-xl p-3.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 resize-none leading-relaxed" required>{{ old('reason_joining') }}</textarea>
                         <p id="wordCountWarning" class="text-[11px] text-amber-400 hidden flex items-center gap-1">
-                            <i class="fas fa-exclamation-circle"></i> Jumlah kata belum mencapai batas minimal 50 kata.
+                            <i class="fas fa-exclamation-circle"></i> Jumlah huruf belum mencapai batas minimal 50 huruf.
                         </p>
                     </div>
 
@@ -444,9 +444,9 @@
                     return;
                 }
 
-                const words = countWords(reasonJoining);
-                if (words < 50) {
-                    alert(`Alasan bergabung wajib minimal 50 kata. Saat ini baru terisi ${words} kata.`);
+                const chars = (reasonJoining || '').trim().length;
+                if (chars < 50) {
+                    alert(`Alasan bergabung wajib minimal 50 huruf. Saat ini baru terisi ${chars} huruf.`);
                     document.getElementById('reason_joining').focus();
                     return;
                 }
@@ -492,9 +492,9 @@
 
     if (reasonEl) {
         reasonEl.addEventListener('input', function() {
-            const words = countWords(this.value);
-            badgeEl.textContent = `${words} / 50 kata`;
-            if (words >= 50) {
+            const chars = this.value.trim().length;
+            badgeEl.textContent = `${chars} / 50 huruf`;
+            if (chars >= 50) {
                 badgeEl.className = "text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
                 warningEl.classList.add('hidden');
             } else {

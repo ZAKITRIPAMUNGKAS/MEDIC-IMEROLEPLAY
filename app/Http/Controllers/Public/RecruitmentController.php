@@ -79,11 +79,11 @@ class RecruitmentController extends Controller
             'online_days.required'       => 'Pilih minimal satu hari online / masuk kota.',
         ]);
 
-        // 2. Validasi Minimal 50 Kata untuk Alasan Bergabung
-        $wordCount = count(preg_split('/\s+/u', trim($request->reason_joining), -1, PREG_SPLIT_NO_EMPTY));
-        if ($wordCount < 50) {
+        // 2. Validasi Minimal 50 Huruf/Karakter untuk Alasan Bergabung
+        $charCount = mb_strlen(trim((string) $request->reason_joining));
+        if ($charCount < 50) {
             return back()
-                ->withErrors(['reason_joining' => "Alasan bergabung wajib minimal 50 kata. Jawaban Anda saat ini baru {$wordCount} kata. Silakan jelaskan lebih detail."])
+                ->withErrors(['reason_joining' => "Alasan bergabung wajib minimal 50 huruf. Jawaban Anda saat ini baru {$charCount} huruf. Silakan jelaskan lebih detail."])
                 ->withInput();
         }
 
