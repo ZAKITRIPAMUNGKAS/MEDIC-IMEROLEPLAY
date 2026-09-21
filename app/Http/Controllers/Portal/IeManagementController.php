@@ -132,8 +132,9 @@ class IeManagementController extends Controller
             ->pluck('total_seconds', 'user_id');
 
         // Ambil data pengecualian duty yang sudah dicatat IE untuk bulan ini
+        $periodCol = DutyExemption::getPeriodColumn();
         $exemptions = DutyExemption::with('exemptedBy', 'leaveRequest')
-            ->where('month_period', $period)
+            ->where($periodCol, $period)
             ->get()
             ->keyBy('user_id');
 
@@ -188,28 +189,40 @@ class IeManagementController extends Controller
         $this->checkIsIe();
 
         $validated = $request->validate([
-            'month_period'     => 'required|string|regex:/^\d{4}-\d{2}$/',
+            'month_period'     => 'nullable|string',
+            'period'           => 'nullable|string',
             'leave_request_id' => 'nullable|exists:leave_requests,id',
             'reason'           => 'nullable|string|max:500',
         ]);
 
+        $periodVal = $validated['month_period'] ?? $validated['period'] ?? Carbon::now()->format('Y-m');
+        $periodCol = DutyExemption::getPeriodColumn();
+
         $existing = DutyExemption::where('user_id', $user->id)
-            ->where('month_period', $validated['month_period'])
+            ->where($periodCol, $periodVal)
             ->first();
 
         if ($existing) {
             $existing->delete();
-            return back()->with('success', "Pengecualian pemutihan untuk {$user->name} pada periode {$validated['month_period']} telah dicabut.");
+            return back()->with('success', "Pengecualian pemutihan untuk {$user->name} pada periode {$periodVal} telah dicabut.");
         }
 
-        DutyExemption::create([
+        $createData = [
             'user_id'          => $user->id,
-            'month_period'     => $validated['month_period'],
             'leave_request_id' => $validated['leave_request_id'] ?? null,
             'exempted_by'      => Auth::id(),
             'reason'           => $validated['reason'] ?? 'Pengecualian pemutihan karena memiliki izin cuti yang sah.',
-        ]);
+        ];
+        $createData[$periodCol] = $periodVal;
+        if (\Illuminate\Support\Facades\Schema::hasColumn('duty_exemptions', 'month_period')) {
+            $createData['month_period'] = $periodVal;
+        }
+        if (\Illuminate\Support\Facades\Schema::hasColumn('duty_exemptions', 'period')) {
+            $createData['period'] = $periodVal;
+        }
 
-        return back()->with('success', "Staf {$user->name} berhasil dikecualikan dari daftar pemutihan periode {$validated['month_period']}.");
+        DutyExemption::create($createData);
+
+        return back()->with('success', "Staf {$user->name} berhasil dikecualikan dari daftar pemutihan periode {$periodVal}.");
     }
 }
