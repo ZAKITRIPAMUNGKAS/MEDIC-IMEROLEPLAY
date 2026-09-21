@@ -76,7 +76,7 @@
                     </div>
                 </div>
 
-                <div class="pt-2">
+                <div class="pt-2 flex flex-wrap items-center justify-center md:justify-start gap-2">
                     @php
                         $level = $user->role->level ?? 0;
                         $badgeColor = 'bg-sky-500/20 text-sky-300 border-sky-500/30';
@@ -90,9 +90,27 @@
                             $badgeColor = 'bg-blue-500/20 text-blue-300 border-blue-500/30';
                         }
                     @endphp
-                    <span class="inline-flex items-center px-4 py-1.5 rounded-xl text-xs font-bold border shadow-md {{ $badgeColor }}">
-                        <i class="fas fa-user-tag mr-2"></i>{{ $user->role->display_name ?? 'Staff' }}
+                    <span class="inline-flex items-center px-3.5 py-1.5 rounded-xl text-xs font-bold border shadow-md {{ $badgeColor }}">
+                        <i class="fas fa-user-tag mr-1.5"></i>{{ $user->role->display_name ?? 'Staff' }}
                     </span>
+
+                    {{-- Sub-Jabatan / Divisi (Alta Hospital) --}}
+                    @if($user->subRole)
+                        <span class="inline-flex items-center px-3.5 py-1.5 rounded-xl text-xs font-bold shadow-md" style="{{ $user->subRole->badge_style }}">
+                            <i class="fas fa-layer-group mr-1.5"></i> Divisi {{ $user->subRole->short_name }}
+                        </span>
+                    @endif
+
+                    {{-- Credit Score Badge (Alta Hospital) --}}
+                    @if(strtolower(trim($user->hospital ?? 'alta')) === 'alta')
+                        @php
+                            $csVal = $creditScore ?? 100;
+                            $csColor = $csVal >= 85 ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : ($csVal >= 80 ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' : 'bg-rose-500/20 text-rose-300 border-rose-500/30');
+                        @endphp
+                        <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold border shadow-md {{ $csColor }}">
+                            <i class="fas fa-star text-[11px]"></i> Credit Score: {{ $csVal }}
+                        </span>
+                    @endif
                 </div>
             </div>
         </div>
@@ -201,6 +219,109 @@
                 </div>
             </button>
         </div>
+
+        {{-- ═══ SECTION: PERSYARATAN & STATUS KENAIKAN JABATAN (ALTA HOSPITAL) ═══ --}}
+        @if(strtolower(trim($user->hospital ?? 'alta')) === 'alta')
+        <div class="bg-white bg-opacity-10 backdrop-blur-md border border-white border-opacity-20 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500/30 to-purple-500/30 border border-violet-400/40 text-violet-300 flex items-center justify-center text-xl shadow-lg shrink-0">
+                        <i class="fas fa-medal"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            Status & Persyaratan Kenaikan Jabatan
+                        </h2>
+                        <p class="text-xs sm:text-sm text-sky-200 mt-0.5">
+                            Deteksi otomatis kelayakan promosi berdasarkan database aktif Alta Hospital
+                        </p>
+                    </div>
+                </div>
+
+                @if($isHighestLevel ?? false)
+                    <span class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                        <i class="fas fa-crown text-amber-400"></i> Jenjang Eksekutif / Tertinggi
+                    </span>
+                @elseif(!empty($promotionTargetRole))
+                    <div class="text-right">
+                        <span class="text-[11px] uppercase tracking-wider text-violet-300 font-bold block">Target Kenaikan:</span>
+                        <span class="text-sm font-extrabold text-white">
+                            {{ $promotionTargetRole->display_name }} (Level {{ $promotionTargetRole->level }})
+                        </span>
+                    </div>
+                @endif
+            </div>
+
+            @if($isHighestLevel ?? false)
+                <div class="bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/20 rounded-xl p-5 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-2xl shrink-0">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-bold text-amber-200">Jabatan Tertinggi Alta Hospital</h3>
+                        <p class="text-xs text-slate-300 mt-0.5">
+                            {{ $user->name }} saat ini memegang posisi pimpinan atau manajemen tertinggi sehingga tidak memiliki jenjang promosi reguler berikutnya.
+                        </p>
+                    </div>
+                </div>
+            @elseif(!empty($promotionTargetRole) && count($promotionChecklist) > 0)
+                {{-- Progress Bar --}}
+                <div class="space-y-2 bg-black/20 rounded-xl p-4 border border-white/10">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-semibold text-slate-300">
+                            Progres Kelayakan: <strong class="text-white">{{ collect($promotionChecklist)->where('met', true)->count() }} dari {{ count($promotionChecklist) }} Persyaratan</strong>
+                        </span>
+                        <span class="font-bold {{ ($promotionAllMet ?? false) ? 'text-emerald-400' : 'text-violet-400' }}">
+                            {{ $promotionProgressPercent ?? 0 }}% Terpenuhi
+                        </span>
+                    </div>
+                    <div class="w-full bg-white/10 rounded-full h-3 overflow-hidden p-0.5 border border-white/10">
+                        <div class="h-full rounded-full transition-all duration-500 {{ ($promotionAllMet ?? false) ? 'bg-gradient-to-r from-emerald-500 to-teal-400' : 'bg-gradient-to-r from-violet-500 to-sky-400' }}"
+                             style="width: {{ $promotionProgressPercent ?? 0 }}%"></div>
+                    </div>
+                </div>
+
+                {{-- Checklist Grid --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-1">
+                    @foreach($promotionChecklist as $item)
+                        <div class="flex items-start gap-3 p-3.5 rounded-xl border transition-all {{ $item['met'] ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-white/5 border-white/10' }}">
+                            <div class="mt-0.5 w-6 h-6 rounded-lg flex items-center justify-center text-xs shrink-0 {{ $item['met'] ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30' }}">
+                                <i class="fas {{ $item['met'] ? 'fa-check' : 'fa-times' }}"></i>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-xs font-semibold {{ $item['met'] ? 'text-emerald-200' : 'text-slate-300' }}">
+                                    {{ $item['label'] }}
+                                </p>
+                                <span class="text-[10px] font-bold uppercase tracking-wider mt-1 inline-block {{ $item['met'] ? 'text-emerald-400' : 'text-rose-400' }}">
+                                    {{ $item['met'] ? '✓ Memenuhi Syarat' : '✗ Belum Memenuhi' }}
+                                </span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                {{-- Action / Info Helper --}}
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 text-xs text-slate-300 border-t border-white/10">
+                    <span class="text-[11px] text-slate-400 flex items-center gap-1.5">
+                        <i class="fas fa-info-circle text-sky-400"></i>
+                        Data syarat otomatis tersinkronisasi dari rekam medis, log absensi duty, sertifikasi GA/MSL/PND/IE, dan Credit Score.
+                    </span>
+
+                    @if(auth()->id() === $user->id)
+                        <a href="{{ route('portal.promotion.index') }}"
+                           class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold text-xs transition-all shadow-md shrink-0">
+                            <i class="fas fa-external-link-alt"></i> Buka Portal Kenaikan Jabatan
+                        </a>
+                    @endif
+                </div>
+            @else
+                <div class="p-6 text-center text-slate-400 text-xs bg-black/20 rounded-xl border border-white/5">
+                    <i class="fas fa-user-check text-2xl mb-2 text-slate-500 block"></i>
+                    Tidak ada persyaratan kenaikan jabatan tambahan yang terdaftar untuk posisi ini.
+                </div>
+            @endif
+        </div>
+        @endif
 
         <!-- Detail Section 1: Rekam Operasi -->
         <div x-show="activeTab === 'operations'" 

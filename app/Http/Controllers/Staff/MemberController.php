@@ -179,6 +179,56 @@ class MemberController extends Controller
             || strtolower(auth()->user()->role?->name ?? '') === 'executive' 
             || (auth()->user()->role?->level ?? 0) >= 7;
 
-        return view('staff.members.show', compact('user', 'stats', 'timeline', 'canViewMedical', 'canSeeAll', 'operations', 'forms', 'managerEvaluations', 'evaluationsAvg', 'evaluationsCount'));
+        // 4. Deteksi Kenaikan Jabatan & Credit Score dari Database
+        $user->loadMissing(['role', 'subRole']);
+        $promotionTargetRole = null;
+        $promotionChecklist = [];
+        $promotionProgressPercent = 0;
+        $promotionAllMet = false;
+        $isHighestLevel = false;
+        $creditScore = 100;
+
+        try {
+            if (method_exists($user, 'getCreditBalance')) {
+                $creditScore = $user->getCreditBalance();
+            }
+        } catch (\Throwable $e) {
+            $creditScore = 100;
+        }
+
+        $userHospital = strtolower(trim($user->hospital ?? 'alta'));
+        if ($userHospital === 'alta') {
+            $currentLevel = $user->role?->level ?? 0;
+            $currentRoleName = strtolower($user->role?->name ?? '');
+
+            if ($user->isAdmin() || $currentLevel >= 6 || in_array($currentRoleName, ['admin', 'direktur', 'vice_director', 'executive'])) {
+                $isHighestLevel = true;
+            } else {
+                $promotionTargetRole = \App\Models\StaffRole::where('level', '>', $currentLevel)
+                    ->where('name', '!=', 'admin')
+                    ->orderBy('level', 'asc')
+                    ->first();
+
+                if ($promotionTargetRole && method_exists($user, 'buildPromotionChecklist')) {
+                    try {
+                        $promotionChecklist = $user->buildPromotionChecklist($promotionTargetRole);
+                        if (!empty($promotionChecklist)) {
+                            $metCount = collect($promotionChecklist)->where('met', true)->count();
+                            $totalCount = count($promotionChecklist);
+                            $promotionProgressPercent = round(($metCount / $totalCount) * 100);
+                            $promotionAllMet = ($metCount === $totalCount);
+                        }
+                    } catch (\Throwable $e) {
+                        $promotionChecklist = [];
+                    }
+                }
+            }
+        }
+
+        return view('staff.members.show', compact(
+            'user', 'stats', 'timeline', 'canViewMedical', 'canSeeAll',
+            'operations', 'forms', 'managerEvaluations', 'evaluationsAvg', 'evaluationsCount',
+            'promotionTargetRole', 'promotionChecklist', 'promotionProgressPercent', 'promotionAllMet', 'isHighestLevel', 'creditScore'
+        ));
     }
 }
