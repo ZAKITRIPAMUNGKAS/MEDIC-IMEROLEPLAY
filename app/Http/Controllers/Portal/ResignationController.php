@@ -94,6 +94,24 @@ class ResignationController extends Controller
             ->with('success', 'Permohonan resign berhasil dikirim ke divisi PND untuk diverifikasi.');
     }
 
+    public function cancelOwn(Request $request)
+    {
+        $user = Auth::user();
+        $resignation = ResignationRequest::where('user_id', $user->id)
+            ->where('status', ResignationRequest::STATUS_PENDING_PND)
+            ->first();
+
+        if (!$resignation) {
+            return back()->with('error', 'Tidak ada permohonan resign aktif yang dapat dibatalkan.');
+        }
+
+        $resignation->delete();
+        $user->update(['is_active' => true]);
+
+        return redirect()->route('portal.resignation.index')
+            ->with('success', 'Pengajuan permohonan resign Anda berhasil dibatalkan.');
+    }
+
     public function show(ResignationRequest $resignation)
     {
         $this->authorizeView($resignation);
@@ -112,6 +130,9 @@ class ResignationController extends Controller
 
         if ($status = $request->get('status')) {
             $query->where('status', $status);
+        } else {
+            // Default hanya tampilkan pengajuan yang butuh ditinjau PND (tidak termasuk cancelled)
+            $query->where('status', '!=', ResignationRequest::STATUS_CANCELLED);
         }
 
         $requests = $query->paginate(30)->withQueryString();
@@ -161,22 +182,19 @@ class ResignationController extends Controller
     public function pndCancel(Request $request, ResignationRequest $resignation)
     {
         $this->checkIsPnd();
-        $request->validate(['pnd_notes' => 'required|string|max:500']);
 
         try {
-            $resignation->update([
-                'status'          => ResignationRequest::STATUS_CANCELLED,
-                'pnd_approved_by' => Auth::id(),
-                'pnd_approved_at' => now(),
-                'pnd_notes'       => '[Dibatalkan PND] ' . $request->pnd_notes,
-            ]);
+            $applicantName = $resignation->applicant_name ?? $resignation->user?->name ?? 'anggota';
 
             // Pastikan akun staf tetap aktif
             if ($resignation->user) {
                 $resignation->user->update(['is_active' => true]);
             }
 
-            return back()->with('success', 'Permohonan resign ' . ($resignation->applicant_name ?? 'anggota') . ' berhasil dibatalkan oleh PND.');
+            // Hapus pengajuan resign agar benar-benar hilang dari antrean
+            $resignation->delete();
+
+            return back()->with('success', 'Permohonan resign ' . $applicantName . ' berhasil dibatalkan dan dihapus dari antrean.');
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error('[Resignation] PND Cancel Error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return back()->with('error', 'Gagal membatalkan permohonan resign: ' . $e->getMessage());
@@ -196,11 +214,8 @@ class ResignationController extends Controller
         if ($status = $request->get('status')) {
             $query->where('status', $status);
         } else {
-            $query->whereIn('status', [
-                ResignationRequest::STATUS_PENDING_IE,
-                ResignationRequest::STATUS_COMPLETED,
-                ResignationRequest::STATUS_CANCELLED,
-            ]);
+            // Default hanya tampilkan pengajuan yang butuh diverifikasi IE
+            $query->where('status', ResignationRequest::STATUS_PENDING_IE);
         }
 
         $requests = $query->paginate(30)->withQueryString();
@@ -235,22 +250,19 @@ class ResignationController extends Controller
     public function ieCancel(Request $request, ResignationRequest $resignation)
     {
         $this->checkIsIe();
-        $request->validate(['ie_notes' => 'required|string|max:500']);
 
         try {
-            $resignation->update([
-                'status'         => ResignationRequest::STATUS_CANCELLED,
-                'ie_verified_by' => Auth::id(),
-                'ie_verified_at' => now(),
-                'ie_notes'       => '[Dibatalkan IE] ' . $request->ie_notes,
-            ]);
+            $applicantName = $resignation->applicant_name ?? $resignation->user?->name ?? 'anggota';
 
             // Pastikan akun staf tetap aktif
             if ($resignation->user) {
                 $resignation->user->update(['is_active' => true]);
             }
 
-            return back()->with('success', 'Permohonan resign ' . ($resignation->applicant_name ?? 'anggota') . ' berhasil dibatalkan oleh IE.');
+            // Hapus pengajuan resign agar benar-benar hilang dari antrean
+            $resignation->delete();
+
+            return back()->with('success', 'Permohonan resign ' . $applicantName . ' berhasil dibatalkan dan dihapus dari antrean IE.');
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error('[Resignation] IE Cancel Error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return back()->with('error', 'Gagal membatalkan permohonan resign: ' . $e->getMessage());

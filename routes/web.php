@@ -1273,7 +1273,7 @@ Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->gro
         Route::get('/',        [\App\Http\Controllers\Portal\ResignationController::class, 'index'])->name('index');
         Route::get('/create',  [\App\Http\Controllers\Portal\ResignationController::class, 'create'])->name('create');
         Route::post('/',       [\App\Http\Controllers\Portal\ResignationController::class, 'store'])->name('store');
-        Route::get('/{resignation}', [\App\Http\Controllers\Portal\ResignationController::class, 'show'])->name('show');
+        Route::post('/cancel-own', [\App\Http\Controllers\Portal\ResignationController::class, 'cancelOwn'])->name('cancel-own');
         // PND
         Route::get('/manage/pnd',                       [\App\Http\Controllers\Portal\ResignationController::class, 'managePnd'])->name('manage.pnd');
         Route::post('/{resignation}/pnd-approve',       [\App\Http\Controllers\Portal\ResignationController::class, 'pndApprove'])->name('pnd-approve');
@@ -1283,6 +1283,7 @@ Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->gro
         Route::get('/manage/ie',                        [\App\Http\Controllers\Portal\ResignationController::class, 'manageIe'])->name('manage.ie');
         Route::post('/{resignation}/ie-verify-payment', [\App\Http\Controllers\Portal\ResignationController::class, 'ieVerifyPayment'])->name('ie-verify');
         Route::post('/{resignation}/ie-cancel',         [\App\Http\Controllers\Portal\ResignationController::class, 'ieCancel'])->name('ie-cancel');
+        Route::get('/{resignation}', [\App\Http\Controllers\Portal\ResignationController::class, 'show'])->where('resignation', '[0-9]+')->name('show');
     });
 
     // ── GA: Sertifikasi Kendaraan ─────────────────────────────────────────────

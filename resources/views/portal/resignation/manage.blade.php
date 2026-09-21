@@ -122,18 +122,28 @@
                                                 class="px-2.5 py-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-semibold rounded-lg border border-rose-500/30 transition-all flex items-center gap-1">
                                             <i class="fas fa-times"></i> Tolak
                                         </button>
-                                        {{-- Batalkan (Cancel) --}}
-                                        <button type="button" onclick="openPndCancelModal({{ $req->id }}, '{{ addslashes($req->applicant_name) }}')"
-                                                class="px-2.5 py-1.5 bg-gray-500/20 hover:bg-gray-500/30 text-gray-300 text-xs font-semibold rounded-lg border border-gray-500/30 transition-all flex items-center gap-1">
-                                            <i class="fas fa-ban"></i> Batalkan
-                                        </button>
+                                        {{-- Batalkan & Hapus Resign (PND) --}}
+                                        <form method="POST" action="{{ route('portal.resignation.pnd-cancel', $req) }}"
+                                              onsubmit="return confirm('Yakin ingin membatalkan pengajuan resign {{ addslashes($req->applicant_name) }}? Pengajuan akan dihapus dari sistem dan akun staf dipastikan tetap aktif.');"
+                                              class="inline">
+                                            @csrf
+                                            <button type="submit"
+                                                    class="px-2.5 py-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-semibold rounded-lg border border-rose-500/30 transition-all flex items-center gap-1">
+                                                <i class="fas fa-ban"></i> Batalkan Resign
+                                            </button>
+                                        </form>
                                     </div>
                                     @elseif(in_array($req->status, ['approved_pnd', 'pending_ie']))
                                     <div class="flex items-center justify-end gap-1.5">
-                                        <button type="button" onclick="openPndCancelModal({{ $req->id }}, '{{ addslashes($req->applicant_name) }}')"
-                                                class="px-2.5 py-1.5 bg-gray-500/20 hover:bg-gray-500/30 text-gray-300 text-xs font-semibold rounded-lg border border-gray-500/30 transition-all flex items-center gap-1">
-                                            <i class="fas fa-ban"></i> Batalkan Resign
-                                        </button>
+                                        <form method="POST" action="{{ route('portal.resignation.pnd-cancel', $req) }}"
+                                              onsubmit="return confirm('Yakin ingin membatalkan pengajuan resign {{ addslashes($req->applicant_name) }}? Pengajuan akan dihapus dari sistem dan akun staf dipastikan tetap aktif.');"
+                                              class="inline">
+                                            @csrf
+                                            <button type="submit"
+                                                    class="px-2.5 py-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-semibold rounded-lg border border-rose-500/30 transition-all flex items-center gap-1">
+                                                <i class="fas fa-ban"></i> Batalkan Resign
+                                            </button>
+                                        </form>
                                     </div>
                                     @else
                                     <span class="text-white/30 text-xs">—</span>
@@ -152,11 +162,16 @@
                                                 <i class="fas fa-check-double"></i> Lunas &amp; Nonaktifkan
                                             </button>
                                         </form>
-                                        {{-- Batalkan (Cancel) oleh IE --}}
-                                        <button type="button" onclick="openIeCancelModal({{ $req->id }}, '{{ addslashes($req->applicant_name) }}')"
-                                                class="px-2.5 py-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-semibold rounded-lg border border-rose-500/30 transition-all flex items-center gap-1">
-                                            <i class="fas fa-ban"></i> Batalkan Resign
-                                        </button>
+                                        {{-- Batalkan & Hapus Resign (IE) --}}
+                                        <form method="POST" action="{{ route('portal.resignation.ie-cancel', $req) }}"
+                                              onsubmit="return confirm('Batalkan resign untuk {{ addslashes($req->applicant_name) }}? Beban denda dihapuskan, pengajuan dihapus, dan akun staf tetap aktif.');"
+                                              class="inline">
+                                            @csrf
+                                            <button type="submit"
+                                                    class="px-2.5 py-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-semibold rounded-lg border border-rose-500/30 transition-all flex items-center gap-1">
+                                                <i class="fas fa-ban"></i> Batalkan Resign
+                                            </button>
+                                        </form>
                                     </div>
                                     @else
                                     <span class="text-white/30 text-xs">—</span>

@@ -68,6 +68,13 @@
                 <span class="text-white font-semibold">{{ $request->status_label }}</span>
                 @if($request->status === 'completed')
                 <span class="text-xs text-emerald-300 font-medium">✅ Akun dinonaktifkan setelah pelunasan denda</span>
+                @elseif($request->status === 'pending_pnd')
+                <form method="POST" action="{{ route('portal.resignation.cancel-own') }}" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pengajuan resign ini?');" class="inline">
+                    @csrf
+                    <button type="submit" class="text-xs text-rose-300 hover:text-rose-200 bg-rose-500/20 hover:bg-rose-500/30 px-3 py-1.5 rounded-lg border border-rose-500/30 transition-all flex items-center gap-1.5 font-semibold">
+                        <i class="fas fa-times-circle"></i> Batalkan Pengajuan Saya
+                    </button>
+                </form>
                 @elseif($request->status === 'cancelled')
                 <span class="text-xs text-amber-300 font-medium">⚠️ Pengajuan resign telah dibatalkan</span>
                 @endif
