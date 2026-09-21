@@ -50,13 +50,13 @@ class LeaveRequestController extends Controller
             'end_date.after_or_equal'   => 'Tanggal selesai cuti harus sama atau setelah tanggal mulai cuti.',
         ]);
 
-        $start    = Carbon::parse($validated['start_date']);
-        $end      = Carbon::parse($validated['end_date']);
+        $start    = Carbon::parse($validated['start_date'])->startOfDay();
+        $end      = Carbon::parse($validated['end_date'])->startOfDay();
         $duration = $start->diffInDays($end) + 1;
 
         if ($duration > 30) {
             return back()->withInput()->withErrors([
-                'end_date' => 'Maksimal periode cuti yang dapat diajukan adalah 30 hari. (Pengajuan Anda: ' . $duration . ' hari).',
+                'end_date' => 'Pengajuan cuti tidak dapat dikirim karena melebihi batas maksimal 30 hari. (Durasi pengajuan Anda: ' . $duration . ' hari).',
             ]);
         }
 
