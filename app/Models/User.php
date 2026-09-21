@@ -242,7 +242,21 @@ class User extends Authenticatable
             return true;
         }
 
-        return (bool) ($this->role && $this->role->level >= 5);
+        $roleLevel = $this->role?->level ?? 0;
+        $medicLevel = $this->medicRole?->level ?? 0;
+        $roleName = strtolower($this->role?->name ?? '');
+        $medicName = strtolower($this->medicRole?->name ?? '');
+
+        if ($roleLevel >= 5 || $medicLevel >= 5) {
+            return true;
+        }
+
+        if (in_array($roleName, ['manajer', 'manager', 'staff_manager', 'executive', 'admin']) ||
+            in_array($medicName, ['manajer', 'manager', 'staff_manager', 'executive', 'admin'])) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -261,6 +275,18 @@ class User extends Authenticatable
         // Check custom user permissions first
         if (!empty($this->custom_permissions) && in_array($permission, $this->custom_permissions)) {
             return true;
+        }
+
+        // Jabatan Manager ke atas (level >= 5: Staff Manager, Manajer, Executive, Admin) dapat mengelola Staf (Manajemen Staf)
+        if ($permission === 'manage_users') {
+            if ($this->isManagerOrAbove() 
+                || ($this->role && $this->role->level >= 5) 
+                || ($this->role && in_array(strtolower($this->role->name), ['manajer', 'manager', 'staff_manager', 'executive', 'admin']))
+                || ($this->medicRole && $this->medicRole->level >= 5)
+                || ($this->medicRole && in_array(strtolower($this->medicRole->name), ['manajer', 'manager', 'staff_manager', 'executive', 'admin']))
+            ) {
+                return true;
+            }
         }
 
         // Jabatan Manager ke atas (level >= 5: Staff Manager, Manajer, Executive, Admin) dapat melihat Laporan & Keluhan

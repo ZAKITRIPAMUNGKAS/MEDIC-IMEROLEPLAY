@@ -1464,7 +1464,7 @@
                             <div class="absolute right-0 top-full mt-2 w-60 bg-white rounded-xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-1 group-hover:translate-y-0 transition-all duration-200 z-[9999] dropdown-scrollable" style="max-height: calc(100vh - 110px) !important; max-height: calc(100dvh - 110px) !important; overflow-y: auto !important; overflow-x: hidden !important; -webkit-overflow-scrolling: touch !important; overscroll-behavior: contain !important;">
                                 <div class="px-3 pt-2.5 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400 border-b border-gray-100">Panel Admin</div>
                                 <div class="py-1">
-                                    @if(auth()->user()->hasPermission('manage_users'))
+                                    @if(auth()->user()->hasPermission('manage_users') || auth()->user()->isManagerOrAbove())
                                         <a href="{{ route('admin.staff.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-users-cog w-4 text-slate-500 text-sm"></i> Manajemen Staf</a>
                                     @endif
                                     @if(auth()->user()->hasPermission('manage_users') || auth()->user()->hasPermission('manage_doctor_schedules'))
@@ -1816,7 +1816,7 @@
                         <div class="space-y-1 pt-2 border-t border-white/10">
                             <div class="px-2 pt-1 text-[10px] font-black tracking-widest uppercase text-amber-300/80">Menu Administrator</div>
                             
-                            @if(auth()->user()->hasPermission('manage_users'))
+                            @if(auth()->user()->hasPermission('manage_users') || auth()->user()->isManagerOrAbove())
                                 <a href="{{ route('admin.staff.index') }}"
                                     class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
                                     <i class="fas fa-users-cog w-5 text-amber-400 text-sm"></i>
