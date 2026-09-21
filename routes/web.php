@@ -1253,6 +1253,9 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
 // ═══════════════════════════════════════════════════════════════════════════
 Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->group(function () {
 
+    // ── Pratinjau Langsung Gambar Sertifikat Resmi (SVG Vector Image) ─────────
+    Route::get('/certifications/{certification}/image', [\App\Http\Controllers\Portal\CertificateImageController::class, 'show'])->name('cert.image');
+
     // ── Pengajuan Cuti (Semua Anggota) ───────────────────────────────────────
     Route::prefix('leave')->name('leave.')->group(function () {
         Route::get('/',           [\App\Http\Controllers\Portal\LeaveRequestController::class, 'index'])->name('index');

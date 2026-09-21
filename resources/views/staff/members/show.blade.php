@@ -385,28 +385,21 @@
                                 'ie'  => ['bg' => 'bg-sky-500/20', 'border' => 'border-sky-500/30', 'text' => 'text-sky-300', 'icon' => 'fa-file-contract', 'label' => 'IE Kontrak'],
                             ];
                             $badge = $divColors[$div] ?? $divColors['pnd'];
-                            $fileUrl = $cert->file_path ? asset('storage/' . $cert->file_path) : null;
+                            $fileUrl = route('portal.cert.image', $cert->id);
                         @endphp
                         <div class="group bg-black/30 hover:bg-black/40 border border-white/10 hover:border-amber-400/40 rounded-2xl overflow-hidden shadow-lg transition-all duration-300 flex flex-col">
                             
                             {{-- Image Preview with Lightbox trigger --}}
                             <div class="relative aspect-[1.41/1] bg-slate-950/80 overflow-hidden cursor-pointer"
                                  onclick="openCertPreview('{{ $fileUrl }}', '{{ addslashes($cert->title) }}', '{{ $cert->certificate_number ?? '-' }}', '{{ $cert->issue_date ? $cert->issue_date->translatedFormat('d F Y') : '-' }}', '{{ addslashes($cert->issuedBy?->name ?? 'Alta Hospital') }}')">
-                                @if($fileUrl)
-                                    <img src="{{ $fileUrl }}" alt="{{ $cert->title }}"
-                                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                         loading="lazy">
-                                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
-                                        <span class="px-3 py-1.5 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs font-semibold flex items-center gap-1.5 shadow-lg">
-                                            <i class="fas fa-search-plus"></i> Lihat Foto Penuh
-                                        </span>
-                                    </div>
-                                @else
-                                    <div class="w-full h-full flex flex-col items-center justify-center text-white/30">
-                                        <i class="fas fa-file-image text-3xl mb-2"></i>
-                                        <span class="text-xs">Foto tidak tersedia</span>
-                                    </div>
-                                @endif
+                                <img src="{{ $fileUrl }}" alt="{{ $cert->title }}"
+                                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                     loading="lazy">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2">
+                                    <span class="px-3 py-1.5 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs font-semibold flex items-center gap-1.5 shadow-lg">
+                                        <i class="fas fa-search-plus"></i> Lihat Foto Penuh
+                                    </span>
+                                </div>
 
                                 {{-- Division Tag Pill --}}
                                 <div class="absolute top-3 left-3">

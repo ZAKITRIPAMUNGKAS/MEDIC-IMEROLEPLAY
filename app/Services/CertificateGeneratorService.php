@@ -9,13 +9,9 @@ use Illuminate\Support\Str;
 class CertificateGeneratorService
 {
     /**
-     * Generate an official, high-resolution vector certificate image (SVG)
-     * and store it in the public disk.
-     *
-     * @param MemberCertification $cert
-     * @return string Relative path in public storage
+     * Render raw SVG string with full visual certificate details
      */
-    public static function generate(MemberCertification $cert): string
+    public static function renderSvg(MemberCertification $cert): string
     {
         $user = $cert->user;
         $recipientName = $user ? $user->name : 'Anggota Medis';
@@ -58,8 +54,7 @@ class CertificateGeneratorService
         $safeDivLabel   = htmlspecialchars($divLabel, ENT_XML1, 'UTF-8');
         $safeNotes      = htmlspecialchars($cert->notes ? Str::limit($cert->notes, 120) : 'Telah memenuhi standar kompetensi operasional medis Alta Hospital.', ENT_XML1, 'UTF-8');
 
-        // Build SVG XML
-        $svg = <<<SVG
+        return <<<SVG
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 850" width="1200" height="850">
     <defs>
         <!-- Background Gradient -->
@@ -248,6 +243,18 @@ class CertificateGeneratorService
     </g>
 </svg>
 SVG;
+    }
+
+    /**
+     * Generate an official, high-resolution vector certificate image (SVG)
+     * and store it in the public disk.
+     *
+     * @param MemberCertification $cert
+     * @return string Relative path in public storage
+     */
+    public static function generate(MemberCertification $cert): string
+    {
+        $svg = self::renderSvg($cert);
 
         // Ensure storage directory exists
         $folder = 'certifications/generated';
