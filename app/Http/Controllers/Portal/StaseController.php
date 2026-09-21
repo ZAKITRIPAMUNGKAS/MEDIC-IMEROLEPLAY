@@ -27,11 +27,11 @@ class StaseController extends Controller
     {
         $user = Auth::user();
 
-        // Daftar konsulen / dokter spesialis aktif di hospital yang sama
+        // Daftar konsulen / dokter spesialis / manajemen medis aktif di hospital yang sama
         $konsulenList = User::with('role:id,name,display_name')
             ->where('is_active', true)
             ->where('hospital', $user->hospital ?? 'alta')
-            ->whereHas('role', fn($q) => $q->whereIn('name', ['dokter_spesialis', 'supervisor']))
+            ->whereHas('role', fn($q) => $q->whereIn('name', ['dokter_spesialis', 'supervisor', 'staff_manager', 'manajer', 'executive', 'admin']))
             ->orderByRoleLevel()
             ->get(['id', 'name', 'staff_id', 'role_id']);
 

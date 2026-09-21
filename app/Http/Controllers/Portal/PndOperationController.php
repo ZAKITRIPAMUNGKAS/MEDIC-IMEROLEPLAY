@@ -35,10 +35,14 @@ class PndOperationController extends Controller
     public function createOperation()
     {
         $user = Auth::user();
+        // Sertakan semua staf aktif medis & manajemen (kecuali Trainee) agar Manajer, Staff Manager, dll tetap dapat ditargetkan sebagai DPJP/Asisten
         $doctors = User::with('role:id,name,display_name,level')
             ->where('is_active', true)
             ->where('hospital', $user->hospital ?? 'alta')
-            ->whereHas('role', fn($q) => $q->whereIn('name', ['dokter_umum', 'dokter_spesialis', 'co_ass']))
+            ->where(function ($q) {
+                $q->whereDoesntHave('role')
+                  ->orWhereHas('role', fn($rq) => $rq->whereNotIn('name', ['trainee']));
+            })
             ->orderByRoleLevel()
             ->get(['id', 'name', 'staff_id', 'role_id']);
 
