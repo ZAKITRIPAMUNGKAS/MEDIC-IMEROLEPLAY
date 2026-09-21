@@ -188,9 +188,7 @@ class IeManagementController extends Controller
         foreach ($pemutihanList as $item) {
             if (!$item['is_exempted']) {
                 $staf = $item['user'];
-                $roleName = $staf->medicRole?->display_name ?? $staf->role?->display_name ?? '-';
-                $subRole = $staf->subRole ? " ({$staf->subRole->short_name})" : '';
-                $discordListLines[] = "{$num}. {$staf->name} - {$roleName}{$subRole}";
+                $discordListLines[] = "{$num}. {$staf->name}";
                 $num++;
             }
         }
