@@ -1188,6 +1188,7 @@
                                             <option value="Spesialis Jantung dan Pembuluh Darah" @if(old('form_data.poli') == 'Spesialis Jantung dan Pembuluh Darah') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Jantung dan Pembuluh Darah</option>
                                             <option value="Spesialis Paru" @if(old('form_data.poli') == 'Spesialis Paru') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Paru</option>
                                             <option value="Spesialis Dermatovenerologi" @if(old('form_data.poli') == 'Spesialis Dermatovenerologi') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Dermatovenerologi</option>
+                                            <option value="Spesialis Onkologi" @if(old('form_data.poli') == 'Spesialis Onkologi') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Onkologi</option>
                                             <option value="Poli Kejiwaan" @if(old('form_data.poli') == 'Poli Kejiwaan') selected @endif class="bg-slate-900 text-white font-bold">🩺 Poli Kejiwaan</option>
                                         </select>
                                         @error('form_data.poli') <p class="form-error text-xs mt-1">{{ $message }}</p> @enderror

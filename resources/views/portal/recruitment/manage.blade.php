@@ -20,8 +20,8 @@
                 </p>
             </div>
 
-            <!-- Recruitment Status Toggle Button -->
-            <div class="flex items-center gap-3">
+            <!-- Recruitment Status Toggle Button & Candidate Cleanup Option -->
+            <div class="flex flex-wrap items-center gap-2.5">
                 @if($currentPeriod)
                     <div class="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 px-3.5 py-2 rounded-xl text-emerald-300 text-xs font-bold">
                         <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -40,6 +40,16 @@
                     </div>
                     <button onclick="document.getElementById('openBatchModal').classList.remove('hidden')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-1.5">
                         <i class="fas fa-bullhorn"></i> Buka Pendaftaran
+                    </button>
+                    @if($stats['total'] > 0)
+                    <button type="button" onclick="document.getElementById('clearApplicantsModal').classList.remove('hidden')" class="px-3.5 py-2 bg-rose-600/20 hover:bg-rose-600/30 border border-rose-500/30 text-rose-300 hover:text-white rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-1.5">
+                        <i class="fas fa-trash-alt"></i> Bersihkan Pendaftar
+                    </button>
+                    @endif
+                @endif
+                @if($currentPeriod && $stats['total'] > 0)
+                    <button type="button" onclick="document.getElementById('clearApplicantsModal').classList.remove('hidden')" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-white/10 text-slate-300 hover:text-rose-400 rounded-xl text-xs font-bold transition flex items-center gap-1.5" title="Opsi Pembersihan Data Pelamar">
+                        <i class="fas fa-trash-alt"></i> Bersihkan Data
                     </button>
                 @endif
             </div>
@@ -158,9 +168,18 @@
                                 {{ $app->created_at?->translatedFormat('d M Y, H:i') ?? '-' }}
                             </td>
                             <td class="py-3 px-4 text-right">
-                                <a href="{{ route('portal.recruitment.show', $app) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition">
-                                    <i class="fas fa-eye"></i> Tinjau Berkas
-                                </a>
+                                <div class="inline-flex items-center gap-1.5 justify-end">
+                                    <a href="{{ route('portal.recruitment.show', $app) }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition">
+                                        <i class="fas fa-eye"></i> Tinjau Berkas
+                                    </a>
+                                    <form method="POST" action="{{ route('portal.recruitment.destroy', $app) }}" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus berkas pendaftaran {{ addslashes($app->ic_name) }} (#{{ $app->cid }}) secara permanen?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 hover:text-rose-200 transition" title="Hapus Berkas Pendaftar">
+                                            <i class="fas fa-trash-alt text-xs"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                         @empty
@@ -216,6 +235,68 @@
                 </button>
                 <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition shadow-lg">
                     Ya, Buka Pendaftaran Sekarang
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Pembersihan Data Pendaftar EMS -->
+<div id="clearApplicantsModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-rose-500/30 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+        <div class="flex items-center justify-between border-b border-white/10 pb-3">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                <i class="fas fa-trash-alt text-rose-400"></i> Pembersihan Data Pendaftaran Calon Medis
+            </h3>
+            <button onclick="document.getElementById('clearApplicantsModal').classList.add('hidden')" class="text-slate-400 hover:text-white">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs leading-relaxed space-y-1">
+            <div class="font-bold flex items-center gap-1.5 text-rose-200">
+                <i class="fas fa-exclamation-triangle"></i> Perhatian: Aksi ini bersifat permanen!
+            </div>
+            <p>
+                Fitur ini membersihkan nama-nama pelamar EMS dan menghapus file berkas pendukung fisik (KTP, SKB, Surat Bebas Narkoba/Sehat, dan Surat Psikologi) dari server penyimpanan agar siap untuk batch rekrutmen berikutnya.
+            </p>
+        </div>
+
+        <form method="POST" action="{{ route('portal.recruitment.clear') }}" class="space-y-4" onsubmit="return confirm('Apakah Anda benar-benar yakin ingin membersihkan data pendaftaran yang dipilih?')">
+            @csrf
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-2">Pilih Lingkup Pembersihan</label>
+                <div class="space-y-2">
+                    <label class="flex items-start gap-2.5 p-3 rounded-xl bg-slate-800/80 border border-white/10 hover:border-white/20 cursor-pointer transition">
+                        <input type="radio" name="scope" value="all" checked class="mt-0.5 text-rose-500 focus:ring-rose-500">
+                        <div>
+                            <div class="text-xs font-bold text-white">Hapus Seluruh Data Pendaftar (Reset Total)</div>
+                            <div class="text-[11px] text-slate-400">Membersihkan seluruh {{ $stats['total'] }} berkas pelamar baik yang menunggu, lolos, maupun ditolak.</div>
+                        </div>
+                    </label>
+                    <label class="flex items-start gap-2.5 p-3 rounded-xl bg-slate-800/80 border border-white/10 hover:border-white/20 cursor-pointer transition">
+                        <input type="radio" name="scope" value="rejected" class="mt-0.5 text-rose-500 focus:ring-rose-500">
+                        <div>
+                            <div class="text-xs font-bold text-white">Hanya Pelamar Ditolak ({{ $stats['rejected'] }} Berkas)</div>
+                            <div class="text-[11px] text-slate-400">Hanya membersihkan pelamar yang status berkasnya ditolak.</div>
+                        </div>
+                    </label>
+                    <label class="flex items-start gap-2.5 p-3 rounded-xl bg-slate-800/80 border border-white/10 hover:border-white/20 cursor-pointer transition">
+                        <input type="radio" name="scope" value="without_interview" class="mt-0.5 text-rose-500 focus:ring-rose-500">
+                        <div>
+                            <div class="text-xs font-bold text-white">Hapus Yang Belum / Batal Interview (Pending, Lolos Berkas & Ditolak)</div>
+                            <div class="text-[11px] text-slate-400">Menyimpan data calon yang sudah masuk ke tahap Interview atau Diterima.</div>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-2.5 pt-2">
+                <button type="button" onclick="document.getElementById('clearApplicantsModal').classList.add('hidden')" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-semibold hover:bg-slate-700 transition">
+                    Batal
+                </button>
+                <button type="submit" class="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition shadow-lg flex items-center gap-1.5">
+                    <i class="fas fa-trash-alt"></i> Bersihkan Sekarang
                 </button>
             </div>
         </form>

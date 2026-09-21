@@ -182,4 +182,76 @@ class RecruitmentManagementController extends Controller
 
         return back()->with('success', "Akun calon medis {$user->name} (#{$user->citizen_id}) berhasil dibuat dan langsung masuk ke Antrian Interviewer Calon Medis!");
     }
+
+    /**
+     * Hapus satu berkas pendaftaran calon medis beserta file fisiknya.
+     */
+    public function destroy(RecruitmentApplication $application)
+    {
+        $this->authorizeManager();
+
+        $name = $application->ic_name;
+        \App\Models\CandidateInterview::where('recruitment_application_id', $application->id)
+            ->update(['recruitment_application_id' => null]);
+
+        $this->deleteApplicationFiles($application);
+        $application->delete();
+
+        return back()->with('success', "Data berkas pendaftaran calon medis '{$name}' berhasil dihapus.");
+    }
+
+    /**
+     * Bersihkan / reset nama-nama pendaftar rekrutmen (opsi saat pendaftaran ditutup atau reset batch).
+     */
+    public function clearCandidates(Request $request)
+    {
+        $this->authorizeManager();
+
+        $scope = $request->input('scope', 'all');
+
+        $query = RecruitmentApplication::where('hospital', 'alta');
+
+        if ($scope === 'rejected') {
+            $query->where('status', 'rejected');
+        } elseif ($scope === 'pending') {
+            $query->where('status', 'pending');
+        } elseif ($scope === 'without_interview') {
+            $query->whereIn('status', ['pending', 'reviewed', 'rejected']);
+        }
+
+        $applications = $query->get();
+        $count = $applications->count();
+
+        if ($count === 0) {
+            return back()->with('info', 'Tidak ada data pendaftaran calon medis yang sesuai untuk dibersihkan.');
+        }
+
+        foreach ($applications as $app) {
+            \App\Models\CandidateInterview::where('recruitment_application_id', $app->id)
+                ->update(['recruitment_application_id' => null]);
+            $this->deleteApplicationFiles($app);
+            $app->delete();
+        }
+
+        return back()->with('success', "Berhasil membersihkan {$count} data pendaftaran calon medis EMS.");
+    }
+
+    /**
+     * Helper untuk menghapus file fisik berkas pendaftaran calon.
+     */
+    private function deleteApplicationFiles(RecruitmentApplication $application): void
+    {
+        $files = [
+            $application->ktp_file,
+            $application->skb_file,
+            $application->health_cert_file,
+            $application->psychology_cert_file,
+        ];
+
+        foreach ($files as $filePath) {
+            if ($filePath && file_exists(public_path($filePath))) {
+                @unlink(public_path($filePath));
+            }
+        }
+    }
 }

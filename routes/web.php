@@ -1553,9 +1553,11 @@ Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->gro
     Route::prefix('recruitment')->name('recruitment.')->group(function () {
         Route::get('/manage',                         [\App\Http\Controllers\Portal\RecruitmentManagementController::class, 'index'])->name('index');
         Route::post('/toggle',                        [\App\Http\Controllers\Portal\RecruitmentManagementController::class, 'toggle'])->name('toggle');
+        Route::post('/clear',                         [\App\Http\Controllers\Portal\RecruitmentManagementController::class, 'clearCandidates'])->name('clear');
         Route::get('/{application}',                  [\App\Http\Controllers\Portal\RecruitmentManagementController::class, 'show'])->name('show');
         Route::post('/{application}/status',          [\App\Http\Controllers\Portal\RecruitmentManagementController::class, 'updateStatus'])->name('status');
         Route::post('/{application}/convert',         [\App\Http\Controllers\Portal\RecruitmentManagementController::class, 'convertCandidate'])->name('convert');
+        Route::delete('/{application}',               [\App\Http\Controllers\Portal\RecruitmentManagementController::class, 'destroy'])->name('destroy');
     });
 
     // ── Role Interview: Wawancara Calon Medis & Pengajuan Role ─────────────────
