@@ -25,6 +25,7 @@ class PromotionController extends Controller
 
     public function index()
     {
+        PromotionApplication::ensureTableAndColumns();
         $user   = Auth::user();
         $period = PromotionPeriod::currentOpen($user->hospital ?? 'alta');
 
@@ -39,6 +40,7 @@ class PromotionController extends Controller
 
     public function create(Request $request)
     {
+        PromotionApplication::ensureTableAndColumns();
         $user   = Auth::user();
         $period = PromotionPeriod::currentOpen($user->hospital ?? 'alta');
 
@@ -93,6 +95,7 @@ class PromotionController extends Controller
 
     public function store(Request $request)
     {
+        PromotionApplication::ensureTableAndColumns();
         $user   = Auth::user();
         $period = PromotionPeriod::currentOpen($user->hospital ?? 'alta');
 
@@ -139,7 +142,7 @@ class PromotionController extends Controller
             return $item;
         }, $checklist);
 
-        PromotionApplication::create([
+        $payload = [
             'user_id'                    => $user->id,
             'period_id'                  => $period->id,
             'current_role_id'            => $user->role_id,
@@ -151,9 +154,15 @@ class PromotionController extends Controller
             'case_study_file'            => $caseStudy,
             'recommendation_letter_1'    => $rec1,
             'recommendation_letter_2'    => $rec2,
-            'supporting_document'        => $supportingDoc,
             'status'                     => PromotionApplication::STATUS_PENDING,
-        ]);
+        ];
+
+        // Hanya masukkan supporting_document jika kolom tersedia di database
+        if (\Illuminate\Support\Facades\Schema::hasColumn('promotion_applications', 'supporting_document')) {
+            $payload['supporting_document'] = $supportingDoc;
+        }
+
+        PromotionApplication::create($payload);
 
         return redirect()->route('portal.promotion.index')
             ->with('success', 'Pengajuan kenaikan jabatan berhasil dikirim ke PND untuk ditinjau.');
@@ -222,6 +231,7 @@ class PromotionController extends Controller
 
     public function manageApplications(Request $request)
     {
+        PromotionApplication::ensureTableAndColumns();
         $this->checkIsPnd();
         $user = Auth::user();
 

@@ -88,6 +88,47 @@
         </div>
         @endif
 
+        {{-- Berkas yang diunggah --}}
+        @if($latestApp->case_study_file || $latestApp->recommendation_letter_1 || $latestApp->recommendation_letter_2 || $latestApp->supporting_document)
+        <div class="mt-4 pt-3 border-t border-white/10">
+            <p class="text-white/50 text-xs uppercase tracking-wider font-semibold mb-2">Berkas yang Anda Unggah</p>
+            <div class="flex flex-wrap gap-2">
+                @if($latestApp->case_study_file)
+                    @php
+                        $targetName = strtolower(($latestApp->targetRole?->name ?? '') . ' ' . ($latestApp->targetRole?->display_name ?? ''));
+                        $isDokspel = str_contains($targetName, 'spesialis');
+                    @endphp
+                    <a href="{{ asset('storage/' . $latestApp->case_study_file) }}" target="_blank"
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 {{ $isDokspel ? 'bg-violet-500/20 text-violet-300 border-violet-500/30' : 'bg-sky-500/20 text-sky-300 border-sky-500/30' }} border rounded-xl text-xs font-medium hover:brightness-125 transition-all">
+                        <i class="fas {{ $isDokspel ? 'fa-file-pdf text-rose-400' : 'fa-file-alt text-sky-400' }}"></i>
+                        <span>{{ $isDokspel ? 'Studi Kasus Dokspel' : 'Berkas Laporan Kenaikan' }}</span>
+                    </a>
+                @endif
+                @if($latestApp->recommendation_letter_1)
+                    <a href="{{ asset('storage/' . $latestApp->recommendation_letter_1) }}" target="_blank"
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-xl text-xs font-medium hover:brightness-125 transition-all">
+                        <i class="fas fa-file-alt text-sky-400"></i>
+                        <span>Rekomendasi Konsulen 1</span>
+                    </a>
+                @endif
+                @if($latestApp->recommendation_letter_2)
+                    <a href="{{ asset('storage/' . $latestApp->recommendation_letter_2) }}" target="_blank"
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-xl text-xs font-medium hover:brightness-125 transition-all">
+                        <i class="fas fa-file-alt text-sky-400"></i>
+                        <span>Rekomendasi Konsulen 2</span>
+                    </a>
+                @endif
+                @if($latestApp->supporting_document)
+                    <a href="{{ asset('storage/' . $latestApp->supporting_document) }}" target="_blank"
+                       class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-xl text-xs font-medium hover:brightness-125 transition-all">
+                        <i class="fas fa-folder-open text-amber-400"></i>
+                        <span>Berkas Pendukung</span>
+                    </a>
+                @endif
+            </div>
+        </div>
+        @endif
+
         @if($latestApp->pnd_notes)
         <div class="mt-4 p-3 bg-violet-500/10 rounded-xl border border-violet-500/20 text-xs text-violet-200">
             <span class="font-semibold">Catatan PND:</span> {{ $latestApp->pnd_notes }}

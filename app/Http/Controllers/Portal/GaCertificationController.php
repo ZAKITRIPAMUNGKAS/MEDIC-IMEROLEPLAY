@@ -52,6 +52,7 @@ class GaCertificationController extends Controller
             ->orderByRoleLevel()
             ->get(['id', 'name', 'staff_id', 'role_id']);
 
+        \App\Models\CertificateApplication::ensureTableExists();
         $pendingApplications = \App\Models\CertificateApplication::with('user')
             ->where('division', 'ga')
             ->where('status', 'pending')

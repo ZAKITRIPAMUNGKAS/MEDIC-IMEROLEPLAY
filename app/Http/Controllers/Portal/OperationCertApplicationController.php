@@ -12,6 +12,7 @@ class OperationCertApplicationController extends Controller
 {
     public function index()
     {
+        CertificateApplication::ensureTableExists();
         $user = Auth::user();
 
         // Riwayat pengajuan sertifikat operasi oleh user
@@ -35,6 +36,7 @@ class OperationCertApplicationController extends Controller
 
     public function store(Request $request)
     {
+        CertificateApplication::ensureTableExists();
         $user = Auth::user();
 
         $validated = $request->validate([

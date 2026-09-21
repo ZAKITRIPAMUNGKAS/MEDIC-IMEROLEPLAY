@@ -12,6 +12,7 @@ class VehicleCertApplicationController extends Controller
 {
     public function index()
     {
+        CertificateApplication::ensureTableExists();
         $user = Auth::user();
 
         // Riwayat pengajuan sertifikat kendaraan oleh user
@@ -35,6 +36,7 @@ class VehicleCertApplicationController extends Controller
 
     public function store(Request $request)
     {
+        CertificateApplication::ensureTableExists();
         $user = Auth::user();
 
         $validated = $request->validate([

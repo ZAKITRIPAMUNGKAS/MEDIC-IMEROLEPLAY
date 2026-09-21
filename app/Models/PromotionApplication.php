@@ -33,6 +33,50 @@ class PromotionApplication extends Model
         'duty_hours'             => 'float',
     ];
 
+    private static bool $schemaChecked = false;
+
+    public static function ensureTableAndColumns(): void
+    {
+        if (static::$schemaChecked) {
+            return;
+        }
+        static::$schemaChecked = true;
+
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('promotion_applications')) {
+                \Illuminate\Support\Facades\Schema::create('promotion_applications', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->id();
+                    $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+                    $table->foreignId('period_id')->constrained('promotion_periods')->cascadeOnDelete();
+                    $table->unsignedBigInteger('current_role_id')->nullable();
+                    $table->unsignedBigInteger('target_role_id')->nullable();
+                    $table->integer('credit_score_at_submission')->default(0);
+                    $table->integer('training_days')->default(0);
+                    $table->float('duty_hours')->default(0);
+                    $table->json('requirements_checklist')->nullable();
+                    $table->string('case_study_file')->nullable();
+                    $table->string('recommendation_letter_1')->nullable();
+                    $table->string('recommendation_letter_2')->nullable();
+                    $table->string('supporting_document')->nullable();
+                    $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+                    $table->foreignId('approved_by_pnd')->nullable()->constrained('users')->nullOnDelete();
+                    $table->timestamp('pnd_reviewed_at')->nullable();
+                    $table->text('pnd_notes')->nullable();
+                    $table->timestamps();
+                    $table->index(['user_id', 'period_id', 'status']);
+                });
+            } else {
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('promotion_applications', 'supporting_document')) {
+                    \Illuminate\Support\Facades\Schema::table('promotion_applications', function (\Illuminate\Database\Schema\Blueprint $table) {
+                        $table->string('supporting_document')->nullable()->after('recommendation_letter_2');
+                    });
+                }
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('PromotionApplication ensureTableAndColumns error: ' . $e->getMessage());
+        }
+    }
+
     const STATUS_PENDING  = 'pending';
     const STATUS_APPROVED = 'approved';
     const STATUS_REJECTED = 'rejected';

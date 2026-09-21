@@ -616,6 +616,7 @@ Route::get('/auto-setup-db', function () {
                 $table->string('case_study_file')->nullable();
                 $table->string('recommendation_letter_1')->nullable();
                 $table->string('recommendation_letter_2')->nullable();
+                $table->string('supporting_document')->nullable();
                 $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
                 $table->foreignId('approved_by_pnd')->nullable()->constrained('users')->nullOnDelete();
                 $table->timestamp('pnd_reviewed_at')->nullable();
@@ -626,6 +627,36 @@ Route::get('/auto-setup-db', function () {
             $logs[] = '✅ Tabel promotion_applications berhasil dibuat.';
         } else {
             $logs[] = 'ℹ️ Tabel promotion_applications sudah ada.';
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('promotion_applications', 'supporting_document')) {
+                \Illuminate\Support\Facades\Schema::table('promotion_applications', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->string('supporting_document')->nullable()->after('recommendation_letter_2');
+                });
+                $logs[] = '✅ Kolom supporting_document berhasil ditambahkan ke tabel promotion_applications.';
+            }
+        }
+
+        // 9. Certificate Applications (Pengajuan Sertifikat Kendaraan & Operasi oleh Anggota)
+        if (!\Illuminate\Support\Facades\Schema::hasTable('certificate_applications')) {
+            \Illuminate\Support\Facades\Schema::create('certificate_applications', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->id();
+                $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+                $table->string('type'); // vehicle_land, vehicle_heli, operation_cert
+                $table->string('division'); // ga, pnd
+                $table->string('title');
+                $table->text('reason')->nullable();
+                $table->text('notes')->nullable();
+                $table->string('status', 30)->default('pending');
+                $table->foreignId('verified_by')->nullable()->constrained('users')->nullOnDelete();
+                $table->timestamp('verified_at')->nullable();
+                $table->text('admin_notes')->nullable();
+                $table->foreignId('certification_id')->nullable()->constrained('member_certifications')->nullOnDelete();
+                $table->timestamps();
+
+                $table->index(['user_id', 'division', 'status']);
+            });
+            $logs[] = '✅ Tabel certificate_applications berhasil dibuat.';
+        } else {
+            $logs[] = 'ℹ️ Tabel certificate_applications sudah ada.';
         }
 
         // Jalankan migrasi resmi jika tersedia

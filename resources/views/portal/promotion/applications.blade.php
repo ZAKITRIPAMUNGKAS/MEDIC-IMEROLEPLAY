@@ -58,10 +58,21 @@
                             {{-- Berkas Upload Link --}}
                             <div class="mt-2 flex flex-wrap gap-1">
                                 @if($app->case_study_file)
-                                    <a href="{{ asset('storage/' . $app->case_study_file) }}" target="_blank"
-                                       class="inline-flex items-center gap-1 px-2 py-0.5 bg-violet-500/20 hover:bg-violet-500/30 text-violet-300 border border-violet-500/30 rounded text-[11px] font-medium transition-all" title="Buka Dokumen Studi Kasus">
-                                        <i class="fas fa-file-pdf text-rose-400 text-[10px]"></i> Studi Kasus
-                                    </a>
+                                    @php
+                                        $targetRoleText = strtolower(($app->targetRole?->name ?? '') . ' ' . ($app->targetRole?->display_name ?? ''));
+                                        $isDokspelRole = str_contains($targetRoleText, 'spesialis');
+                                    @endphp
+                                    @if($isDokspelRole)
+                                        <a href="{{ asset('storage/' . $app->case_study_file) }}" target="_blank"
+                                           class="inline-flex items-center gap-1 px-2 py-0.5 bg-violet-500/20 hover:bg-violet-500/30 text-violet-300 border border-violet-500/30 rounded text-[11px] font-medium transition-all" title="Buka Dokumen Studi Kasus Dokspel">
+                                            <i class="fas fa-file-pdf text-rose-400 text-[10px]"></i> Studi Kasus (Dokspel)
+                                        </a>
+                                    @else
+                                        <a href="{{ asset('storage/' . $app->case_study_file) }}" target="_blank"
+                                           class="inline-flex items-center gap-1 px-2 py-0.5 bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/30 rounded text-[11px] font-medium transition-all" title="Buka Berkas Laporan Kenaikan Jabatan">
+                                            <i class="fas fa-file-alt text-sky-400 text-[10px]"></i> Berkas Laporan
+                                        </a>
+                                    @endif
                                 @endif
                                 @if($app->recommendation_letter_1)
                                     <a href="{{ asset('storage/' . $app->recommendation_letter_1) }}" target="_blank"

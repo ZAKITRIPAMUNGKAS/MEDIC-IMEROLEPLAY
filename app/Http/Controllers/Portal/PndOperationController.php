@@ -138,10 +138,10 @@ class PndOperationController extends Controller
             ->latest()
             ->paginate(30);
 
+        \App\Models\CertificateApplication::ensureTableExists();
         $pendingApplications = \App\Models\CertificateApplication::with('user:id,name,staff_id')
             ->where('division', 'pnd')
             ->where('status', 'pending')
-            ->whereHas('user', fn($q) => $q->where('hospital', $user->hospital ?? 'alta'))
             ->latest()
             ->get();
 
