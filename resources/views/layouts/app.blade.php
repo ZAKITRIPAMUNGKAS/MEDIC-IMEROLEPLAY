@@ -1467,6 +1467,9 @@
                                         </a>
                                         <a href="{{ route('admin.duty-tracking.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-trophy w-4 text-amber-500 text-sm"></i> Duty Tracking</a>
                                     @endif
+                                    @if(auth()->user()->isAdmin() || auth()->user()->isManagerOrAbove())
+                                        <a href="{{ route('admin.inactive-staff.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-user-slash w-4 text-red-500 text-sm"></i> Staf Tidak Aktif</a>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -1679,6 +1682,14 @@
                                     class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
                                     <i class="fas fa-chart-bar w-5 text-sky-400 text-sm"></i>
                                     <span>Laporan Absensi</span>
+                                </a>
+                            @endif
+
+                            @if(auth()->user()->isAdmin() || auth()->user()->isManagerOrAbove())
+                                <a href="{{ route('admin.inactive-staff.index') }}"
+                                    class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                    <i class="fas fa-user-slash w-5 text-red-400 text-sm"></i>
+                                    <span>Staf Tidak Aktif</span>
                                 </a>
                             @endif
                         </div>

@@ -860,6 +860,10 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
         }
     })->middleware('admin')->name('duty-tracking.trigger-auto-checkout');
 
+    // Staf Tidak Aktif Duty (Staff Manager ke atas)
+    Route::get('/inactive-staff', [\App\Http\Controllers\Admin\InactiveStaffController::class, 'index'])
+        ->name('inactive-staff.index');
+
     // Structural/Organizational Management (Admin only - no specific permission check yet)
     Route::resource('structural', \App\Http\Controllers\Admin\StructuralManagementController::class)
         ->middleware('admin');
