@@ -233,7 +233,11 @@ class MemberController extends Controller
             ->get();
 
         foreach ($certifications as $cert) {
-            if (empty($cert->file_path) || !\Illuminate\Support\Facades\Storage::disk('public')->exists($cert->file_path)) {
+            $needsRegeneration = empty($cert->file_path) 
+                || !\Illuminate\Support\Facades\Storage::disk('public')->exists($cert->file_path)
+                || !str_ends_with(strtolower($cert->file_path), '.svg');
+
+            if ($needsRegeneration) {
                 try {
                     $newPath = \App\Services\CertificateGeneratorService::generate($cert);
                     $cert->update(['file_path' => $newPath]);

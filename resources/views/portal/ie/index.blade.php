@@ -40,13 +40,15 @@
                 <label class="block text-xs text-white/50 mb-1">Tanggal Berakhir</label>
                 <input type="date" name="expiry_date" class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-xl text-white text-sm focus:outline-none focus:border-sky-400">
             </div>
-            <div>
-                <label class="block text-xs text-white/50 mb-1">Upload Kontrak (PDF/Gambar)</label>
-                <input type="file" name="file" accept=".pdf,.jpg,.jpeg,.png" class="w-full px-3 py-2 bg-white/10 border border-white/20 border-dashed rounded-xl text-white/70 text-xs file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-sky-500/20 file:text-sky-300">
+            <div class="col-span-1 sm:col-span-2 p-3 bg-sky-500/10 border border-sky-500/25 rounded-xl text-sky-200 text-xs flex items-start gap-2.5">
+                <i class="fas fa-magic text-sky-400 mt-0.5 shrink-0"></i>
+                <div class="leading-relaxed text-[11px]">
+                    <strong class="text-white">Cetak Dokumen Kontrak Otomatis:</strong> Tidak perlu unggah berkas manual. Sistem akan otomatis men-generate template dokumen resmi Alta Hospital dengan Nomor Registrasi, Stempel Resmi &amp; Tanda Tangan Digital yang langsung tersimpan di profil anggota.
+                </div>
             </div>
             <div class="col-span-1 sm:col-span-2">
-                <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold rounded-xl text-sm hover:from-sky-400 hover:to-blue-500 transition-all">
-                    <i class="fas fa-file-contract mr-1.5"></i> Terbitkan Kontrak & Sync ke Profil
+                <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold rounded-xl text-sm hover:from-sky-400 hover:to-blue-500 transition-all flex items-center gap-2">
+                    <i class="fas fa-magic"></i> Terbitkan Kontrak &amp; Generate Foto ke Profil
                 </button>
             </div>
         </form>

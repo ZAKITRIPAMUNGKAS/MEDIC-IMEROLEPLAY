@@ -165,22 +165,23 @@
                 </div>
             </div>
 
-            <div>
-                <label class="block text-xs font-semibold text-white/70 uppercase mb-1">Unggah Berkas / Dokumen (PDF, PNG, JPG - Maks 5MB)</label>
-                <input type="file" name="file" accept=".pdf,.png,.jpg,.jpeg"
-                       class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-xl text-white text-sm focus:outline-none focus:border-emerald-400 file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white hover:file:bg-emerald-500">
+            <div class="p-3 bg-emerald-500/10 border border-emerald-500/25 rounded-xl text-emerald-200 text-xs flex items-start gap-2.5">
+                <i class="fas fa-magic text-emerald-400 mt-0.5 shrink-0"></i>
+                <div class="leading-relaxed text-[11px]">
+                    <strong class="text-white">Cetak Foto Otomatis:</strong> Berkas foto sertifikat beresolusi tinggi akan otomatis di-generate oleh sistem menggunakan template resmi Alta Hospital (dilengkapi Nomor Registrasi, Cap Stempel Resmi &amp; Tanda Tangan Digital) dan langsung tampil di profil anggota.
+                </div>
             </div>
 
             <div>
-                <label class="block text-xs font-semibold text-white/70 uppercase mb-1">Catatan Tambahan</label>
-                <textarea name="notes" rows="2" placeholder="Catatan atau rincian sertifikasi..."
+                <label class="block text-xs font-semibold text-white/70 uppercase mb-1">Catatan Tambahan (Opsional)</label>
+                <textarea name="notes" rows="2" placeholder="Catatan atau rincian kualifikasi bedah/operasi..."
                           class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-xl text-white text-sm focus:outline-none focus:border-emerald-400"></textarea>
             </div>
 
             <div class="flex justify-end gap-2 pt-3 border-t border-white/10">
                 <button type="button" onclick="closeCertModal()" class="px-4 py-2 bg-white/10 text-white/70 hover:text-white rounded-xl text-xs font-semibold">Batal</button>
-                <button type="submit" class="px-5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-emerald-900/30">
-                    <i class="fas fa-check mr-1"></i> Terbitkan Sekarang
+                <button type="submit" class="px-5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-emerald-900/30 flex items-center gap-1.5">
+                    <i class="fas fa-magic text-xs"></i> Terbitkan &amp; Generate Foto
                 </button>
             </div>
         </form>

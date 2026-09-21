@@ -39,9 +39,15 @@
                 <label class="block text-xs text-white/50 mb-1">Tanggal Terbit *</label>
                 <input type="date" name="issue_date" value="{{ date('Y-m-d') }}" required class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-xl text-white text-sm focus:outline-none focus:border-teal-400">
             </div>
+            <div class="col-span-1 sm:col-span-2 p-3 bg-teal-500/10 border border-teal-500/25 rounded-xl text-teal-200 text-xs flex items-start gap-2.5">
+                <i class="fas fa-magic text-teal-400 mt-0.5 shrink-0"></i>
+                <div class="leading-relaxed text-[11px]">
+                    <strong class="text-white">Cetak Sertifikat Otomatis:</strong> Berkas foto sertifikat visum beresolusi tinggi otomatis di-generate oleh sistem menggunakan template resmi Alta Hospital dengan Nomor Registrasi, Cap Stempel Resmi &amp; Tanda Tangan Digital yang langsung tampil di profil anggota.
+                </div>
+            </div>
             <div class="col-span-1 sm:col-span-2">
-                <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-600 text-white font-semibold rounded-xl text-sm hover:from-teal-400 hover:to-cyan-500 transition-all">
-                    <i class="fas fa-certificate mr-1.5"></i> Terbitkan & Otomatis Sync ke Profil
+                <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-teal-500 to-cyan-600 text-white font-semibold rounded-xl text-sm hover:from-teal-400 hover:to-cyan-500 transition-all flex items-center gap-2">
+                    <i class="fas fa-magic"></i> Terbitkan &amp; Generate Foto ke Profil
                 </button>
             </div>
         </form>
