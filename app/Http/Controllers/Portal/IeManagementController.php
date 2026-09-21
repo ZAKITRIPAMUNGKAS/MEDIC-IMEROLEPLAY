@@ -190,9 +190,7 @@ class IeManagementController extends Controller
                 $staf = $item['user'];
                 $roleName = $staf->medicRole?->display_name ?? $staf->role?->display_name ?? '-';
                 $subRole = $staf->subRole ? " ({$staf->subRole->short_name})" : '';
-                $cid = $staf->citizen_id ? " [CID: {$staf->citizen_id}]" : '';
-                $hoursText = $item['total_hours'] . ' Jam';
-                $discordListLines[] = "{$num}. {$staf->name}{$cid} - {$roleName}{$subRole} (Total Duty: {$hoursText})";
+                $discordListLines[] = "{$num}. {$staf->name} - {$roleName}{$subRole}";
                 $num++;
             }
         }
