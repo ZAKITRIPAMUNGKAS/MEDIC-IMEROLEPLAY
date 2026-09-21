@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', '{{ $stage === "pnd" ? "Verifikasi PND" : "Denda IE" }} — Resign Portal')
+@section('title', ($stage === 'pnd' ? 'Verifikasi PND' : 'Denda IE') . ' — Resign Portal Alta')
 
 @section('content')
 <div class="min-h-screen pt-20 pb-10" style="background: linear-gradient(135deg, #0b1329 0%, #0c2461 50%, #0b1329 100%);">
