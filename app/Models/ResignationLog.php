@@ -12,9 +12,14 @@ class ResignationLog extends Model
 
     protected $table = 'resignation_logs';
 
+    // Tipe Pengajuan / Sanksi
+    const TYPE_RESIGNATION = 'resignation';
+    const TYPE_PTDH        = 'ptdh';
+
     protected $fillable = [
         'resignation_request_id',
         'user_id',
+        'type',
         'member_name',
         'citizen_id',
         'last_position',
@@ -28,6 +33,7 @@ class ResignationLog extends Model
         'reason_ooc',
         'total_fine',
         'fine_percentage',
+        'ptdh_additional_fee',
         'fine_status',
         'pocket_proof',
         'key_proof',
@@ -39,11 +45,17 @@ class ResignationLog extends Model
     ];
 
     protected $casts = [
-        'resignation_date' => 'date',
-        'deactivated_at'   => 'datetime',
-        'total_fine'       => 'integer',
-        'fine_percentage'  => 'float',
+        'resignation_date'    => 'date',
+        'deactivated_at'      => 'datetime',
+        'total_fine'          => 'integer',
+        'fine_percentage'     => 'float',
+        'ptdh_additional_fee' => 'integer',
     ];
+
+    public function isPtdh(): bool
+    {
+        return ($this->type ?? self::TYPE_RESIGNATION) === self::TYPE_PTDH;
+    }
 
     // ─── Relasi ───────────────────────────────────────────────────────────────
 

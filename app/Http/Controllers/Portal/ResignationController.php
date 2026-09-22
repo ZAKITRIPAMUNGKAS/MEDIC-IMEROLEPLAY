@@ -394,7 +394,185 @@ class ResignationController extends Controller
         $requests = $query->paginate(30)->withQueryString();
         $stage    = 'ie';
 
-        return view('portal.resignation.manage', compact('requests', 'stage'));
+        $staffList = User::where('is_active', true)
+            ->where('hospital', Auth::user()->hospital ?? 'alta')
+            ->whereNotNull('role_id')
+            ->with(['role', 'effective_medic_role'])
+            ->orderByRoleLevel()
+            ->get(['id', 'name', 'staff_id', 'citizen_id', 'role_id', 'batch']);
+
+        return view('portal.resignation.manage', compact('requests', 'stage', 'staffList'));
+    }
+
+    /**
+     * IE: Hitung Denda PTDH secara real-time via AJAX untuk anggota yang dipilih.
+     */
+    public function ptdhCalculate(Request $request)
+    {
+        $this->ensureResignationSchema();
+        $this->checkIsIe();
+
+        $userId = $request->get('user_id');
+        if (!$userId) {
+            return response()->json(['success' => false, 'message' => 'Anggota wajib dipilih.'], 400);
+        }
+
+        $targetUser = User::with(['role', 'effective_medic_role'])->find($userId);
+        if (!$targetUser) {
+            return response()->json(['success' => false, 'message' => 'Data anggota medis tidak ditemukan.'], 404);
+        }
+
+        // Hitung akumulasi gaji pokok yang telah diterima staf
+        $paidBaseSalary = (int) Payroll::where('user_id', $targetUser->id)
+            ->where('status', 'paid')
+            ->sum('base_salary');
+
+        if ($paidBaseSalary <= 0) {
+            $allBaseSalary = (int) Payroll::where('user_id', $targetUser->id)->sum('base_salary');
+            $paidBaseSalary = $allBaseSalary > 0
+                ? $allBaseSalary
+                : (int) PayrollHelper::getBaseSalary($targetUser->role?->name, $targetUser->custom_salary ?? 0);
+        }
+
+        $baseSalary = $paidBaseSalary;
+
+        // Persentase denda berdasarkan peran klinis
+        $userMedic = $targetUser->effective_medic_role?->name ?? $targetUser->role?->name ?? '';
+        $posName = strtolower(trim(str_replace([' ', '-'], '_', (string) ($userMedic ?: $targetUser->role?->display_name ?? ''))));
+
+        if (str_contains($posName, 'dokter_umum') || str_contains($posName, 'dokter umum')) {
+            $pct = 25.0;
+        } elseif (str_contains($posName, 'perawat') || str_contains($posName, 'co_ass') || str_contains($posName, 'coass') || str_contains($posName, 'trainee')) {
+            $pct = 30.0;
+        } else {
+            $pct = 30.0;
+        }
+
+        $baseFine = (int) round($baseSalary * $pct / 100);
+        $defaultAdditionalFee = 250000;
+        $totalFine = $baseFine + $defaultAdditionalFee;
+
+        $managerialPosition = null;
+        try {
+            $managerialPosition = OrganizationalStructure::where('user_id', $targetUser->id)->value('managerial_position');
+        } catch (\Throwable $e) {}
+
+        return response()->json([
+            'success'                => true,
+            'user_id'                => $targetUser->id,
+            'name'                   => $targetUser->name,
+            'staff_id'               => $targetUser->staff_id ?? '-',
+            'citizen_id'             => $targetUser->citizen_id ?? '-',
+            'position'               => $targetUser->role?->display_name ?? '-',
+            'managerial_position'    => $managerialPosition ?? '-',
+            'batch'                  => $targetUser->batch ?? '-',
+            'base_salary'            => $baseSalary,
+            'base_salary_formatted'  => number_format($baseSalary, 0, ',', '.'),
+            'fine_percentage'        => $pct,
+            'base_fine'              => $baseFine,
+            'base_fine_formatted'    => number_format($baseFine, 0, ',', '.'),
+            'default_additional_fee' => $defaultAdditionalFee,
+            'total_fine'             => $totalFine,
+            'total_fine_formatted'   => number_format($totalFine, 0, ',', '.'),
+        ]);
+    }
+
+    /**
+     * IE: Simpan penetapan denda PTDH dan alihkan langsung ke tahap Upload Bukti.
+     */
+    public function ptdhStore(Request $request)
+    {
+        $this->ensureResignationSchema();
+        $this->checkIsIe();
+
+        $validated = $request->validate([
+            'user_id'             => 'required|exists:users,id',
+            'ptdh_additional_fee' => 'required|integer|min:0',
+            'reason_ic'           => 'nullable|string|max:2000',
+            'reason_ooc'          => 'nullable|string|max:2000',
+            'ie_notes'            => 'nullable|string|max:1000',
+        ]);
+
+        $targetUser = User::with(['role', 'effective_medic_role'])->findOrFail($validated['user_id']);
+
+        // Jika anggota sudah memiliki pengajuan resign aktif, batalkan agar tidak tumpang tindih
+        ResignationRequest::where('user_id', $targetUser->id)
+            ->whereNotIn('status', [ResignationRequest::STATUS_COMPLETED, ResignationRequest::STATUS_REJECTED, ResignationRequest::STATUS_CANCELLED])
+            ->delete();
+
+        // Hitung akumulasi gaji pokok
+        $paidBaseSalary = (int) Payroll::where('user_id', $targetUser->id)
+            ->where('status', 'paid')
+            ->sum('base_salary');
+
+        if ($paidBaseSalary <= 0) {
+            $allBaseSalary = (int) Payroll::where('user_id', $targetUser->id)->sum('base_salary');
+            $paidBaseSalary = $allBaseSalary > 0
+                ? $allBaseSalary
+                : (int) PayrollHelper::getBaseSalary($targetUser->role?->name, $targetUser->custom_salary ?? 0);
+        }
+
+        $baseSalary = $paidBaseSalary;
+
+        // Persentase denda
+        $userMedic = $targetUser->effective_medic_role?->name ?? $targetUser->role?->name ?? '';
+        $posName = strtolower(trim(str_replace([' ', '-'], '_', (string) ($userMedic ?: $targetUser->role?->display_name ?? ''))));
+
+        if (str_contains($posName, 'dokter_umum') || str_contains($posName, 'dokter umum')) {
+            $pct = 25.0;
+        } elseif (str_contains($posName, 'perawat') || str_contains($posName, 'co_ass') || str_contains($posName, 'coass') || str_contains($posName, 'trainee')) {
+            $pct = 30.0;
+        } else {
+            $pct = 30.0;
+        }
+
+        $baseFine      = (int) round($baseSalary * $pct / 100);
+        $additionalFee = (int) $validated['ptdh_additional_fee'];
+        $totalFine     = $baseFine + $additionalFee;
+
+        $managerialPosition = null;
+        try {
+            $managerialPosition = OrganizationalStructure::where('user_id', $targetUser->id)->value('managerial_position');
+        } catch (\Throwable $e) {}
+
+        $position  = $targetUser->role?->display_name ?? '-';
+        $reasonIc  = $validated['reason_ic'] ?: 'Pemberhentian Tidak Dengan Hormat (PTDH) atas pelanggaran kode etik / indisipliner oleh Divisi IE.';
+        $reasonOoc = $validated['reason_ooc'] ?: 'Sanksi PTDH diterbitkan berdasarkan evaluasi dan ketentuan Divisi IE Alta Hospital.';
+
+        $standardText = "SURAT KEPUTUSAN PEMBERHENTIAN TIDAK DENGAN HORMAT (PTDH)\n\nNomor: PTDH/IE/" . date('Ymd') . "/{$targetUser->id}\n\nMenyatakan bahwa:\nNama : {$targetUser->name}\nJabatan : {$position}\nCitizen ID : " . ($targetUser->citizen_id ?? '-') . "\n\nTelah resmi diputuskan untuk DIBERHENTIKAN TIDAK DENGAN HORMAT (PTDH) dari Alta Hospital.\n\nYang bersangkutan diwajibkan melunasi denda administrasi PTDH (termasuk biaya tambahan Rp " . number_format($additionalFee, 0, ',', '.') . ") dan mengunggah 4 berkas bukti administrasi secara lengkap.\n\nHormat kami,\nDivisi Industrial & Employee Relations (IE)\nAlta Hospital";
+
+        $resignation = ResignationRequest::create([
+            'user_id'             => $targetUser->id,
+            'type'                => ResignationRequest::TYPE_PTDH,
+            'letter_date'         => now()->toDateString(),
+            'applicant_name'      => $targetUser->name,
+            'position'            => $position,
+            'managerial_position' => $managerialPosition ?? '-',
+            'batch'               => $targetUser->batch ?? '-',
+            'reason_ic'           => $reasonIc,
+            'reason_ooc'          => $reasonOoc,
+            'standard_text'       => $standardText,
+            'status'              => ResignationRequest::STATUS_PENDING_PROOF, // Langsung ke tahap upload bukti!
+            'base_salary'         => $baseSalary,
+            'fine_percentage'     => $pct,
+            'ptdh_additional_fee' => $additionalFee,
+            'fine_amount'         => $totalFine,
+            'fine_paid'           => true,
+            'ie_verified_by'      => Auth::id(),
+            'ie_verified_at'      => now(),
+            'ie_notes'            => $validated['ie_notes'] ?: ('Denda PTDH diterbitkan oleh ' . Auth::user()->name . ' dengan biaya tambahan Rp' . number_format($additionalFee, 0, ',', '.')),
+        ]);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success'      => true,
+                'message'      => 'Denda PTDH untuk ' . $targetUser->name . ' sebesar $ ' . number_format($totalFine, 0, ',', '.') . ' berhasil diterbitkan! Alur langsung dialihkan ke tahap Upload Bukti.',
+                'redirect_url' => route('portal.resignation.manage.ie'),
+            ]);
+        }
+
+        return redirect()->route('portal.resignation.manage.ie')
+            ->with('success', 'Denda PTDH untuk ' . $targetUser->name . ' sebesar $ ' . number_format($totalFine, 0, ',', '.') . ' berhasil diterbitkan! Anggota diarahkan mengunggah 4 berkas bukti.');
     }
 
     /**
@@ -543,6 +721,7 @@ class ResignationController extends Controller
             ResignationLog::create([
                 'resignation_request_id' => $resignation->id,
                 'user_id'                => $user?->id,
+                'type'                   => $resignation->type ?? ResignationRequest::TYPE_RESIGNATION,
                 'member_name'            => $resignation->applicant_name ?? $user?->name ?? 'Anggota',
                 'citizen_id'             => $user?->citizen_id ?? '-',
                 'last_position'          => $user?->role?->display_name ?? $resignation->position ?? '-',
@@ -556,6 +735,7 @@ class ResignationController extends Controller
                 'reason_ooc'             => $resignation->reason_ooc,
                 'total_fine'             => $resignation->fine_amount ?? 0,
                 'fine_percentage'        => $resignation->fine_percentage ?? 0,
+                'ptdh_additional_fee'    => $resignation->ptdh_additional_fee ?? 0,
                 'fine_status'            => $resignation->fine_paid ? 'Lunas' : 'Belum Lunas',
                 'pocket_proof'           => $resignation->pocket_proof,
                 'key_proof'              => $resignation->key_proof,
@@ -674,6 +854,18 @@ class ResignationController extends Controller
                         $table->timestamp('final_deactivated_at')->nullable();
                     });
                 }
+
+                // Tambah kolom PTDH jika belum ada
+                if (!Schema::hasColumn('resignation_requests', 'type')) {
+                    Schema::table('resignation_requests', function (Blueprint $table) {
+                        $table->string('type', 20)->default('resignation')->after('user_id');
+                    });
+                }
+                if (!Schema::hasColumn('resignation_requests', 'ptdh_additional_fee')) {
+                    Schema::table('resignation_requests', function (Blueprint $table) {
+                        $table->unsignedBigInteger('ptdh_additional_fee')->default(0)->after('fine_percentage');
+                    });
+                }
             }
 
             // 3. Pastikan tabel resignation_logs ada
@@ -682,6 +874,7 @@ class ResignationController extends Controller
                     $table->id();
                     $table->unsignedBigInteger('resignation_request_id')->nullable();
                     $table->unsignedBigInteger('user_id')->nullable();
+                    $table->string('type', 20)->default('resignation');
                     $table->string('member_name');
                     $table->string('citizen_id')->nullable();
                     $table->string('last_position');
@@ -695,6 +888,7 @@ class ResignationController extends Controller
                     $table->text('reason_ooc')->nullable();
                     $table->unsignedBigInteger('total_fine')->default(0);
                     $table->decimal('fine_percentage', 5, 2)->default(0);
+                    $table->unsignedBigInteger('ptdh_additional_fee')->default(0);
                     $table->string('fine_status')->default('Lunas');
                     $table->string('pocket_proof')->nullable();
                     $table->string('key_proof')->nullable();
@@ -705,6 +899,17 @@ class ResignationController extends Controller
                     $table->text('notes')->nullable();
                     $table->timestamps();
                 });
+            } else {
+                if (!Schema::hasColumn('resignation_logs', 'type')) {
+                    Schema::table('resignation_logs', function (Blueprint $table) {
+                        $table->string('type', 20)->default('resignation')->after('user_id');
+                    });
+                }
+                if (!Schema::hasColumn('resignation_logs', 'ptdh_additional_fee')) {
+                    Schema::table('resignation_logs', function (Blueprint $table) {
+                        $table->unsignedBigInteger('ptdh_additional_fee')->default(0)->after('fine_percentage');
+                    });
+                }
             }
         } catch (\Throwable $e) {
             Log::warning('[Resignation] Schema ensure warning: ' . $e->getMessage());

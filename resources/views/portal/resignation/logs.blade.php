@@ -93,7 +93,18 @@
                         @foreach($logs as $log)
                         <tr class="hover:bg-white/5 transition-colors">
                             <td class="px-5 py-3.5">
-                                <div class="text-white font-bold">{{ $log->member_name }}</div>
+                                <div class="text-white font-bold flex items-center gap-2 flex-wrap">
+                                    <span>{{ $log->member_name }}</span>
+                                    @if($log->isPtdh())
+                                    <span class="px-2 py-0.5 rounded-full bg-rose-500/25 text-rose-300 border border-rose-500/40 text-[10px] font-black uppercase tracking-wide inline-flex items-center gap-1 shadow-sm">
+                                        <i class="fas fa-gavel text-[9px]"></i> PTDH
+                                    </span>
+                                    @else
+                                    <span class="px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[10px] font-bold uppercase tracking-wide">
+                                        Resign
+                                    </span>
+                                    @endif
+                                </div>
                                 <div class="text-white/50 text-xs flex items-center gap-1.5 mt-0.5">
                                     <span class="px-1.5 py-0.5 rounded bg-white/10 text-white/80 font-mono text-[11px]">
                                         Citizen ID: {{ $log->citizen_id ?? '-' }}
@@ -114,7 +125,10 @@
                             </td>
                             <td class="px-5 py-3.5 whitespace-nowrap">
                                 <div class="text-orange-300 font-bold">$ {{ number_format($log->total_fine, 0, ',', '.') }}</div>
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                @if($log->isPtdh() && $log->ptdh_additional_fee > 0)
+                                <div class="text-rose-300/80 text-[11px] font-medium">+ PTDH Fee: ${{ number_format($log->ptdh_additional_fee, 0, ',', '.') }}</div>
+                                @endif
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 mt-0.5">
                                     <i class="fas fa-check"></i> {{ $log->fine_status }}
                                 </span>
                             </td>
@@ -185,7 +199,10 @@
                 </span>
                 <div>
                     <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                        Arsip Riwayat Resign: <span id="modalMemberName" class="text-emerald-300"></span>
+                        Arsip Riwayat: <span id="modalMemberName" class="text-emerald-300"></span>
+                        <span id="modalPtdhBadge" class="hidden px-2 py-0.5 rounded-full bg-rose-500/30 text-rose-300 border border-rose-500/50 text-[10px] font-black uppercase">
+                            <i class="fas fa-gavel"></i> PTDH
+                        </span>
                     </h3>
                     <p class="text-xs text-white/50">
                         Citizen ID: <span id="modalCitizenId" class="text-white font-medium"></span> • 
@@ -229,6 +246,10 @@
                         <div class="flex justify-between">
                             <span>Total Denda:</span>
                             <span id="modalFineTotal" class="font-bold text-orange-400"></span>
+                        </div>
+                        <div id="modalPtdhFeeRow" class="hidden flex justify-between text-rose-300 font-medium">
+                            <span>Biaya Tambahan PTDH:</span>
+                            <span id="modalPtdhFee" class="font-bold"></span>
                         </div>
                         <div class="flex justify-between">
                             <span>Persentase:</span>
@@ -345,6 +366,19 @@ function openLogDetailModal(log) {
     document.getElementById('modalFineTotal').innerText = '$ ' + Number(log.total_fine || 0).toLocaleString('id-ID');
     document.getElementById('modalFinePct').innerText = (log.fine_percentage || 0) + '%';
     document.getElementById('modalFineStatus').innerText = log.fine_status || 'Lunas';
+
+    const ptdhBadge = document.getElementById('modalPtdhBadge');
+    const ptdhRow = document.getElementById('modalPtdhFeeRow');
+    if (log.type === 'ptdh') {
+        if (ptdhBadge) ptdhBadge.classList.remove('hidden');
+        if (ptdhRow) {
+            ptdhRow.classList.remove('hidden');
+            document.getElementById('modalPtdhFee').innerText = '$ ' + Number(log.ptdh_additional_fee || 0).toLocaleString('id-ID');
+        }
+    } else {
+        if (ptdhBadge) ptdhBadge.classList.add('hidden');
+        if (ptdhRow) ptdhRow.classList.add('hidden');
+    }
 
     document.getElementById('modalVerifier').innerText = log.ie_verifier_name || '-';
     document.getElementById('modalDeactivator').innerText = log.ie_deactivator_name || '-';

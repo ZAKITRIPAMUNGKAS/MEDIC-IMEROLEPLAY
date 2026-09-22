@@ -9,8 +9,13 @@ use Illuminate\Support\Facades\Storage;
 
 class ResignationRequest extends Model
 {
+    // Tipe Pengajuan / Sanksi
+    const TYPE_RESIGNATION = 'resignation';
+    const TYPE_PTDH        = 'ptdh';
+
     protected $fillable = [
         'user_id',
+        'type',
         'letter_date',
         'applicant_name',
         'position',
@@ -27,6 +32,7 @@ class ResignationRequest extends Model
         // IE denda
         'base_salary',
         'fine_percentage',
+        'ptdh_additional_fee',
         'fine_amount',
         'fine_paid',
         'ie_verified_by',
@@ -52,6 +58,7 @@ class ResignationRequest extends Model
         'final_deactivated_at' => 'datetime',
         'base_salary'          => 'integer',
         'fine_percentage'      => 'float',
+        'ptdh_additional_fee'  => 'integer',
         'fine_amount'          => 'integer',
         'fine_paid'            => 'boolean',
     ];
@@ -216,7 +223,25 @@ class ResignationRequest extends Model
         }
 
         $this->fine_percentage = $pct;
-        $this->fine_amount     = (int) round(($this->base_salary ?? 0) * $pct / 100);
+        $baseFine              = (int) round(($this->base_salary ?? 0) * $pct / 100);
+        $additionalFee         = $this->isPtdh() ? (int) ($this->ptdh_additional_fee ?? 250000) : 0;
+        $this->fine_amount     = $baseFine + $additionalFee;
+    }
+
+    /**
+     * Apakah pengajuan ini merupakan sanksi PTDH?
+     */
+    public function isPtdh(): bool
+    {
+        return ($this->type ?? self::TYPE_RESIGNATION) === self::TYPE_PTDH;
+    }
+
+    /**
+     * Denda murni sebelum biaya tambahan PTDH.
+     */
+    public function getBaseFineAmountAttribute(): int
+    {
+        return (int) round(($this->base_salary ?? 0) * ($this->fine_percentage ?? 30) / 100);
     }
 
     /**

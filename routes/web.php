@@ -1501,6 +1501,8 @@ Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->gro
         Route::post('/{resignation}/pnd-cancel',        [\App\Http\Controllers\Portal\ResignationController::class, 'pndCancel'])->name('pnd-cancel');
         // IE
         Route::get('/manage/ie',                        [\App\Http\Controllers\Portal\ResignationController::class, 'manageIe'])->name('manage.ie');
+        Route::get('/ptdh-calculate',                   [\App\Http\Controllers\Portal\ResignationController::class, 'ptdhCalculate'])->name('ptdh-calculate');
+        Route::post('/ptdh-store',                      [\App\Http\Controllers\Portal\ResignationController::class, 'ptdhStore'])->name('ptdh-store');
         Route::post('/{resignation}/ie-verify-payment', [\App\Http\Controllers\Portal\ResignationController::class, 'ieVerifyPayment'])->name('ie-verify');
         Route::post('/{resignation}/ie-request-revision',[\App\Http\Controllers\Portal\ResignationController::class, 'ieRequestProofRevision'])->name('ie-request-revision');
         Route::post('/{resignation}/ie-final-confirm',  [\App\Http\Controllers\Portal\ResignationController::class, 'ieFinalConfirm'])->name('ie-final-confirm');

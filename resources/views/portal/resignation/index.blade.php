@@ -58,11 +58,53 @@
         @endif
 
         @if($request)
-        {{-- Progress Flow Alur Resign --}}
+
+        {{-- Banner Sanksi PTDH (Jika tipe PTDH) --}}
+        @if($request->isPtdh())
+        <div class="mb-6 p-5 bg-gradient-to-r from-rose-950/70 via-red-900/50 to-amber-950/70 border-2 border-rose-500/60 rounded-2xl shadow-2xl relative overflow-hidden">
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-rose-500/20 border border-rose-500/50 flex items-center justify-center text-rose-300 shrink-0 text-2xl shadow-inner">
+                    <i class="fas fa-gavel"></i>
+                </div>
+                <div class="flex-1">
+                    <div class="flex items-center gap-2.5 flex-wrap mb-1">
+                        <h2 class="text-base sm:text-lg font-extrabold text-white tracking-wide">Pemberhentian Tidak Dengan Hormat (PTDH)</h2>
+                        <span class="px-2.5 py-0.5 rounded-full bg-rose-500/30 text-rose-200 border border-rose-500/50 text-[11px] font-black uppercase tracking-wider">
+                            Sanksi IE
+                        </span>
+                    </div>
+                    <p class="text-xs sm:text-sm text-rose-100/80 leading-relaxed">
+                        Divisi Industrial &amp; Employee Relations (IE) telah menerbitkan surat keputusan dan kalkulasi denda <strong>PTDH</strong> untuk Anda. Silakan selesaikan pembayaran denda dan unggah <strong>4 berkas bukti administrasi</strong> di bawah ini agar proses administrasi dapat diselesaikan.
+                    </p>
+
+                    <div class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+                        <div class="bg-black/40 p-2.5 rounded-xl border border-white/10">
+                            <span class="text-white/40 block text-[10px] uppercase font-semibold">Akumulasi Gapok</span>
+                            <span class="text-white font-bold text-xs sm:text-sm">$ {{ number_format($request->base_salary, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="bg-black/40 p-2.5 rounded-xl border border-white/10">
+                            <span class="text-white/40 block text-[10px] uppercase font-semibold">Denda Dasar ({{ $request->fine_percentage }}%)</span>
+                            <span class="text-white font-bold text-xs sm:text-sm">$ {{ number_format($request->base_fine_amount, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="bg-black/40 p-2.5 rounded-xl border border-rose-500/30">
+                            <span class="text-rose-300/80 block text-[10px] uppercase font-semibold">Biaya Tambahan PTDH</span>
+                            <span class="text-rose-300 font-extrabold text-xs sm:text-sm">$ {{ number_format($request->ptdh_additional_fee, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="bg-gradient-to-r from-amber-500/20 to-rose-500/20 p-2.5 rounded-xl border-2 border-amber-500/50">
+                            <span class="text-amber-300 block text-[10px] uppercase font-black">Total Wajib Bayar</span>
+                            <span class="text-amber-300 font-black text-sm sm:text-base">$ {{ number_format($request->fine_amount, 0, ',', '.') }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        {{-- Progress Flow Alur Resign / PTDH --}}
         <div class="mb-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-xl">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-white/70 text-xs uppercase tracking-wider font-bold flex items-center gap-2">
-                    <i class="fas fa-stream text-orange-400"></i> Alur Tahapan Proses Resign
+                    <i class="fas fa-stream text-orange-400"></i> Alur Tahapan {{ $request->isPtdh() ? 'Proses PTDH' : 'Proses Resign' }}
                 </h3>
                 <span class="text-xs px-2.5 py-1 rounded-full font-semibold border
                     @if($request->status === 'completed') bg-emerald-500/20 text-emerald-300 border-emerald-500/40
@@ -213,17 +255,23 @@
                         </div>
                     </div>
 
-                    {{-- 3. Foto Surat Resign --}}
+                    {{-- 3. Foto Surat Resign / SK PTDH --}}
                     <div class="bg-white/5 border border-white/10 rounded-xl p-4 hover:border-purple-400/50 transition-all flex flex-col justify-between">
                         <div>
                             <div class="flex items-center justify-between mb-2">
                                 <label class="text-sm font-bold text-white flex items-center gap-2">
                                     <span class="w-6 h-6 rounded-lg bg-purple-500/30 text-purple-300 text-xs flex items-center justify-center font-extrabold">3</span>
-                                    Foto Surat Resign <span class="text-rose-400">*</span>
+                                    Foto Surat {{ $request->isPtdh() ? 'Keputusan PTDH' : 'Resign' }} <span class="text-rose-400">*</span>
                                 </label>
-                                <span class="text-[10px] uppercase font-semibold text-purple-300/80 bg-purple-500/20 px-2 py-0.5 rounded">Surat Resmi</span>
+                                <span class="text-[10px] uppercase font-semibold text-purple-300/80 bg-purple-500/20 px-2 py-0.5 rounded">{{ $request->isPtdh() ? 'SK PTDH' : 'Surat Resmi' }}</span>
                             </div>
-                            <p class="text-xs text-white/50 mb-3">Screenshot surat permohonan pengunduran diri yang telah Anda susun.</p>
+                            <p class="text-xs text-white/50 mb-3">
+                                @if($request->isPtdh())
+                                Screenshot surat keputusan PTDH atau bukti pemberitahuan resmi dari IE.
+                                @else
+                                Screenshot surat permohonan pengunduran diri yang telah Anda susun.
+                                @endif
+                            </p>
                         </div>
                         
                         <div class="space-y-2">
@@ -231,7 +279,7 @@
                                    onchange="previewProofImage(this, 'preview_letter')"
                                    class="block w-full text-xs text-white/70 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-500 file:cursor-pointer bg-white/5 rounded-lg border border-white/10 focus:outline-none">
                             <div id="preview_letter" class="hidden mt-2 relative rounded-lg overflow-hidden border border-purple-500/40 max-h-40 bg-black/40">
-                                <img src="" alt="Preview Surat Resign" class="w-full h-36 object-cover">
+                                <img src="" alt="Preview Surat" class="w-full h-36 object-cover">
                             </div>
                         </div>
                     </div>
@@ -242,11 +290,11 @@
                             <div class="flex items-center justify-between mb-2">
                                 <label class="text-sm font-bold text-white flex items-center gap-2">
                                     <span class="w-6 h-6 rounded-lg bg-purple-500/30 text-purple-300 text-xs flex items-center justify-center font-extrabold">4</span>
-                                    Foto Billing Denda <span class="text-rose-400">*</span>
+                                    Foto Billing Denda {{ $request->isPtdh() ? 'PTDH' : 'Resign' }} <span class="text-rose-400">*</span>
                                 </label>
                                 <span class="text-[10px] uppercase font-semibold text-purple-300/80 bg-purple-500/20 px-2 py-0.5 rounded">Bukti Pembayaran</span>
                             </div>
-                            <p class="text-xs text-white/50 mb-3">Screenshot bukti transfer / billing pelunasan denda resign (${{ number_format($request->fine_amount, 0, ',', '.') }}).</p>
+                            <p class="text-xs text-white/50 mb-3">Screenshot bukti transfer / billing pelunasan denda {{ $request->isPtdh() ? 'PTDH' : 'resign' }} (${{ number_format($request->fine_amount, 0, ',', '.') }}).</p>
                         </div>
                         
                         <div class="space-y-2">
@@ -404,8 +452,28 @@
                 @if($request->status !== 'pending_pnd')
                 <div class="p-4 bg-orange-500/10 rounded-xl border border-orange-500/20">
                     <p class="text-xs text-orange-300 uppercase tracking-wider mb-2 font-bold flex items-center gap-1.5">
-                        <i class="fas fa-coins text-orange-400"></i> Rincian Denda Resign (IE)
+                        <i class="fas fa-coins text-orange-400"></i> {{ $request->isPtdh() ? 'Rincian Denda PTDH (IE)' : 'Rincian Denda Resign (IE)' }}
                     </p>
+                    @if($request->isPtdh())
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
+                        <div class="p-2 rounded-lg bg-black/20">
+                            <p class="text-white/40 text-[11px] mb-0.5">Akumulasi Gapok</p>
+                            <p class="text-white font-bold text-xs sm:text-sm">$ {{ number_format($request->base_salary, 0, ',', '.') }}</p>
+                        </div>
+                        <div class="p-2 rounded-lg bg-black/20">
+                            <p class="text-white/40 text-[11px] mb-0.5">Denda Dasar ({{ $request->fine_percentage }}%)</p>
+                            <p class="text-white font-bold text-xs sm:text-sm">$ {{ number_format($request->base_fine_amount, 0, ',', '.') }}</p>
+                        </div>
+                        <div class="p-2 rounded-lg bg-black/20">
+                            <p class="text-rose-300/80 text-[11px] mb-0.5">Biaya Tambahan PTDH</p>
+                            <p class="text-rose-300 font-extrabold text-xs sm:text-sm">$ {{ number_format($request->ptdh_additional_fee, 0, ',', '.') }}</p>
+                        </div>
+                        <div class="p-2 rounded-lg bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30">
+                            <p class="text-amber-300 text-[11px] mb-0.5 font-bold">Total Denda PTDH</p>
+                            <p class="text-amber-300 font-black text-xs sm:text-sm">$ {{ number_format($request->fine_amount, 0, ',', '.') }}</p>
+                        </div>
+                    </div>
+                    @else
                     <div class="grid grid-cols-3 gap-3 text-center">
                         <div class="p-2 rounded-lg bg-black/20">
                             <p class="text-white/40 text-[11px] mb-0.5">Akumulasi Gaji Pokok</p>
@@ -420,6 +488,7 @@
                             <p class="text-orange-400 font-extrabold text-sm">$ {{ number_format($request->fine_amount, 0, ',', '.') }}</p>
                         </div>
                     </div>
+                    @endif
                     <div class="mt-3 text-center">
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold {{ $request->fine_paid ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-300 border border-rose-500/30' }}">
                             <i class="fas {{ $request->fine_paid ? 'fa-check-circle' : 'fa-hourglass-half' }}"></i>

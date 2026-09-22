@@ -33,6 +33,10 @@
 
             <div class="flex items-center gap-2.5 flex-wrap">
                 @if($stage === 'ie')
+                <button type="button" onclick="openPtdhModal()"
+                   class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600 hover:from-amber-500 hover:via-orange-500 hover:to-rose-500 text-white text-xs sm:text-sm font-extrabold rounded-xl shadow-lg shadow-orange-950/40 transition-all cursor-pointer">
+                    <i class="fas fa-gavel"></i> + Hitung Denda PTDH
+                </button>
                 <a href="{{ route('portal.resignation.logs') }}"
                    class="inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs sm:text-sm font-bold rounded-xl shadow-lg shadow-emerald-950/40 transition-all">
                     <i class="fas fa-archive"></i> Buka Arsip Log Resign
@@ -119,7 +123,14 @@
                         @foreach($requests as $req)
                         <tr class="hover:bg-white/5 transition-colors">
                             <td class="py-4 px-6">
-                                <div class="text-white font-semibold text-sm">{{ $req->applicant_name }}</div>
+                                <div class="text-white font-semibold text-sm flex items-center gap-2 flex-wrap">
+                                    <span>{{ $req->applicant_name }}</span>
+                                    @if($req->isPtdh())
+                                    <span class="px-2 py-0.5 rounded-full bg-rose-500/25 text-rose-300 border border-rose-500/40 text-[10px] font-extrabold uppercase tracking-wide inline-flex items-center gap-1 shadow-sm shadow-rose-950/30">
+                                        <i class="fas fa-gavel text-[9px]"></i> PTDH
+                                    </span>
+                                    @endif
+                                </div>
                                 <div class="text-white/40 text-xs flex items-center gap-2 mt-0.5">
                                     <span>ID: {{ $req->user?->staff_id ?? '-' }}</span>
                                     <span>•</span>
@@ -156,12 +167,19 @@
                             @if($stage === 'ie')
                             <td class="py-4 px-5 whitespace-nowrap">
                                 <div class="text-amber-300 font-extrabold text-sm">$ {{ number_format($req->fine_amount, 0, ',', '.') }}</div>
+                                @if($req->isPtdh())
+                                <div class="text-rose-300 text-xs mt-0.5 font-semibold flex items-center gap-1">
+                                    <i class="fas fa-plus-circle text-[10px] text-rose-400"></i> PTDH: ${{ number_format($req->ptdh_additional_fee, 0, ',', '.') }}
+                                </div>
+                                <div class="text-white/40 text-[11px] mt-0.5">(Denda Dasar: ${{ number_format($req->base_fine_amount, 0, ',', '.') }})</div>
+                                @else
                                 <div class="text-white/40 text-xs mt-0.5">{{ $req->fine_percentage }}% dari gapok (${{ number_format($req->base_salary, 0, ',', '.') }})</div>
+                                @endif
                             </td>
                             <td class="py-4 px-5 text-center whitespace-nowrap">
                                 @if($req->hasAllProofs())
                                 <button type="button"
-                                        onclick="openProofPreviewModal({{ $req->id }}, '{{ addslashes($req->applicant_name) }}', '{{ $req->pocket_proof_url }}', '{{ $req->key_proof_url }}', '{{ $req->letter_proof_url }}', '{{ $req->fine_proof_url }}')"
+                                        onclick="openProofPreviewModal({{ $req->id }}, '{{ addslashes($req->applicant_name) }}', '{{ $req->pocket_proof_url }}', '{{ $req->key_proof_url }}', '{{ $req->letter_proof_url }}', '{{ $req->fine_proof_url }}', {{ $req->isPtdh() ? 'true' : 'false' }}, '{{ number_format($req->ptdh_additional_fee, 0, ',', '.') }}', '{{ number_format($req->base_fine_amount, 0, ',', '.') }}')"
                                         class="px-3 py-1.5 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 rounded-xl border border-cyan-500/40 text-xs font-bold inline-flex items-center gap-1.5 transition-all shadow-sm shadow-cyan-950/30">
                                     <i class="fas fa-images"></i> 4 Bukti Lengkap
                                 </button>
@@ -246,7 +264,7 @@
                                     <div class="flex items-center justify-end gap-2">
                                         {{-- Tombol Periksa Bukti (Membuka Modal Review & Keputusan) --}}
                                         <button type="button"
-                                                onclick="openIeReviewModal({{ $req->id }}, '{{ addslashes($req->applicant_name) }}', '{{ $req->user?->citizen_id ?? '-' }}', '{{ addslashes($req->position) }}', '{{ number_format($req->fine_amount, 0, ',', '.') }}', '{{ $req->pocket_proof_url ?? '' }}', '{{ $req->key_proof_url ?? '' }}', '{{ $req->letter_proof_url ?? '' }}', '{{ $req->fine_proof_url ?? '' }}', '{{ addslashes($req->proof_revision_notes ?? '') }}')"
+                                                onclick="openIeReviewModal({{ $req->id }}, '{{ addslashes($req->applicant_name) }}', '{{ $req->user?->citizen_id ?? '-' }}', '{{ addslashes($req->position) }}', '{{ number_format($req->fine_amount, 0, ',', '.') }}', '{{ $req->pocket_proof_url ?? '' }}', '{{ $req->key_proof_url ?? '' }}', '{{ $req->letter_proof_url ?? '' }}', '{{ $req->fine_proof_url ?? '' }}', '{{ addslashes($req->proof_revision_notes ?? '') }}', {{ $req->isPtdh() ? 'true' : 'false' }}, '{{ number_format($req->ptdh_additional_fee, 0, ',', '.') }}', '{{ number_format($req->base_fine_amount, 0, ',', '.') }}')"
                                                 class="px-3.5 py-2 bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white text-xs font-bold rounded-xl shadow-md shadow-sky-950/40 transition-all flex items-center gap-1.5">
                                             <i class="fas fa-search-plus"></i> Cross-Check Bukti
                                         </button>
@@ -295,12 +313,16 @@
                 </span>
                 <div>
                     <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                        Cross-Check Bukti Resign: <span id="reviewApplicantName" class="text-cyan-300 font-extrabold"></span>
+                        Cross-Check Bukti: <span id="reviewApplicantName" class="text-cyan-300 font-extrabold"></span>
+                        <span id="reviewPtdhBadge" class="hidden px-2 py-0.5 rounded-full bg-rose-500/30 text-rose-300 border border-rose-500/50 text-[10px] font-extrabold uppercase tracking-wide">
+                            <i class="fas fa-gavel"></i> PTDH
+                        </span>
                     </h3>
                     <p class="text-xs text-white/50">
                         Citizen ID: <span id="reviewCitizenId" class="text-white font-medium"></span> • 
                         Jabatan: <span id="reviewPosition" class="text-white font-medium"></span> • 
-                        Denda: <span id="reviewFineAmount" class="text-orange-400 font-bold">$ </span>
+                        Total Denda: <span id="reviewFineAmount" class="text-orange-400 font-bold"></span>
+                        <span id="reviewFineDetails" class="text-rose-300/90 text-xs font-semibold ml-1"></span>
                     </p>
                 </div>
             </div>
@@ -448,9 +470,237 @@
     </div>
 </div>
 
+{{-- ═══════════════════════════════════════════════════════════════════════════ --}}
+{{-- MODAL HITUNG & TERBITKAN DENDA PTDH OLEH IE --}}
+{{-- ═══════════════════════════════════════════════════════════════════════════ --}}
+<div id="ptdhModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md hidden p-4 overflow-y-auto">
+    <div class="bg-gray-900 border border-amber-500/40 rounded-2xl w-full max-w-2xl p-6 shadow-2xl my-auto relative">
+        <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
+            <div class="flex items-center gap-3">
+                <span class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-rose-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
+                    <i class="fas fa-gavel text-lg"></i>
+                </span>
+                <div>
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        Hitung Denda PTDH Anggota Medis
+                    </h3>
+                    <p class="text-xs text-white/50">
+                        Pilih anggota medis dan terbitkan perhitungan denda PTDH secara langsung tanpa menunggu pengajuan resign.
+                    </p>
+                </div>
+            </div>
+            <button type="button" onclick="closeModal('ptdhModal')" class="text-white/50 hover:text-white p-2 rounded-lg text-lg transition-colors">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <form id="ptdhForm" action="{{ route('portal.resignation.ptdh-store') }}" method="POST" class="space-y-4">
+            @csrf
+
+            {{-- Pemilihan Anggota Medis --}}
+            <div>
+                <label class="block text-xs font-bold text-amber-300 uppercase tracking-wider mb-2 flex items-center gap-2">
+                    <i class="fas fa-user-md"></i> Pilih Anggota Medis Aktif <span class="text-rose-400">*</span>
+                </label>
+                <select id="ptdh_user_id" name="user_id" required onchange="fetchPtdhCalculation(this.value)"
+                        class="w-full px-3.5 py-2.5 bg-black/50 border border-white/20 rounded-xl text-white text-sm focus:outline-none focus:border-amber-400 cursor-pointer">
+                    <option value="" class="bg-slate-900 text-white/60">-- Pilih Nama Staf Medis yang akan di-PTDH --</option>
+                    @if(isset($staffList))
+                        @foreach($staffList as $staff)
+                        <option value="{{ $staff->id }}" class="bg-slate-900 text-white">
+                            {{ $staff->name }} ({{ $staff->role?->display_name ?? 'Staf' }} | ID: {{ $staff->staff_id ?? '-' }} | Citizen: {{ $staff->citizen_id ?? '-' }})
+                        </option>
+                        @endforeach
+                    @endif
+                </select>
+                <p class="text-[11px] text-white/40 mt-1">Hanya memuat anggota rumah sakit yang berstatus aktif saat ini.</p>
+            </div>
+
+            {{-- Loading Spinner --}}
+            <div id="ptdhLoading" class="hidden py-6 text-center text-amber-400">
+                <i class="fas fa-circle-notch fa-spin text-2xl mb-2"></i>
+                <p class="text-xs text-white/70">Menghitung akumulasi riwayat gaji pokok dan skema denda staf...</p>
+            </div>
+
+            {{-- Container Hasil Kalkulasi Denda --}}
+            <div id="ptdhCalculationBox" class="hidden space-y-4">
+                {{-- Info Anggota --}}
+                <div class="p-3.5 bg-white/5 border border-white/10 rounded-xl grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                    <div>
+                        <span class="text-white/40 block text-[10px] uppercase font-semibold">Nama Lengkap</span>
+                        <span id="ptdh_disp_name" class="font-bold text-white truncate block"></span>
+                    </div>
+                    <div>
+                        <span class="text-white/40 block text-[10px] uppercase font-semibold">Jabatan / Role</span>
+                        <span id="ptdh_disp_position" class="font-medium text-white/90 truncate block"></span>
+                    </div>
+                    <div>
+                        <span class="text-white/40 block text-[10px] uppercase font-semibold">Citizen ID / Batch</span>
+                        <span id="ptdh_disp_citizen" class="font-medium text-white/90 truncate block"></span>
+                    </div>
+                    <div>
+                        <span class="text-white/40 block text-[10px] uppercase font-semibold">Persentase Denda</span>
+                        <span id="ptdh_disp_percentage" class="font-extrabold text-amber-300"></span>
+                    </div>
+                </div>
+
+                {{-- Rincian Perhitungan --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="p-3 bg-black/30 border border-white/10 rounded-xl">
+                        <span class="text-white/50 text-xs block">Akumulasi Gaji Pokok (Paid):</span>
+                        <div class="text-base font-extrabold text-white mt-0.5">$ <span id="ptdh_disp_salary">0</span></div>
+                        <span class="text-[10px] text-white/40">Total penerimaan gaji pokok murni (tanpa bonus)</span>
+                    </div>
+                    <div class="p-3 bg-black/30 border border-white/10 rounded-xl">
+                        <span class="text-white/50 text-xs block">Denda Resign Dasar:</span>
+                        <div class="text-base font-extrabold text-amber-300 mt-0.5">$ <span id="ptdh_disp_base_fine">0</span></div>
+                        <span class="text-[10px] text-white/40" id="ptdh_disp_base_formula">Persentase dari gaji pokok</span>
+                    </div>
+                </div>
+
+                {{-- Input Biaya Tambahan PTDH (Customizable) --}}
+                <div class="p-4 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-rose-500/10 border border-amber-500/30 rounded-xl">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                        <label class="text-xs font-bold text-amber-300 uppercase tracking-wide flex items-center gap-1.5">
+                            <i class="fas fa-plus-circle text-rose-400"></i> Biaya Tambahan PTDH <span class="text-rose-400">*</span>
+                        </label>
+                        <span class="text-[11px] text-amber-200/80 font-semibold bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/30">Customizable (Dapat Diubah IE)</span>
+                    </div>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-amber-400 font-extrabold text-sm">$</span>
+                        <input type="number" id="ptdh_additional_fee" name="ptdh_additional_fee" value="250000" min="0" step="1000" required
+                               oninput="recalculatePtdhTotal()"
+                               class="w-full pl-8 pr-4 py-2.5 bg-black/60 border border-amber-500/40 rounded-xl text-white font-extrabold text-base focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400">
+                    </div>
+                    <p class="text-[11px] text-white/50 mt-1.5 leading-relaxed">
+                        Sesuai ketentuan, sistem menambahkan biaya sebesar <strong>Rp250.000 / $250.000</strong>. Anda dapat mengubah nominal ini secara fleksibel sesuai dengan SK atau ketentuan yang berlaku.
+                    </p>
+                </div>
+
+                {{-- Total Denda PTDH --}}
+                <div class="p-4 bg-gradient-to-r from-orange-600/25 via-rose-600/25 to-amber-600/25 border-2 border-orange-500/50 rounded-xl flex items-center justify-between shadow-lg">
+                    <div>
+                        <span class="text-xs font-bold text-orange-200 uppercase tracking-wider block">Total Denda PTDH Wajib Dibayar</span>
+                        <div class="text-2xl font-black text-white mt-0.5">$ <span id="ptdh_disp_total_fine">0</span></div>
+                    </div>
+                    <div class="text-right">
+                        <span class="px-3 py-1 bg-rose-500/30 text-rose-300 border border-rose-500/50 rounded-lg text-xs font-extrabold uppercase inline-flex items-center gap-1">
+                            <i class="fas fa-gavel"></i> Total Tagihan
+                        </span>
+                        <div class="text-[10px] text-white/50 mt-1">Denda Pokok + Biaya PTDH</div>
+                    </div>
+                </div>
+
+                {{-- Alasan PTDH --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-white/70 mb-1">Alasan PTDH (IC)</label>
+                        <textarea name="reason_ic" rows="2" placeholder="Pelanggaran SOP medis, desersi dinas tanpa izin, dsb..."
+                                  class="w-full px-3 py-2 bg-black/40 border border-white/15 rounded-xl text-white text-xs focus:outline-none focus:border-amber-400"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-white/70 mb-1">Alasan PTDH (OOC)</label>
+                        <textarea name="reason_ooc" rows="2" placeholder="Alasan administratif internal atau catatan indisipliner..."
+                                  class="w-full px-3 py-2 bg-black/40 border border-white/15 rounded-xl text-white text-xs focus:outline-none focus:border-amber-400"></textarea>
+                    </div>
+                </div>
+
+                {{-- Catatan IE --}}
+                <div>
+                    <label class="block text-xs font-semibold text-white/70 mb-1">Catatan Tambahan IE (Opsional)</label>
+                    <input type="text" name="ie_notes" placeholder="Catatan instruksi pembayaran atau pelunasan denda..."
+                           class="w-full px-3 py-2 bg-black/40 border border-white/15 rounded-xl text-white text-xs focus:outline-none focus:border-amber-400">
+                </div>
+
+                {{-- Alur Informasi --}}
+                <div class="p-3 bg-purple-500/15 border border-purple-500/30 rounded-xl text-xs text-purple-200 flex items-start gap-2.5">
+                    <i class="fas fa-info-circle text-purple-400 text-sm mt-0.5 shrink-0"></i>
+                    <div class="leading-relaxed">
+                        Setelah perhitungan dikonfirmasi, alur <strong>langsung diteruskan ke Tahap Upload Bukti</strong> oleh staf medis (Foto Kantong full layar, Kunci tercabut, Surat/SK, dan Foto Billing Denda) sebelum penonaktifan akhir diverifikasi IE.
+                    </div>
+                </div>
+            </div>
+
+            {{-- Footer Action Buttons --}}
+            <div class="flex items-center justify-end gap-2.5 pt-4 border-t border-white/10">
+                <button type="button" onclick="closeModal('ptdhModal')" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white/70 hover:text-white rounded-xl text-xs font-semibold transition-all">
+                    Batal
+                </button>
+                <button type="submit" id="ptdhSubmitBtn" disabled
+                        onclick="return confirm('Apakah perhitungan denda PTDH ini telah sesuai? Status anggota akan langsung dialihkan ke tahap Upload Bukti.');"
+                        class="px-5 py-2.5 bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600 hover:from-amber-500 hover:to-rose-500 text-white rounded-xl text-xs font-extrabold shadow-lg shadow-orange-950/50 transition-all flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed">
+                    <i class="fas fa-check-circle"></i> Konfirmasi &amp; Terbitkan Denda PTDH
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
+let currentBaseFine = 0;
+
 function closeModal(id) {
     document.getElementById(id).classList.add('hidden');
+}
+
+function openPtdhModal() {
+    document.getElementById('ptdhModal').classList.remove('hidden');
+}
+
+function fetchPtdhCalculation(userId) {
+    if (!userId) {
+        document.getElementById('ptdhCalculationBox').classList.add('hidden');
+        document.getElementById('ptdhSubmitBtn').disabled = true;
+        return;
+    }
+
+    document.getElementById('ptdhLoading').classList.remove('hidden');
+    document.getElementById('ptdhCalculationBox').classList.add('hidden');
+    document.getElementById('ptdhSubmitBtn').disabled = true;
+
+    fetch('{{ route("portal.resignation.ptdh-calculate") }}?user_id=' + encodeURIComponent(userId), {
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById('ptdhLoading').classList.add('hidden');
+        if (!data.success) {
+            alert(data.message || 'Gagal menghitung denda PTDH.');
+            return;
+        }
+
+        currentBaseFine = data.base_fine;
+
+        document.getElementById('ptdh_disp_name').innerText = data.name;
+        document.getElementById('ptdh_disp_position').innerText = data.position;
+        document.getElementById('ptdh_disp_citizen').innerText = (data.citizen_id || '-') + (data.batch ? ' • ' + data.batch : '');
+        document.getElementById('ptdh_disp_percentage').innerText = data.fine_percentage + '%';
+        document.getElementById('ptdh_disp_salary').innerText = data.base_salary_formatted;
+        document.getElementById('ptdh_disp_base_fine').innerText = data.base_fine_formatted;
+        document.getElementById('ptdh_disp_base_formula').innerText = data.fine_percentage + '% dari gapok ($' + data.base_salary_formatted + ')';
+
+        // Set additional fee input
+        document.getElementById('ptdh_additional_fee').value = data.default_additional_fee;
+        recalculatePtdhTotal();
+
+        document.getElementById('ptdhCalculationBox').classList.remove('hidden');
+        document.getElementById('ptdhSubmitBtn').disabled = false;
+    })
+    .catch(err => {
+        document.getElementById('ptdhLoading').classList.add('hidden');
+        console.error('Error fetching PTDH calculation:', err);
+        alert('Terjadi kesalahan saat mengambil kalkulasi denda.');
+    });
+}
+
+function recalculatePtdhTotal() {
+    const feeInput = document.getElementById('ptdh_additional_fee');
+    const fee = parseInt(feeInput.value) || 0;
+    const total = currentBaseFine + fee;
+    document.getElementById('ptdh_disp_total_fine').innerText = total.toLocaleString('id-ID');
 }
 
 function openPndRejectModal(id, name) {
@@ -459,11 +709,23 @@ function openPndRejectModal(id, name) {
     document.getElementById('pndRejectModal').classList.remove('hidden');
 }
 
-function openIeReviewModal(id, name, citizenId, position, fineAmount, pocketUrl, keyUrl, letterUrl, fineUrl, revNotes) {
+function openIeReviewModal(id, name, citizenId, position, fineAmount, pocketUrl, keyUrl, letterUrl, fineUrl, revNotes, isPtdh = false, ptdhFee = '0', baseFine = '0') {
     document.getElementById('reviewApplicantName').innerText = name;
     document.getElementById('reviewCitizenId').innerText = citizenId;
     document.getElementById('reviewPosition').innerText = position;
-    document.getElementById('reviewFineAmount').innerText = '$ ' + fineAmount;
+
+    const ptdhBadge = document.getElementById('reviewPtdhBadge');
+    const fineSubtitle = document.getElementById('reviewFineDetails');
+
+    if (isPtdh) {
+        if (ptdhBadge) ptdhBadge.classList.remove('hidden');
+        document.getElementById('reviewFineAmount').innerText = '$ ' + fineAmount;
+        if (fineSubtitle) fineSubtitle.innerText = ' (Denda Dasar: $' + baseFine + ' + Biaya PTDH: $' + ptdhFee + ')';
+    } else {
+        if (ptdhBadge) ptdhBadge.classList.add('hidden');
+        document.getElementById('reviewFineAmount').innerText = '$ ' + fineAmount;
+        if (fineSubtitle) fineSubtitle.innerText = '';
+    }
 
     // Set preview images and links
     const placeholderImg = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="%23666" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>';
@@ -500,8 +762,8 @@ function toggleRevisionSection(show) {
     }
 }
 
-function openProofPreviewModal(id, name, pUrl, kUrl, lUrl, fUrl) {
-    openIeReviewModal(id, name, '-', '-', '0', pUrl, kUrl, lUrl, fUrl, '');
+function openProofPreviewModal(id, name, pUrl, kUrl, lUrl, fUrl, isPtdh = false, ptdhFee = '0', baseFine = '0') {
+    openIeReviewModal(id, name, '-', '-', '0', pUrl, kUrl, lUrl, fUrl, '', isPtdh, ptdhFee, baseFine);
 }
 </script>
 @endsection
