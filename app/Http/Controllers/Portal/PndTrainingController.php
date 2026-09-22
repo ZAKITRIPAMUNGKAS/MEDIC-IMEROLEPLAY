@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Models\TrainingApplication;
+use App\Models\MemberCertification;
+use App\Services\CertificateGeneratorService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class PndTrainingController extends Controller
 {
@@ -31,7 +34,15 @@ class PndTrainingController extends Controller
 
         $query = TrainingApplication::with(['user:id,name,staff_id,citizen_id', 'reviewer:id,name']);
 
-        if ($type !== 'all' && in_array($type, [TrainingApplication::TYPE_OPERASI, TrainingApplication::TYPE_SURAT_MENYURAT, TrainingApplication::TYPE_VISUM_HIDUP])) {
+        $validTypes = [
+            TrainingApplication::TYPE_OPERASI,
+            TrainingApplication::TYPE_SURAT_MENYURAT,
+            TrainingApplication::TYPE_VISUM_HIDUP,
+            TrainingApplication::TYPE_REKAM_MEDIS,
+            TrainingApplication::TYPE_PEMULSARAN_JENAZAH,
+        ];
+
+        if ($type !== 'all' && in_array($type, $validTypes)) {
             $query->where('training_type', $type);
         }
 
@@ -59,13 +70,15 @@ class PndTrainingController extends Controller
 
         // Statistics
         $stats = [
-            'total'          => TrainingApplication::count(),
-            'pending'        => TrainingApplication::where('status', TrainingApplication::STATUS_PENDING)->count(),
-            'approved'       => TrainingApplication::where('status', TrainingApplication::STATUS_APPROVED)->count(),
-            'rejected'       => TrainingApplication::where('status', TrainingApplication::STATUS_REJECTED)->count(),
-            'operasi'        => TrainingApplication::where('training_type', TrainingApplication::TYPE_OPERASI)->count(),
-            'surat_menyurat' => TrainingApplication::where('training_type', TrainingApplication::TYPE_SURAT_MENYURAT)->count(),
-            'visum_hidup'    => TrainingApplication::where('training_type', TrainingApplication::TYPE_VISUM_HIDUP)->count(),
+            'total'              => TrainingApplication::count(),
+            'pending'            => TrainingApplication::where('status', TrainingApplication::STATUS_PENDING)->count(),
+            'approved'           => TrainingApplication::where('status', TrainingApplication::STATUS_APPROVED)->count(),
+            'rejected'           => TrainingApplication::where('status', TrainingApplication::STATUS_REJECTED)->count(),
+            'operasi'            => TrainingApplication::where('training_type', TrainingApplication::TYPE_OPERASI)->count(),
+            'surat_menyurat'     => TrainingApplication::where('training_type', TrainingApplication::TYPE_SURAT_MENYURAT)->count(),
+            'visum_hidup'        => TrainingApplication::where('training_type', TrainingApplication::TYPE_VISUM_HIDUP)->count(),
+            'rekam_medis'        => TrainingApplication::where('training_type', TrainingApplication::TYPE_REKAM_MEDIS)->count(),
+            'pemulsaran_jenazah' => TrainingApplication::where('training_type', TrainingApplication::TYPE_PEMULSARAN_JENAZAH)->count(),
         ];
 
         // Available batches for filter
@@ -83,6 +96,96 @@ class PndTrainingController extends Controller
             'q',
             'availableBatches'
         ));
+    }
+
+    /**
+     * Otomatis terbitkan Sertifikat Resmi di profil anggota ketika pengajuan pelatihan disetujui (5 jenis pelatihan)
+     */
+    private function grantTrainingCertificate(TrainingApplication $application, ?int $reviewerId = null): ?MemberCertification
+    {
+        $userId = $application->user_id;
+        if (!$userId) {
+            return null;
+        }
+
+        $config = match ($application->training_type) {
+            TrainingApplication::TYPE_OPERASI => [
+                'type'     => 'operation_cert',
+                'title'    => 'Sertifikat Pelatihan Operasi Medis',
+                'division' => 'pnd',
+            ],
+            TrainingApplication::TYPE_SURAT_MENYURAT => [
+                'type'     => 'training_surat_menyurat',
+                'title'    => 'Sertifikat Pelatihan Surat Menyurat',
+                'division' => 'pnd',
+            ],
+            TrainingApplication::TYPE_VISUM_HIDUP => [
+                'type'     => 'visum_alive',
+                'title'    => 'Sertifikat Pelatihan Visum Hidup Medis',
+                'division' => 'pnd',
+            ],
+            TrainingApplication::TYPE_REKAM_MEDIS => [
+                'type'     => 'training_rekam_medis',
+                'title'    => 'Sertifikat Pelatihan Rekam Medis',
+                'division' => 'pnd',
+            ],
+            TrainingApplication::TYPE_PEMULSARAN_JENAZAH => [
+                'type'     => 'training_pemulsaran_jenazah',
+                'title'    => 'Sertifikat Pelatihan Pemulsaran Jenazah',
+                'division' => 'pnd',
+            ],
+            default => [
+                'type'     => 'training_' . $application->training_type,
+                'title'    => 'Sertifikat ' . ($application->type_label ?? 'Pelatihan Medis'),
+                'division' => 'pnd',
+            ],
+        };
+
+        // Cek apakah sertifikat tipe ini sudah ada untuk user
+        $cert = MemberCertification::where('user_id', $userId)
+            ->where(function ($q) use ($config) {
+                $q->where('type', $config['type'])
+                  ->orWhere('title', $config['title']);
+            })
+            ->first();
+
+        $batchInfo = !empty($application->batch) ? " (Batch {$application->batch})" : "";
+        $notes = "Diterbitkan otomatis melalui persetujuan {$application->type_label}{$batchInfo}.";
+
+        if (!$cert) {
+            $year = now()->format('Y');
+            $randomNum = rand(100, 999);
+            $certNumber = sprintf('ALTA/PND/%s/%04d', $year, $randomNum);
+
+            $cert = MemberCertification::create([
+                'user_id'            => $userId,
+                'type'               => $config['type'],
+                'division'           => $config['division'],
+                'title'              => $config['title'],
+                'certificate_number' => $certNumber,
+                'issued_by_user_id'  => $reviewerId ?? Auth::id(),
+                'issue_date'         => now(),
+                'notes'              => $notes,
+                'status'             => 'active',
+            ]);
+        } else {
+            $cert->update([
+                'status'            => 'active',
+                'issued_by_user_id' => $reviewerId ?? Auth::id(),
+                'issue_date'        => now(),
+                'notes'             => $notes,
+            ]);
+        }
+
+        // Generate file SVG sertifikat
+        try {
+            $filePath = CertificateGeneratorService::generate($cert);
+            $cert->update(['file_path' => $filePath]);
+        } catch (\Throwable $e) {
+            Log::warning('[TrainingCert] Gagal generate SVG: ' . $e->getMessage());
+        }
+
+        return $cert;
     }
 
     /**
@@ -104,13 +207,19 @@ class PndTrainingController extends Controller
             'reviewed_at' => now(),
         ]);
 
+        $certNotice = '';
+        if ($validated['status'] === 'approved') {
+            $this->grantTrainingCertificate($application, Auth::id());
+            $certNotice = ' Sertifikat resmi otomatis diterbitkan ke profil anggota.';
+        }
+
         $statusText = match ($validated['status']) {
             'approved' => 'disetujui',
             'rejected' => 'ditolak',
             default    => 'dikembalikan ke pending',
         };
 
-        return back()->with('success', "Pendaftaran {$application->nama_ic} ({$application->type_label}) berhasil {$statusText}!");
+        return back()->with('success', "Pendaftaran {$application->nama_ic} ({$application->type_label}) berhasil {$statusText}!{$certNotice}");
     }
 
     /**
@@ -136,17 +245,27 @@ class PndTrainingController extends Controller
             return back()->with('success', count($ids) . ' data pendaftaran berhasil dihapus.');
         }
 
-        $newStatus = ($action === 'approve') ? TrainingApplication::STATUS_APPROVED : TrainingApplication::STATUS_REJECTED;
-
-        TrainingApplication::whereIn('id', $ids)->update([
-            'status'      => $newStatus,
-            'admin_notes' => $notes,
-            'reviewed_by' => Auth::id(),
-            'reviewed_at' => now(),
-        ]);
-
-        $statusWord = ($action === 'approve') ? 'disetujui' : 'ditolak';
-        return back()->with('success', count($ids) . " data pendaftaran berhasil {$statusWord}.");
+        if ($action === 'approve') {
+            $applicationsToApprove = TrainingApplication::whereIn('id', $ids)->get();
+            foreach ($applicationsToApprove as $appItem) {
+                $appItem->update([
+                    'status'      => TrainingApplication::STATUS_APPROVED,
+                    'admin_notes' => $notes,
+                    'reviewed_by' => Auth::id(),
+                    'reviewed_at' => now(),
+                ]);
+                $this->grantTrainingCertificate($appItem, Auth::id());
+            }
+            return back()->with('success', count($ids) . ' data pendaftaran berhasil disetujui dan seluruh sertifikat otomatis diterbitkan ke profil anggota.');
+        } else {
+            TrainingApplication::whereIn('id', $ids)->update([
+                'status'      => TrainingApplication::STATUS_REJECTED,
+                'admin_notes' => $notes,
+                'reviewed_by' => Auth::id(),
+                'reviewed_at' => now(),
+            ]);
+            return back()->with('success', count($ids) . ' data pendaftaran berhasil ditolak.');
+        }
     }
 
     /**

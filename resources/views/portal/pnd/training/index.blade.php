@@ -124,6 +124,20 @@
                 <span>Visum Hidup</span>
                 <span class="px-2 py-0.5 rounded-full text-[10px] {{ $type === 'visum_hidup' ? 'bg-purple-700 text-white' : 'bg-white/10 text-white/60' }}">{{ $stats['visum_hidup'] }}</span>
             </a>
+
+            <a href="{{ route('portal.pnd.training.index', array_merge(request()->except(['type', 'page']), ['type' => 'rekam_medis'])) }}"
+               class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 {{ $type === 'rekam_medis' ? 'bg-cyan-500 text-white shadow-lg shadow-cyan-500/30' : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white' }}">
+                <i class="fas fa-file-medical"></i>
+                <span>Rekam Medis</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] {{ $type === 'rekam_medis' ? 'bg-cyan-700 text-white' : 'bg-white/10 text-white/60' }}">{{ $stats['rekam_medis'] ?? 0 }}</span>
+            </a>
+
+            <a href="{{ route('portal.pnd.training.index', array_merge(request()->except(['type', 'page']), ['type' => 'pemulsaran_jenazah'])) }}"
+               class="px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-2 {{ $type === 'pemulsaran_jenazah' ? 'bg-amber-500 text-slate-950 font-extrabold shadow-lg shadow-amber-500/30' : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white' }}">
+                <i class="fas fa-hand-holding-medical"></i>
+                <span>Pemulsaran Jenazah</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] {{ $type === 'pemulsaran_jenazah' ? 'bg-amber-700 text-white' : 'bg-white/10 text-white/60' }}">{{ $stats['pemulsaran_jenazah'] ?? 0 }}</span>
+            </a>
         </div>
 
         {{-- Filter and Search Bar --}}
@@ -242,9 +256,21 @@
                                             <span class="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 border border-blue-500/30 flex items-center justify-center text-xs shrink-0">
                                                 <i class="fas fa-envelope-open-text"></i>
                                             </span>
-                                        @else
+                                        @elseif($item->training_type === 'visum_hidup')
                                             <span class="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-400 border border-purple-500/30 flex items-center justify-center text-xs shrink-0">
                                                 <i class="fas fa-notes-medical"></i>
+                                            </span>
+                                        @elseif($item->training_type === 'rekam_medis')
+                                            <span class="w-7 h-7 rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex items-center justify-center text-xs shrink-0">
+                                                <i class="fas fa-file-medical"></i>
+                                            </span>
+                                        @elseif($item->training_type === 'pemulsaran_jenazah')
+                                            <span class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center text-xs shrink-0">
+                                                <i class="fas fa-hand-holding-medical"></i>
+                                            </span>
+                                        @else
+                                            <span class="w-7 h-7 rounded-lg bg-white/10 text-white/60 border border-white/20 flex items-center justify-center text-xs shrink-0">
+                                                <i class="fas fa-certificate"></i>
                                             </span>
                                         @endif
                                         <div>
@@ -361,23 +387,72 @@
             </div>
 
             <div class="mb-4">
-                <label class="block text-xs font-bold text-white mb-2">Pilih Status Verifikasi:</label>
-                <div class="grid grid-cols-3 gap-2">
-                    <label class="flex flex-col items-center justify-center p-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 cursor-pointer has-[:checked]:border-amber-500 has-[:checked]:bg-amber-500/15 transition-all text-center">
-                        <input type="radio" name="status" value="pending" class="sr-only">
-                        <i class="fas fa-clock text-amber-400 text-sm mb-1"></i>
-                        <span class="text-[11px] font-bold text-white">Pending</span>
-                    </label>
-                    <label class="flex flex-col items-center justify-center p-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 cursor-pointer has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-500/15 transition-all text-center">
-                        <input type="radio" name="status" value="approved" class="sr-only">
-                        <i class="fas fa-check-circle text-emerald-400 text-sm mb-1"></i>
-                        <span class="text-[11px] font-bold text-white">Setujui</span>
-                    </label>
-                    <label class="flex flex-col items-center justify-center p-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 cursor-pointer has-[:checked]:border-rose-500 has-[:checked]:bg-rose-500/15 transition-all text-center">
-                        <input type="radio" name="status" value="rejected" class="sr-only">
-                        <i class="fas fa-times-circle text-rose-400 text-sm mb-1"></i>
-                        <span class="text-[11px] font-bold text-white">Tolak</span>
-                    </label>
+                <div class="flex items-center justify-between mb-2">
+                    <label class="block text-xs font-bold text-white">Pilih Status Verifikasi:</label>
+                    <span id="selectedStatusText" class="text-[11px] font-bold text-emerald-400">Pilihan: Setujui</span>
+                </div>
+
+                <input type="hidden" name="status" id="modalStatusInput" value="approved">
+
+                <div class="space-y-2.5">
+                    {{-- Option 1: Pending --}}
+                    <div id="statusOpt_pending" onclick="selectStatusOption('pending')"
+                         class="flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all duration-200"
+                         style="background: rgba(255, 255, 255, 0.03); border-color: rgba(255, 255, 255, 0.12);">
+                        <div class="flex items-center gap-3">
+                            <div class="status-icon-box w-9 h-9 rounded-xl flex items-center justify-center text-sm shrink-0 border"
+                                 style="background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.5);">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs font-bold status-title text-white">Pending</div>
+                                <div class="text-[10px] text-white/50">Status pendaftaran masih menunggu review</div>
+                            </div>
+                        </div>
+                        <div class="status-indicator">
+                            <span class="inline-block w-4 h-4 rounded-full border border-white/20"></span>
+                        </div>
+                    </div>
+
+                    {{-- Option 2: Setujui (Approved) --}}
+                    <div id="statusOpt_approved" onclick="selectStatusOption('approved')"
+                         class="flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all duration-200"
+                         style="background: rgba(255, 255, 255, 0.03); border-color: rgba(255, 255, 255, 0.12);">
+                        <div class="flex items-center gap-3">
+                            <div class="status-icon-box w-9 h-9 rounded-xl flex items-center justify-center text-sm shrink-0 border"
+                                 style="background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.5);">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs font-bold status-title text-white">Setujui</div>
+                                <div class="text-[10px] text-emerald-400/90 font-medium flex items-center gap-1">
+                                    <i class="fas fa-certificate text-[9px]"></i> Otomatis terbitkan sertifikat resmi
+                                </div>
+                            </div>
+                        </div>
+                        <div class="status-indicator">
+                            <span class="inline-block w-4 h-4 rounded-full border border-white/20"></span>
+                        </div>
+                    </div>
+
+                    {{-- Option 3: Tolak (Rejected) --}}
+                    <div id="statusOpt_rejected" onclick="selectStatusOption('rejected')"
+                         class="flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all duration-200"
+                         style="background: rgba(255, 255, 255, 0.03); border-color: rgba(255, 255, 255, 0.12);">
+                        <div class="flex items-center gap-3">
+                            <div class="status-icon-box w-9 h-9 rounded-xl flex items-center justify-center text-sm shrink-0 border"
+                                 style="background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.5);">
+                                <i class="fas fa-times-circle"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs font-bold status-title text-white">Tolak</div>
+                                <div class="text-[10px] text-white/50">Tolak pendaftaran peserta pelatihan ini</div>
+                            </div>
+                        </div>
+                        <div class="status-indicator">
+                            <span class="inline-block w-4 h-4 rounded-full border border-white/20"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -495,6 +570,98 @@
         });
     });
 
+    // Interactive Status Option Click Handler
+    function selectStatusOption(status) {
+        const input = document.getElementById('modalStatusInput');
+        if (input) input.value = status;
+
+        const options = ['pending', 'approved', 'rejected'];
+        const configs = {
+            pending: {
+                bg: 'rgba(245, 158, 11, 0.16)',
+                border: '#f59e0b',
+                boxShadow: '0 0 16px rgba(245, 158, 11, 0.3)',
+                textColor: '#fbbf24',
+                iconBg: 'rgba(245, 158, 11, 0.25)',
+                iconBorder: '#f59e0b',
+                iconColor: '#f59e0b',
+                label: 'Pending (Menunggu Review)',
+                badgeBg: '#f59e0b',
+                badgeText: '#0f172a'
+            },
+            approved: {
+                bg: 'rgba(16, 185, 129, 0.2)',
+                border: '#10b981',
+                boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)',
+                textColor: '#6ee7b7',
+                iconBg: 'rgba(16, 185, 129, 0.3)',
+                iconBorder: '#10b981',
+                iconColor: '#34d399',
+                label: 'Setujui (Lulus & Terbitkan Sertifikat)',
+                badgeBg: '#10b981',
+                badgeText: '#022c22'
+            },
+            rejected: {
+                bg: 'rgba(244, 63, 94, 0.2)',
+                border: '#f43f5e',
+                boxShadow: '0 0 20px rgba(244, 63, 94, 0.4)',
+                textColor: '#fda4af',
+                iconBg: 'rgba(244, 63, 94, 0.3)',
+                iconBorder: '#f43f5e',
+                iconColor: '#fb7185',
+                label: 'Tolak (Gugur)',
+                badgeBg: '#f43f5e',
+                badgeText: '#ffffff'
+            }
+        };
+
+        const statusText = document.getElementById('selectedStatusText');
+        if (statusText && configs[status]) {
+            statusText.textContent = 'Pilihan: ' + configs[status].label;
+            statusText.style.color = configs[status].textColor;
+        }
+
+        options.forEach(opt => {
+            const el = document.getElementById('statusOpt_' + opt);
+            if (!el) return;
+
+            const iconBox = el.querySelector('.status-icon-box');
+            const title = el.querySelector('.status-title');
+            const indicator = el.querySelector('.status-indicator');
+
+            if (opt === status) {
+                const cfg = configs[opt];
+                el.style.backgroundColor = cfg.bg;
+                el.style.borderColor = cfg.border;
+                el.style.borderWidth = '2px';
+                el.style.boxShadow = cfg.boxShadow;
+                if (title) title.style.color = cfg.textColor;
+                if (iconBox) {
+                    iconBox.style.backgroundColor = cfg.iconBg;
+                    iconBox.style.borderColor = cfg.iconBorder;
+                    iconBox.style.color = cfg.iconColor;
+                }
+                if (indicator) {
+                    indicator.innerHTML = `<span style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 9999px; font-size: 11px; font-weight: 800; background: ${cfg.badgeBg}; color: ${cfg.badgeText}; box-shadow: 0 0 10px ${cfg.badgeBg};"><i class="fas fa-check-circle"></i> Terpilih</span>`;
+                }
+            } else {
+                el.style.backgroundColor = 'rgba(255, 255, 255, 0.03)';
+                el.style.borderColor = 'rgba(255, 255, 255, 0.12)';
+                el.style.borderWidth = '1px';
+                el.style.boxShadow = 'none';
+                if (title) title.style.color = 'rgba(255, 255, 255, 0.75)';
+                if (iconBox) {
+                    iconBox.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                    iconBox.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                    iconBox.style.color = 'rgba(255, 255, 255, 0.4)';
+                }
+                if (indicator) {
+                    indicator.innerHTML = `<span style="display: inline-block; width: 18px; height: 18px; border-radius: 9999px; border: 2px solid rgba(255, 255, 255, 0.2);"></span>`;
+                }
+            }
+        });
+    }
+
     // Review Modal
     function openReviewModal(id, name, typeLabel, currentStatus, notes) {
         const modal = document.getElementById('reviewModal');
@@ -506,8 +673,8 @@
         document.getElementById('modalTrainingType').textContent = typeLabel;
         document.getElementById('admin_notes').value = notes || '';
 
-        const radio = form.querySelector(`input[name="status"][value="${currentStatus}"]`);
-        if (radio) radio.checked = true;
+        // Terapkan tanda aktif pada pilihan status (Default ke currentStatus atau 'approved')
+        selectStatusOption(currentStatus || 'approved');
 
         modal.classList.remove('hidden');
         setTimeout(() => {

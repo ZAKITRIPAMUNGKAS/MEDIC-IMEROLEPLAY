@@ -29,7 +29,14 @@ class MemberCertification extends Model
     const TYPES = [
         'ga'  => ['vehicle_land' => 'Sertifikat Kendaraan Darat', 'vehicle_heli' => 'Sertifikat Kendaraan Heli'],
         'msl' => ['visum_alive' => 'Sertifikat Visum Hidup', 'visum_dead' => 'Sertifikat Visum Mati', 'stase' => 'Sertifikat Kelulusan Stase'],
-        'pnd' => ['operation_cert' => 'Sertifikat Operasi Medis'],
+        'pnd' => [
+            'operation_cert'              => 'Sertifikat Pelatihan Operasi Medis',
+            'training_operasi'            => 'Sertifikat Pelatihan Operasi Medis',
+            'training_surat_menyurat'     => 'Sertifikat Pelatihan Surat Menyurat',
+            'training_visum_hidup'        => 'Sertifikat Pelatihan Visum Hidup Medis',
+            'training_rekam_medis'        => 'Sertifikat Pelatihan Rekam Medis',
+            'training_pemulsaran_jenazah' => 'Sertifikat Pelatihan Pemulsaran Jenazah',
+        ],
         'ie'  => ['medical_contract' => 'Surat Perjanjian Kontrak Medis'],
     ];
 
