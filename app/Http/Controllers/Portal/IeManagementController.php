@@ -80,6 +80,7 @@ class IeManagementController extends Controller
             'role_id'       => 'required|exists:staff_roles,id',
             'medic_role_id' => 'nullable|exists:staff_roles,id',
             'sub_role_id'   => 'nullable|exists:staff_sub_roles,id',
+            'batch'         => 'nullable|string|max:50',
         ]);
 
         $oldRole = $user->role?->display_name;
@@ -89,6 +90,7 @@ class IeManagementController extends Controller
             'role_id'        => $validated['role_id'],
             'medic_role_id'  => $validated['medic_role_id'] ?? null,
             'sub_role_id'    => $validated['sub_role_id'] ?? null,
+            'batch'          => $request->filled('batch') ? $request->input('batch') : null,
             'is_interviewer' => $request->boolean('is_interviewer'),
         ]);
 

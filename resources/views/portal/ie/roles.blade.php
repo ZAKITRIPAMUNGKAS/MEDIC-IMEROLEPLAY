@@ -130,11 +130,13 @@
                                         <div class="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
                                             @if($staf->staff_id)
                                                 <span class="font-mono text-sky-300 bg-sky-500/10 px-1.5 py-0.5 rounded border border-sky-500/20 text-[11px]">{{ $staf->staff_id }}</span>
-                                            @endif
-                                            @if($staf->citizen_id && !str_contains($staf->citizen_id, '@'))
+                                                                              @if($staf->citizen_id && !str_contains($staf->citizen_id, '@'))
                                                 <span class="font-mono text-emerald-300 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20 text-[11px]">CID: {{ $staf->citizen_id }}</span>
                                             @else
                                                 <span class="font-mono text-slate-500 text-[11px]">CID: Belum Diatur</span>
+                                            @endif
+                                            @if($staf->batch)
+                                                {!! $staf->batch_badge_html !!}
                                             @endif
                                         </div>
                                     </div>
@@ -151,7 +153,7 @@
                                         <i class="fas fa-stethoscope text-[10px]"></i> {{ $staf->medicRole->display_name }}
                                     </span>
                                 @elseif($staf->role)
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-xs text-slate-300 bg-white/5 border border-white/10">
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs text-slate-300 bg-white/5 border border-white/10">
                                         <span class="text-slate-400 text-[10px] uppercase font-bold">Klinis:</span> {{ $staf->role->display_name }}
                                     </span>
                                 @else
@@ -176,7 +178,7 @@
                             </td>
                             <td class="px-5 py-3.5 text-center">
                                 <button type="button"
-                                        onclick="openEditRoleModal({{ $staf->id }}, '{{ addslashes($staf->name) }}', {{ $staf->role_id ?? 'null' }}, {{ $staf->medic_role_id ?? 'null' }}, {{ $staf->sub_role_id ?? 'null' }}, {{ $staf->isInterviewer() ? 'true' : 'false' }})"
+                                        onclick="openEditRoleModal({{ $staf->id }}, '{{ addslashes($staf->name) }}', {{ $staf->role_id ?? 'null' }}, {{ $staf->medic_role_id ?? 'null' }}, {{ $staf->sub_role_id ?? 'null' }}, {{ $staf->isInterviewer() ? 'true' : 'false' }}, '{{ $staf->batch ?? '' }}')"
                                         class="px-3 py-1.5 bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white rounded-xl text-xs font-semibold shadow-md transition-all flex items-center gap-1.5 mx-auto">
                                     <i class="fas fa-edit text-[10px]"></i> Ubah Jabatan
                                 </button>
@@ -258,6 +260,19 @@
                 </select>
             </div>
 
+            <div>
+                <label class="block text-xs font-semibold text-amber-300 uppercase mb-1.5">
+                    <i class="fas fa-award mr-1 text-amber-400"></i> Batch &amp; Periode Pendaftaran
+                </label>
+                <select name="batch" id="modalBatch" class="w-full bg-slate-800 text-white border border-white/20 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+                    <option value="">— Tidak Ada / Hapus Batch —</option>
+                    @foreach(\App\Models\User::BATCH_LIST as $bKey => $bData)
+                        <option value="{{ $bKey }}">{{ $bData['label'] }} ({{ $bData['roman'] }}) — Periode: {{ $bData['period'] }}</option>
+                    @endforeach
+                </select>
+                <p class="text-[11px] text-slate-400 mt-1">Badge batch otomatis tampil di profil dan direktori jika status anggota aktif.</p>
+            </div>
+
             <div class="p-3.5 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-between gap-3">
                 <div>
                     <span class="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
@@ -283,12 +298,13 @@
 </div>
 
 <script>
-function openEditRoleModal(id, name, roleId, medicRoleId, subRoleId, isInterviewer) {
+function openEditRoleModal(id, name, roleId, medicRoleId, subRoleId, isInterviewer, batch) {
     document.getElementById('modalStaffName').textContent = 'Anggota: ' + name;
     document.getElementById('editRoleForm').action = '/portal/ie/roles/' + id + '/update';
     document.getElementById('modalRoleId').value = roleId || '';
     document.getElementById('modalMedicRoleId').value = medicRoleId || '';
     document.getElementById('modalSubRoleId').value = subRoleId || '';
+    document.getElementById('modalBatch').value = batch || '';
     document.getElementById('modalIsInterviewer').checked = !!isInterviewer;
     document.getElementById('editRoleModal').classList.remove('hidden');
 }
