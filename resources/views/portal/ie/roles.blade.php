@@ -130,7 +130,8 @@
                                         <div class="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
                                             @if($staf->staff_id)
                                                 <span class="font-mono text-sky-300 bg-sky-500/10 px-1.5 py-0.5 rounded border border-sky-500/20 text-[11px]">{{ $staf->staff_id }}</span>
-                                                                              @if($staf->citizen_id && !str_contains($staf->citizen_id, '@'))
+                                            @endif
+                                            @if($staf->citizen_id && !str_contains($staf->citizen_id, '@'))
                                                 <span class="font-mono text-emerald-300 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20 text-[11px]">CID: {{ $staf->citizen_id }}</span>
                                             @else
                                                 <span class="font-mono text-slate-500 text-[11px]">CID: Belum Diatur</span>
