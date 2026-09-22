@@ -215,10 +215,11 @@ class ResignationController extends Controller
             $query->where('status', '!=', ResignationRequest::STATUS_CANCELLED);
         }
 
-        $requests = $query->paginate(30)->withQueryString();
-        $stage    = 'pnd';
+        $requests  = $query->paginate(30)->withQueryString();
+        $stage     = 'pnd';
+        $staffList = collect();
 
-        return view('portal.resignation.manage', compact('requests', 'stage'));
+        return view('portal.resignation.manage', compact('requests', 'stage', 'staffList'));
     }
 
     public function pndApprove(Request $request, ResignationRequest $resignation)
@@ -397,9 +398,9 @@ class ResignationController extends Controller
         $staffList = User::where('is_active', true)
             ->where('hospital', Auth::user()->hospital ?? 'alta')
             ->whereNotNull('role_id')
-            ->with(['role', 'effective_medic_role'])
+            ->with(['role', 'medicRole'])
             ->orderByRoleLevel()
-            ->get(['id', 'name', 'staff_id', 'citizen_id', 'role_id', 'batch']);
+            ->get(['id', 'name', 'staff_id', 'citizen_id', 'role_id', 'medic_role_id', 'batch']);
 
         return view('portal.resignation.manage', compact('requests', 'stage', 'staffList'));
     }
@@ -417,7 +418,7 @@ class ResignationController extends Controller
             return response()->json(['success' => false, 'message' => 'Anggota wajib dipilih.'], 400);
         }
 
-        $targetUser = User::with(['role', 'effective_medic_role'])->find($userId);
+        $targetUser = User::with(['role', 'medicRole'])->find($userId);
         if (!$targetUser) {
             return response()->json(['success' => false, 'message' => 'Data anggota medis tidak ditemukan.'], 404);
         }
@@ -493,7 +494,7 @@ class ResignationController extends Controller
             'ie_notes'            => 'nullable|string|max:1000',
         ]);
 
-        $targetUser = User::with(['role', 'effective_medic_role'])->findOrFail($validated['user_id']);
+        $targetUser = User::with(['role', 'medicRole'])->findOrFail($validated['user_id']);
 
         // Jika anggota sudah memiliki pengajuan resign aktif, batalkan agar tidak tumpang tindih
         ResignationRequest::where('user_id', $targetUser->id)
