@@ -374,8 +374,8 @@
         </div>
         @endif
 
-        {{-- ═══ SECTION: SERTIFIKAT & LISENSI RESMI ALTA (FOTO & DOKUMEN OTOMATIS) ═══ --}}
-        <div class="bg-white bg-opacity-10 backdrop-blur-md border border-white border-opacity-20 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
+        {{-- ═══ SECTION: SERTIFIKAT & LISENSI RESMI MEDIC (FOTO & DOKUMEN OTOMATIS) ═══ --}}
+        <div id="sertifikat-section" class="bg-white bg-opacity-10 backdrop-blur-md border border-white border-opacity-20 rounded-2xl p-6 sm:p-8 shadow-xl space-y-6">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">
                 <div class="flex items-center gap-3.5">
                     <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500/30 to-yellow-500/30 border border-amber-400/40 text-amber-300 flex items-center justify-center text-xl shadow-lg shrink-0">
@@ -383,19 +383,23 @@
                     </div>
                     <div>
                         <h2 class="text-xl font-bold text-white flex items-center gap-2">
-                            Sertifikat &amp; Lisensi Resmi Alta
+                            Sertifikat &amp; Lisensi Resmi Medic
                         </h2>
                         <p class="text-xs sm:text-sm text-sky-200 mt-0.5">
-                            Dokumen kompetensi, sertifikasi spesialisasi, dan lisensi medis terverifikasi
+                            Dokumen kompetensi, sertifikasi spesialisasi, dan lisensi medis terverifikasi seluruh jajaran Medic
                         </p>
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2">
+                <div class="flex flex-wrap items-center gap-2">
                     <span class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1.5 shadow-sm">
                         <i class="fas fa-certificate text-amber-400"></i>
                         {{ $certifications->count() }} Sertifikat Terdaftar
                     </span>
+                    <a href="{{ route('staff.certificates.index') }}" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/20 flex items-center gap-1.5 transition-all shadow-sm">
+                        <i class="fas fa-th-list text-sky-400"></i>
+                        <span>Semua Sertifikat Medic</span>
+                    </a>
                 </div>
             </div>
 

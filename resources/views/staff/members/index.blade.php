@@ -9,11 +9,15 @@
         {{-- Header --}}
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-                <h1 class="text-4xl font-bold text-white mb-2">
-                    <i class="fas fa-user-md mr-3 text-sky-400"></i>Direktori Dokter & Manajemen
+                <h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">
+                    <i class="fas fa-user-md mr-3 text-sky-400"></i>Direktori Dokter &amp; Manajemen
                 </h1>
-                <p class="text-sky-200">Pantau jadwal praktek, status duty, dan profil jajaran Dokter hingga Manajemen</p>
+                <p class="text-sky-200">Pantau jadwal praktek, status duty, profil jajaran Dokter hingga arsip Sertifikat Resmi</p>
             </div>
+            <a href="{{ route('staff.certificates.index') }}" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-sm font-bold shadow-lg transition-all">
+                <i class="fas fa-award text-base text-amber-400"></i>
+                <span>Sertifikat &amp; Lisensi Medic</span>
+            </a>
         </div>
 
         {{-- Filter & Search Container --}}
@@ -159,6 +163,14 @@
                                             </span>
                                         @endif
                                         {!! $member->batch_badge_html !!}
+                                        @if(($member->certifications_count ?? 0) > 0)
+                                            <a href="{{ route('staff.members.show', $member->id) }}#sertifikat-section"
+                                               class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold border bg-amber-500/20 text-amber-300 border-amber-500/30 hover:bg-amber-500/30 transition-colors"
+                                               title="{{ $member->certifications_count }} Sertifikat & Lisensi Resmi Terdaftar">
+                                                <i class="fas fa-award text-amber-400 text-[10px]"></i>
+                                                <span>{{ $member->certifications_count }} Sertifikat</span>
+                                            </a>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

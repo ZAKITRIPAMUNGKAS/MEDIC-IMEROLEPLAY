@@ -1429,6 +1429,9 @@
                                     <a href="{{ route('staff.members.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
                                         <i class="fas fa-users w-4 text-sky-500 text-sm"></i> Anggota Staf
                                     </a>
+                                    <a href="{{ route('staff.certificates.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                                        <i class="fas fa-award w-4 text-amber-500 text-sm"></i> Sertifikat &amp; Lisensi
+                                    </a>
                                     <a href="{{ route('staff.messages.index') }}" class="flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
                                         <span class="flex items-center gap-2.5"><i class="fas fa-envelope w-4 text-cyan-500 text-sm"></i> Pesan Internal</span>
                                         @if($unreadMessagesCount > 0)
@@ -1776,6 +1779,12 @@
                             class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
                             <i class="fas fa-users w-5 text-cyan-400 text-sm"></i>
                             <span>Daftar Anggota Staf</span>
+                        </a>
+
+                        <a href="{{ route('staff.certificates.index') }}"
+                            class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                            <i class="fas fa-award w-5 text-amber-400 text-sm"></i>
+                            <span>Sertifikat &amp; Lisensi Medic</span>
                         </a>
 
                         @php

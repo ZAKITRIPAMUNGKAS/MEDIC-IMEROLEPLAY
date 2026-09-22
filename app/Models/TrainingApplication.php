@@ -118,9 +118,9 @@ class TrainingApplication extends Model
     public function getStatusBadgeAttribute(): string
     {
         return match ($this->status) {
-            self::STATUS_APPROVED => '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200"><i class="fas fa-check-circle text-[11px]"></i> Disetujui</span>',
-            self::STATUS_REJECTED => '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-800 border border-rose-200"><i class="fas fa-times-circle text-[11px]"></i> Ditolak</span>',
-            default               => '<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 border border-amber-200"><i class="fas fa-clock text-[11px]"></i> Menunggu Review</span>',
+            self::STATUS_APPROVED => '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm whitespace-nowrap"><i class="fas fa-check-circle text-[11px] text-emerald-400"></i> Disetujui</span>',
+            self::STATUS_REJECTED => '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-sm whitespace-nowrap"><i class="fas fa-times-circle text-[11px] text-rose-400"></i> Ditolak</span>',
+            default               => '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm whitespace-nowrap"><i class="fas fa-clock text-[11px] text-amber-400"></i> Menunggu Review</span>',
         };
     }
 

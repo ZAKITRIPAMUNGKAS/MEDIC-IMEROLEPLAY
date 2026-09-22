@@ -22,7 +22,10 @@ class MemberController extends Controller
 
         $query = User::whereNotNull('users.role_id');
 
-        $query->with('role');
+        $query->with('role')
+              ->withCount(['certifications' => function ($q) {
+                  $q->where('status', 'active');
+              }]);
 
         if (!empty($search)) {
             $query->where(function ($q) use ($search) {
@@ -276,6 +279,79 @@ class MemberController extends Controller
             'operations', 'forms', 'managerEvaluations', 'evaluationsAvg', 'evaluationsCount',
             'promotionTargetRole', 'promotionChecklist', 'promotionProgressPercent', 'promotionAllMet', 'isHighestLevel', 'creditScore',
             'certifications', 'currentMedicRole'
+        ));
+    }
+
+    /**
+     * Direktori Semua Sertifikat & Lisensi Resmi Seluruh Medic
+     */
+    public function certificates(Request $request)
+    {
+        $search   = trim($request->input('search', ''));
+        $division = $request->input('division', 'all');
+        $batch    = $request->input('batch', '');
+        $hospital = $request->input('hospital', 'all');
+
+        $query = \App\Models\MemberCertification::with([
+            'user:id,name,staff_id,citizen_id,hospital,batch,profile_image,role_id',
+            'user.role:id,name,display_name',
+            'issuedBy:id,name'
+        ])->where('status', 'active');
+
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('certificate_number', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($qu) use ($search) {
+                      $qu->where('name', 'like', "%{$search}%")
+                        ->orWhere('staff_id', 'like', "%{$search}%")
+                        ->orWhere('citizen_id', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        if ($division !== 'all' && !empty($division)) {
+            $query->where('division', $division);
+        }
+
+        if ($hospital !== 'all' && !empty($hospital)) {
+            $query->whereHas('user', function ($qu) use ($hospital) {
+                $qu->where('hospital', $hospital);
+            });
+        }
+
+        if (!empty($batch)) {
+            $query->whereHas('user', function ($qu) use ($batch) {
+                $qu->where('batch', $batch);
+                if (isset(User::BATCH_LIST[$batch])) {
+                    $qu->orWhere('batch', User::BATCH_LIST[$batch]['roman']);
+                }
+            });
+        }
+
+        $certifications = $query->latest('issue_date')->paginate(12)->withQueryString();
+
+        // Regenerate SVG if needed
+        foreach ($certifications as $cert) {
+            $needsRegeneration = empty($cert->file_path) 
+                || !\Illuminate\Support\Facades\Storage::disk('public')->exists($cert->file_path)
+                || !str_ends_with(strtolower($cert->file_path), '.svg');
+
+            if ($needsRegeneration) {
+                try {
+                    $newPath = \App\Services\CertificateGeneratorService::generate($cert);
+                    $cert->update(['file_path' => $newPath]);
+                } catch (\Throwable $e) {
+                    // silent fallback
+                }
+            }
+        }
+
+        $batches = User::BATCH_LIST;
+        $totalCerts = \App\Models\MemberCertification::where('status', 'active')->count();
+
+        return view('staff.certificates.index', compact(
+            'certifications', 'search', 'division', 'batch', 'hospital', 'batches', 'totalCerts'
         ));
     }
 }

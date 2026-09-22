@@ -225,119 +225,145 @@
                 @else
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-sm text-white/80">
-                        <thead class="text-[11px] uppercase tracking-wider text-white/40 bg-white/[0.02] border-b border-white/10">
+                        <thead class="text-[11px] uppercase tracking-wider text-sky-200/60 bg-white/[0.04] border-b border-white/10">
                             <tr>
-                                <th class="py-3 px-4 w-8">
-                                    <input type="checkbox" id="selectAll" class="w-4 h-4 rounded bg-white/10 border-white/20 text-emerald-500 focus:ring-0">
+                                <th class="py-3.5 px-4 w-10 text-center">
+                                    <input type="checkbox" id="selectAll" class="w-4 h-4 rounded bg-white/10 border-white/20 text-emerald-500 focus:ring-0 cursor-pointer">
                                 </th>
-                                <th class="py-3 px-4">Pelatihan</th>
-                                <th class="py-3 px-4">Nama IC & Kontak</th>
-                                <th class="py-3 px-4">Akun Staf</th>
-                                <th class="py-3 px-4">Jabatan</th>
-                                <th class="py-3 px-4">Batch</th>
-                                <th class="py-3 px-4">Status</th>
-                                <th class="py-3 px-4">Reviewer</th>
-                                <th class="py-3 px-4 text-right">Aksi</th>
+                                <th class="py-3.5 px-4 whitespace-nowrap">Pelatihan</th>
+                                <th class="py-3.5 px-4 whitespace-nowrap">Nama IC & Kontak</th>
+                                <th class="py-3.5 px-4 whitespace-nowrap">Akun Staf</th>
+                                <th class="py-3.5 px-4 whitespace-nowrap">Jabatan</th>
+                                <th class="py-3.5 px-4 whitespace-nowrap text-center">Batch</th>
+                                <th class="py-3.5 px-4 whitespace-nowrap">Status</th>
+                                <th class="py-3.5 px-4 whitespace-nowrap">Reviewer</th>
+                                <th class="py-3.5 px-4 text-right whitespace-nowrap">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-white/5">
                             @foreach($applications as $item)
-                            <tr class="hover:bg-white/[0.02] transition-colors">
-                                <td class="py-3.5 px-4">
-                                    <input type="checkbox" name="ids[]" value="{{ $item->id }}" class="item-checkbox w-4 h-4 rounded bg-white/10 border-white/20 text-emerald-500 focus:ring-0">
+                            <tr class="hover:bg-white/[0.03] transition-colors">
+                                <td class="py-3.5 px-4 text-center">
+                                    <input type="checkbox" name="ids[]" value="{{ $item->id }}" class="item-checkbox w-4 h-4 rounded bg-white/10 border-white/20 text-emerald-500 focus:ring-0 cursor-pointer">
                                 </td>
                                 <td class="py-3.5 px-4 font-semibold text-white">
-                                    <div class="flex items-center gap-2">
+                                    <div class="flex items-center gap-2.5">
                                         @if($item->training_type === 'operasi')
-                                            <span class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-xs shrink-0">
+                                            <span class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-xs shrink-0 shadow-sm">
                                                 <i class="fas fa-procedures"></i>
                                             </span>
                                         @elseif($item->training_type === 'surat_menyurat')
-                                            <span class="w-7 h-7 rounded-lg bg-blue-500/20 text-blue-400 border border-blue-500/30 flex items-center justify-center text-xs shrink-0">
+                                            <span class="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 border border-blue-500/30 flex items-center justify-center text-xs shrink-0 shadow-sm">
                                                 <i class="fas fa-envelope-open-text"></i>
                                             </span>
                                         @elseif($item->training_type === 'visum_hidup')
-                                            <span class="w-7 h-7 rounded-lg bg-purple-500/20 text-purple-400 border border-purple-500/30 flex items-center justify-center text-xs shrink-0">
+                                            <span class="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-400 border border-purple-500/30 flex items-center justify-center text-xs shrink-0 shadow-sm">
                                                 <i class="fas fa-notes-medical"></i>
                                             </span>
                                         @elseif($item->training_type === 'rekam_medis')
-                                            <span class="w-7 h-7 rounded-lg bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex items-center justify-center text-xs shrink-0">
+                                            <span class="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 flex items-center justify-center text-xs shrink-0 shadow-sm">
                                                 <i class="fas fa-file-medical"></i>
                                             </span>
                                         @elseif($item->training_type === 'pemulsaran_jenazah')
-                                            <span class="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center text-xs shrink-0">
+                                            <span class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center text-xs shrink-0 shadow-sm">
                                                 <i class="fas fa-hand-holding-medical"></i>
                                             </span>
                                         @else
-                                            <span class="w-7 h-7 rounded-lg bg-white/10 text-white/60 border border-white/20 flex items-center justify-center text-xs shrink-0">
+                                            <span class="w-8 h-8 rounded-xl bg-white/10 text-white/60 border border-white/20 flex items-center justify-center text-xs shrink-0">
                                                 <i class="fas fa-certificate"></i>
                                             </span>
                                         @endif
                                         <div>
-                                            <div class="text-xs font-bold text-white">{{ $item->type_label }}</div>
-                                            <div class="text-[10px] text-white/40">{{ $item->created_at->translatedFormat('d M Y, H:i') }}</div>
+                                            <div class="text-xs font-bold text-white whitespace-nowrap">{{ $item->type_label }}</div>
+                                            <div class="text-[10px] text-sky-200/50 mt-0.5 whitespace-nowrap">{{ $item->created_at->translatedFormat('d M Y, H:i') }}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td class="py-3.5 px-4">
-                                    <div class="font-bold text-white text-sm">{{ $item->nama_ic }}</div>
-                                    <div class="flex items-center gap-2 text-xs text-white/60 mt-0.5">
-                                        <span><i class="fas fa-venus-mars text-[10px] text-white/40"></i> {{ $item->gender }}</span>
+                                    <div class="font-bold text-white text-sm whitespace-nowrap">{{ $item->nama_ic }}</div>
+                                    <div class="flex items-center gap-2 text-xs text-sky-200/70 mt-0.5 whitespace-nowrap">
+                                        <span class="inline-flex items-center gap-1">
+                                            <i class="fas fa-venus-mars text-[10px] text-sky-400"></i> {{ $item->gender }}
+                                        </span>
                                         @if($item->phone_ic)
-                                        <span>•</span>
-                                        <span class="font-mono text-[11px] text-white/70"><i class="fas fa-phone-alt text-[9px] text-white/40"></i> {{ $item->phone_ic }}</span>
+                                        <span class="text-white/30">•</span>
+                                        <span class="inline-flex items-center gap-1 font-mono text-[11px] text-sky-200/80">
+                                            <i class="fas fa-phone-alt text-[9px] text-sky-400"></i> {{ $item->phone_ic }}
+                                        </span>
                                         @endif
                                     </div>
                                 </td>
-                                <td class="py-3.5 px-4 text-xs">
+                                <td class="py-3.5 px-4 text-xs whitespace-nowrap">
                                     @if($item->user)
-                                        <div class="text-white/90 font-medium">{{ $item->user->name }}</div>
-                                        <div class="text-white/40 text-[11px]">CID: {{ $item->user->staff_id ?? '-' }}</div>
+                                        <div class="text-white font-medium flex items-center gap-1.5">
+                                            <i class="fas fa-user-circle text-sky-400 text-xs"></i>
+                                            <span>{{ $item->user->name }}</span>
+                                        </div>
+                                        <div class="text-sky-200/60 text-[11px] mt-0.5">
+                                            CID: <span class="font-mono text-white/80">{{ $item->user->citizen_id ?? $item->user->staff_id ?? '-' }}</span>
+                                        </div>
                                     @else
                                         <span class="text-white/30 italic">User Terhapus</span>
                                     @endif
                                 </td>
-                                <td class="py-3.5 px-4 text-xs">
+                                <td class="py-3.5 px-4 text-xs whitespace-nowrap">
                                     @if($item->jabatan)
-                                        <span class="px-2 py-0.5 rounded-md bg-white/10 text-white/80 font-medium">{{ $item->jabatan }}</span>
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold bg-sky-500/15 text-sky-300 border border-sky-500/30 shadow-sm">
+                                            {{ $item->jabatan }}
+                                        </span>
                                     @else
-                                        <span class="text-white/30">-</span>
+                                        <span class="text-white/30 font-mono">-</span>
                                     @endif
                                 </td>
-                                <td class="py-3.5 px-4">
-                                    <span class="px-2.5 py-1 rounded-md text-xs font-bold bg-white/10 border border-white/15 text-white">
-                                        {{ $item->batch }}
-                                    </span>
+                                <td class="py-3.5 px-4 text-center whitespace-nowrap">
+                                    @php
+                                        $bNorm = \App\Models\User::normalizeBatch($item->batch);
+                                    @endphp
+                                    @if($bNorm)
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-black tracking-wide border whitespace-nowrap shadow-sm"
+                                              style="background: {{ $bNorm['bg'] }}; border-color: {{ $bNorm['border'] }}; color: {{ $bNorm['color'] }};"
+                                              title="Batch Resmi: {{ $bNorm['roman'] }} ({{ $bNorm['period'] }})">
+                                            <i class="fas fa-certificate text-[10px]"></i>
+                                            <span>{{ $bNorm['roman'] }}</span>
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-bold bg-white/10 border border-white/15 text-white whitespace-nowrap">
+                                            {{ $item->batch }}
+                                        </span>
+                                    @endif
                                 </td>
-                                <td class="py-3.5 px-4">
+                                <td class="py-3.5 px-4 whitespace-nowrap">
                                     {!! $item->status_badge !!}
                                 </td>
-                                <td class="py-3.5 px-4 text-xs max-w-xs">
+                                <td class="py-3.5 px-4 text-xs whitespace-nowrap">
                                     @if($item->reviewed_by && $item->reviewer)
-                                        <div class="text-white/90 font-medium">{{ $item->reviewer->name }}</div>
-                                        <div class="text-white/40 text-[10px]">{{ $item->reviewed_at?->translatedFormat('d M Y, H:i') }}</div>
+                                        <div class="text-white font-medium flex items-center gap-1.5">
+                                            <i class="fas fa-user-check text-emerald-400 text-xs"></i>
+                                            <span>{{ $item->reviewer->name }}</span>
+                                        </div>
+                                        <div class="text-sky-200/50 text-[10px] mt-0.5">{{ $item->reviewed_at?->translatedFormat('d M Y, H:i') }}</div>
                                     @endif
                                     @if($item->admin_notes)
-                                        <div class="text-[11px] text-white/70 italic mt-0.5 line-clamp-2">"{{ $item->admin_notes }}"</div>
+                                        <div class="text-[11px] text-white/70 italic mt-0.5 max-w-[180px] truncate" title="{{ $item->admin_notes }}">"{{ $item->admin_notes }}"</div>
                                     @elseif(!$item->reviewed_by)
                                         <span class="text-white/30 italic">-</span>
                                     @endif
                                 </td>
-                                <td class="py-3.5 px-4 text-right">
+                                <td class="py-3.5 px-4 text-right whitespace-nowrap">
                                     <div class="flex items-center justify-end gap-1.5">
                                         {{-- Modal Review Button --}}
                                         <button type="button"
                                                 onclick="openReviewModal({{ $item->id }}, '{{ addslashes($item->nama_ic) }}', '{{ $item->type_label }}', '{{ $item->status }}', '{{ addslashes($item->admin_notes ?? '') }}')"
-                                                class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-medium transition-all flex items-center gap-1"
+                                                class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500/20 to-teal-500/20 hover:from-emerald-500/30 hover:to-teal-500/30 text-emerald-300 border border-emerald-500/30 text-xs font-semibold transition-all flex items-center gap-1.5 shadow-sm"
                                                 title="Verifikasi / Ubah Status">
-                                            <i class="fas fa-edit text-xs text-emerald-400"></i>
+                                            <i class="fas fa-edit text-xs"></i>
                                             <span>Review</span>
                                         </button>
 
                                         {{-- Delete Button --}}
                                         <button type="button"
                                                 onclick="deleteItem({{ $item->id }}, '{{ addslashes($item->nama_ic) }}')"
-                                                class="w-8 h-8 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 flex items-center justify-center transition-all text-xs"
+                                                class="w-8 h-8 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 flex items-center justify-center transition-all text-xs shadow-sm"
                                                 title="Hapus Data">
                                             <i class="fas fa-trash-alt"></i>
                                         </button>

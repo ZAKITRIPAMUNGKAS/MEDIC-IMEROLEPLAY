@@ -1202,6 +1202,7 @@ Route::middleware(['auth', 'staff'])->group(function () {
 
     // Members Directory & Profiles
     Route::get('/staff/members', [\App\Http\Controllers\Staff\MemberController::class, 'index'])->name('staff.members.index');
+    Route::get('/staff/certificates', [\App\Http\Controllers\Staff\MemberController::class, 'certificates'])->name('staff.certificates.index');
     Route::get('/staff/members/{user}', [\App\Http\Controllers\Staff\MemberController::class, 'show'])->name('staff.members.show');
 
     // Private Messages (Direct Messaging)
@@ -1460,14 +1461,17 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/voting/{id}', [VotingController::class, 'destroy'])->middleware('permission:manage_users')->name('voting.destroy');
 });
 
+// ── Pratinjau Langsung Gambar Sertifikat Resmi (SVG) — Dapat Dilihat Seluruh Medic (Alta & Roxwood) ──
+Route::middleware(['auth'])->group(function () {
+    Route::get('/portal/certifications/{certification}/image', [\App\Http\Controllers\Portal\CertificateImageController::class, 'show'])->name('portal.cert.image');
+    Route::get('/certifications/{certification}/image', [\App\Http\Controllers\Portal\CertificateImageController::class, 'show'])->name('cert.image');
+});
+
 // ═══════════════════════════════════════════════════════════════════════════
 // PORTAL MANAJEMEN ALTA HOSPITAL — Cuti, Resign, Sertifikasi, Stase, Promosi, IE, Interview
 // Fitur ini khusus anggota Alta Hospital (bukan Roxwood).
 // ═══════════════════════════════════════════════════════════════════════════
 Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->group(function () {
-
-    // ── Pratinjau Langsung Gambar Sertifikat Resmi (SVG Vector Image) ─────────
-    Route::get('/certifications/{certification}/image', [\App\Http\Controllers\Portal\CertificateImageController::class, 'show'])->name('cert.image');
 
     // ── Pengajuan Cuti (Semua Anggota) ───────────────────────────────────────
     Route::prefix('leave')->name('leave.')->group(function () {
