@@ -36,10 +36,17 @@ class StaffManagementController extends Controller
             $query->where('hospital', request('hospital'));
         }
 
-        // Explicit Status Filter
         if (request()->has('active') && request('active') !== null && request('active') !== '') {
             $isActive = request('active') == '1';
             $query->where('is_active', $isActive);
+        }
+
+        if (request('batch')) {
+            $batchReq = request('batch');
+            $query->where(function ($bq) use ($batchReq) {
+                $bq->where('batch', $batchReq)
+                   ->orWhere('batch', 'like', "%{$batchReq}%");
+            });
         }
 
         // Clone query for counts BEFORE pagination
@@ -60,6 +67,7 @@ class StaffManagementController extends Controller
 
         $staff = $query->orderBy('name')->paginate(20)->withQueryString();
         $roles = StaffRole::orderBy('display_name')->get();
+        $batches = User::BATCH_LIST;
 
         // Pass stats to view
         request()->merge(['stats' => $stats]);
@@ -168,7 +176,8 @@ class StaffManagementController extends Controller
     public function create()
     {
         $roles = StaffRole::orderBy('display_name')->get();
-        return view('admin.staff.create', compact('roles'));
+        $batches = User::BATCH_LIST;
+        return view('admin.staff.create', compact('roles', 'batches'));
     }
 
     public function store(Request $request)
@@ -178,6 +187,7 @@ class StaffManagementController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6|confirmed',
             'role_id' => 'required|exists:staff_roles,id',
+            'batch' => 'nullable|string|max:50',
             'is_active' => 'nullable|boolean',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
@@ -216,6 +226,7 @@ class StaffManagementController extends Controller
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'role_id' => $validated['role_id'],
+            'batch' => $request->filled('batch') ? trim($request->batch) : null,
             'is_active' => $request->boolean('is_active', true),
             'profile_image' => $profileImagePath,
         ]);
@@ -236,7 +247,8 @@ class StaffManagementController extends Controller
             ->orderBy('level')
             ->get();
         $subRoles = \App\Models\StaffSubRole::orderBy('sort_order')->get();
-        return view('admin.staff.edit', compact('user', 'roles', 'medicalRoles', 'subRoles'));
+        $batches = User::BATCH_LIST;
+        return view('admin.staff.edit', compact('user', 'roles', 'medicalRoles', 'subRoles', 'batches'));
     }
 
     public function update(Request $request, User $user)
@@ -256,6 +268,7 @@ class StaffManagementController extends Controller
             'role_id' => 'required|exists:staff_roles,id',
             'medic_role_id' => 'nullable|exists:staff_roles,id',
             'sub_role_id' => 'nullable|exists:staff_sub_roles,id',
+            'batch' => 'nullable|string|max:50',
             'is_active' => 'nullable|boolean',
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'custom_salary' => 'nullable|numeric|min:0|max:9999999999',
@@ -269,6 +282,7 @@ class StaffManagementController extends Controller
             'role_id' => $validated['role_id'],
             'medic_role_id' => $request->filled('medic_role_id') ? $request->medic_role_id : null,
             'sub_role_id' => $request->filled('sub_role_id') ? $request->sub_role_id : null,
+            'batch' => $request->filled('batch') ? trim($request->batch) : null,
             'is_active' => $request->boolean('is_active', true),
         ];
 

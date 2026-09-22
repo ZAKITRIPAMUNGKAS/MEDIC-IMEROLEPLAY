@@ -33,6 +33,7 @@ class User extends Authenticatable
         'custom_permissions',
         'custom_salary',
         'status',
+        'batch',
         'last_seen_at',
     ];
 
@@ -885,5 +886,152 @@ class User extends Authenticatable
     public function getTotalDutyHoursFormatted(): string
     {
         return \App\Helpers\TimeHelper::getHumanReadableDuration($this->getTotalDutySeconds());
+    }
+
+    // ─── Fitur Badge Batch & Periode (Batch 1 - 15) ──────────────────────────
+
+    public const BATCH_LIST = [
+        1  => ['label' => 'Batch 1',  'roman' => 'Batch I',    'period' => '21 - 24 Jun',   'color' => '#10b981', 'bg' => 'rgba(16, 185, 129, 0.18)',  'border' => '#10b981'],
+        2  => ['label' => 'Batch 2',  'roman' => 'Batch II',   'period' => '5 - 6 Jul',     'color' => '#38bdf8', 'bg' => 'rgba(56, 189, 248, 0.18)',  'border' => '#38bdf8'],
+        3  => ['label' => 'Batch 3',  'roman' => 'Batch III',  'period' => '21 - 22 Jul',   'color' => '#2dd4bf', 'bg' => 'rgba(45, 212, 191, 0.18)',  'border' => '#2dd4bf'],
+        4  => ['label' => 'Batch 4',  'roman' => 'Batch IV',   'period' => '23 - 24 Aug',   'color' => '#818cf8', 'bg' => 'rgba(129, 140, 248, 0.18)', 'border' => '#818cf8'],
+        5  => ['label' => 'Batch 5',  'roman' => 'Batch V',    'period' => '8 Sep',         'color' => '#c084fc', 'bg' => 'rgba(192, 132, 252, 0.18)', 'border' => '#c084fc'],
+        6  => ['label' => 'Batch 6',  'roman' => 'Batch VI',   'period' => '28 Sep',        'color' => '#a855f7', 'bg' => 'rgba(168, 85, 247, 0.18)',  'border' => '#a855f7'],
+        7  => ['label' => 'Batch 7',  'roman' => 'Batch VII',  'period' => '28 Okt',        'color' => '#f59e0b', 'bg' => 'rgba(245, 158, 11, 0.18)',  'border' => '#f59e0b'],
+        8  => ['label' => 'Batch 8',  'roman' => 'Batch VIII', 'period' => '18 Des',        'color' => '#fb7185', 'bg' => 'rgba(251, 113, 133, 0.18)', 'border' => '#fb7185'],
+        9  => ['label' => 'Batch 9',  'roman' => 'Batch IX',   'period' => '27 Jan',        'color' => '#34d399', 'bg' => 'rgba(52, 211, 153, 0.18)',  'border' => '#34d399'],
+        10 => ['label' => 'Batch 10', 'roman' => 'Batch X',    'period' => '25 Feb',        'color' => '#60a5fa', 'bg' => 'rgba(96, 165, 250, 0.18)',  'border' => '#60a5fa'],
+        11 => ['label' => 'Batch 11', 'roman' => 'Batch XI',   'period' => '13 Apr',        'color' => '#22d3ee', 'bg' => 'rgba(34, 211, 238, 0.18)',  'border' => '#22d3ee'],
+        12 => ['label' => 'Batch 12', 'roman' => 'Batch XII',  'period' => '17 Mei',        'color' => '#d8b4fe', 'bg' => 'rgba(216, 180, 254, 0.18)', 'border' => '#d8b4fe'],
+        13 => ['label' => 'Batch 13', 'roman' => 'Batch XIII', 'period' => '21 Juni',       'color' => '#fbbf24', 'bg' => 'rgba(251, 191, 36, 0.18)',  'border' => '#fbbf24'],
+        14 => ['label' => 'Batch 14', 'roman' => 'Batch XIV',  'period' => '17 Agustus',    'color' => '#f87171', 'bg' => 'rgba(248, 113, 113, 0.18)', 'border' => '#f87171'],
+        15 => ['label' => 'Batch 15', 'roman' => 'Batch XV',   'period' => 'TBA',           'color' => '#94a3b8', 'bg' => 'rgba(148, 163, 184, 0.18)', 'border' => '#94a3b8'],
+    ];
+
+    protected static bool $userSchemaBatchChecked = false;
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        if (!static::$userSchemaBatchChecked) {
+            static::$userSchemaBatchChecked = true;
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('users') && !\Illuminate\Support\Facades\Schema::hasColumn('users', 'batch')) {
+                    \Illuminate\Support\Facades\Schema::table('users', function (\Illuminate\Database\Schema\Blueprint $table) {
+                        $table->string('batch', 50)->nullable()->after('hospital');
+                    });
+                }
+            } catch (\Throwable $e) {
+                // Silently skip if DB not available or table locked
+            }
+        }
+    }
+
+    /**
+     * Normalisasi string batch ke master BATCH_LIST
+     */
+    public static function normalizeBatch(?string $batch): ?array
+    {
+        if (empty($batch)) {
+            return null;
+        }
+
+        $cleaned = trim(strtolower($batch));
+
+        $map = [
+            'batch xv' => 15, 'xv' => 15, 'batch 15' => 15,
+            'batch xiv' => 14, 'xiv' => 14, 'batch 14' => 14,
+            'batch xiii' => 13, 'xiii' => 13, 'batch 13' => 13,
+            'batch xii' => 12, 'xii' => 12, 'batch 12' => 12,
+            'batch xi' => 11, 'xi' => 11, 'batch 11' => 11,
+            'batch x' => 10, 'x' => 10, 'batch 10' => 10,
+            'batch ix' => 9, 'ix' => 9, 'batch 9' => 9,
+            'batch viii' => 8, 'viii' => 8, 'batch 8' => 8,
+            'batch vii' => 7, 'vii' => 7, 'batch 7' => 7,
+            'batch vi' => 6, 'vi' => 6, 'batch 6' => 6,
+            'batch v' => 5, 'v' => 5, 'batch 5' => 5,
+            'batch iv' => 4, 'iv' => 4, 'batch 4' => 4,
+            'batch iii' => 3, 'iii' => 3, 'batch 3' => 3,
+            'batch ii' => 2, 'ii' => 2, 'batch 2' => 2,
+            'batch i' => 1, 'i' => 1, 'batch 1' => 1,
+        ];
+
+        foreach ($map as $needle => $num) {
+            if ($cleaned === $needle || str_contains($cleaned, $needle)) {
+                return self::BATCH_LIST[$num] ?? null;
+            }
+        }
+
+        // Jika angka saja (1-15)
+        if (is_numeric($cleaned) && isset(self::BATCH_LIST[(int)$cleaned])) {
+            return self::BATCH_LIST[(int)$cleaned];
+        }
+
+        return [
+            'label'  => ucfirst($batch),
+            'roman'  => ucfirst($batch),
+            'period' => 'Anggota RS',
+            'color'  => '#38bdf8',
+            'bg'     => 'rgba(56, 189, 248, 0.18)',
+            'border' => '#38bdf8',
+        ];
+    }
+
+    /**
+     * Memeriksa apakah status anggota aktif
+     */
+    public function isStaffActive(): bool
+    {
+        if (!$this->is_active) {
+            return false;
+        }
+
+        if ($this->status && in_array(strtolower($this->status), ['not_active', 'inactive', 'nonaktif', 'resign', 'resigned'])) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Accessor data batch terstruktur
+     */
+    public function getBatchInfoAttribute(): ?array
+    {
+        return self::normalizeBatch($this->batch);
+    }
+
+    /**
+     * Accessor Badge Batch HTML siap pakai dengan warna dan periode
+     * Aturan: Hanya tampil jika status anggota = Active
+     */
+    public function getBatchBadgeHtmlAttribute(): ?string
+    {
+        if (!$this->isStaffActive()) {
+            return null;
+        }
+
+        $info = $this->batch_info;
+        if (!$info) {
+            return null;
+        }
+
+        $color  = htmlspecialchars($info['color']);
+        $bg     = htmlspecialchars($info['bg']);
+        $border = htmlspecialchars($info['border']);
+        $roman  = htmlspecialchars($info['roman']);
+        $period = htmlspecialchars($info['period']);
+
+        return <<<HTML
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-black tracking-wide border shadow-sm transition-all hover:scale-105"
+      style="background: {$bg}; border-color: {$border}; color: {$color}; box-shadow: 0 0 14px {$bg};"
+      title="Badge Batch Resmi: {$roman} (Periode {$period})">
+    <i class="fas fa-certificate" style="color: {$color};"></i>
+    <span>{$roman}</span>
+    <span style="opacity: 0.45;">•</span>
+    <span style="font-weight: 700; font-size: 11px;">{$period}</span>
+</span>
+HTML;
     }
 }

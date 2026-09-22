@@ -36,10 +36,27 @@
                     </a>
                 </div>
 
-                {{-- Search Input --}}
-                <form method="GET" action="{{ route('staff.members.index') }}" class="w-full md:w-80 flex gap-2">
+                {{-- Search & Batch Input --}}
+                <form method="GET" action="{{ route('staff.members.index') }}" class="w-full md:w-auto flex flex-wrap items-center gap-2">
                     <input type="hidden" name="hospital" value="{{ $hospital }}">
-                    <div class="relative flex-1">
+                    
+                    {{-- Batch Select --}}
+                    <div class="relative">
+                        <select name="batch" onchange="this.form.submit()" 
+                                class="bg-white bg-opacity-10 text-white border border-white border-opacity-20 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 appearance-none pr-8">
+                            <option value="" class="bg-slate-800 text-slate-300">Semua Batch</option>
+                            @foreach($batches as $bKey => $bData)
+                                <option value="{{ $bKey }}" @selected((string)$batch === (string)$bKey || (string)$batch === $bData['roman']) class="bg-slate-800 text-slate-100">
+                                    {{ $bData['label'] }} ({{ $bData['roman'] }})
+                                </option>
+                            @endforeach
+                        </select>
+                        <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2.5 text-sky-300 text-xs">
+                            <i class="fas fa-chevron-down"></i>
+                        </span>
+                    </div>
+
+                    <div class="relative flex-1 md:w-64">
                         <input type="text" 
                                name="search" 
                                value="{{ $search }}"
@@ -50,9 +67,14 @@
                             <i class="fas fa-search text-xs"></i>
                         </div>
                     </div>
-                    <button type="submit" class="px-5 py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-semibold rounded-xl text-sm transition-all shadow-md">
+                    <button type="submit" class="px-4 py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-semibold rounded-xl text-sm transition-all shadow-md">
                         Cari
                     </button>
+                    @if(!empty($search) || !empty($batch))
+                        <a href="{{ route('staff.members.index', ['hospital' => $hospital]) }}" class="px-3 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-sm transition-all border border-white/20" title="Reset filter">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    @endif
                 </form>
             </div>
         </div>
@@ -136,6 +158,7 @@
                                                 🩺 {{ $mRole->display_name }}
                                             </span>
                                         @endif
+                                        {!! $member->batch_badge_html !!}
                                     </div>
                                 </div>
                             </div>

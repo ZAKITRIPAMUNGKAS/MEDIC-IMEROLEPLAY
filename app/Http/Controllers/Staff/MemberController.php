@@ -18,6 +18,7 @@ class MemberController extends Controller
     {
         $search = trim($request->input('search', ''));
         $hospital = $request->input('hospital', 'all');
+        $batch = $request->input('batch', '');
 
         $query = User::whereNotNull('users.role_id');
 
@@ -28,6 +29,7 @@ class MemberController extends Controller
                 $q->where('users.name', 'like', "%{$search}%")
                   ->orWhere('users.staff_id', 'like', "%{$search}%")
                   ->orWhere('users.email', 'like', "%{$search}%")
+                  ->orWhere('users.batch', 'like', "%{$search}%")
                   ->orWhereHas('role', function ($qr) use ($search) {
                       $qr->where('display_name', 'like', "%{$search}%")
                         ->orWhere('name', 'like', "%{$search}%");
@@ -39,6 +41,15 @@ class MemberController extends Controller
             $query->where('users.hospital', $hospital);
         }
 
+        if (!empty($batch)) {
+            $query->where(function ($qb) use ($batch) {
+                $qb->where('users.batch', $batch);
+                if (isset(User::BATCH_LIST[$batch])) {
+                    $qb->orWhere('users.batch', User::BATCH_LIST[$batch]['roman']);
+                }
+            });
+        }
+
         $members = $query->join('staff_roles', 'users.role_id', '=', 'staff_roles.id')
             ->where('staff_roles.level', '>=', 0)
             ->select('users.*')
@@ -48,8 +59,9 @@ class MemberController extends Controller
             ->withQueryString();
 
         $schedules = \App\Models\DoctorSchedule::where('is_active', true)->get()->groupBy('doctor_name');
+        $batches = User::BATCH_LIST;
 
-        return view('staff.members.index', compact('members', 'search', 'hospital', 'schedules'));
+        return view('staff.members.index', compact('members', 'search', 'hospital', 'batch', 'batches', 'schedules'));
     }
 
     /**

@@ -53,6 +53,51 @@
                                 </p> 
                             @enderror
                         </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-3">Rumah Sakit</label>
+                            <select name="hospital" class="w-full bg-white/10 text-white border border-white/20 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 transition-all duration-300 appearance-none" required>
+                                <option value="alta" @selected(old('hospital', 'alta') == 'alta') class="bg-slate-800 text-slate-100">Alta Hospital (EMS)</option>
+                                <option value="roxwood" @selected(old('hospital') == 'roxwood') class="bg-slate-800 text-slate-100">Roxwood Hospital</option>
+                            </select>
+                            @error('hospital')
+                                <p class="text-red-300 text-sm mt-2 flex items-center">
+                                    <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-3">Citizen ID (FiveM)</label>
+                            <input type="text" name="citizen_id" value="{{ old('citizen_id') }}" placeholder="Contoh: JDN12345" class="w-full bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 transition-all duration-300">
+                            @error('citizen_id')
+                                <p class="text-red-300 text-sm mt-2 flex items-center">
+                                    <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-300 mb-3">
+                                <i class="fas fa-award text-amber-400 mr-1.5"></i>Batch & Periode Pendaftaran
+                            </label>
+                            <select name="batch" class="w-full bg-white/10 text-white border border-white/20 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 transition-all duration-300 appearance-none">
+                                <option value="" class="bg-slate-800 text-slate-400">-- Pilih Batch (Opsional) --</option>
+                                @foreach(\App\Models\User::BATCH_LIST as $bKey => $bData)
+                                    <option value="{{ $bKey }}" @selected((string)old('batch') === (string)$bKey) class="bg-slate-800 text-slate-100">
+                                        {{ $bData['label'] }} ({{ $bData['roman'] }}) — Periode: {{ $bData['period'] }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <p class="text-xs text-sky-200/70 mt-1.5 flex items-center">
+                                <i class="fas fa-info-circle mr-1 text-sky-400"></i> Badge batch otomatis aktif bila status anggota aktif. Jika status Nonaktif / Resign, badge disembunyikan.
+                            </p>
+                            @error('batch')
+                                <p class="text-red-300 text-sm mt-2 flex items-center">
+                                    <i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}
+                                </p>
+                            @enderror
+                        </div>
                     </div>
                 </div>
 

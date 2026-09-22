@@ -56,6 +56,9 @@
                             <i class="fas fa-clock mr-1"></i> ON DUTY
                         </span>
                     @endif
+
+                    {{-- Batch Badge --}}
+                    {!! $user->batch_badge_html !!}
                 </div>
 
                 <!-- Roles & Attributes -->
@@ -74,6 +77,13 @@
                         <i class="fas fa-fingerprint text-sky-400 mr-1.5"></i>
                         <span>Citizen ID: <strong class="text-white">{{ $user->citizen_id ?? '-' }}</strong></span>
                     </div>
+                    @if($user->batch_info && $user->isStaffActive())
+                        <span class="hidden md:inline text-sky-400/50">•</span>
+                        <div>
+                            <i class="fas fa-award text-amber-400 mr-1.5"></i>
+                            <span>Batch: <strong class="text-white">{{ $user->batch_info['roman'] }}</strong> <span class="text-sky-300/80 text-xs">({{ $user->batch_info['period'] }})</span></span>
+                        </div>
+                    @endif
                 </div>
 
                 <div class="pt-2 flex flex-wrap items-center justify-center md:justify-start gap-2">

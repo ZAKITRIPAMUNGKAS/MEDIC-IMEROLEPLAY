@@ -70,13 +70,13 @@
             </div>
 
             <!-- Search and Filter -->
-            <form method="GET" action="{{ route('admin.staff.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                <div class="sm:col-span-2 lg:col-span-1">
+            <form method="GET" action="{{ route('admin.staff.index') }}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                <div>
                     <input type="text" name="q" value="{{ request('q') }}" placeholder="Cari nama atau email..." 
-                           class="w-full bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 text-sm">
+                           class="w-full bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded-lg px-3.5 py-2.5 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 text-sm">
                 </div>
-                <div class="sm:col-span-2 lg:col-span-1">
-                    <select name="role" class="w-full bg-white/10 text-white border border-white/20 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 appearance-none text-sm">
+                <div>
+                    <select name="role" class="w-full bg-white/10 text-white border border-white/20 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 appearance-none text-sm">
                         <option value="">Semua Peran</option>
                         @isset($roles)
                             @foreach($roles as $role)
@@ -84,29 +84,39 @@
                             @endforeach
                         @endisset
                     </select>
+                </div>
+                <!-- Batch Filter -->
+                <div>
+                    <select name="batch" class="w-full bg-white/10 text-white border border-white/20 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 appearance-none text-sm">
+                        <option value="">Semua Batch</option>
+                        @foreach(\App\Models\User::BATCH_LIST as $bKey => $bData)
+                            <option value="{{ $bKey }}" @selected((string)request('batch') === (string)$bKey || request('batch') === $bData['roman']) class="bg-slate-800 text-slate-100">
+                                {{ $bData['label'] }} ({{ $bData['roman'] }})
+                            </option>
+                        @endforeach
                     </select>
                 </div>
                 <!-- Status Filter -->
-                <div class="sm:col-span-2 lg:col-span-1">
-                    <select name="active" class="w-full bg-white/10 text-white border border-white/20 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 appearance-none text-sm">
+                <div>
+                    <select name="active" class="w-full bg-white/10 text-white border border-white/20 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 appearance-none text-sm">
                         <option value="">Semua Status</option>
                         <option value="1" @selected(request('active') === '1') class="bg-slate-800 text-slate-100">Aktif</option>
                         <option value="0" @selected(request('active') === '0') class="bg-slate-800 text-slate-100">Nonaktif</option>
                     </select>
                 </div>
                 <!-- Hospital Filter -->
-                <div class="sm:col-span-2 lg:col-span-1">
-                    <select name="hospital" class="w-full bg-white/10 text-white border border-white/20 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 appearance-none text-sm">
+                <div>
+                    <select name="hospital" class="w-full bg-white/10 text-white border border-white/20 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 appearance-none text-sm">
                         <option value="">Semua RS</option>
                         <option value="alta" @selected(request('hospital') === 'alta') class="bg-slate-800 text-slate-100">Alta Hospital</option>
                         <option value="roxwood" @selected(request('hospital') === 'roxwood') class="bg-slate-800 text-slate-100">Roxwood Hospital</option>
                     </select>
                 </div>
-                <div class="sm:col-span-2 lg:col-span-1 flex gap-2">
-                    <button type="submit" class="flex-1 inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white rounded-lg font-semibold transition-all duration-300 text-sm">
-                        <i class="fas fa-search mr-2"></i><span class="hidden xs:inline">Cari</span>
+                <div class="flex gap-2">
+                    <button type="submit" class="flex-1 inline-flex items-center justify-center px-4 py-2.5 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white rounded-lg font-semibold transition-all duration-300 text-sm">
+                        <i class="fas fa-search mr-1.5"></i><span>Filter</span>
                     </button>
-                    <a href="{{ route('admin.staff.index') }}" class="inline-flex items-center justify-center px-4 py-3 bg-white/10 text-white rounded-lg border border-white/20 hover:bg-white/20 transition-all duration-300">
+                    <a href="{{ route('admin.staff.index') }}" title="Reset Filter" class="inline-flex items-center justify-center px-3 py-2.5 bg-white/10 text-white rounded-lg border border-white/20 hover:bg-white/20 transition-all duration-300 text-sm">
                         <i class="fas fa-times"></i>
                     </a>
                 </div>
@@ -132,11 +142,14 @@
                             <tr class="hover:bg-white/5 transition-colors duration-200">
                                 <td class="px-3 sm:px-6 py-4">
                                     <div class="flex items-center">
-                                        <div class="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mr-3 sm:mr-4">
+                                        <div class="w-8 h-8 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center mr-3 sm:mr-4 shrink-0">
                                             <i class="fas fa-user text-white text-sm sm:text-lg"></i>
                                         </div>
                                         <div class="min-w-0 flex-1">
-                                            <p class="text-white font-semibold text-sm sm:text-lg truncate">{{ $user->name }}</p>
+                                            <div class="flex flex-wrap items-center gap-1.5">
+                                                <p class="text-white font-semibold text-sm sm:text-lg truncate">{{ $user->name }}</p>
+                                                {!! $user->batch_badge_html !!}
+                                            </div>
                                             <p class="text-gray-300 text-xs sm:text-sm truncate">{{ $user->email }}</p>
                                             <!-- Mobile: Show role and status -->
                                                 @if($user->isRoxwood())
