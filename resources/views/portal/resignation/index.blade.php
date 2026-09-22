@@ -90,20 +90,44 @@
                 ];
             @endphp
 
-            <div class="grid grid-cols-5 gap-2 text-center text-xs">
-                @foreach($pipeline as $idx => $step)
-                <div class="flex flex-col items-center gap-1.5 relative">
-                    <div class="w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300
-                        @if($step['done']) bg-emerald-500/30 border border-emerald-400 text-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.3)]
-                        @elseif(!empty($step['active'])) bg-purple-500/30 border border-purple-400 text-purple-300 animate-pulse ring-2 ring-purple-400/50
-                        @else bg-white/10 border border-white/20 text-white/30 @endif">
-                        <i class="fas {{ $step['icon'] }} text-xs"></i>
-                    </div>
-                    <span class="text-[11px] font-medium leading-tight {{ $step['done'] ? 'text-emerald-300 font-semibold' : (!empty($step['active']) ? 'text-purple-300 font-bold' : 'text-white/40') }}">
-                        {{ $step['label'] }}
-                    </span>
+            <div style="position: relative; width: 100%; padding: 8px 0 4px 0;">
+                @php
+                    $completedSteps = 1;
+                    if ($stepPnd) $completedSteps = 2;
+                    if ($stepIeDenda) $completedSteps = 3;
+                    if ($stepProof) $completedSteps = 4;
+                    if ($stepFinal) $completedSteps = 5;
+                    $fillPercent = (($completedSteps - 1) / 4) * 100;
+                @endphp
+
+                {{-- Background Track & Active Progress Bar --}}
+                <div style="position: absolute; top: 26px; left: 8%; right: 8%; height: 4px; background: rgba(255, 255, 255, 0.12); border-radius: 9999px; z-index: 0; pointer-events: none;">
+                    <div style="width: {{ $fillPercent }}%; height: 100%; background: linear-gradient(90deg, #10b981 0%, #06b6d4 100%); border-radius: 9999px; box-shadow: 0 0 10px rgba(16, 185, 129, 0.6); transition: width 0.4s ease;"></div>
                 </div>
-                @endforeach
+
+                {{-- Step Items Horizontal Row --}}
+                <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-start; position: relative; z-index: 1; width: 100%;">
+                    @foreach($pipeline as $idx => $step)
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 2px;">
+                        <div style="width: 36px; height: 36px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: all 0.3s ease; margin-bottom: 6px; backdrop-filter: blur(8px);
+                            @if($step['done'])
+                                background: rgba(16, 185, 129, 0.25); border: 1.5px solid #34d399; color: #6ee7b7; box-shadow: 0 0 12px rgba(52, 211, 153, 0.4);
+                            @elseif(!empty($step['active']))
+                                background: rgba(168, 85, 247, 0.3); border: 2px solid #c084fc; color: #e9d5ff; box-shadow: 0 0 14px rgba(192, 132, 252, 0.55);
+                            @else
+                                background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: rgba(255, 255, 255, 0.35);
+                            @endif">
+                            <i class="fas {{ $step['icon'] }}"></i>
+                        </div>
+                        <div style="font-size: 11px; line-height: 1.25; font-weight: 600;
+                            @if($step['done']) color: #6ee7b7;
+                            @elseif(!empty($step['active'])) color: #e9d5ff; text-shadow: 0 0 8px rgba(192, 132, 252, 0.5);
+                            @else color: rgba(255, 255, 255, 0.45); @endif">
+                            {{ $step['label'] }}
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
             </div>
         </div>
 

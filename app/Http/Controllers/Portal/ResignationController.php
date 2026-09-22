@@ -10,7 +10,10 @@ use App\Models\User;
 use App\Models\Payroll;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Schema\Blueprint;
 use Carbon\Carbon;
 use App\Helpers\PayrollHelper;
 
@@ -20,6 +23,7 @@ class ResignationController extends Controller
 
     public function index()
     {
+        $this->ensureResignationSchema();
         $user    = Auth::user();
         $request = ResignationRequest::where('user_id', $user->id)->latest()->first();
         return view('portal.resignation.index', compact('request', 'user'));
@@ -56,6 +60,7 @@ class ResignationController extends Controller
 
     public function store(Request $request)
     {
+        $this->ensureResignationSchema();
         $user = Auth::user();
 
         // Cek double-submit
@@ -137,6 +142,7 @@ class ResignationController extends Controller
 
     public function uploadProof(Request $request)
     {
+        $this->ensureResignationSchema();
         $user = Auth::user();
         $resignation = ResignationRequest::where('user_id', $user->id)
             ->whereIn('status', [ResignationRequest::STATUS_PENDING_PROOF, ResignationRequest::STATUS_PROOF_REVISION])
@@ -179,6 +185,14 @@ class ResignationController extends Controller
             'status'               => ResignationRequest::STATUS_PROOF_SUBMITTED,
         ]);
 
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success'      => true,
+                'message'      => 'Seluruh berkas bukti resign berhasil dikirim! Menunggu cross-check dan verifikasi akhir dari Divisi IE.',
+                'redirect_url' => route('portal.resignation.index'),
+            ]);
+        }
+
         return redirect()->route('portal.resignation.index')
             ->with('success', 'Seluruh berkas bukti resign berhasil dikirim! Menunggu cross-check dan verifikasi akhir dari Divisi IE.');
     }
@@ -187,6 +201,7 @@ class ResignationController extends Controller
 
     public function managePnd(Request $request)
     {
+        $this->ensureResignationSchema();
         $this->checkIsPnd();
 
         $query = ResignationRequest::with(['user:id,name,staff_id,hospital', 'pndApprovedBy:id,name'])
@@ -208,6 +223,7 @@ class ResignationController extends Controller
 
     public function pndApprove(Request $request, ResignationRequest $resignation)
     {
+        $this->ensureResignationSchema();
         $this->checkIsPnd();
         $request->validate(['pnd_notes' => 'nullable|string|max:500']);
 
@@ -291,7 +307,7 @@ class ResignationController extends Controller
                 'embeds'  => [$embed],
             ]);
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::warning('[Discord-IE-Resign] Gagal kirim webhook: ' . $e->getMessage());
+            Log::warning('[Discord-IE-Resign] Gagal kirim webhook: ' . $e->getMessage());
         }
     }
 
@@ -327,7 +343,7 @@ class ResignationController extends Controller
 
             return back()->with('success', 'Permohonan resign ' . $applicantName . ' berhasil dibatalkan dan dihapus dari antrean.');
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('[Resignation] PND Cancel Error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::error('[Resignation] PND Cancel Error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return back()->with('error', 'Gagal membatalkan permohonan resign: ' . $e->getMessage());
         }
     }
@@ -336,6 +352,7 @@ class ResignationController extends Controller
 
     public function manageIe(Request $request)
     {
+        $this->ensureResignationSchema();
         $this->checkIsIe();
 
         $query = ResignationRequest::with([
@@ -350,10 +367,14 @@ class ResignationController extends Controller
 
         // Otomatis update perhitungan denda untuk permohonan yang berstatus pending_ie
         // agar nominal denda selalu tersinkronisasi dengan riwayat penerimaan gaji pokok terbaru
-        $pendingIeRequests = ResignationRequest::where('status', ResignationRequest::STATUS_PENDING_IE)->get();
-        foreach ($pendingIeRequests as $pReq) {
-            $pReq->calculateFine();
-            $pReq->save();
+        try {
+            $pendingIeRequests = ResignationRequest::where('status', ResignationRequest::STATUS_PENDING_IE)->get();
+            foreach ($pendingIeRequests as $pReq) {
+                $pReq->calculateFine();
+                $pReq->save();
+            }
+        } catch (\Throwable $e) {
+            Log::warning('[Resignation] Recalculate fine error: ' . $e->getMessage());
         }
 
         if ($status = $request->get('status')) {
@@ -383,22 +404,61 @@ class ResignationController extends Controller
      */
     public function ieVerifyPayment(Request $request, ResignationRequest $resignation)
     {
+        $this->ensureResignationSchema();
         $this->checkIsIe();
         $request->validate(['ie_notes' => 'nullable|string|max:500']);
 
         if ($resignation->status !== ResignationRequest::STATUS_PENDING_IE) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Status pengajuan saat ini (' . $resignation->status_label . ') tidak sesuai untuk konfirmasi denda IE.',
+                ], 400);
+            }
             return back()->with('error', 'Status tidak sesuai untuk konfirmasi denda IE.');
         }
 
-        $resignation->update([
-            'fine_paid'      => true,
-            'ie_verified_by' => Auth::id(),
-            'ie_verified_at' => now(),
-            'ie_notes'       => $request->ie_notes,
-            'status'         => ResignationRequest::STATUS_PENDING_PROOF,
-        ]);
+        try {
+            $resignation->update([
+                'fine_paid'      => true,
+                'ie_verified_by' => Auth::id(),
+                'ie_verified_at' => now(),
+                'ie_notes'       => $request->ie_notes,
+                'status'         => ResignationRequest::STATUS_PENDING_PROOF,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('[Resignation] ieVerifyPayment update failed: ' . $e->getMessage());
+            // Force schema alter and retry
+            try {
+                DB::statement("ALTER TABLE resignation_requests MODIFY COLUMN status VARCHAR(50) NOT NULL DEFAULT 'pending_pnd'");
+                $resignation->update([
+                    'fine_paid'      => true,
+                    'ie_verified_by' => Auth::id(),
+                    'ie_verified_at' => now(),
+                    'ie_notes'       => $request->ie_notes,
+                    'status'         => ResignationRequest::STATUS_PENDING_PROOF,
+                ]);
+            } catch (\Throwable $e2) {
+                Log::error('[Resignation] ieVerifyPayment retry failed: ' . $e2->getMessage());
+                if ($request->ajax() || $request->wantsJson()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Gagal mengonfirmasi denda: ' . $e2->getMessage(),
+                    ], 500);
+                }
+                return back()->with('error', 'Gagal mengonfirmasi denda: ' . $e2->getMessage());
+            }
+        }
 
-        // Catatan: Akun pengguna TETAP AKTIF (is_active = true) pada tahap ini agar dapat login dan mengunggah bukti
+        // Response AJAX/JSON atau redirect normal
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success'      => true,
+                'message'      => 'Konfirmasi denda berhasil! Pengajuan ' . $resignation->applicant_name . ' dialihkan ke tahap Upload Bukti Resign.',
+                'redirect_url' => route('portal.resignation.manage.ie'),
+            ]);
+        }
+
         return back()->with('success', 'Konfirmasi denda berhasil! Pengajuan ' . $resignation->applicant_name . ' dipindahkan ke tahap Upload Bukti Resign oleh anggota.');
     }
 
@@ -407,6 +467,7 @@ class ResignationController extends Controller
      */
     public function ieRequestProofRevision(Request $request, ResignationRequest $resignation)
     {
+        $this->ensureResignationSchema();
         $this->checkIsIe();
         $request->validate([
             'revision_notes' => 'required|string|max:1000',
@@ -415,6 +476,12 @@ class ResignationController extends Controller
         ]);
 
         if (!in_array($resignation->status, [ResignationRequest::STATUS_PROOF_SUBMITTED, ResignationRequest::STATUS_PENDING_PROOF])) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Status tidak sesuai untuk meminta pengisian ulang bukti.',
+                ], 400);
+            }
             return back()->with('error', 'Status tidak sesuai untuk meminta pengisian ulang bukti.');
         }
 
@@ -422,6 +489,14 @@ class ResignationController extends Controller
             'status'               => ResignationRequest::STATUS_PROOF_REVISION,
             'proof_revision_notes' => $request->revision_notes,
         ]);
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success'      => true,
+                'message'      => 'Permintaan isi ulang form bukti resign telah dikirim ke ' . $resignation->applicant_name . '.',
+                'redirect_url' => route('portal.resignation.manage.ie'),
+            ]);
+        }
 
         return back()->with('info', 'Permintaan isi ulang form bukti resign telah dikirim ke ' . $resignation->applicant_name . '. Catatan perbaikan berhasil disimpan.');
     }
@@ -435,53 +510,79 @@ class ResignationController extends Controller
      */
     public function ieFinalConfirm(Request $request, ResignationRequest $resignation)
     {
+        $this->ensureResignationSchema();
         $this->checkIsIe();
         $request->validate(['final_notes' => 'nullable|string|max:500']);
 
         if (!in_array($resignation->status, [ResignationRequest::STATUS_PROOF_SUBMITTED, ResignationRequest::STATUS_PENDING_PROOF])) {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pengajuan belum berada pada tahap siap konfirmasi akhir.',
+                ], 400);
+            }
             return back()->with('error', 'Pengajuan belum berada pada tahap siap konfirmasi akhir.');
         }
 
         $user = $resignation->user;
 
-        // 1. Perbarui data pengajuan resign
-        $resignation->update([
-            'status'               => ResignationRequest::STATUS_COMPLETED,
-            'final_deactivated_by' => Auth::id(),
-            'final_deactivated_at' => now(),
-        ]);
+        try {
+            // 1. Perbarui data pengajuan resign
+            $resignation->update([
+                'status'               => ResignationRequest::STATUS_COMPLETED,
+                'final_deactivated_by' => Auth::id(),
+                'final_deactivated_at' => now(),
+            ]);
 
-        // 2. Ubah status anggota menjadi Not Active
-        if ($user) {
-            $user->update(['is_active' => false]);
+            // 2. Ubah status anggota menjadi Not Active
+            if ($user) {
+                $user->update(['is_active' => false]);
+            }
+
+            // 3. Simpan Log Resign secara otomatis ke riwayat administrasi permanen
+            ResignationLog::create([
+                'resignation_request_id' => $resignation->id,
+                'user_id'                => $user?->id,
+                'member_name'            => $resignation->applicant_name ?? $user?->name ?? 'Anggota',
+                'citizen_id'             => $user?->citizen_id ?? '-',
+                'last_position'          => $user?->role?->display_name ?? $resignation->position ?? '-',
+                'managerial_position'    => $resignation->managerial_position ?? '-',
+                'batch'                  => $resignation->batch ?? '-',
+                'hospital'               => $user?->hospital ?? 'alta',
+                'resignation_date'       => $resignation->letter_date ?? now()->toDateString(),
+                'deactivated_at'         => now(),
+                'reason'                 => "Alasan IC:\n" . ($resignation->reason_ic ?? '-') . "\n\nAlasan OOC:\n" . ($resignation->reason_ooc ?? '-'),
+                'reason_ic'              => $resignation->reason_ic,
+                'reason_ooc'             => $resignation->reason_ooc,
+                'total_fine'             => $resignation->fine_amount ?? 0,
+                'fine_percentage'        => $resignation->fine_percentage ?? 0,
+                'fine_status'            => $resignation->fine_paid ? 'Lunas' : 'Belum Lunas',
+                'pocket_proof'           => $resignation->pocket_proof,
+                'key_proof'              => $resignation->key_proof,
+                'letter_proof'           => $resignation->letter_proof,
+                'fine_proof'             => $resignation->fine_proof,
+                'ie_verifier_name'       => $resignation->ieVerifiedBy?->name ?? Auth::user()->name,
+                'ie_deactivator_name'    => Auth::user()->name,
+                'notes'                  => $request->final_notes,
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('[Resignation] ieFinalConfirm error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal memproses konfirmasi akhir: ' . $e->getMessage(),
+                ], 500);
+            }
+            return back()->with('error', 'Gagal memproses konfirmasi akhir: ' . $e->getMessage());
         }
 
-        // 3. Simpan Log Resign secara otomatis ke riwayat administrasi permanen
-        ResignationLog::create([
-            'resignation_request_id' => $resignation->id,
-            'user_id'                => $user?->id,
-            'member_name'            => $resignation->applicant_name ?? $user?->name ?? 'Anggota',
-            'citizen_id'             => $user?->citizen_id ?? '-',
-            'last_position'          => $user?->role?->display_name ?? $resignation->position ?? '-',
-            'managerial_position'    => $resignation->managerial_position ?? '-',
-            'batch'                  => $resignation->batch ?? '-',
-            'hospital'               => $user?->hospital ?? 'alta',
-            'resignation_date'       => $resignation->letter_date ?? now()->toDateString(),
-            'deactivated_at'         => now(),
-            'reason'                 => "Alasan IC:\n" . ($resignation->reason_ic ?? '-') . "\n\nAlasan OOC:\n" . ($resignation->reason_ooc ?? '-'),
-            'reason_ic'              => $resignation->reason_ic,
-            'reason_ooc'             => $resignation->reason_ooc,
-            'total_fine'             => $resignation->fine_amount ?? 0,
-            'fine_percentage'        => $resignation->fine_percentage ?? 0,
-            'fine_status'            => $resignation->fine_paid ? 'Lunas' : 'Belum Lunas',
-            'pocket_proof'           => $resignation->pocket_proof,
-            'key_proof'              => $resignation->key_proof,
-            'letter_proof'           => $resignation->letter_proof,
-            'fine_proof'             => $resignation->fine_proof,
-            'ie_verifier_name'       => $resignation->ieVerifiedBy?->name ?? Auth::user()->name,
-            'ie_deactivator_name'    => Auth::user()->name,
-            'notes'                  => $request->final_notes,
-        ]);
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success'      => true,
+                'message'      => 'Konfirmasi akhir berhasil! Status anggota ' . ($resignation->applicant_name ?? $user?->name) . ' telah diubah menjadi Not Active dan data resmi tercatat di Log Resign.',
+                'redirect_url' => route('portal.resignation.manage.ie'),
+            ]);
+        }
 
         return back()->with('success', 'Konfirmasi akhir berhasil! Status anggota ' . ($resignation->applicant_name ?? $user?->name) . ' telah diubah menjadi Not Active dan Log Resign resmi telah tersimpan di arsip.');
     }
@@ -501,9 +602,17 @@ class ResignationController extends Controller
             // Hapus pengajuan resign agar benar-benar hilang dari antrean
             $resignation->delete();
 
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success'      => true,
+                    'message'      => 'Permohonan resign ' . $applicantName . ' berhasil dibatalkan.',
+                    'redirect_url' => route('portal.resignation.manage.ie'),
+                ]);
+            }
+
             return back()->with('success', 'Permohonan resign ' . $applicantName . ' berhasil dibatalkan dan dihapus dari antrean IE.');
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('[Resignation] IE Cancel Error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            Log::error('[Resignation] IE Cancel Error: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
             return back()->with('error', 'Gagal membatalkan permohonan resign: ' . $e->getMessage());
         }
     }
@@ -512,6 +621,7 @@ class ResignationController extends Controller
 
     public function logs(Request $request)
     {
+        $this->ensureResignationSchema();
         $this->checkCanViewLogs();
 
         $query = ResignationLog::query()->latest('deactivated_at');
@@ -538,6 +648,67 @@ class ResignationController extends Controller
         $logs = $query->paginate(20)->withQueryString();
 
         return view('portal.resignation.logs', compact('logs'));
+    }
+
+    // ─── Otomasi Schema & Kolom Database (Self-Healing) ───────────────────────
+
+    private function ensureResignationSchema(): void
+    {
+        try {
+            if (Schema::hasTable('resignation_requests')) {
+                // 1. Pastikan kolom status bertipe VARCHAR(50) agar tidak ditolak MySQL ENUM
+                try {
+                    DB::statement("ALTER TABLE resignation_requests MODIFY COLUMN status VARCHAR(50) NOT NULL DEFAULT 'pending_pnd'");
+                } catch (\Throwable $e) {}
+
+                // 2. Tambah kolom bukti jika belum ada
+                if (!Schema::hasColumn('resignation_requests', 'pocket_proof')) {
+                    Schema::table('resignation_requests', function (Blueprint $table) {
+                        $table->string('pocket_proof')->nullable();
+                        $table->string('key_proof')->nullable();
+                        $table->string('letter_proof')->nullable();
+                        $table->string('fine_proof')->nullable();
+                        $table->timestamp('proof_submitted_at')->nullable();
+                        $table->text('proof_revision_notes')->nullable();
+                        $table->unsignedBigInteger('final_deactivated_by')->nullable();
+                        $table->timestamp('final_deactivated_at')->nullable();
+                    });
+                }
+            }
+
+            // 3. Pastikan tabel resignation_logs ada
+            if (!Schema::hasTable('resignation_logs')) {
+                Schema::create('resignation_logs', function (Blueprint $table) {
+                    $table->id();
+                    $table->unsignedBigInteger('resignation_request_id')->nullable();
+                    $table->unsignedBigInteger('user_id')->nullable();
+                    $table->string('member_name');
+                    $table->string('citizen_id')->nullable();
+                    $table->string('last_position');
+                    $table->string('managerial_position')->nullable();
+                    $table->string('batch')->nullable();
+                    $table->string('hospital')->default('alta');
+                    $table->date('resignation_date');
+                    $table->dateTime('deactivated_at');
+                    $table->text('reason')->nullable();
+                    $table->text('reason_ic')->nullable();
+                    $table->text('reason_ooc')->nullable();
+                    $table->unsignedBigInteger('total_fine')->default(0);
+                    $table->decimal('fine_percentage', 5, 2)->default(0);
+                    $table->string('fine_status')->default('Lunas');
+                    $table->string('pocket_proof')->nullable();
+                    $table->string('key_proof')->nullable();
+                    $table->string('letter_proof')->nullable();
+                    $table->string('fine_proof')->nullable();
+                    $table->string('ie_verifier_name')->nullable();
+                    $table->string('ie_deactivator_name');
+                    $table->text('notes')->nullable();
+                    $table->timestamps();
+                });
+            }
+        } catch (\Throwable $e) {
+            Log::warning('[Resignation] Schema ensure warning: ' . $e->getMessage());
+        }
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────

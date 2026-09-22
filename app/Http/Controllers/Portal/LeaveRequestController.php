@@ -209,15 +209,16 @@ class LeaveRequestController extends Controller
     private function authorizeView(LeaveRequest $leave): void
     {
         $user = Auth::user();
-        if ($leave->user_id !== $user->id && !$user->isManagerOrAbove()) {
+        if ($leave->user_id !== $user->id && !$user->isManagerOrAbove() && !$user->isInDivision('ie') && !$user->isAdmin()) {
             abort(403);
         }
     }
 
     private function checkCanApprove(): void
     {
-        if (!Auth::user()->isManagerOrAbove()) {
-            abort(403, 'Hanya Manager ke atas yang dapat menyetujui cuti.');
+        $user = Auth::user();
+        if (!$user->isManagerOrAbove() && !$user->isInDivision('ie') && !$user->isAdmin()) {
+            abort(403, 'Hanya Divisi IE dan Manajemen yang dapat mengelola dan menyetujui cuti.');
         }
     }
 }

@@ -20,14 +20,14 @@
                     <span class="w-10 h-10 rounded-xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400 text-lg">
                         <i class="fas fa-calendar-alt"></i>
                     </span>
-                    Kelola Pengajuan Cuti
+                    Kelola Pengajuan Cuti (Divisi IE)
                 </h1>
-                <p class="text-slate-300 text-sm mt-1">Verifikasi dan kelola persetujuan izin cuti seluruh staf medis Alta Hospital</p>
+                <p class="text-slate-300 text-sm mt-1">Verifikasi dan kelola persetujuan izin cuti seluruh staf medis Alta Hospital oleh Divisi IE &amp; Manajemen</p>
             </div>
 
             <div class="flex items-center gap-3">
                 <span class="px-3.5 py-2 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs font-semibold flex items-center gap-2">
-                    <i class="fas fa-hospital-alt"></i> Khusus Alta Hospital
+                    <i class="fas fa-user-shield"></i> Otoritas Divisi IE
                 </span>
             </div>
         </div>

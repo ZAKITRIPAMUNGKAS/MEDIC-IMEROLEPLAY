@@ -1613,6 +1613,9 @@
                                     <a href="{{ route('portal.ie.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-sky-50 hover:text-sky-700 transition-colors">
                                         <i class="fas fa-file-contract w-4 text-sky-500 text-sm"></i> IE: Kontrak Medis
                                     </a>
+                                    <a href="{{ route('portal.leave.manage') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-rose-50 hover:text-rose-700 transition-colors">
+                                        <i class="fas fa-calendar-alt w-4 text-rose-500 text-sm"></i> IE: Kelola Cuti
+                                    </a>
                                     <a href="{{ route('portal.resignation.manage.ie') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors">
                                         <i class="fas fa-hand-holding-usd w-4 text-orange-400 text-sm"></i> IE: Denda Resign
                                     </a>
@@ -1633,9 +1636,6 @@
                                 <div class="py-1 border-t border-gray-100">
                                     <a href="{{ route('portal.resignation.manage.pnd') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-700 transition-colors">
                                         <i class="fas fa-check-circle w-4 text-orange-400 text-sm"></i> PND: Verifikasi Resign
-                                    </a>
-                                    <a href="{{ route('portal.leave.manage') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-rose-50 hover:text-rose-700 transition-colors">
-                                        <i class="fas fa-calendar-alt w-4 text-rose-400 text-sm"></i> PND: Kelola Cuti
                                     </a>
                                 </div>
                                 @endif
@@ -1974,6 +1974,11 @@
                                 class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
                                 <i class="fas fa-hand-holding-usd w-5 text-orange-400 text-sm"></i>
                                 <span>IE: Denda Resign</span>
+                            </a>
+                            <a href="{{ route('portal.leave.manage') }}"
+                                class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                                <i class="fas fa-calendar-alt w-5 text-rose-400 text-sm"></i>
+                                <span>IE: Kelola Cuti</span>
                             </a>
                             <a href="{{ route('portal.resignation.logs') }}"
                                 class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">

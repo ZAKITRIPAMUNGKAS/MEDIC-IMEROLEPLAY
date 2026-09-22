@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="min-h-screen pt-20 pb-12" style="background: linear-gradient(135deg, #0b1329 0%, #0c2461 50%, #0b1329 100%);">
-    <div class="max-w-6xl mx-auto px-4">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {{-- Header --}}
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -100,53 +100,53 @@
                 <p class="text-sm font-medium">Tidak ada permohonan resign pada filter ini.</p>
             </div>
             @else
-            <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                    <thead class="border-b border-white/10 text-xs text-white/50 uppercase tracking-wider bg-white/3">
+            <div class="overflow-x-auto" style="scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent;">
+                <table class="w-full text-sm text-left border-collapse" style="min-width: 980px;">
+                    <thead class="border-b border-white/10 text-xs text-white/50 uppercase tracking-wider bg-white/5">
                         <tr>
-                            <th class="text-left px-5 py-3.5">Nama Staf &amp; ID</th>
-                            <th class="text-left px-5 py-3.5">Jabatan Terakhir</th>
-                            <th class="text-left px-5 py-3.5">Tanggal Surat</th>
-                            <th class="text-left px-5 py-3.5">Status Alur</th>
+                            <th class="py-4 px-6 font-semibold" style="min-width: 220px;">Nama Staf &amp; ID</th>
+                            <th class="py-4 px-5 font-semibold" style="min-width: 150px;">Jabatan Terakhir</th>
+                            <th class="py-4 px-5 font-semibold" style="min-width: 120px;">Tanggal Surat</th>
+                            <th class="py-4 px-5 font-semibold" style="min-width: 170px;">Status Alur</th>
                             @if($stage === 'ie')
-                            <th class="text-left px-5 py-3.5">Denda Resign</th>
-                            <th class="text-center px-5 py-3.5">4 Berkas Bukti</th>
+                            <th class="py-4 px-5 font-semibold" style="min-width: 160px;">Denda Resign</th>
+                            <th class="py-4 px-5 font-semibold text-center" style="min-width: 140px;">4 Berkas Bukti</th>
                             @endif
-                            <th class="text-right px-5 py-3.5">Aksi Tindakan</th>
+                            <th class="py-4 px-6 font-semibold text-right" style="min-width: 230px;">Aksi Tindakan</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-white/5">
                         @foreach($requests as $req)
                         <tr class="hover:bg-white/5 transition-colors">
-                            <td class="px-5 py-3.5">
-                                <div class="text-white font-semibold">{{ $req->applicant_name }}</div>
+                            <td class="py-4 px-6">
+                                <div class="text-white font-semibold text-sm">{{ $req->applicant_name }}</div>
                                 <div class="text-white/40 text-xs flex items-center gap-2 mt-0.5">
                                     <span>ID: {{ $req->user?->staff_id ?? '-' }}</span>
                                     <span>•</span>
                                     <span>Citizen: {{ $req->user?->citizen_id ?? '-' }}</span>
                                 </div>
                             </td>
-                            <td class="px-5 py-3.5 text-white/80">
-                                <div class="font-medium">{{ $req->position }}</div>
+                            <td class="py-4 px-5 text-white/80">
+                                <div class="font-medium text-sm">{{ $req->position }}</div>
                                 @if($req->batch)
-                                <div class="text-white/40 text-xs">Batch: {{ $req->batch }}</div>
+                                <div class="text-white/40 text-xs mt-0.5">Batch: {{ $req->batch }}</div>
                                 @endif
                             </td>
-                            <td class="px-5 py-3.5 text-white/70 whitespace-nowrap">
+                            <td class="py-4 px-5 text-white/70 whitespace-nowrap text-xs sm:text-sm">
                                 {{ $req->letter_date?->format('d M Y') }}
                             </td>
-                            <td class="px-5 py-3.5 whitespace-nowrap">
-                                <span class="px-2.5 py-1 rounded-full text-xs font-bold border inline-flex items-center gap-1.5
+                            <td class="py-4 px-5 whitespace-nowrap">
+                                <span class="px-3 py-1 rounded-full text-xs font-bold border inline-flex items-center gap-1.5
                                     @if($req->status === 'pending_pnd') bg-yellow-500/20 text-yellow-300 border-yellow-500/30
-                                    @elseif($req->status === 'pending_ie') bg-orange-500/20 text-orange-300 border-orange-500/30
-                                    @elseif($req->status === 'pending_proof') bg-purple-500/20 text-purple-300 border-purple-500/30
-                                    @elseif($req->status === 'proof_submitted') bg-sky-500/20 text-sky-300 border-sky-500/30 animate-pulse
-                                    @elseif($req->status === 'proof_revision') bg-rose-500/20 text-rose-300 border-rose-500/30
-                                    @elseif($req->status === 'completed') bg-emerald-500/20 text-emerald-300 border-emerald-500/30
+                                    @elseif($req->status === 'pending_ie') bg-amber-500/20 text-amber-300 border-amber-500/40 shadow-sm shadow-amber-950/20
+                                    @elseif($req->status === 'pending_proof') bg-purple-500/20 text-purple-300 border-purple-500/40 shadow-sm shadow-purple-950/20
+                                    @elseif($req->status === 'proof_submitted') bg-sky-500/25 text-sky-200 border-sky-400/50 shadow-sm shadow-sky-950/30 animate-pulse
+                                    @elseif($req->status === 'proof_revision') bg-rose-500/20 text-rose-300 border-rose-500/40 shadow-sm shadow-rose-950/20
+                                    @elseif($req->status === 'completed') bg-emerald-500/20 text-emerald-300 border-emerald-500/40 shadow-sm shadow-emerald-950/20
                                     @elseif($req->status === 'cancelled') bg-gray-500/20 text-gray-300 border-gray-500/30
                                     @else bg-red-500/20 text-red-300 border-red-500/30 @endif">
                                     @if($req->status === 'proof_submitted')
-                                    <span class="w-2 h-2 rounded-full bg-sky-400"></span>
+                                    <span class="w-2 h-2 rounded-full bg-sky-400 animate-ping"></span>
                                     @endif
                                     {{ $req->status_label }}
                                 </span>
@@ -154,21 +154,21 @@
 
                             {{-- Kolom IE: Denda & Bukti --}}
                             @if($stage === 'ie')
-                            <td class="px-5 py-3.5 whitespace-nowrap">
-                                <div class="text-orange-300 font-bold text-sm">$ {{ number_format($req->fine_amount, 0, ',', '.') }}</div>
-                                <div class="text-white/40 text-xs">{{ $req->fine_percentage }}% dari gapok (${{ number_format($req->base_salary, 0, ',', '.') }})</div>
+                            <td class="py-4 px-5 whitespace-nowrap">
+                                <div class="text-amber-300 font-extrabold text-sm">$ {{ number_format($req->fine_amount, 0, ',', '.') }}</div>
+                                <div class="text-white/40 text-xs mt-0.5">{{ $req->fine_percentage }}% dari gapok (${{ number_format($req->base_salary, 0, ',', '.') }})</div>
                             </td>
-                            <td class="px-5 py-3.5 text-center whitespace-nowrap">
+                            <td class="py-4 px-5 text-center whitespace-nowrap">
                                 @if($req->hasAllProofs())
                                 <button type="button"
                                         onclick="openProofPreviewModal({{ $req->id }}, '{{ addslashes($req->applicant_name) }}', '{{ $req->pocket_proof_url }}', '{{ $req->key_proof_url }}', '{{ $req->letter_proof_url }}', '{{ $req->fine_proof_url }}')"
-                                        class="px-2.5 py-1 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 rounded-lg border border-cyan-500/30 text-xs font-semibold inline-flex items-center gap-1 transition-all">
+                                        class="px-3 py-1.5 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 rounded-xl border border-cyan-500/40 text-xs font-bold inline-flex items-center gap-1.5 transition-all shadow-sm shadow-cyan-950/30">
                                     <i class="fas fa-images"></i> 4 Bukti Lengkap
                                 </button>
                                 @elseif($req->status === 'pending_proof')
-                                <span class="text-purple-300/80 text-xs italic">Menunggu upload</span>
+                                <span class="text-purple-300/80 text-xs italic font-medium">Menunggu upload</span>
                                 @elseif($req->status === 'proof_revision')
-                                <span class="text-rose-300/80 text-xs italic">Diminta revisi</span>
+                                <span class="text-rose-300/80 text-xs italic font-medium">Diminta revisi</span>
                                 @else
                                 <span class="text-white/30 text-xs">—</span>
                                 @endif
@@ -176,7 +176,7 @@
                             @endif
 
                             {{-- Kolom Aksi --}}
-                            <td class="px-5 py-3.5 text-right whitespace-nowrap">
+                            <td class="py-4 px-6 text-right whitespace-nowrap">
                                 {{-- Aksi PND --}}
                                 @if($stage === 'pnd')
                                     @if($req->status === 'pending_pnd')
@@ -184,22 +184,22 @@
                                         {{-- Setujui --}}
                                         <form method="POST" action="{{ route('portal.resignation.pnd-approve', $req) }}">
                                             @csrf
-                                            <button type="submit" class="px-2.5 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-xs font-semibold rounded-lg border border-emerald-500/30 transition-all flex items-center gap-1">
+                                            <button type="submit" class="px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-xs font-semibold rounded-xl border border-emerald-500/30 transition-all flex items-center gap-1">
                                                 <i class="fas fa-check"></i> Setujui
                                             </button>
                                         </form>
                                         {{-- Tolak --}}
                                         <button type="button" onclick="openPndRejectModal({{ $req->id }}, '{{ addslashes($req->applicant_name) }}')"
-                                                class="px-2.5 py-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-semibold rounded-lg border border-rose-500/30 transition-all flex items-center gap-1">
-                                            <i class="fas fa-times"></i> Tolak
+                                                class="px-3 py-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-semibold rounded-xl border border-rose-500/30 transition-all flex items-center gap-1">
+                                                <i class="fas fa-times"></i> Tolak
                                         </button>
                                         {{-- Batalkan Resign (PND) --}}
                                         <form method="POST" action="{{ route('portal.resignation.pnd-cancel', $req) }}"
                                               onsubmit="return confirm('Yakin ingin membatalkan pengajuan resign {{ addslashes($req->applicant_name) }}? Pengajuan akan dihapus dan akun tetap aktif.');"
                                               class="inline">
                                             @csrf
-                                            <button type="submit" class="px-2.5 py-1.5 bg-gray-500/20 hover:bg-gray-500/30 text-gray-300 text-xs font-semibold rounded-lg border border-gray-500/30 transition-all flex items-center gap-1">
-                                                <i class="fas fa-ban"></i> Batal
+                                            <button type="submit" class="p-2 bg-gray-500/20 hover:bg-gray-500/30 text-gray-300 text-xs font-semibold rounded-xl border border-gray-500/30 transition-all" title="Batal Pengajuan">
+                                                <i class="fas fa-ban"></i>
                                             </button>
                                         </form>
                                     </div>
@@ -209,7 +209,7 @@
                                               onsubmit="return confirm('Yakin ingin membatalkan pengajuan resign {{ addslashes($req->applicant_name) }}?');"
                                               class="inline">
                                             @csrf
-                                            <button type="submit" class="px-2.5 py-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-semibold rounded-lg border border-rose-500/30 transition-all flex items-center gap-1">
+                                            <button type="submit" class="px-3 py-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-semibold rounded-xl border border-rose-500/30 transition-all flex items-center gap-1">
                                                 <i class="fas fa-ban"></i> Batalkan Resign
                                             </button>
                                         </form>
@@ -222,12 +222,12 @@
                                 @elseif($stage === 'ie')
                                     {{-- Tahap 1 IE: Konfirmasi Denda & Pindahkan ke Upload Bukti --}}
                                     @if($req->status === 'pending_ie')
-                                    <div class="flex items-center justify-end gap-1.5 flex-wrap">
-                                        <form method="POST" action="{{ route('portal.resignation.ie-verify', $req) }}">
+                                    <div class="flex items-center justify-end gap-2">
+                                        <form method="POST" action="{{ route('portal.resignation.ie-verify', $req) }}" class="inline">
                                             @csrf
                                             <button type="submit"
                                                     onclick="return confirm('Konfirmasi denda sebesar ${{ number_format($req->fine_amount, 0, ',', '.') }} untuk {{ addslashes($req->applicant_name) }}? Data akan dialihkan ke tahap Upload Bukti Resign dan akun staf TETAP AKTIF sampai konfirmasi akhir.')"
-                                                    class="px-3 py-1.5 bg-orange-500/20 hover:bg-orange-500/30 text-orange-300 text-xs font-bold rounded-lg border border-orange-500/40 transition-all flex items-center gap-1.5 shadow-sm">
+                                                    class="px-3.5 py-2 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-white text-xs font-bold rounded-xl shadow-md shadow-orange-950/40 transition-all flex items-center gap-1.5">
                                                 <i class="fas fa-arrow-right"></i> Konfirmasi Denda &amp; Lanjut Bukti
                                             </button>
                                         </form>
@@ -235,27 +235,27 @@
                                         <form method="POST" action="{{ route('portal.resignation.ie-cancel', $req) }}"
                                               onsubmit="return confirm('Batalkan resign untuk {{ addslashes($req->applicant_name) }}?');" class="inline">
                                             @csrf
-                                            <button type="submit" class="px-2 py-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-semibold rounded-lg border border-rose-500/30 transition-all">
-                                                <i class="fas fa-ban"></i>
+                                            <button type="submit" class="p-2 bg-rose-500/20 hover:bg-rose-500/35 text-rose-300 hover:text-rose-200 text-xs font-semibold rounded-xl border border-rose-500/30 transition-all" title="Batalkan Resign">
+                                                <i class="fas fa-ban text-sm"></i>
                                             </button>
                                         </form>
                                     </div>
 
                                     {{-- Tahap 2 IE: Cross-Check 4 Bukti Resign & Konfirmasi Akhir Penonaktifan --}}
                                     @elseif(in_array($req->status, ['proof_submitted', 'pending_proof', 'proof_revision']))
-                                    <div class="flex items-center justify-end gap-1.5 flex-wrap">
+                                    <div class="flex items-center justify-end gap-2">
                                         {{-- Tombol Periksa Bukti (Membuka Modal Review & Keputusan) --}}
                                         <button type="button"
                                                 onclick="openIeReviewModal({{ $req->id }}, '{{ addslashes($req->applicant_name) }}', '{{ $req->user?->citizen_id ?? '-' }}', '{{ addslashes($req->position) }}', '{{ number_format($req->fine_amount, 0, ',', '.') }}', '{{ $req->pocket_proof_url ?? '' }}', '{{ $req->key_proof_url ?? '' }}', '{{ $req->letter_proof_url ?? '' }}', '{{ $req->fine_proof_url ?? '' }}', '{{ addslashes($req->proof_revision_notes ?? '') }}')"
-                                                class="px-3 py-1.5 bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 text-xs font-bold rounded-lg border border-sky-500/40 transition-all flex items-center gap-1.5 shadow-sm">
+                                                class="px-3.5 py-2 bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white text-xs font-bold rounded-xl shadow-md shadow-sky-950/40 transition-all flex items-center gap-1.5">
                                             <i class="fas fa-search-plus"></i> Cross-Check Bukti
                                         </button>
 
                                         <form method="POST" action="{{ route('portal.resignation.ie-cancel', $req) }}"
                                               onsubmit="return confirm('Batalkan pengajuan resign {{ addslashes($req->applicant_name) }}? Akun akan tetap aktif.');" class="inline">
                                             @csrf
-                                            <button type="submit" class="px-2 py-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 text-xs font-semibold rounded-lg border border-rose-500/30 transition-all" title="Batalkan Resign">
-                                                <i class="fas fa-ban"></i>
+                                            <button type="submit" class="p-2 bg-rose-500/20 hover:bg-rose-500/35 text-rose-300 hover:text-rose-200 text-xs font-semibold rounded-xl border border-rose-500/30 transition-all" title="Batalkan Resign">
+                                                <i class="fas fa-ban text-sm"></i>
                                             </button>
                                         </form>
                                     </div>
