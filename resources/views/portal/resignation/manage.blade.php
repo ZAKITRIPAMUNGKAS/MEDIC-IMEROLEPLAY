@@ -473,38 +473,38 @@
 {{-- ═══════════════════════════════════════════════════════════════════════════ --}}
 {{-- MODAL HITUNG & TERBITKAN DENDA PTDH OLEH IE --}}
 {{-- ═══════════════════════════════════════════════════════════════════════════ --}}
-<div id="ptdhModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md hidden p-4 overflow-y-auto">
-    <div class="bg-gray-900 border border-amber-500/40 rounded-2xl w-full max-w-2xl p-6 shadow-2xl my-auto relative">
-        <div class="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
-            <div class="flex items-center gap-3">
-                <span class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-rose-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
-                    <i class="fas fa-gavel text-lg"></i>
+<div id="ptdhModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden p-3 overflow-y-auto">
+    <div class="bg-gray-900 border border-amber-500/40 rounded-xl w-full max-w-lg p-4 sm:p-5 shadow-2xl my-auto relative max-h-[92vh] flex flex-col">
+        {{-- Header: Compact & Clean --}}
+        <div class="flex items-center justify-between pb-3 border-b border-white/10 shrink-0">
+            <div class="flex items-center gap-2.5">
+                <span class="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 text-sm">
+                    <i class="fas fa-gavel"></i>
                 </span>
                 <div>
-                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                        Hitung Denda PTDH Anggota Medis
+                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                        Hitung Denda PTDH
+                        <span class="text-[10px] bg-rose-500/20 text-rose-300 px-1.5 py-0.5 rounded border border-rose-500/30">Manual IE</span>
                     </h3>
-                    <p class="text-xs text-white/50">
-                        Pilih anggota medis dan terbitkan perhitungan denda PTDH secara langsung tanpa menunggu pengajuan resign.
-                    </p>
+                    <p class="text-[11px] text-white/50">Terbitkan kalkulasi denda PTDH langsung ke tahap upload bukti.</p>
                 </div>
             </div>
-            <button type="button" onclick="closeModal('ptdhModal')" class="text-white/50 hover:text-white p-2 rounded-lg text-lg transition-colors">
+            <button type="button" onclick="closeModal('ptdhModal')" class="text-white/40 hover:text-white p-1 rounded-lg text-sm transition-colors">
                 <i class="fas fa-times"></i>
             </button>
         </div>
 
-        <form id="ptdhForm" action="{{ route('portal.resignation.ptdh-store') }}" method="POST" class="space-y-4">
+        <form id="ptdhForm" action="{{ route('portal.resignation.ptdh-store') }}" method="POST" class="space-y-3 pt-3 overflow-y-auto pr-1 text-xs">
             @csrf
 
-            {{-- Pemilihan Anggota Medis --}}
+            {{-- Pemilihan Staf Medis --}}
             <div>
-                <label class="block text-xs font-bold text-amber-300 uppercase tracking-wider mb-2 flex items-center gap-2">
+                <label class="block text-[11px] font-bold text-amber-300 uppercase tracking-wider mb-1 flex items-center gap-1.5">
                     <i class="fas fa-user-md"></i> Pilih Anggota Medis Aktif <span class="text-rose-400">*</span>
                 </label>
                 <select id="ptdh_user_id" name="user_id" required onchange="fetchPtdhCalculation(this.value)"
-                        class="w-full px-3.5 py-2.5 bg-black/50 border border-white/20 rounded-xl text-white text-sm focus:outline-none focus:border-amber-400 cursor-pointer">
-                    <option value="" class="bg-slate-900 text-white/60">-- Pilih Nama Staf Medis yang akan di-PTDH --</option>
+                        class="w-full px-3 py-2 bg-black/50 border border-white/20 rounded-lg text-white text-xs focus:outline-none focus:border-amber-400 cursor-pointer">
+                    <option value="" class="bg-slate-900 text-white/60">-- Pilih Staf Medis yang akan di-PTDH --</option>
                     @if(isset($staffList))
                         @foreach($staffList as $staff)
                         <option value="{{ $staff->id }}" class="bg-slate-900 text-white">
@@ -513,123 +513,115 @@
                         @endforeach
                     @endif
                 </select>
-                <p class="text-[11px] text-white/40 mt-1">Hanya memuat anggota rumah sakit yang berstatus aktif saat ini.</p>
             </div>
 
             {{-- Loading Spinner --}}
-            <div id="ptdhLoading" class="hidden py-6 text-center text-amber-400">
-                <i class="fas fa-circle-notch fa-spin text-2xl mb-2"></i>
-                <p class="text-xs text-white/70">Menghitung akumulasi riwayat gaji pokok dan skema denda staf...</p>
+            <div id="ptdhLoading" class="hidden py-4 text-center text-amber-400">
+                <i class="fas fa-circle-notch fa-spin text-xl mb-1"></i>
+                <p class="text-[11px] text-white/60">Menghitung riwayat gaji pokok & skema denda...</p>
             </div>
 
             {{-- Container Hasil Kalkulasi Denda --}}
-            <div id="ptdhCalculationBox" class="hidden space-y-4">
-                {{-- Info Anggota --}}
-                <div class="p-3.5 bg-white/5 border border-white/10 rounded-xl grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div id="ptdhCalculationBox" class="hidden space-y-2.5">
+                {{-- Compact Member Info Bar --}}
+                <div class="p-2.5 bg-white/5 border border-white/10 rounded-lg grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
                     <div>
-                        <span class="text-white/40 block text-[10px] uppercase font-semibold">Nama Lengkap</span>
+                        <span class="text-white/40 block text-[9px] uppercase font-semibold">Nama</span>
                         <span id="ptdh_disp_name" class="font-bold text-white truncate block"></span>
                     </div>
                     <div>
-                        <span class="text-white/40 block text-[10px] uppercase font-semibold">Jabatan / Role</span>
-                        <span id="ptdh_disp_position" class="font-medium text-white/90 truncate block"></span>
+                        <span class="text-white/40 block text-[9px] uppercase font-semibold">Jabatan</span>
+                        <span id="ptdh_disp_position" class="font-medium text-white/80 truncate block"></span>
                     </div>
                     <div>
-                        <span class="text-white/40 block text-[10px] uppercase font-semibold">Citizen ID / Batch</span>
-                        <span id="ptdh_disp_citizen" class="font-medium text-white/90 truncate block"></span>
+                        <span class="text-white/40 block text-[9px] uppercase font-semibold">Citizen / Batch</span>
+                        <span id="ptdh_disp_citizen" class="font-medium text-white/80 truncate block"></span>
                     </div>
                     <div>
-                        <span class="text-white/40 block text-[10px] uppercase font-semibold">Persentase Denda</span>
-                        <span id="ptdh_disp_percentage" class="font-extrabold text-amber-300"></span>
+                        <span class="text-white/40 block text-[9px] uppercase font-semibold">Persentase</span>
+                        <span id="ptdh_disp_percentage" class="font-bold text-amber-300"></span>
                     </div>
                 </div>
 
-                {{-- Rincian Perhitungan --}}
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div class="p-3 bg-black/30 border border-white/10 rounded-xl">
-                        <span class="text-white/50 text-xs block">Akumulasi Gaji Pokok (Paid):</span>
-                        <div class="text-base font-extrabold text-white mt-0.5">$ <span id="ptdh_disp_salary">0</span></div>
-                        <span class="text-[10px] text-white/40">Total penerimaan gaji pokok murni (tanpa bonus)</span>
+                {{-- Unified Financial Breakdown --}}
+                <div class="p-2.5 bg-black/40 border border-white/10 rounded-lg space-y-2">
+                    <div class="grid grid-cols-2 gap-2 text-[11px]">
+                        <div class="bg-white/5 p-2 rounded border border-white/5">
+                            <span class="text-white/50 block text-[10px]">Total Gaji Pokok (Paid):</span>
+                            <div class="text-sm font-bold text-white mt-0.5">$ <span id="ptdh_disp_salary">0</span></div>
+                        </div>
+                        <div class="bg-white/5 p-2 rounded border border-white/5">
+                            <span class="text-white/50 block text-[10px]">Denda Dasar:</span>
+                            <div class="text-sm font-bold text-amber-300 mt-0.5">$ <span id="ptdh_disp_base_fine">0</span></div>
+                            <span class="text-[9px] text-white/40 block truncate" id="ptdh_disp_base_formula">Persentase dari gaji pokok</span>
+                        </div>
                     </div>
-                    <div class="p-3 bg-black/30 border border-white/10 rounded-xl">
-                        <span class="text-white/50 text-xs block">Denda Resign Dasar:</span>
-                        <div class="text-base font-extrabold text-amber-300 mt-0.5">$ <span id="ptdh_disp_base_fine">0</span></div>
-                        <span class="text-[10px] text-white/40" id="ptdh_disp_base_formula">Persentase dari gaji pokok</span>
+
+                    {{-- Biaya Tambahan PTDH (Customizable inline) --}}
+                    <div class="flex items-center justify-between gap-2 pt-1.5 border-t border-white/10">
+                        <div class="shrink-0">
+                            <label class="text-[11px] font-bold text-amber-300 flex items-center gap-1">
+                                <i class="fas fa-plus-circle text-rose-400"></i> Biaya Tambahan PTDH:
+                            </label>
+                            <span class="text-[9px] text-white/40 block">Default Rp250.000 (Customizable)</span>
+                        </div>
+                        <div class="relative w-36 sm:w-44">
+                            <span class="absolute inset-y-0 left-0 pl-2.5 flex items-center text-amber-400 font-bold text-xs">$</span>
+                            <input type="number" id="ptdh_additional_fee" name="ptdh_additional_fee" value="250000" min="0" step="1000" required
+                                   oninput="recalculatePtdhTotal()"
+                                   class="w-full pl-6 pr-2.5 py-1 bg-black/60 border border-amber-500/40 rounded-lg text-white font-bold text-xs text-right focus:outline-none focus:border-amber-400">
+                        </div>
                     </div>
                 </div>
 
-                {{-- Input Biaya Tambahan PTDH (Customizable) --}}
-                <div class="p-4 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-rose-500/10 border border-amber-500/30 rounded-xl">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
-                        <label class="text-xs font-bold text-amber-300 uppercase tracking-wide flex items-center gap-1.5">
-                            <i class="fas fa-plus-circle text-rose-400"></i> Biaya Tambahan PTDH <span class="text-rose-400">*</span>
-                        </label>
-                        <span class="text-[11px] text-amber-200/80 font-semibold bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/30">Customizable (Dapat Diubah IE)</span>
+                {{-- Total Highlight Banner --}}
+                <div class="px-3 py-2 bg-gradient-to-r from-orange-600/30 via-rose-600/30 to-amber-600/30 border border-orange-500/50 rounded-lg flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] font-bold text-orange-200 uppercase tracking-wider block">Total Denda PTDH</span>
+                        <div class="text-lg font-black text-white">$ <span id="ptdh_disp_total_fine">0</span></div>
                     </div>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-amber-400 font-extrabold text-sm">$</span>
-                        <input type="number" id="ptdh_additional_fee" name="ptdh_additional_fee" value="250000" min="0" step="1000" required
-                               oninput="recalculatePtdhTotal()"
-                               class="w-full pl-8 pr-4 py-2.5 bg-black/60 border border-amber-500/40 rounded-xl text-white font-extrabold text-base focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400">
-                    </div>
-                    <p class="text-[11px] text-white/50 mt-1.5 leading-relaxed">
-                        Sesuai ketentuan, sistem menambahkan biaya sebesar <strong>Rp250.000 / $250.000</strong>. Anda dapat mengubah nominal ini secara fleksibel sesuai dengan SK atau ketentuan yang berlaku.
-                    </p>
+                    <span class="px-2 py-0.5 bg-rose-500/20 text-rose-300 border border-rose-500/40 rounded text-[10px] font-extrabold uppercase flex items-center gap-1">
+                        <i class="fas fa-gavel"></i> Wajib Bayar
+                    </span>
                 </div>
 
-                {{-- Total Denda PTDH --}}
-                <div class="p-4 bg-gradient-to-r from-orange-600/25 via-rose-600/25 to-amber-600/25 border-2 border-orange-500/50 rounded-xl flex items-center justify-between shadow-lg">
+                {{-- Alasan IC & OOC (Compact 2 cols) --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     <div>
-                        <span class="text-xs font-bold text-orange-200 uppercase tracking-wider block">Total Denda PTDH Wajib Dibayar</span>
-                        <div class="text-2xl font-black text-white mt-0.5">$ <span id="ptdh_disp_total_fine">0</span></div>
-                    </div>
-                    <div class="text-right">
-                        <span class="px-3 py-1 bg-rose-500/30 text-rose-300 border border-rose-500/50 rounded-lg text-xs font-extrabold uppercase inline-flex items-center gap-1">
-                            <i class="fas fa-gavel"></i> Total Tagihan
-                        </span>
-                        <div class="text-[10px] text-white/50 mt-1">Denda Pokok + Biaya PTDH</div>
-                    </div>
-                </div>
-
-                {{-- Alasan PTDH --}}
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-white/70 mb-1">Alasan PTDH (IC)</label>
-                        <textarea name="reason_ic" rows="2" placeholder="Pelanggaran SOP medis, desersi dinas tanpa izin, dsb..."
-                                  class="w-full px-3 py-2 bg-black/40 border border-white/15 rounded-xl text-white text-xs focus:outline-none focus:border-amber-400"></textarea>
+                        <label class="block text-[10px] font-semibold text-white/70 mb-0.5">Alasan PTDH (IC)</label>
+                        <textarea name="reason_ic" rows="2" placeholder="Pelanggaran SOP / desersi..."
+                                  class="w-full px-2.5 py-1.5 bg-black/40 border border-white/15 rounded-lg text-white text-[11px] focus:outline-none focus:border-amber-400 resize-none"></textarea>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-white/70 mb-1">Alasan PTDH (OOC)</label>
-                        <textarea name="reason_ooc" rows="2" placeholder="Alasan administratif internal atau catatan indisipliner..."
-                                  class="w-full px-3 py-2 bg-black/40 border border-white/15 rounded-xl text-white text-xs focus:outline-none focus:border-amber-400"></textarea>
+                        <label class="block text-[10px] font-semibold text-white/70 mb-0.5">Alasan PTDH (OOC)</label>
+                        <textarea name="reason_ooc" rows="2" placeholder="Catatan indisipliner internal..."
+                                  class="w-full px-2.5 py-1.5 bg-black/40 border border-white/15 rounded-lg text-white text-[11px] focus:outline-none focus:border-amber-400 resize-none"></textarea>
                     </div>
                 </div>
 
                 {{-- Catatan IE --}}
                 <div>
-                    <label class="block text-xs font-semibold text-white/70 mb-1">Catatan Tambahan IE (Opsional)</label>
-                    <input type="text" name="ie_notes" placeholder="Catatan instruksi pembayaran atau pelunasan denda..."
-                           class="w-full px-3 py-2 bg-black/40 border border-white/15 rounded-xl text-white text-xs focus:outline-none focus:border-amber-400">
+                    <label class="block text-[10px] font-semibold text-white/70 mb-0.5">Catatan Tambahan IE (Opsional)</label>
+                    <input type="text" name="ie_notes" placeholder="Catatan pembayaran atau instruksi pelunasan..."
+                           class="w-full px-2.5 py-1.5 bg-black/40 border border-white/15 rounded-lg text-white text-[11px] focus:outline-none focus:border-amber-400">
                 </div>
 
-                {{-- Alur Informasi --}}
-                <div class="p-3 bg-purple-500/15 border border-purple-500/30 rounded-xl text-xs text-purple-200 flex items-start gap-2.5">
-                    <i class="fas fa-info-circle text-purple-400 text-sm mt-0.5 shrink-0"></i>
-                    <div class="leading-relaxed">
-                        Setelah perhitungan dikonfirmasi, alur <strong>langsung diteruskan ke Tahap Upload Bukti</strong> oleh staf medis (Foto Kantong full layar, Kunci tercabut, Surat/SK, dan Foto Billing Denda) sebelum penonaktifan akhir diverifikasi IE.
-                    </div>
+                {{-- Info Note --}}
+                <div class="p-2 bg-purple-500/10 border border-purple-500/20 rounded-lg text-[10px] text-purple-200/80 flex items-center gap-1.5">
+                    <i class="fas fa-info-circle text-purple-400 shrink-0"></i>
+                    <span>Setelah diterbitkan, alur <strong>langsung beralih ke tahap Upload Bukti</strong> (Kantong, Kunci, SK, Billing).</span>
                 </div>
             </div>
 
             {{-- Footer Action Buttons --}}
-            <div class="flex items-center justify-end gap-2.5 pt-4 border-t border-white/10">
-                <button type="button" onclick="closeModal('ptdhModal')" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white/70 hover:text-white rounded-xl text-xs font-semibold transition-all">
+            <div class="flex items-center justify-end gap-2 pt-3 border-t border-white/10 shrink-0">
+                <button type="button" onclick="closeModal('ptdhModal')" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white/70 hover:text-white rounded-lg text-xs font-semibold transition-all">
                     Batal
                 </button>
                 <button type="submit" id="ptdhSubmitBtn" disabled
                         onclick="return confirm('Apakah perhitungan denda PTDH ini telah sesuai? Status anggota akan langsung dialihkan ke tahap Upload Bukti.');"
-                        class="px-5 py-2.5 bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600 hover:from-amber-500 hover:to-rose-500 text-white rounded-xl text-xs font-extrabold shadow-lg shadow-orange-950/50 transition-all flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed">
-                    <i class="fas fa-check-circle"></i> Konfirmasi &amp; Terbitkan Denda PTDH
+                        class="px-4 py-1.5 bg-gradient-to-r from-amber-600 to-rose-600 hover:from-amber-500 hover:to-rose-500 text-white rounded-lg text-xs font-extrabold shadow-md transition-all flex items-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed">
+                    <i class="fas fa-check-circle"></i> Terbitkan Denda PTDH
                 </button>
             </div>
         </form>
