@@ -245,23 +245,28 @@ class RecruitmentManagementController extends Controller
         $this->authorizeManager();
 
         $updatedCount = 0;
-        $applications = RecruitmentApplication::with(['period', 'user'])
+        RecruitmentApplication::where('status', 'accepted')
             ->whereNotNull('period_id')
-            ->get();
+            ->with(['period:id,batch_name', 'user:id,citizen_id,batch'])
+            ->chunkById(100, function ($applications) use (&$updatedCount) {
+                foreach ($applications as $app) {
+                    $batchName = $app->period?->batch_name;
+                    if (!$batchName) continue;
 
-        foreach ($applications as $app) {
-            $batchName = $app->period?->batch_name;
-            if (!$batchName) continue;
+                    $user = $app->user;
+                    if (!$user && !empty($app->cid)) {
+                        $user = User::where('citizen_id', $app->cid)->first();
+                    }
 
-            $user = $app->user ?? User::where('citizen_id', $app->cid)->first();
-            if ($user && empty($user->batch)) {
-                $user->update(['batch' => $batchName]);
-                if (!$app->user_id) {
-                    $app->update(['user_id' => $user->id]);
+                    if ($user && empty($user->batch)) {
+                        $user->update(['batch' => $batchName]);
+                        if (!$app->user_id) {
+                            $app->update(['user_id' => $user->id]);
+                        }
+                        $updatedCount++;
+                    }
                 }
-                $updatedCount++;
-            }
-        }
+            });
 
         return back()->with('success', "Berhasil menyinkronkan {$updatedCount} akun anggota dengan badge batch rekrutmen.");
     }

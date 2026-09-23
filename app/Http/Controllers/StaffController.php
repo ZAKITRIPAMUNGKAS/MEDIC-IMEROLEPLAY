@@ -18,12 +18,13 @@ class StaffController extends Controller
         $user = Auth::user();
         $operations = \App\Models\OperationRecord::whereHas('members', function($q) use ($user) {
             $q->where('user_id', $user->id);
-        })->orderBy('tanggal_waktu', 'desc')->get();
+        })->orderBy('tanggal_waktu', 'desc')->take(25)->get();
 
         if (\Illuminate\Support\Facades\Schema::hasTable('manager_evaluations')) {
             $managerEvaluations = \App\Models\ManagerEvaluation::with(['evaluator.role'])
                 ->where('manager_id', $user->id)
                 ->orderBy('created_at', 'desc')
+                ->take(25)
                 ->get();
         } else {
             $managerEvaluations = collect([]);

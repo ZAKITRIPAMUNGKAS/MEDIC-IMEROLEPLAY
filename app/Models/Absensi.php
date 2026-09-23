@@ -149,27 +149,4 @@ class Absensi extends Model
         return $this->belongsTo(User::class, 'player_id', 'citizen_id');
     }
 
-    /**
-     * Dynamic user resolution supporting both citizen_id and staff_id
-     */
-    public function getUserAttribute()
-    {
-        if ($this->relationLoaded('user') && $this->getRelation('user')) {
-            return $this->getRelation('user');
-        }
-
-        $playerId = (string)$this->player_id;
-        $stripped = preg_replace('/^(char\d+:|citizen:|cid:|id:|license:|steam:|discord:)/i', '', strtolower(trim($playerId)));
-        $stripped = trim(str_replace(['#', ' ', '-', '.'], '', $stripped));
-
-        $user = User::where(function($q) use ($playerId, $stripped) {
-            $q->where('citizen_id', $playerId)
-              ->orWhere('staff_id', $playerId)
-              ->orWhereRaw('LOWER(TRIM(citizen_id)) = ?', [$stripped])
-              ->orWhereRaw('LOWER(TRIM(staff_id)) = ?', [$stripped]);
-        })->first();
-
-        $this->setRelation('user', $user);
-        return $user;
-    }
 }
