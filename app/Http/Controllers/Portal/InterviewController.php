@@ -37,7 +37,14 @@ class InterviewController extends Controller
         }
 
         // Ambil data calon medis langsung dari hasil formulir Recruitment Alta Hospital
-        $query = RecruitmentApplication::with(['period', 'latestInterview.interviewer', 'user'])
+        $relations = ['period', 'user'];
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasColumn('candidate_interviews', 'recruitment_application_id')) {
+                $relations[] = 'latestInterview.interviewer';
+            }
+        } catch (\Throwable $e) {}
+
+        $query = RecruitmentApplication::with($relations)
             ->where('hospital', $user->hospital ?? 'alta');
 
         if ($search = $request->get('q')) {
@@ -55,9 +62,18 @@ class InterviewController extends Controller
         $candidates = $query->latest()->paginate(20)->withQueryString();
 
         // Riwayat evaluasi interview yang telah selesai
-        $completedInterviews = CandidateInterview::with(['application', 'candidate', 'interviewer'])
-            ->latest('interviewed_at')
-            ->paginate(15, ['*'], 'completed_page');
+        $completedInterviews = collect();
+        try {
+            $completedRelations = ['candidate', 'interviewer'];
+            if (\Illuminate\Support\Facades\Schema::hasColumn('candidate_interviews', 'recruitment_application_id')) {
+                $completedRelations[] = 'application';
+            }
+            $completedInterviews = CandidateInterview::with($completedRelations)
+                ->latest('interviewed_at')
+                ->paginate(15, ['*'], 'completed_page');
+        } catch (\Throwable $e) {
+            $completedInterviews = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 15);
+        }
 
         // Hak kelola penugasan interviewer (khusus PND, IE, & Admin)
         $canManageInterviewers = $user->isAdmin() || $user->isInDivision('ie', 'pnd');
@@ -98,20 +114,59 @@ class InterviewController extends Controller
             : collect();
 
         // Daftar seluruh pendaftar yang lolos wawancara / rekomendasi untuk pengumuman
-        $passedCandidates = RecruitmentApplication::with(['period', 'latestInterview.interviewer'])
-            ->where('hospital', $user->hospital ?? 'alta')
-            ->where(function ($q) {
-                $q->where('status', 'accepted')
-                  ->orWhereHas('candidateInterviews', function ($iq) {
-                      $iq->where('result', 'recommended');
-                  });
-            })
-            ->latest()
-            ->get();
+        $passedCandidates = collect();
+        try {
+            $passedCandidates = RecruitmentApplication::with(['period'])
+                ->where('hospital', $user->hospital ?? 'alta')
+                ->where(function ($q) {
+                    $q->where('status', 'accepted')
+                      ->orWhere('status', 'interview')
+                      ->orWhere('reviewer_notes', 'like', '%Lolos%');
+                })
+                ->latest()
+                ->get();
+        } catch (\Throwable $e) {
+            $passedCandidates = collect();
+        }
+
+        // Siapkan format array siap pakai untuk JavaScript pengumuman
+        $passedList = $passedCandidates->map(function ($c) {
+            $role = 'Staf Medis';
+            if (!empty($c->reviewer_notes) && preg_match('/Direkomendasikan sebagai ([^.]+)/i', $c->reviewer_notes, $matches)) {
+                $role = trim($matches[1]);
+            }
+            return [
+                'id'       => $c->id,
+                'ic_name'  => $c->ic_name,
+                'cid'      => $c->cid,
+                'discord'  => $c->discord_username ? '@' . ltrim($c->discord_username, '@') : '-',
+                'batch'    => $c->period?->batch_name ?? 'Recruitment Batch',
+                'role'     => $role,
+                'status'   => $c->status,
+            ];
+        })->values();
+
+        $currentCandidatesList = collect($candidates->items())->map(function ($c) {
+            $role = 'Staf Medis';
+            if (!empty($c->reviewer_notes) && preg_match('/Direkomendasikan sebagai ([^.]+)/i', $c->reviewer_notes, $matches)) {
+                $role = trim($matches[1]);
+            }
+            return [
+                'id'       => $c->id,
+                'ic_name'  => $c->ic_name,
+                'cid'      => $c->cid,
+                'discord'  => $c->discord_username ? '@' . ltrim($c->discord_username, '@') : '-',
+                'batch'    => $c->period?->batch_name ?? 'Recruitment Batch',
+                'role'     => $role,
+                'status'   => $c->status,
+            ];
+        })->values();
 
         return view('portal.interview.index', compact(
             'candidates',
             'passedCandidates',
+            'passedList',
+            'currentCandidatesList',
             'completedInterviews',
             'pendingApplications',
             'recentDecisions',

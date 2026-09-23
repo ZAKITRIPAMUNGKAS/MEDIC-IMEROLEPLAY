@@ -284,7 +284,14 @@
                     <tbody class="divide-y divide-white/5 text-slate-200">
                         @forelse($candidates as $candidate)
                         @php
-                            $latestInterview = $candidate->latestInterview ?? $candidate->candidateInterviews->last();
+                            $latestInterview = null;
+                            try {
+                                if ($candidate->relationLoaded('latestInterview')) {
+                                    $latestInterview = $candidate->latestInterview;
+                                }
+                            } catch (\Throwable $e) {
+                                $latestInterview = null;
+                            }
                         @endphp
                         <tr class="hover:bg-white/5 transition-colors">
                             <td class="px-5 py-3.5">
@@ -321,6 +328,14 @@
                                             <i class="fas fa-times-circle text-[10px]"></i> Not Recommended
                                         </span>
                                     @endif
+                                @elseif($candidate->status === 'accepted' || ($candidate->status === 'interview' && str_contains($candidate->reviewer_notes ?? '', 'Lolos')))
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                        <i class="fas fa-check-circle text-[10px]"></i> Lolos Wawancara
+                                    </span>
+                                @elseif($candidate->status === 'rejected' && str_contains($candidate->reviewer_notes ?? '', 'wawancara'))
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                                        <i class="fas fa-times-circle text-[10px]"></i> Not Recommended
+                                    </span>
                                 @else
                                     <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
                                         <i class="fas fa-clock text-[10px]"></i> Belum Di-interview
@@ -517,31 +532,8 @@
 
 {{-- Data JSON untuk Calon Lolos & Script Pendukung --}}
 <script>
-    const allPassedCandidates = @json($passedCandidates->map(function ($c) {
-        $latest = $c->latestInterview ?? $c->candidateInterviews->last();
-        return [
-            'id'       => $c->id,
-            'ic_name'  => $c->ic_name,
-            'cid'      => $c->cid,
-            'discord'  => $c->discord_username ? '@' . ltrim($c->discord_username, '@') : '-',
-            'batch'    => $c->period?->batch_name ?? 'Recruitment Batch',
-            'role'     => $latest?->recommended_role_label ?? 'Staf Medis',
-            'status'   => $c->status,
-        ];
-    }));
-
-    const currentPageCandidates = @json($candidates->map(function ($c) {
-        $latest = $c->latestInterview ?? $c->candidateInterviews->last();
-        return [
-            'id'       => $c->id,
-            'ic_name'  => $c->ic_name,
-            'cid'      => $c->cid,
-            'discord'  => $c->discord_username ? '@' . ltrim($c->discord_username, '@') : '-',
-            'batch'    => $c->period?->batch_name ?? 'Recruitment Batch',
-            'role'     => $latest?->recommended_role_label ?? 'Staf Medis',
-            'status'   => $c->status,
-        ];
-    }));
+    const allPassedCandidates = @json($passedList ?? []);
+    const currentPageCandidates = @json($currentCandidatesList ?? []);
 
     let currentFormat = 'discord';
 
