@@ -27,6 +27,8 @@ class RecruitmentApplication extends Model
         'online_hours',
         'online_days',
         'discord_username',
+        'email',
+        'password_temp',
         'status',
         'reviewed_by',
         'reviewed_at',

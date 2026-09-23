@@ -58,6 +58,8 @@ class RecruitmentController extends Controller
             'online_hours'               => 'required|array|min:1',
             'online_days'                => 'required|array|min:1',
             'discord_username'           => 'nullable|string|max:100',
+            'email'                      => 'required|email|max:191',
+            'password'                   => 'required|string|min:8|confirmed',
         ], [
             'agree_general_req.accepted' => 'Anda harus menyetujui seluruh persyaratan umum EMS.',
             'agree_special_req.accepted' => 'Anda harus menyetujui persyaratan khusus IC sebelum interview.',
@@ -77,6 +79,11 @@ class RecruitmentController extends Controller
             'health_cert_file.max'       => 'Ukuran berkas Surat Kesehatan maksimal 10 MB.',
             'online_hours.required'      => 'Pilih minimal satu jam online / masuk kota.',
             'online_days.required'       => 'Pilih minimal satu hari online / masuk kota.',
+            'email.required'             => 'Email wajib diisi untuk membuat akun portal jika diterima.',
+            'email.email'                => 'Format email tidak valid.',
+            'password.required'          => 'Password wajib diisi (minimal 8 karakter).',
+            'password.min'               => 'Password minimal 8 karakter.',
+            'password.confirmed'         => 'Konfirmasi password tidak sesuai.',
         ]);
 
         // 2. Validasi Minimal 50 Huruf/Karakter untuk Alasan Bergabung
@@ -123,6 +130,8 @@ class RecruitmentController extends Controller
             'online_hours'              => $request->online_hours,
             'online_days'               => $request->online_days,
             'discord_username'          => $request->discord_username ? strip_tags($request->discord_username) : null,
+            'email'                     => strtolower(trim($request->email)),
+            'password_temp'             => $request->password, // plain — akan di-hash saat akun dibuat
             'status'                    => 'pending',
         ]);
 

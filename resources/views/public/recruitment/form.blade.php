@@ -402,9 +402,66 @@
                                    class="w-full bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded-xl pl-10 pr-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
                         </div>
                     </div>
+                    {{-- Pembuatan Akun Portal --}}
+                    <div class="pt-2 border-t border-white/10 space-y-4">
+                        <div class="flex items-center gap-2.5 mb-1">
+                            <i class="fas fa-key text-amber-400 text-sm"></i>
+                            <p class="text-xs font-black text-white uppercase tracking-wider">
+                                Akun Portal Staf (Untuk Login Jika Diterima)
+                            </p>
+                        </div>
+                        <div class="rounded-xl bg-amber-500/10 border border-amber-500/30 p-3 text-xs text-amber-200 leading-relaxed">
+                            <i class="fas fa-info-circle mr-1 text-amber-400"></i>
+                            <strong>Penting:</strong> Email dan password ini akan digunakan untuk login ke Portal Staf <strong>jika Anda diterima</strong>.
+                            Simpan baik-baik. Tidak perlu daftar ulang — akun langsung aktif otomatis setelah diterima.
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="sm:col-span-2">
+                                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                                    Email <span class="text-rose-400">*</span>
+                                    <span class="text-slate-400 font-normal normal-case">(untuk login portal)</span>
+                                </label>
+                                <div class="relative">
+                                    <i class="fas fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                                    <input type="email" name="email" value="{{ old('email') }}" placeholder="email@example.com"
+                                           class="w-full bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded-xl pl-10 pr-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+                                           required>
+                                </div>
+                                @error('email')
+                                    <p class="text-rose-400 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                                    Password <span class="text-rose-400">*</span>
+                                    <span class="text-slate-400 font-normal normal-case">(min. 8 karakter)</span>
+                                </label>
+                                <div class="relative">
+                                    <i class="fas fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                                    <input type="password" name="password" placeholder="Buat password Anda"
+                                           class="w-full bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded-xl pl-10 pr-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+                                           required minlength="8">
+                                </div>
+                                @error('password')
+                                    <p class="text-rose-400 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                                    Konfirmasi Password <span class="text-rose-400">*</span>
+                                </label>
+                                <div class="relative">
+                                    <i class="fas fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                                    <input type="password" name="password_confirmation" placeholder="Ulangi password"
+                                           class="w-full bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded-xl pl-10 pr-4 py-2.5 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-amber-400"
+                                           required minlength="8">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Buttons Step 3 -->
+                {{-- Buttons Step 3 --}}
                 <div class="flex items-center justify-between pt-2">
                     <button type="button" onclick="goToStep(2)" class="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-slate-300 font-semibold text-xs sm:text-sm transition flex items-center gap-2">
                         <i class="fas fa-arrow-left text-xs"></i> <span>Kembali</span>
@@ -415,6 +472,7 @@
                 </div>
             </div>
         </form>
+
 
     </div>
 </div>

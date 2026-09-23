@@ -195,6 +195,17 @@
                                             <i class="fas fa-circle-check text-emerald-400 mt-0.5 shrink-0 text-[10px]"></i>
                                             <span><strong class="text-white">Tidak perlu daftar ulang.</strong> Langsung login menggunakan email & password yang Anda buat saat mendaftar.</span>
                                         </div>
+                                        @if(!empty($app->email))
+                                        <div class="flex items-start gap-2">
+                                            <i class="fas fa-circle-check text-emerald-400 mt-0.5 shrink-0 text-[10px]"></i>
+                                            <span>
+                                                Email login Anda:
+                                                <code class="font-mono bg-emerald-500/20 px-1.5 py-0.5 rounded text-emerald-200 font-bold">
+                                                    {{ substr($app->email, 0, 3) }}***@{{ explode('@', $app->email)[1] ?? '' }}
+                                                </code>
+                                            </span>
+                                        </div>
+                                        @endif
                                         <div class="flex items-start gap-2">
                                             <i class="fas fa-circle-check text-emerald-400 mt-0.5 shrink-0 text-[10px]"></i>
                                             <span>CID Anda: <code class="font-mono bg-emerald-500/20 px-1.5 py-0.5 rounded text-emerald-300 font-bold">#{{ $app->cid }}</code></span>

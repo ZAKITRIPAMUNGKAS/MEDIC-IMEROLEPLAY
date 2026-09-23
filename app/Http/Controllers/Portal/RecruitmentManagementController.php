@@ -155,13 +155,21 @@ class RecruitmentManagementController extends Controller
             } else {
                 $traineeRole = StaffRole::where('name', 'trainee')->first()
                     ?? StaffRole::orderBy('level', 'asc')->first();
-                $dummyEmail = Str::slug($application->ic_name, '') . rand(100, 999) . '@medic.alta';
+
+                // Gunakan email & password yang diisi pelamar saat mendaftar
+                $email    = $application->email
+                    ? strtolower(trim($application->email))
+                    : (Str::slug($application->ic_name, '') . rand(100, 999) . '@medic.alta');
+                $password = $application->password_temp
+                    ? Hash::make($application->password_temp)
+                    : Hash::make(Str::random(12));
+
                 $user = User::create([
                     'name'       => $application->ic_name,
-                    'email'      => $dummyEmail,
+                    'email'      => $email,
                     'citizen_id' => $application->cid,
                     'staff_id'   => $application->cid,
-                    'password'   => Hash::make(Str::random(10)),
+                    'password'   => $password,
                     'role_id'    => $traineeRole?->id,
                     'hospital'   => 'alta',
                     'batch'      => $batchName,
@@ -214,15 +222,19 @@ class RecruitmentManagementController extends Controller
 
         // Buat akun baru dalam status is_active = false agar masuk antrian interview
         $username = Str::slug($application->ic_name, '.') . rand(10, 99);
-        $dummyEmail = Str::slug($application->ic_name, '') . rand(100, 999) . '@medic.alta';
-        $randomPass = Str::random(10);
+        $email    = $application->email
+            ? strtolower(trim($application->email))
+            : (Str::slug($application->ic_name, '') . rand(100, 999) . '@medic.alta');
+        $password = $application->password_temp
+            ? Hash::make($application->password_temp)
+            : Hash::make(Str::random(12));
 
         $user = User::create([
             'name'       => $application->ic_name,
-            'email'      => $dummyEmail,
+            'email'      => $email,
             'citizen_id' => $application->cid,
             'staff_id'   => $application->cid,
-            'password'   => Hash::make($randomPass),
+            'password'   => $password,
             'role_id'    => $traineeRole?->id,
             'hospital'   => 'alta',
             'batch'      => $batchName,
