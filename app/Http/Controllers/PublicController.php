@@ -238,7 +238,42 @@ class PublicController extends Controller
                 ->get(['id', 'character_name', 'created_at', 'hospital', 'form_data']);
         }
 
-        return view('public.form', compact('type', 'formTypes', 'doctors', 'availablePsychForms'));
+        // Resolusi otomatis data dokter yang dipilih (dari query URL atau session)
+        $selectedDoctor = request('doctor', request('doctor_name', old('form_data.doctor_name')));
+        $selectedPoli = request('poli', old('form_data.poli'));
+        $selectedHospital = request('hospital', old('hospital'));
+
+        if ($type === 'janji_temu' && $selectedDoctor) {
+            $schedule = DoctorSchedule::where('doctor_name', $selectedDoctor)->first();
+            if ($schedule) {
+                if (!$selectedPoli) {
+                    $selectedPoli = $schedule->poli;
+                }
+                if (!$selectedHospital) {
+                    $selectedHospital = $schedule->hospital;
+                }
+            } else {
+                $docUser = User::where('name', $selectedDoctor)->first();
+                if ($docUser) {
+                    if (!$selectedHospital) {
+                        $selectedHospital = $docUser->isRoxwood() ? 'roxwood' : 'alta';
+                    }
+                    if (!$selectedPoli) {
+                        $selectedPoli = $docUser->medicRole?->display_name ?? 'Poli Umum';
+                    }
+                }
+            }
+        }
+
+        return view('public.form', compact(
+            'type',
+            'formTypes',
+            'doctors',
+            'availablePsychForms',
+            'selectedDoctor',
+            'selectedPoli',
+            'selectedHospital'
+        ));
     }
 
     public function createAppointment(Request $request)

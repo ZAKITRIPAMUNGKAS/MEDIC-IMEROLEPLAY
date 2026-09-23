@@ -95,14 +95,32 @@
                                     <label for="hospital" class="block text-sm font-medium text-white mb-2 font-bold text-lg">
                                         Rumah Sakit <span class="text-red-400">*</span>
                                     </label>
-                                    <select id="hospital" name="hospital"
-                                        class="form-select @error('hospital') border-red-500 @enderror" required>
-                                        <option value="">-- Pilih Rumah Sakit --</option>
-                                        <option value="alta" @if(old('hospital') == 'alta') selected @endif
-                                            class="bg-slate-900 text-white font-bold">Alta Hospital</option>
-                                        <option value="roxwood" @if(old('hospital') == 'roxwood') selected @endif
-                                            class="bg-slate-900 text-white font-bold">Roxwood Hospital</option>
-                                    </select>
+                                    @php
+                                        $chosenHospital = old('hospital', request('hospital', $selectedHospital ?? ''));
+                                    @endphp
+                                    @if($type === 'janji_temu' && !empty($chosenHospital))
+                                        <div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-900/80 border border-cyan-500/30 text-white shadow-inner">
+                                            <div class="w-9 h-9 rounded-lg bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-base flex-shrink-0">
+                                                <i class="fas fa-hospital"></i>
+                                            </div>
+                                            <div>
+                                                <p class="text-[11px] text-slate-400 font-medium">Rumah Sakit Praktik</p>
+                                                <p class="text-sm font-bold text-cyan-300">
+                                                    {{ $chosenHospital === 'roxwood' ? 'Roxwood Hospital' : 'Alta Hospital' }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" name="hospital" id="hospital" value="{{ $chosenHospital }}">
+                                    @else
+                                        <select id="hospital" name="hospital"
+                                            class="form-select @error('hospital') border-red-500 @enderror" required>
+                                            <option value="">-- Pilih Rumah Sakit --</option>
+                                            <option value="alta" @if($chosenHospital == 'alta') selected @endif
+                                                class="bg-slate-900 text-white font-bold">Alta Hospital</option>
+                                            <option value="roxwood" @if($chosenHospital == 'roxwood') selected @endif
+                                                class="bg-slate-900 text-white font-bold">Roxwood Hospital</option>
+                                        </select>
+                                    @endif
                                     @error('hospital') <p class="form-error">{{ $message }}</p> @enderror
                                 </div>
                                 <div>
@@ -1160,101 +1178,111 @@
                                 </div>
 
                             @elseif($type === 'janji_temu')
-                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-                                    <div class="min-w-0">
-                                        <label for="poli_jt"
-                                            class="block text-xs font-medium text-white mb-1.5 font-bold">
-                                            Pilihan Poli <span class="text-red-400">*</span>
-                                        </label>
-                                        <select id="poli_jt" name="form_data[poli]" class="form-select w-full @error('form_data.poli') border-red-500 @enderror" required>
-                                            <option value="">-- Pilih Poli --</option>
-                                            <option value="Poli Umum" @if(old('form_data.poli', request('poli')) == 'Poli Umum') selected @endif class="bg-slate-900 text-white font-bold">🩺 Poli Umum</option>
-                                            <option value="Spesialis Anestesiologi" @if(old('form_data.poli') == 'Spesialis Anestesiologi') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Anestesiologi</option>
-                                            <option value="Spesialis Bedah" @if(old('form_data.poli') == 'Spesialis Bedah') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Bedah</option>
-                                            <option value="Spesialis Bedah Mulut" @if(old('form_data.poli') == 'Spesialis Bedah Mulut') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Bedah Mulut</option>
-                                            <option value="Spesialis Bedah Plastik, Rekonstruksi, dan Estetik" @if(old('form_data.poli') == 'Spesialis Bedah Plastik, Rekonstruksi, dan Estetik') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Bedah Plastik, Rekonstruksi, dan Estetik</option>
-                                            <option value="Spesialis Forensik dan Medikolegal" @if(old('form_data.poli') == 'Spesialis Forensik dan Medikolegal') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Forensik dan Medikolegal</option>
-                                            <option value="Spesialis Kesehatan Jiwa" @if(old('form_data.poli') == 'Spesialis Kesehatan Jiwa') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Kesehatan Jiwa</option>
-                                            <option value="Spesialis Kedokteran Gigi Anak" @if(old('form_data.poli') == 'Spesialis Kedokteran Gigi Anak') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Kedokteran Gigi Anak</option>
-                                            <option value="Spesialis Radiologi" @if(old('form_data.poli') == 'Spesialis Radiologi') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Radiologi</option>
-                                            <option value="Spesialis Mata" @if(old('form_data.poli') == 'Spesialis Mata') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Mata</option>
-                                            <option value="Spesialis Neurologi" @if(old('form_data.poli') == 'Spesialis Neurologi') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Neurologi</option>
-                                            <option value="Spesialis Ortopedi dan Traumatologi" @if(old('form_data.poli') == 'Spesialis Ortopedi dan Traumatologi') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Ortopedi dan Traumatologi</option>
-                                            <option value="Spesialis Konservasi Gigi" @if(old('form_data.poli') == 'Spesialis Konservasi Gigi') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Konservasi Gigi</option>
-                                            <option value="Spesialis Telinga, Hidung, dan Tenggorok" @if(old('form_data.poli') == 'Spesialis Telinga, Hidung, dan Tenggorok') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Telinga, Hidung, dan Tenggorok</option>
-                                            <option value="Spesialis Prostodontia" @if(old('form_data.poli') == 'Spesialis Prostodontia') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Prostodontia</option>
-                                            <option value="Spesialis Gizi Klinis" @if(old('form_data.poli') == 'Spesialis Gizi Klinis') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Gizi Klinis</option>
-                                            <option value="Spesialis Obstetri dan Ginekologi" @if(old('form_data.poli') == 'Spesialis Obstetri dan Ginekologi') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Obstetri dan Ginekologi</option>
-                                            <option value="Spesialis Jantung dan Pembuluh Darah" @if(old('form_data.poli') == 'Spesialis Jantung dan Pembuluh Darah') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Jantung dan Pembuluh Darah</option>
-                                            <option value="Spesialis Paru" @if(old('form_data.poli') == 'Spesialis Paru') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Paru</option>
-                                            <option value="Spesialis Dermatovenerologi" @if(old('form_data.poli') == 'Spesialis Dermatovenerologi') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Dermatovenerologi</option>
-                                            <option value="Spesialis Onkologi" @if(old('form_data.poli') == 'Spesialis Onkologi') selected @endif class="bg-slate-900 text-white font-bold">🩺 Spesialis Onkologi</option>
-                                            <option value="Poli Kejiwaan" @if(old('form_data.poli') == 'Poli Kejiwaan') selected @endif class="bg-slate-900 text-white font-bold">🩺 Poli Kejiwaan</option>
-                                        </select>
-                                        @error('form_data.poli') <p class="form-error text-xs mt-1">{{ $message }}</p> @enderror
+                                @php
+                                    $activeDoctor = $selectedDoctor ?? old('form_data.doctor_name', request('doctor', request('doctor_name')));
+                                    $activePoli = $selectedPoli ?? old('form_data.poli', request('poli', 'Poli Umum'));
+                                    $activeHospital = $selectedHospital ?? old('hospital', request('hospital', 'alta'));
+                                    $activePurpose = (stripos($activePoli, 'spesialis') !== false || stripos($activePoli, 'jiwa') !== false)
+                                        ? 'Konsultasi Spesialis' 
+                                        : 'Janji Temu Umum';
+                                @endphp
+
+                                @if(!empty($activeDoctor))
+                                    {{-- Card Dokter Terpilih Otomatis (Dropdown Dihilangkan Sesuai Pilihan Awal) --}}
+                                    <div class="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-sky-950/60 via-slate-900 to-cyan-950/60 border border-cyan-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+                                        <div class="flex items-center gap-3.5">
+                                            <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-cyan-600 to-sky-500 flex items-center justify-center text-white text-xl shadow-lg shadow-cyan-500/20 flex-shrink-0">
+                                                <i class="fas fa-user-md"></i>
+                                            </div>
+                                            <div>
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-[10px] uppercase font-bold tracking-widest text-cyan-400 bg-cyan-500/20 px-2 py-0.5 rounded-full border border-cyan-500/30 font-mono">
+                                                        Dokter Terpilih
+                                                    </span>
+                                                    <span class="text-xs text-slate-400 font-mono">
+                                                        <i class="fas fa-hospital text-cyan-400 mr-1"></i>{{ strtoupper($activeHospital) }} HOSPITAL
+                                                    </span>
+                                                </div>
+                                                <h4 class="text-base sm:text-lg font-bold text-white mt-1">{{ $activeDoctor }}</h4>
+                                                <p class="text-xs text-sky-200/80 flex items-center gap-1.5 mt-0.5">
+                                                    <i class="fas fa-stethoscope text-cyan-400"></i> {{ $activePoli }} • {{ $activePurpose }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <a href="{{ route('public.doctor-schedule') }}" class="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-slate-300 hover:text-white text-xs font-semibold border border-white/10 transition-colors self-start sm:self-auto flex-shrink-0">
+                                            <i class="fas fa-exchange-alt"></i> Ganti Dokter
+                                        </a>
                                     </div>
-                                    <div class="min-w-0">
-                                        <label for="purpose_jt"
-                                            class="block text-xs font-medium text-white mb-1.5 font-bold">Jenis
-                                            Janji Temu</label>
-                                        <select id="purpose_jt" name="form_data[purpose]" class="form-select w-full">
-                                            <option value="Janji Temu Umum" class="bg-slate-900 text-white font-bold">Janji Temu
-                                                Umum
-                                            </option>
-                                            <option value="Konsultasi Spesialis" class="bg-slate-900 text-white font-bold">
-                                                Konsultasi
-                                                Spesialis</option>
-                                            <option value="Pemeriksaan Rutin" class="bg-slate-900 text-white font-bold">
-                                                Pemeriksaan
-                                                Rutin</option>
-                                        </select>
+
+                                    {{-- Data Dokter Otomatis (Hidden) --}}
+                                    <input type="hidden" name="form_data[doctor_name]" value="{{ $activeDoctor }}">
+                                    <input type="hidden" name="form_data[poli]" value="{{ $activePoli }}">
+                                    <input type="hidden" name="form_data[purpose]" value="{{ $activePurpose }}">
+                                @else
+                                    {{-- Fallback jika membuka langsung tanpa memilih dari jadwal --}}
+                                    <div class="p-4 rounded-xl bg-cyan-950/40 border border-cyan-500/30 text-sky-200 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                        <div class="flex items-center gap-2">
+                                            <i class="fas fa-info-circle text-cyan-400 text-base flex-shrink-0"></i>
+                                            <span>Belum memilih dokter? Silakan pilih dokter dari <strong>Jadwal Praktek Dokter</strong> untuk membuat janji temu yang sesuai.</span>
+                                        </div>
+                                        <a href="{{ route('public.doctor-schedule') }}" class="px-3.5 py-2 bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 text-white rounded-lg text-xs font-bold transition-all whitespace-nowrap self-start sm:self-auto shadow-md">
+                                            <i class="fas fa-calendar-alt mr-1"></i> Pilih dari Jadwal Dokter
+                                        </a>
                                     </div>
-                                    <div class="min-w-0">
-                                        <label for="doctor_name_jt"
-                                            class="block text-xs font-medium text-white mb-1.5 font-bold">
-                                            Nama Dokter <span class="text-red-400">*</span>
-                                        </label>
-                                        <select id="doctor_name_jt" name="form_data[doctor_name]"
-                                            class="form-select w-full @error('form_data.doctor_name') border-red-500 @enderror"
-                                            required>
-                                            <option value="">-- Pilih Dokter --</option>
-                                            @foreach($doctors as $doctor)
-                                                <option value="{{ $doctor->name }}"
-                                                    data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
-                                                    @if(old('form_data.doctor_name') == $doctor->name) selected @endif
-                                                    class="bg-slate-900 text-white font-bold">
-                                                    {{ $doctor->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        @error('form_data.doctor_name') <p class="form-error text-xs mt-1">{{ $message }}</p>
-                                        @enderror
+
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                                        <div class="min-w-0">
+                                            <label for="doctor_name_jt" class="block text-xs font-medium text-white mb-1.5 font-bold">
+                                                Pilih Dokter <span class="text-red-400">*</span>
+                                            </label>
+                                            <select id="doctor_name_jt" name="form_data[doctor_name]" class="form-select w-full @error('form_data.doctor_name') border-red-500 @enderror" required onchange="if (typeof updatePoliAndHospital === 'function') updatePoliAndHospital(this)">
+                                                <option value="">-- Pilih Dokter --</option>
+                                                @foreach($doctors as $doctor)
+                                                    <option value="{{ $doctor->name }}"
+                                                        data-hospital="{{ $doctor->hospital ?? ($doctor->isRoxwood() ? 'roxwood' : 'alta') }}"
+                                                        data-role="{{ $doctor->medicRole?->display_name ?? 'Poli Umum' }}"
+                                                        @if(old('form_data.doctor_name') == $doctor->name) selected @endif
+                                                        class="bg-slate-900 text-white font-bold">
+                                                        {{ $doctor->name }} ({{ ($doctor->hospital ?? '') === 'roxwood' ? 'Roxwood' : 'Alta' }})
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('form_data.doctor_name') <p class="form-error text-xs mt-1">{{ $message }}</p> @enderror
+                                        </div>
+                                        <div class="min-w-0">
+                                            <label for="poli_jt" class="block text-xs font-medium text-white mb-1.5 font-bold">
+                                                Poli / Spesialisasi
+                                            </label>
+                                            <input type="text" id="poli_jt" name="form_data[poli]" value="{{ old('form_data.poli', 'Poli Umum') }}" class="form-input w-full bg-slate-900/60" readonly>
+                                        </div>
                                     </div>
+                                    <input type="hidden" name="form_data[purpose]" value="Janji Temu Umum">
+                                @endif
+
+                                {{-- Baris Tanggal & Waktu Janji Temu --}}
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                                     <div class="min-w-0">
                                         <label for="appointment_date"
                                             class="block text-xs font-medium text-white mb-1.5 font-bold">
-                                            Tanggal <span class="text-red-400">*</span>
+                                            Tanggal Janji Temu <span class="text-red-400">*</span>
                                         </label>
                                         <input type="date" id="appointment_date" name="form_data[appointment_date]"
                                             value="{{ old('form_data.appointment_date') }}"
+                                            min="{{ date('Y-m-d') }}"
                                             class="form-input w-full @error('form_data.appointment_date') border-red-500 @enderror"
                                             required>
-                                        @error('form_data.appointment_date') <p class="form-error text-xs mt-1">{{ $message }}
-                                            </p>
-                                        @enderror
+                                        @error('form_data.appointment_date') <p class="form-error text-xs mt-1">{{ $message }}</p> @enderror
                                     </div>
                                     <div class="min-w-0">
                                         <label for="appointment_time"
                                             class="block text-xs font-medium text-white mb-1.5 font-bold">
-                                            Waktu <span class="text-red-400">*</span>
+                                            Waktu / Jam Janji Temu <span class="text-red-400">*</span>
                                         </label>
                                         <input type="time" id="appointment_time" name="form_data[appointment_time]"
                                             value="{{ old('form_data.appointment_time') }}"
                                             class="form-input w-full @error('form_data.appointment_time') border-red-500 @enderror"
                                             required>
-                                        @error('form_data.appointment_time') <p class="form-error text-xs mt-1">{{ $message }}
-                                            </p>
-                                        @enderror
+                                        @error('form_data.appointment_time') <p class="form-error text-xs mt-1">{{ $message }}</p> @enderror
                                     </div>
                                 </div>
 
@@ -1911,6 +1939,24 @@
     </style>
 
     <script>
+        function updatePoliAndHospital(select) {
+            const selectedOption = select.options[select.selectedIndex];
+            if (!selectedOption || !selectedOption.value) return;
+            const hospital = selectedOption.getAttribute('data-hospital');
+            const role = selectedOption.getAttribute('data-role');
+            const hospitalSelect = document.getElementById('hospital');
+            if (hospitalSelect && hospital) {
+                hospitalSelect.value = hospital;
+                if (typeof filterDoctors === 'function') {
+                    filterDoctors();
+                }
+            }
+            const poliInput = document.getElementById('poli_jt');
+            if (poliInput && role) {
+                poliInput.value = role;
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             const hospitalSelect = document.getElementById('hospital');
             if (!hospitalSelect) return;
