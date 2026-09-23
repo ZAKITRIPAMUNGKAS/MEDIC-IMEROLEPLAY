@@ -266,6 +266,42 @@ Route::get('/run-migrate', function () {
     }
 });
 
+// FIX: Tambah kolom email & password_temp ke recruitment_applications (kolom sempat hilang/belum ada di production)
+// DELETE AFTER USE!
+Route::get('/fix-recruitment-email-columns', function () {
+    $results = [];
+    try {
+        if (!\Illuminate\Support\Facades\Schema::hasTable('recruitment_applications')) {
+            return '❌ Tabel recruitment_applications tidak ditemukan.';
+        }
+
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('recruitment_applications', 'email')) {
+            \Illuminate\Support\Facades\Schema::table('recruitment_applications', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->string('email')->nullable()->after('discord_username');
+            });
+            $results[] = '✅ Kolom <b>email</b> berhasil ditambahkan ke tabel recruitment_applications.';
+        } else {
+            $results[] = 'ℹ️ Kolom email sudah ada.';
+        }
+
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('recruitment_applications', 'password_temp')) {
+            \Illuminate\Support\Facades\Schema::table('recruitment_applications', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->string('password_temp')->nullable()->after('email');
+            });
+            $results[] = '✅ Kolom <b>password_temp</b> berhasil ditambahkan ke tabel recruitment_applications.';
+        } else {
+            $results[] = 'ℹ️ Kolom password_temp sudah ada.';
+        }
+
+        $results[] = '';
+        $results[] = '🎉 Selesai! Formulir rekrutmen kini bisa menerima email & password pelamar.';
+        $results[] = '🗑️ <b>Hapus route /fix-recruitment-email-columns dari routes/web.php setelah ini!</b>';
+    } catch (\Exception $e) {
+        $results[] = '❌ Error: ' . $e->getMessage();
+    }
+    return implode('<br>', $results);
+});
+
 // Route otomatis untuk melengkapi kolom & tabel baru di database hosting secara langsung
 Route::get('/auto-setup-db', function () {
     $logs = [];
