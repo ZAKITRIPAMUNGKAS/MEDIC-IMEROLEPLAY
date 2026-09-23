@@ -1052,6 +1052,7 @@ Route::get('/', [PublicController::class, 'index'])->name('public.index');
 
 // Recruitment Paramedic Alta Hospital (Public Flow)
 Route::get('/recruitment', [\App\Http\Controllers\Public\RecruitmentController::class, 'index'])->name('public.recruitment');
+Route::get('/recruitment/status', [\App\Http\Controllers\Public\RecruitmentController::class, 'statusCheck'])->name('public.recruitment.status');
 Route::post('/recruitment/submit', [\App\Http\Controllers\Public\RecruitmentController::class, 'store'])->name('public.recruitment.submit');
 Route::get('/recruitment/success/{id}', [\App\Http\Controllers\Public\RecruitmentController::class, 'success'])->name('public.recruitment.success');
 Route::get('/pendaftaran-medis', function () {
@@ -1565,6 +1566,7 @@ Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->gro
     Route::prefix('recruitment')->name('recruitment.')->group(function () {
         Route::get('/manage',                         [\App\Http\Controllers\Portal\RecruitmentManagementController::class, 'index'])->name('index');
         Route::post('/toggle',                        [\App\Http\Controllers\Portal\RecruitmentManagementController::class, 'toggle'])->name('toggle');
+        Route::post('/sync-batches',                  [\App\Http\Controllers\Portal\RecruitmentManagementController::class, 'syncBatches'])->name('sync-batches');
         Route::post('/clear',                         [\App\Http\Controllers\Portal\RecruitmentManagementController::class, 'clearCandidates'])->name('clear');
         Route::get('/{application}',                  [\App\Http\Controllers\Portal\RecruitmentManagementController::class, 'show'])->name('show');
         Route::post('/{application}/status',          [\App\Http\Controllers\Portal\RecruitmentManagementController::class, 'updateStatus'])->name('status');

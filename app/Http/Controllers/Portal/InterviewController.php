@@ -332,27 +332,61 @@ class InterviewController extends Controller
         ];
         $roleLabel = $roleLabels[$validated['recommended_role'] ?? ''] ?? 'Staf';
 
+        $batchName = $candidate->period?->batch_name;
+
         if ($validated['result'] === 'recommended') {
             $candidate->update([
-                'status'         => 'interview',
+                'status'         => 'accepted',
                 'reviewer_notes' => "Lolos Wawancara. Direkomendasikan sebagai {$roleLabel} oleh " . Auth::user()->name . ". Catatan: " . $validated['notes'],
             ]);
+
+            $targetRole = !empty($validated['recommended_role']) 
+                ? StaffRole::where('name', $validated['recommended_role'])->first() 
+                : (StaffRole::where('name', 'trainee')->first() ?? StaffRole::orderBy('level', 'asc')->first());
+
+            if ($targetUser) {
+                $userUpdates = [
+                    'is_active' => true,
+                ];
+                if ($targetRole) {
+                    $userUpdates['role_id'] = $targetRole->id;
+                    $userUpdates['medic_role_id'] = $targetRole->id;
+                }
+                if (!empty($batchName)) {
+                    $userUpdates['batch'] = $batchName;
+                }
+                $targetUser->update($userUpdates);
+                if (!$candidate->user_id) {
+                    $candidate->update(['user_id' => $targetUser->id]);
+                }
+            } else {
+                // Auto create akun aktif langsung
+                $dummyEmail = \Illuminate\Support\Str::slug($candidate->ic_name, '') . rand(100, 999) . '@medic.alta';
+                $newUser = User::create([
+                    'name'          => $candidate->ic_name,
+                    'email'         => $dummyEmail,
+                    'citizen_id'    => $candidate->cid,
+                    'staff_id'      => $candidate->cid,
+                    'password'      => \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(10)),
+                    'role_id'       => $targetRole?->id,
+                    'medic_role_id' => $targetRole?->id,
+                    'hospital'      => 'alta',
+                    'batch'         => $batchName,
+                    'is_active'     => true,
+                ]);
+                $candidate->update(['user_id' => $newUser->id]);
+            }
         } else {
             $candidate->update([
                 'status'         => 'rejected',
                 'reviewer_notes' => "Tidak lolos wawancara oleh " . Auth::user()->name . ". Catatan: " . $validated['notes'],
             ]);
-        }
 
-        // Sinkronisasi ke akun pengguna jika ada yang cocok dengan CID atau user_id
-        if ($validated['result'] === 'recommended' && $validated['recommended_role']) {
-            if ($targetUser) {
-                $targetRole = StaffRole::where('name', $validated['recommended_role'])->first();
-                if ($targetRole) {
-                    $targetUser->update([
-                        'role_id'       => $targetRole->id,
-                        'medic_role_id' => $targetRole->id,
-                    ]);
+            // Jika tidak lolos, hapus akun sementara agar database bersih dan tidak bisa login
+            if ($targetUser && !$targetUser->isAdmin()) {
+                if ($targetUser->role?->name === 'trainee' || !$targetUser->is_active) {
+                    $targetUser->delete();
+                    $candidate->update(['user_id' => null]);
                 }
             }
         }

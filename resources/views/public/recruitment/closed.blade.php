@@ -38,6 +38,9 @@
         </div>
 
         <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+            <a href="{{ route('public.recruitment.status') }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-bold text-xs transition shadow-lg">
+                <i class="fas fa-search"></i> Cek Status Pendaftaran
+            </a>
             <a href="{{ route('public.index') }}" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-slate-900 font-bold text-xs hover:bg-slate-100 transition shadow-lg">
                 <i class="fas fa-home"></i> Kembali ke Beranda
             </a>

@@ -52,6 +52,9 @@
 
                 <!-- Navigation Action -->
                 <div class="pt-4 flex flex-wrap items-center justify-center gap-3">
+                    <a href="{{ route('public.recruitment.status', ['cid' => $application->cid]) }}" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#9c834a] hover:bg-[#87703d] text-white font-bold text-xs sm:text-sm transition shadow-md">
+                        <i class="fas fa-search"></i> Pantau Status Pendaftaran Anda
+                    </a>
                     <a href="{{ route('public.index') }}" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs sm:text-sm transition shadow-md">
                         <i class="fas fa-home"></i> Kembali ke Beranda Utama
                     </a>

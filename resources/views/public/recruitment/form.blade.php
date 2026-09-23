@@ -25,9 +25,14 @@
                         </p>
                     </div>
                 </div>
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 self-start sm:self-center">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Batch Aktif
-                </span>
+                <div class="flex flex-wrap items-center gap-2 self-start sm:self-center">
+                    <a href="{{ route('public.recruitment.status') }}" class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/40 hover:bg-sky-500/30 transition shadow-sm">
+                        <i class="fas fa-search"></i> Cek Status Pendaftaran
+                    </a>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Batch Aktif
+                    </span>
+                </div>
             </div>
 
             <p class="text-xs sm:text-sm text-slate-300 leading-relaxed pt-2 border-t border-white/10">

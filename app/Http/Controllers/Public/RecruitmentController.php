@@ -142,6 +142,34 @@ class RecruitmentController extends Controller
     }
 
     /**
+     * Halaman Cek Status Pendaftaran Rekrutmen (Pelacakan Transparan via Citizen ID / CID)
+     */
+    public function statusCheck(Request $request)
+    {
+        $cid = trim((string) $request->input('cid', ''));
+        $cidClean = preg_replace('/^(char\d+:|citizen:|cid:|id:|license:)/i', '', strtolower($cid));
+        $cidClean = trim(str_replace(['#', ' ', '-', '.'], '', $cidClean));
+
+        $applications = collect();
+        $searched = false;
+
+        if (!empty($cidClean)) {
+            $searched = true;
+            $applications = RecruitmentApplication::with(['period', 'user'])
+                ->where(function ($q) use ($cid, $cidClean) {
+                    $q->where('cid', $cid)
+                      ->orWhere('cid', $cidClean)
+                      ->orWhereRaw('LOWER(TRIM(cid)) = ?', [$cidClean])
+                      ->orWhereRaw("LOWER(REPLACE(REPLACE(REPLACE(TRIM(cid), ' ', ''), '#', ''), '-', '')) = ?", [$cidClean]);
+                })
+                ->latest()
+                ->get();
+        }
+
+        return view('public.recruitment.status', compact('applications', 'cid', 'searched'));
+    }
+
+    /**
      * Helper Upload File ke public/uploads/recruitment
      */
     private function uploadFile($file, string $prefix): string

@@ -47,11 +47,12 @@
                     </button>
                     @endif
                 @endif
-                @if($currentPeriod && $stats['total'] > 0)
-                    <button type="button" onclick="document.getElementById('clearApplicantsModal').classList.remove('hidden')" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 border border-white/10 text-slate-300 hover:text-rose-400 rounded-xl text-xs font-bold transition flex items-center gap-1.5" title="Opsi Pembersihan Data Pelamar">
-                        <i class="fas fa-trash-alt"></i> Bersihkan Data
+                <form method="POST" action="{{ route('portal.recruitment.sync-batches') }}" onsubmit="return confirm('Apakah Anda ingin menyinkronkan badge batch ke seluruh akun anggota yang terdaftar dari rekrutmen?')">
+                    @csrf
+                    <button type="submit" class="px-3.5 py-2 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 text-purple-300 hover:text-white rounded-xl text-xs font-bold transition shadow-lg flex items-center gap-1.5" title="Sinkronkan badge batch untuk akun pendaftar">
+                        <i class="fas fa-layer-group text-purple-400"></i> Sinkronkan Batch
                     </button>
-                @endif
+                </form>
             </div>
         </div>
 

@@ -138,6 +138,49 @@ class RecruitmentManagementController extends Controller
             'reviewer_notes' => $request->reviewer_notes,
         ]);
 
+        $batchName = $application->period?->batch_name;
+
+        // 1. Jika DITERIMA (Accepted): Otomatis aktifkan akun dan sematkan Batch
+        if ($request->status === 'accepted') {
+            $user = $application->user ?? User::where('citizen_id', $application->cid)->first();
+            if ($user) {
+                $userUpdates = ['is_active' => true];
+                if (!empty($batchName)) {
+                    $userUpdates['batch'] = $batchName;
+                }
+                $user->update($userUpdates);
+                if (!$application->user_id) {
+                    $application->update(['user_id' => $user->id]);
+                }
+            } else {
+                $traineeRole = StaffRole::where('name', 'trainee')->first()
+                    ?? StaffRole::orderBy('level', 'asc')->first();
+                $dummyEmail = Str::slug($application->ic_name, '') . rand(100, 999) . '@medic.alta';
+                $user = User::create([
+                    'name'       => $application->ic_name,
+                    'email'      => $dummyEmail,
+                    'citizen_id' => $application->cid,
+                    'staff_id'   => $application->cid,
+                    'password'   => Hash::make(Str::random(10)),
+                    'role_id'    => $traineeRole?->id,
+                    'hospital'   => 'alta',
+                    'batch'      => $batchName,
+                    'is_active'  => true,
+                ]);
+                $application->update(['user_id' => $user->id]);
+            }
+        } 
+        // 2. Jika DITOLAK (Rejected): Otomatis hapus akun sementara agar tidak bisa login
+        elseif ($request->status === 'rejected') {
+            $user = $application->user ?? User::where('citizen_id', $application->cid)->first();
+            if ($user && !$user->isAdmin()) {
+                if ($user->role?->name === 'trainee' || !$user->is_active) {
+                    $user->delete();
+                    $application->update(['user_id' => null]);
+                }
+            }
+        }
+
         return back()->with('success', "Status pelamar {$application->ic_name} berhasil diperbarui menjadi: " . strtoupper($request->status));
     }
 
@@ -148,10 +191,19 @@ class RecruitmentManagementController extends Controller
     {
         $this->authorizeManager();
 
+        $batchName = $application->period?->batch_name;
+
         // Cek apakah sudah punya akun dengan CID ini
         $existing = User::where('citizen_id', $application->cid)->first();
 
         if ($existing) {
+            $updates = [];
+            if (!empty($batchName) && empty($existing->batch)) {
+                $updates['batch'] = $batchName;
+            }
+            if (!empty($updates)) {
+                $existing->update($updates);
+            }
             $application->update(['user_id' => $existing->id]);
             return back()->with('info', "Calon sudah terhubung dengan akun yang ada: {$existing->name} (#{$existing->citizen_id}).");
         }
@@ -173,6 +225,7 @@ class RecruitmentManagementController extends Controller
             'password'   => Hash::make($randomPass),
             'role_id'    => $traineeRole?->id,
             'hospital'   => 'alta',
+            'batch'      => $batchName,
             'is_active'  => false, // Calon medis non-aktif sebelum interview
         ]);
 
@@ -182,6 +235,35 @@ class RecruitmentManagementController extends Controller
         ]);
 
         return back()->with('success', "Akun calon medis {$user->name} (#{$user->citizen_id}) berhasil dibuat dan langsung masuk ke Antrian Interviewer Calon Medis!");
+    }
+
+    /**
+     * Sinkronkan badge Batch untuk anggota yang sudah terdaftar dari periode rekrutmen sebelumnya.
+     */
+    public function syncBatches()
+    {
+        $this->authorizeManager();
+
+        $updatedCount = 0;
+        $applications = RecruitmentApplication::with(['period', 'user'])
+            ->whereNotNull('period_id')
+            ->get();
+
+        foreach ($applications as $app) {
+            $batchName = $app->period?->batch_name;
+            if (!$batchName) continue;
+
+            $user = $app->user ?? User::where('citizen_id', $app->cid)->first();
+            if ($user && empty($user->batch)) {
+                $user->update(['batch' => $batchName]);
+                if (!$app->user_id) {
+                    $app->update(['user_id' => $user->id]);
+                }
+                $updatedCount++;
+            }
+        }
+
+        return back()->with('success', "Berhasil menyinkronkan {$updatedCount} akun anggota dengan badge batch rekrutmen.");
     }
 
     /**
