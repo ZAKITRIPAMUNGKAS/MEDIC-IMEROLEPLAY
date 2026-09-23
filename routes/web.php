@@ -1053,6 +1053,7 @@ Route::get('/', [PublicController::class, 'index'])->name('public.index');
 // Recruitment Paramedic Alta Hospital (Public Flow)
 Route::get('/recruitment', [\App\Http\Controllers\Public\RecruitmentController::class, 'index'])->name('public.recruitment');
 Route::get('/recruitment/status', [\App\Http\Controllers\Public\RecruitmentController::class, 'statusCheck'])->name('public.recruitment.status');
+Route::post('/recruitment/set-credentials', [\App\Http\Controllers\Public\RecruitmentController::class, 'setCredentials'])->name('public.recruitment.set-credentials');
 Route::post('/recruitment/submit', [\App\Http\Controllers\Public\RecruitmentController::class, 'store'])->name('public.recruitment.submit');
 Route::get('/recruitment/success/{id}', [\App\Http\Controllers\Public\RecruitmentController::class, 'success'])->name('public.recruitment.success');
 Route::get('/pendaftaran-medis', function () {

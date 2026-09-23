@@ -179,6 +179,66 @@ class RecruitmentController extends Controller
     }
 
     /**
+     * Simpan email & password untuk pelamar yang sudah terlanjur daftar
+     * sebelum kolom email tersedia di formulir.
+     */
+    public function setCredentials(Request $request)
+    {
+        $request->validate([
+            'application_id' => 'required|integer|exists:recruitment_applications,id',
+            'cid'            => 'required|string',
+            'email'          => 'required|email|max:191',
+            'password'       => 'required|string|min:8|confirmed',
+        ], [
+            'application_id.exists' => 'Data pendaftaran tidak ditemukan.',
+            'email.required'        => 'Email wajib diisi.',
+            'email.email'           => 'Format email tidak valid.',
+            'password.required'     => 'Password wajib diisi.',
+            'password.min'          => 'Password minimal 8 karakter.',
+            'password.confirmed'    => 'Konfirmasi password tidak sesuai.',
+        ]);
+
+        $app = RecruitmentApplication::find($request->application_id);
+
+        if (!$app) {
+            return back()->withErrors(['email' => 'Data pendaftaran tidak ditemukan.']);
+        }
+
+        // Cek apakah CID cocok (keamanan dasar agar orang lain tidak bisa ubah)
+        $cidClean = strtoupper(trim(str_replace(['#', ' '], '', (string) $request->cid)));
+        $appCid   = strtoupper(trim(str_replace(['#', ' '], '', (string) $app->cid)));
+
+        if ($cidClean !== $appCid) {
+            return back()->withErrors(['email' => 'Citizen ID tidak cocok dengan data pendaftaran.']);
+        }
+
+        // Jangan timpa jika email sudah ada (sudah di-set sebelumnya atau akun sudah aktif)
+        if (!empty($app->email) && !empty($app->password_temp)) {
+            return redirect()
+                ->route('public.recruitment.status', ['cid' => $app->cid])
+                ->with('info', 'Email dan password Anda sudah terdaftar sebelumnya. Tidak ada perubahan yang dilakukan.');
+        }
+
+        // Simpan email & password
+        $app->update([
+            'email'         => strtolower(trim($request->email)),
+            'password_temp' => $request->password, // plain — akan di-hash saat akun dibuat
+        ]);
+
+        // Jika akun user sudah terbuat (user_id ada), update juga passwordnya
+        if ($app->user_id && $app->user) {
+            $app->user->update([
+                'email'    => strtolower(trim($request->email)),
+                'password' => \Illuminate\Support\Facades\Hash::make($request->password),
+            ]);
+        }
+
+        return redirect()
+            ->route('public.recruitment.status', ['cid' => $app->cid])
+            ->with('success', 'Email dan password berhasil disimpan! Simpan email dan password Anda baik-baik untuk login ke Portal Staf jika diterima.');
+    }
+
+    /**
      * Helper Upload File ke public/uploads/recruitment
      */
     private function uploadFile($file, string $prefix): string

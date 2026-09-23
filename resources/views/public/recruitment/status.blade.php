@@ -59,6 +59,19 @@
         </div>
 
         {{-- ── RESULTS ── --}}
+        @if(session('success'))
+            <div class="bg-emerald-500/15 border border-emerald-500/30 rounded-xl px-4 py-3 flex items-start gap-3 text-sm text-emerald-300">
+                <i class="fas fa-check-circle text-emerald-400 shrink-0 mt-0.5"></i>
+                <span>{{ session('success') }}</span>
+            </div>
+        @endif
+        @if(session('info'))
+            <div class="bg-sky-500/15 border border-sky-500/30 rounded-xl px-4 py-3 flex items-start gap-3 text-sm text-sky-300">
+                <i class="fas fa-info-circle text-sky-400 shrink-0 mt-0.5"></i>
+                <span>{{ session('info') }}</span>
+            </div>
+        @endif
+
         @if($searched && $applications->isNotEmpty())
             @foreach($applications as $app)
                 @php
@@ -309,6 +322,113 @@
                                 </div>
                             </div>
                         </div>
+
+                        {{-- ── SET CREDENTIALS (untuk yang sudah terlanjur daftar) ── --}}
+                        @if(empty($app->email) && !in_array($status, ['rejected']))
+                            <div class="border-t border-amber-500/20 pt-4">
+                                <div class="rounded-xl bg-amber-500/10 border border-amber-500/30 p-4 space-y-4">
+                                    <div class="flex items-start gap-2.5">
+                                        <i class="fas fa-key text-amber-400 text-base shrink-0 mt-0.5"></i>
+                                        <div>
+                                            <p class="text-sm font-black text-amber-300 uppercase tracking-wide">
+                                                Lengkapi Akun Portal Anda
+                                            </p>
+                                            <p class="text-xs text-amber-200/80 mt-0.5 leading-relaxed">
+                                                Anda mendaftar sebelum fitur akun tersedia. Silakan isi email &amp; password di bawah agar akun Portal Staf dapat dibuat otomatis jika Anda diterima.
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    {{-- Note email IC --}}
+                                    <div class="rounded-lg bg-rose-500/10 border border-rose-500/30 px-3 py-2.5 flex items-start gap-2 text-xs text-rose-300">
+                                        <i class="fas fa-exclamation-circle shrink-0 mt-0.5 text-rose-400"></i>
+                                        <span>
+                                            <strong class="text-rose-200">Catatan Penting:</strong>
+                                            Gunakan <strong class="text-white">email bebas</strong> (boleh email apapun yang aktif).
+                                            <strong class="text-rose-300">Jangan gunakan email OOC / email asli sehari-hari Anda</strong> demi privasi.
+                                            Disarankan buat email khusus untuk karakter IC Anda.
+                                        </span>
+                                    </div>
+
+                                    @if($errors->any() && old('application_id') == $app->id)
+                                        <div class="rounded-lg bg-rose-500/15 border border-rose-500/30 p-2.5 text-xs text-rose-300 space-y-0.5">
+                                            @foreach($errors->all() as $err)
+                                                <div class="flex items-center gap-1.5"><i class="fas fa-times-circle text-[10px]"></i> {{ $err }}</div>
+                                            @endforeach
+                                        </div>
+                                    @endif
+
+                                    <form method="POST" action="{{ route('public.recruitment.set-credentials') }}" class="space-y-3">
+                                        @csrf
+                                        <input type="hidden" name="application_id" value="{{ $app->id }}">
+                                        <input type="hidden" name="cid" value="{{ $app->cid }}">
+
+                                        <div>
+                                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+                                                Email <span class="text-rose-400">*</span>
+                                                <span class="text-slate-500 font-normal normal-case">(buat email khusus IC, bukan email OOC)</span>
+                                            </label>
+                                            <div class="relative">
+                                                <i class="fas fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                                <input type="email" name="email" value="{{ old('email') }}"
+                                                       placeholder="email.karakter.ic@gmail.com"
+                                                       class="w-full bg-white/10 text-white placeholder-slate-500 border border-white/20 rounded-lg pl-8 pr-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent"
+                                                       required>
+                                            </div>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                            <div>
+                                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+                                                    Password <span class="text-rose-400">*</span>
+                                                    <span class="text-slate-500 font-normal normal-case">(min. 8 karakter)</span>
+                                                </label>
+                                                <div class="relative">
+                                                    <i class="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                                    <input type="password" name="password"
+                                                           placeholder="Buat password"
+                                                           class="w-full bg-white/10 text-white placeholder-slate-500 border border-white/20 rounded-lg pl-8 pr-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400"
+                                                           required minlength="8">
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">
+                                                    Konfirmasi Password <span class="text-rose-400">*</span>
+                                                </label>
+                                                <div class="relative">
+                                                    <i class="fas fa-lock absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                                                    <input type="password" name="password_confirmation"
+                                                           placeholder="Ulangi password"
+                                                           class="w-full bg-white/10 text-white placeholder-slate-500 border border-white/20 rounded-lg pl-8 pr-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400"
+                                                           required minlength="8">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <button type="submit"
+                                                class="w-full sm:w-auto px-5 py-2 rounded-lg font-black text-xs text-white shadow transition flex items-center justify-center gap-1.5"
+                                                style="background: linear-gradient(135deg, #9c834a, #b89b60);">
+                                            <i class="fas fa-save"></i> Simpan Email & Password
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+
+                        @elseif(!empty($app->email) && !in_array($status, ['rejected']))
+                            {{-- Email sudah terisi -- tampilkan konfirmasi --}}
+                            <div class="border-t border-white/10 pt-4">
+                                <div class="rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-3 flex items-center gap-2.5 text-xs text-emerald-300">
+                                    <i class="fas fa-shield-check text-emerald-400 shrink-0"></i>
+                                    <span>
+                                        Akun portal sudah siap. Email login:
+                                        <code class="font-mono bg-emerald-500/20 px-1.5 py-0.5 rounded text-emerald-200 font-bold">
+                                            {{ substr($app->email, 0, 3) }}***@{{ explode('@', $app->email)[1] ?? '' }}
+                                        </code>
+                                        — Simpan email dan password Anda.
+                                    </span>
+                                </div>
+                            </div>
+                        @endif
 
                     </div>
                 </div>
