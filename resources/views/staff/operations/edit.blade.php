@@ -729,8 +729,7 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
 $(document).ready(function() {
-    // Existing data from server
-    const initialMembers = @json($operation->members->map(fn($m) => ['id' => $m->id, 'text' => $m->name . ($m->staff_id ? ' ('.$m->staff_id.')' : '')]));
+    const initialMembers = @json($operation->members->map(fn($m) => ['id' => $m->id, 'text' => $m->name . (($m->citizen_id ?: $m->staff_id) ? ' ('.($m->citizen_id ?: $m->staff_id).')' : '')]));
     const initialDpjpId = @json($operation->dpjp_id);
     const initialTim = @json($med['tim'] ?? []);
 
@@ -801,7 +800,7 @@ $(document).ready(function() {
             $dropdown.append(new Option('-- Tidak Ada --', ''));
 
             selectedData.forEach(function(item) {
-                const isSelected = item.text === currentVal || item.id == currentVal;
+                const isSelected = item.text === currentVal || item.id == currentVal || (currentVal && item.text.startsWith(currentVal));
                 $dropdown.append(new Option(item.text, item.text, false, isSelected));
             });
         });

@@ -61,15 +61,18 @@ class OperationRecordController extends Controller
             $query->where(function($q) use ($timSearch) {
                 $q->whereHas('members', function($qm) use ($timSearch) {
                     $qm->where('name', 'like', '%' . $timSearch . '%')
-                       ->orWhere('staff_id', 'like', '%' . $timSearch . '%');
+                       ->orWhere('staff_id', 'like', '%' . $timSearch . '%')
+                       ->orWhere('citizen_id', 'like', '%' . $timSearch . '%');
                 })
                 ->orWhereHas('dpjp', function($qd) use ($timSearch) {
                     $qd->where('name', 'like', '%' . $timSearch . '%')
-                       ->orWhere('staff_id', 'like', '%' . $timSearch . '%');
+                       ->orWhere('staff_id', 'like', '%' . $timSearch . '%')
+                       ->orWhere('citizen_id', 'like', '%' . $timSearch . '%');
                 })
                 ->orWhereHas('creator', function($qc) use ($timSearch) {
                     $qc->where('name', 'like', '%' . $timSearch . '%')
-                       ->orWhere('staff_id', 'like', '%' . $timSearch . '%');
+                       ->orWhere('staff_id', 'like', '%' . $timSearch . '%')
+                       ->orWhere('citizen_id', 'like', '%' . $timSearch . '%');
                 });
             });
         }
@@ -436,16 +439,18 @@ class OperationRecordController extends Controller
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', '%' . $search . '%')
                   ->orWhere('staff_id', 'like', '%' . $search . '%')
+                  ->orWhere('citizen_id', 'like', '%' . $search . '%')
                   ->orWhere('email', 'like', '%' . $search . '%');
             });
         }
         
-        $users = $query->select('id', 'name', 'staff_id')->limit(25)->get();
+        $users = $query->select('id', 'name', 'staff_id', 'citizen_id')->limit(25)->get();
         
         $formatted = $users->map(function ($user) {
             $label = $user->name;
-            if ($user->staff_id) {
-                $label .= ' (' . $user->staff_id . ')';
+            $cid = $user->citizen_id ?: $user->staff_id;
+            if ($cid) {
+                $label .= ' (' . $cid . ')';
             }
             return ['id' => $user->id, 'text' => $label];
         });

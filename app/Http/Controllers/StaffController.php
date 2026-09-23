@@ -216,14 +216,17 @@ class StaffController extends Controller
             $profileImagePath = $request->file('profile_image')->store('profile-images', 'public');
         }
 
-        $citizenId = trim(str_replace(['#'], '', (string)$request->citizen_id));
+        $rawCitizenId = trim((string)$request->citizen_id);
+        $cleanCitizenId = preg_replace('/^(char\d+:|citizen:|cid:|id:|license:)/i', '', $rawCitizenId);
+        $cleanCitizenId = strtoupper(trim(str_replace(['#', ' '], '', $cleanCitizenId)));
+        $finalId = $cleanCitizenId ?: $rawCitizenId;
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'staff_id' => $request->staff_id,
-            'citizen_id' => $citizenId,
+            'staff_id' => $request->staff_id ?: $finalId,
+            'citizen_id' => $finalId ?: $request->staff_id,
             'role_id' => $request->role_id,
             'hospital' => $request->hospital,
             'is_active' => false,
@@ -250,8 +253,11 @@ class StaffController extends Controller
         ]);
 
         if ($request->filled('citizen_id')) {
+            $rawCitId = trim((string)$request->citizen_id);
+            $cleanCitId = preg_replace('/^(char\d+:|citizen:|cid:|id:|license:)/i', '', $rawCitId);
+            $cleanCitId = strtoupper(trim(str_replace(['#', ' '], '', $cleanCitId)));
             $request->merge([
-                'citizen_id' => trim(str_replace(['#'], '', (string)$request->citizen_id))
+                'citizen_id' => $cleanCitId ?: $rawCitId
             ]);
         }
 
@@ -264,10 +270,11 @@ class StaffController extends Controller
             'profile_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // Update name, hospital, and citizen_id
+        // Update name, hospital, citizen_id, dan sinkronkan staff_id
         $user->name = $validated['name'];
         $user->hospital = $validated['hospital'];
         $user->citizen_id = trim((string)$validated['citizen_id']);
+        $user->staff_id = $user->citizen_id;
 
         // If user wants to change password, verify current password (if set) then update
         if (!empty($validated['password'])) {

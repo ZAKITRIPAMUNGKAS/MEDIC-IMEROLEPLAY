@@ -84,31 +84,44 @@ class AttendanceIntegrationService
         $rawPlayerId = (string) $playerId;
         $normalizedPlayerId = trim(strtolower($rawPlayerId));
         
-        // Bersihkan prefix umum FiveM (char1:, char2:, citizen:, cid:, id:, license:)
-        // Contoh: "char1:t84k5z77" -> "t84k5z77", "citizen:t84k5z77" -> "t84k5z77"
-        $strippedPlayerId = preg_replace('/^(char\d+:|citizen:|cid:|id:|license:)/i', '', $normalizedPlayerId);
+        // Bersihkan prefix umum FiveM (char1:, char2:, citizen:, cid:, id:, license:, steam:, discord:)
+        $strippedPlayerId = preg_replace('/^(char\d+:|citizen:|cid:|id:|license:|license2:|steam:|discord:)/i', '', $normalizedPlayerId);
         $strippedPlayerId = trim(str_replace(['#', ' ', '-', '.'], '', $strippedPlayerId));
 
-        // 1. Coba cari berdasarkan citizen_id (FiveM ID) - Exact Match Case-Insensitive
-        $user = User::whereRaw('LOWER(TRIM(citizen_id)) = ?', [$normalizedPlayerId])
-            ->orWhereRaw('LOWER(TRIM(citizen_id)) = ?', [$strippedPlayerId])
-            ->first();
+        // 1. Coba cari berdasarkan citizen_id atau staff_id - Exact Match Case-Insensitive
+        $user = User::where(function($q) use ($normalizedPlayerId, $strippedPlayerId) {
+            $q->whereRaw('LOWER(TRIM(citizen_id)) = ?', [$normalizedPlayerId])
+              ->orWhereRaw('LOWER(TRIM(citizen_id)) = ?', [$strippedPlayerId])
+              ->orWhereRaw('LOWER(TRIM(staff_id)) = ?', [$normalizedPlayerId])
+              ->orWhereRaw('LOWER(TRIM(staff_id)) = ?', [$strippedPlayerId]);
+        })->first();
 
         if ($user) {
             return $user;
         }
 
-        // 2. Coba jika di DB ada prefix atau kebalikannya (Stripped DB citizen_id = strippedPlayerId)
-        // Contoh: user di DB input "char1:T84K5Z77" atau FiveM kirim "T84K5Z77"
+        // 2. Coba jika di DB ada prefix atau kebalikannya (Stripped DB citizen_id / staff_id = strippedPlayerId)
         if (!empty($strippedPlayerId)) {
-            $user = User::whereNotNull('citizen_id')
-                ->where(function ($q) use ($strippedPlayerId) {
-                    $q->whereRaw("LOWER(REPLACE(REPLACE(REPLACE(TRIM(citizen_id), ' ', ''), '#', ''), '-', '')) = ?", [$strippedPlayerId])
-                      ->orWhereRaw("LOWER(REPLACE(citizen_id, 'char1:', '')) = ?", [$strippedPlayerId])
-                      ->orWhereRaw("LOWER(REPLACE(citizen_id, 'char2:', '')) = ?", [$strippedPlayerId])
-                      ->orWhereRaw("LOWER(REPLACE(citizen_id, 'citizen:', '')) = ?", [$strippedPlayerId]);
+            $user = User::where(function ($q) use ($strippedPlayerId) {
+                $q->where(function($sq) use ($strippedPlayerId) {
+                    $sq->whereNotNull('citizen_id')
+                       ->where(function($ssq) use ($strippedPlayerId) {
+                           $ssq->whereRaw("LOWER(REPLACE(REPLACE(REPLACE(TRIM(citizen_id), ' ', ''), '#', ''), '-', '')) = ?", [$strippedPlayerId])
+                               ->orWhereRaw("LOWER(REPLACE(citizen_id, 'char1:', '')) = ?", [$strippedPlayerId])
+                               ->orWhereRaw("LOWER(REPLACE(citizen_id, 'char2:', '')) = ?", [$strippedPlayerId])
+                               ->orWhereRaw("LOWER(REPLACE(citizen_id, 'citizen:', '')) = ?", [$strippedPlayerId]);
+                       });
                 })
-                ->first();
+                ->orWhere(function($sq) use ($strippedPlayerId) {
+                    $sq->whereNotNull('staff_id')
+                       ->where(function($ssq) use ($strippedPlayerId) {
+                           $ssq->whereRaw("LOWER(REPLACE(REPLACE(REPLACE(TRIM(staff_id), ' ', ''), '#', ''), '-', '')) = ?", [$strippedPlayerId])
+                               ->orWhereRaw("LOWER(REPLACE(staff_id, 'char1:', '')) = ?", [$strippedPlayerId])
+                               ->orWhereRaw("LOWER(REPLACE(staff_id, 'char2:', '')) = ?", [$strippedPlayerId])
+                               ->orWhereRaw("LOWER(REPLACE(staff_id, 'citizen:', '')) = ?", [$strippedPlayerId]);
+                       });
+                });
+            })->first();
 
             if ($user) {
                 return $user;
@@ -117,30 +130,31 @@ class AttendanceIntegrationService
 
         // 3. Coba cari jika salah satu mengandung yang lain (Substring match untuk ID >= 4 karakter)
         if (strlen($strippedPlayerId) >= 4) {
-            $user = User::whereNotNull('citizen_id')
-                ->where(function ($q) use ($strippedPlayerId) {
-                    $q->whereRaw('LOWER(citizen_id) LIKE ?', ['%' . $strippedPlayerId . '%'])
-                      ->orWhereRaw('? LIKE CONCAT("%", LOWER(TRIM(citizen_id)), "%")', [$strippedPlayerId]);
+            $user = User::where(function ($q) use ($strippedPlayerId) {
+                $q->where(function($sq) use ($strippedPlayerId) {
+                    $sq->whereNotNull('citizen_id')
+                       ->where(function($ssq) use ($strippedPlayerId) {
+                           $ssq->whereRaw('LOWER(citizen_id) LIKE ?', ['%' . $strippedPlayerId . '%'])
+                               ->orWhereRaw('? LIKE CONCAT("%", LOWER(TRIM(citizen_id)), "%")', [$strippedPlayerId]);
+                       });
                 })
-                ->first();
+                ->orWhere(function($sq) use ($strippedPlayerId) {
+                    $sq->whereNotNull('staff_id')
+                       ->where(function($ssq) use ($strippedPlayerId) {
+                           $ssq->whereRaw('LOWER(staff_id) LIKE ?', ['%' . $strippedPlayerId . '%'])
+                               ->orWhereRaw('? LIKE CONCAT("%", LOWER(TRIM(staff_id)), "%")', [$strippedPlayerId]);
+                       });
+                });
+            })->first();
 
             if ($user) {
                 return $user;
             }
         }
 
-        // 4. Coba cari berdasarkan staff_id (Badge Number)
-        $user = User::whereRaw('LOWER(TRIM(staff_id)) = ?', [$normalizedPlayerId])
-            ->orWhereRaw('LOWER(TRIM(staff_id)) = ?', [$strippedPlayerId])
-            ->first();
-
-        if ($user) {
-            return $user;
-        }
-
-        // 5. Coba cari berdasarkan nama (Smart Name Matching Fallback)
+        // 4. Coba cari berdasarkan nama (Smart Name Matching Fallback)
         if (!empty($playerName)) {
-            $cleanPlayerName = trim(preg_replace('/^(\[[^\]]+\]|\bdr\.?|\bdokter\b)/i', '', (string)$playerName));
+            $cleanPlayerName = trim(preg_replace('/^(rh\s*[-|–]?\s*|alta\s*[-|–]?\s*|roxwood\s*[-|–]?\s*|medic\s*[-|–]?\s*|ems\s*[-|–]?\s*|\[[^\]]+\]|\bdr\.?|\bdokter\b)/i', '', (string)$playerName));
             $cleanPlayerName = trim(str_replace('_', ' ', $cleanPlayerName));
 
             if (strlen($cleanPlayerName) >= 3) {
@@ -155,6 +169,14 @@ class AttendanceIntegrationService
                         'matched_user' => $user->name,
                         'user_cit_id'  => $user->citizen_id,
                     ]);
+                    
+                    // Auto-sync citizen_id & staff_id jika kosong pada user yang cocok
+                    if (empty($user->citizen_id) && !empty($strippedPlayerId)) {
+                        $user->citizen_id = strtoupper($strippedPlayerId);
+                        $user->staff_id = $user->staff_id ?: strtoupper($strippedPlayerId);
+                        $user->save();
+                    }
+
                     return $user;
                 }
             }
@@ -164,7 +186,7 @@ class AttendanceIntegrationService
             'player_id'     => $playerId,
             'player_name'   => $playerName,
             'normalized_id' => $normalizedPlayerId,
-            'stripped_id'   => $strippedPlayerId,
+            'stripped_id'   => $strippedPlayerId
         ]);
 
         return null;
@@ -490,11 +512,24 @@ class AttendanceIntegrationService
         $user = User::find($userId);
         $automaticAttendance = collect();
 
-        if ($user && $user->staff_id) {
-            $automaticAttendance = Absensi::byPlayer($user->staff_id)
-                ->whereBetween('clock_in', [$dateFrom, $dateTo])
-                ->orderBy('clock_in', 'desc')
-                ->get();
+        if ($user) {
+            $identifiers = array_filter(array_unique([
+                $user->staff_id,
+                $user->citizen_id,
+                $user->staff_id ? strtolower($user->staff_id) : null,
+                $user->staff_id ? strtoupper($user->staff_id) : null,
+                $user->citizen_id ? strtolower($user->citizen_id) : null,
+                $user->citizen_id ? strtoupper($user->citizen_id) : null,
+                $user->citizen_id ? 'char1:' . strtolower($user->citizen_id) : null,
+                $user->citizen_id ? 'citizen:' . strtolower($user->citizen_id) : null,
+            ]));
+
+            if (!empty($identifiers)) {
+                $automaticAttendance = Absensi::whereIn('player_id', $identifiers)
+                    ->whereBetween('clock_in', [$dateFrom, $dateTo])
+                    ->orderBy('clock_in', 'desc')
+                    ->get();
+            }
         }
 
         return [

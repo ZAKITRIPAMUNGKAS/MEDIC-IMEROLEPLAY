@@ -169,6 +169,7 @@ class RecruitmentManagementController extends Controller
             'name'       => $application->ic_name,
             'email'      => $dummyEmail,
             'citizen_id' => $application->cid,
+            'staff_id'   => $application->cid,
             'password'   => Hash::make($randomPass),
             'role_id'    => $traineeRole?->id,
             'hospital'   => 'alta',

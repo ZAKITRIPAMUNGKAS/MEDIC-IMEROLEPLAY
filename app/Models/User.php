@@ -64,6 +64,32 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * The "booted" method of the model.
+     * Otomatis membersihkan prefix dan menyinkronkan citizen_id & staff_id saat user disimpan.
+     */
+    protected static function booted()
+    {
+        static::saving(function ($user) {
+            // Bersihkan citizen_id dari prefix FiveM dan spasi/#
+            if (!empty($user->citizen_id)) {
+                $clean = trim((string)$user->citizen_id);
+                $clean = preg_replace('/^(char\d+:|citizen:|cid:|id:|license:)/i', '', $clean);
+                $clean = strtoupper(trim(str_replace(['#', ' '], '', $clean)));
+                if (!empty($clean)) {
+                    $user->citizen_id = $clean;
+                }
+            }
+
+            // Sinkronkan staff_id dan citizen_id jika salah satunya kosong
+            if (empty($user->staff_id) && !empty($user->citizen_id)) {
+                $user->staff_id = $user->citizen_id;
+            } elseif (empty($user->citizen_id) && !empty($user->staff_id)) {
+                $user->citizen_id = $user->staff_id;
+            }
+        });
+    }
+
     public function role()
     {
         return $this->belongsTo(StaffRole::class, 'role_id');

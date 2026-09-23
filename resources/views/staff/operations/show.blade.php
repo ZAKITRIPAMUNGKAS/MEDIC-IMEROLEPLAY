@@ -660,15 +660,38 @@
                     </div>
                     @endif
 
+                    @php
+                        $formatStaffWithCid = function($val) use ($operation) {
+                            if (empty($val) || $val === '-') return $val;
+                            if (preg_match('/\([^\)]+\)/', $val)) {
+                                return $val;
+                            }
+                            $clean = trim($val);
+                            $member = $operation->members->first(function($m) use ($clean) {
+                                return strcasecmp(trim($m->name), $clean) === 0;
+                            });
+                            if (!$member) {
+                                $member = \App\Models\User::whereRaw('LOWER(TRIM(name)) = ?', [strtolower($clean)])->first();
+                            }
+                            if ($member) {
+                                $cid = $member->citizen_id ?: $member->staff_id;
+                                if ($cid) {
+                                    return $val . ' (' . $cid . ')';
+                                }
+                            }
+                            return $val;
+                        };
+                    @endphp
+
                     {{-- Rincian Tim Medis Khusus --}}
                     @if(!empty($med['tim']))
                     <div class="p-4 space-y-2 text-xs border-b border-white/10">
                         <div class="text-sky-300 font-bold uppercase tracking-wider text-[11px] mb-1">Peran Tim Spesifik:</div>
-                        @if(!empty($med['tim']['first_responder']))<div class="flex justify-between text-white bg-white/5 p-2 rounded-lg"><span>First Responder:</span><strong class="text-sky-300">{{ $med['tim']['first_responder'] }}</strong></div>@endif
-                        @if(!empty($med['tim']['anestesi']))<div class="flex justify-between text-white bg-white/5 p-2 rounded-lg"><span>Petugas Anestesi:</span><strong class="text-sky-300">{{ $med['tim']['anestesi'] }}</strong></div>@endif
-                        @if(!empty($med['tim']['radiologi']))<div class="flex justify-between text-white bg-white/5 p-2 rounded-lg"><span>Petugas Radiologi:</span><strong class="text-sky-300">{{ $med['tim']['radiologi'] }}</strong></div>@endif
-                        @if(!empty($med['tim']['asisten_1']))<div class="flex justify-between text-white bg-white/5 p-2 rounded-lg"><span>Asisten 1:</span><strong class="text-sky-300">{{ $med['tim']['asisten_1'] }}</strong></div>@endif
-                        @if(!empty($med['tim']['asisten_2']))<div class="flex justify-between text-white bg-white/5 p-2 rounded-lg"><span>Asisten 2:</span><strong class="text-sky-300">{{ $med['tim']['asisten_2'] }}</strong></div>@endif
+                        @if(!empty($med['tim']['first_responder']))<div class="flex justify-between text-white bg-white/5 p-2 rounded-lg"><span>First Responder:</span><strong class="text-sky-300">{{ $formatStaffWithCid($med['tim']['first_responder']) }}</strong></div>@endif
+                        @if(!empty($med['tim']['anestesi']))<div class="flex justify-between text-white bg-white/5 p-2 rounded-lg"><span>Petugas Anestesi:</span><strong class="text-sky-300">{{ $formatStaffWithCid($med['tim']['anestesi']) }}</strong></div>@endif
+                        @if(!empty($med['tim']['radiologi']))<div class="flex justify-between text-white bg-white/5 p-2 rounded-lg"><span>Petugas Radiologi:</span><strong class="text-sky-300">{{ $formatStaffWithCid($med['tim']['radiologi']) }}</strong></div>@endif
+                        @if(!empty($med['tim']['asisten_1']))<div class="flex justify-between text-white bg-white/5 p-2 rounded-lg"><span>Asisten 1:</span><strong class="text-sky-300">{{ $formatStaffWithCid($med['tim']['asisten_1']) }}</strong></div>@endif
+                        @if(!empty($med['tim']['asisten_2']))<div class="flex justify-between text-white bg-white/5 p-2 rounded-lg"><span>Asisten 2:</span><strong class="text-sky-300">{{ $formatStaffWithCid($med['tim']['asisten_2']) }}</strong></div>@endif
                     </div>
                     @endif
 
@@ -802,11 +825,11 @@
 $dpjpName = $dpjpMember ? $dpjpMember->name : '-';
 $allMembersList = $operation->members->pluck('name')->implode(', ');
 $timMedis = $med['tim'] ?? [];
-$firstResp = $timMedis['first_responder'] ?? '-';
-$anestesiStaf = $timMedis['anestesi'] ?? '-';
-$radiologiStaf = $timMedis['radiologi'] ?? '-';
-$asisten1 = $timMedis['asisten_1'] ?? '-';
-$asisten2 = $timMedis['asisten_2'] ?? '-';
+$firstResp = !empty($timMedis['first_responder']) ? $formatStaffWithCid($timMedis['first_responder']) : '-';
+$anestesiStaf = !empty($timMedis['anestesi']) ? $formatStaffWithCid($timMedis['anestesi']) : '-';
+$radiologiStaf = !empty($timMedis['radiologi']) ? $formatStaffWithCid($timMedis['radiologi']) : '-';
+$asisten1 = !empty($timMedis['asisten_1']) ? $formatStaffWithCid($timMedis['asisten_1']) : '-';
+$asisten2 = !empty($timMedis['asisten_2']) ? $formatStaffWithCid($timMedis['asisten_2']) : '-';
 
 $pasien = $med['pasien'] ?? [];
 $dob = $pasien['dob'] ?? '-';

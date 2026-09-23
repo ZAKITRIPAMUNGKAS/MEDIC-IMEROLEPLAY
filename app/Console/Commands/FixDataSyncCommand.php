@@ -134,9 +134,12 @@ class FixDataSyncCommand extends Command
                 }
                 
                 if ($user && !$isDryRun) {
-                    // Update user's staff_id if missing
+                    // Update user's staff_id or citizen_id if missing
                     if (!$user->staff_id) {
                         $user->update(['staff_id' => $record->player_id]);
+                    }
+                    if (!$user->citizen_id) {
+                        $user->update(['citizen_id' => $record->player_id]);
                     }
                 }
                 
