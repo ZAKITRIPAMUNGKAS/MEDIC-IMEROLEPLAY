@@ -296,9 +296,11 @@ class PublicController extends Controller
         }
 
         // Buat data form untuk janji temu
+        $doctorName = $request->input('doctor_name', 'Dokter Spesialis');
+
         $formData = [
             'purpose' => 'Janji Temu',
-            'doctor_name' => 'Dokter Spesialis',
+            'doctor_name' => $doctorName,
             'appointment_date' => $appointmentDate,
             'appointment_time' => $appointmentTime,
             'phone_number' => $request->phone_number,
@@ -319,6 +321,9 @@ class PublicController extends Controller
             'status' => 'pending',
             'ip_address' => $request->ip(),
         ]);
+
+        // Kirim notifikasi pesan internal ke dokter yang dipilih
+        $this->notifyDoctorAboutAppointment($medicalForm, $doctorName);
 
         return response()->json([
             'success' => true,
@@ -772,10 +777,81 @@ class PublicController extends Controller
 
         $form = MedicalForm::create($formCreateData);
 
+        // Kirim notifikasi ke dokter yang dipilih jika ada
+        if (!empty($formData['doctor_name'])) {
+            $this->notifyDoctorAboutAppointment($form, $formData['doctor_name']);
+        }
+
         // Webhook system removed for better performance
 
         return redirect()->route('public.form.success', $form->id)
             ->with('success', 'Formulir berhasil dikirim! Tim medis akan segera memproses permintaan Anda.');
+    }
+
+    /**
+     * Kirim notifikasi pesan internal ke dokter yang dipilih untuk janji temu / konsultasi
+     */
+    private function notifyDoctorAboutAppointment(MedicalForm $form, ?string $doctorName): void
+    {
+        if (empty($doctorName) || $doctorName === 'Dokter Spesialis') {
+            return;
+        }
+
+        try {
+            $doctor = User::where('name', $doctorName)->first();
+            if (!$doctor) {
+                $doctor = User::whereRaw('LOWER(name) = ?', [strtolower(trim($doctorName))])->first();
+            }
+
+            if (!$doctor) {
+                return;
+            }
+
+            $adminSender = User::whereHas('role', function ($q) {
+                $q->where('name', 'admin');
+            })->first();
+            $senderId = $adminSender ? $adminSender->id : $doctor->id;
+
+            $formData = $form->form_data ?? [];
+            $apptDate = $formData['appointment_date'] ?? now()->format('Y-m-d');
+            $apptTime = $formData['appointment_time'] ?? '-';
+            $patientPhone = $formData['phone_number'] ?? '-';
+            $symptoms = $formData['symptoms'] ?? ($formData['purpose'] ?? $form->description ?? 'Janji Temu Pasien');
+            $hospitalName = ($form->hospital === 'roxwood') ? 'Roxwood Hospital' : 'Alta Hospital';
+
+            $formTypeNames = [
+                'janji_temu'       => 'Janji Temu Dokter',
+                'poli_umum'        => 'Poli Umum',
+                'penyakit_dalam'   => 'Poli Penyakit Dalam',
+                'spesialis_anak'   => 'Poli Spesialis Anak',
+                'spesialis_bedah'  => 'Poli Spesialis Bedah',
+                'spesialis_mata'   => 'Poli Spesialis Mata',
+                'spesialis_saraf'  => 'Poli Spesialis Saraf (Neurologi)',
+                'spesialis_urologi' => 'Poli Spesialis Urologi',
+                'spesialis_tht'    => 'Poli Spesialis THT',
+                'spesialis_ortopedi' => 'Poli Spesialis Ortopedi',
+            ];
+            $poliLabel = $formTypeNames[$form->form_type] ?? ($formData['poli'] ?? 'Janji Temu');
+
+            $msgBody = "📅 **[NOTIFIKASI JANJI TEMU PASIEN BARU]**\n"
+                     . "Pasien telah memilih Anda sebagai dokter pemeriksa:\n\n"
+                     . "• **Nama Pasien:** {$form->character_name}\n"
+                     . "• **Layanan / Poli:** {$poliLabel}\n"
+                     . "• **Jadwal Janji Temu:** {$apptDate} (Pukul {$apptTime} WIB)\n"
+                     . "• **No. HP Pasien:** {$patientPhone}\n"
+                     . "• **Keluhan / Keperluan:** {$symptoms}\n"
+                     . "• **Rumah Sakit:** {$hospitalName}\n\n"
+                     . "📌 *Silakan periksa detail dan konfirmasi janji temu ini pada menu Dashboard Staf Medis Anda.*";
+
+            \App\Models\MemberMessage::create([
+                'sender_id'   => $senderId,
+                'receiver_id' => $doctor->id,
+                'message'     => $msgBody,
+                'is_read'     => false,
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning("Gagal mengirim notifikasi janji temu ke dokter: {$e->getMessage()}");
+        }
     }
 
     public function formSuccess($id)

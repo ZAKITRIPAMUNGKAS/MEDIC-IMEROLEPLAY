@@ -288,15 +288,26 @@
                             <i class="fas fa-phone mr-1.5 text-sky-400"></i>No HP / Telepon
                         </label>
                         <input type="text" name="medical_details[pasien][no_hp]" class="form-input-dark"
+                               value="{{ old('medical_details.pasien.no_hp') }}"
                                placeholder="Contoh: 08123456789">
                     </div>
 
-                    <div class="md:col-span-2 lg:col-span-1">
+                    <div>
                         <label class="block text-sky-200 text-sm font-semibold mb-2">
                             <i class="fas fa-id-card mr-1.5 text-sky-400"></i>Citizen ID / KTP Pasien
                         </label>
                         <input type="text" name="medical_details[pasien][citizen_id]" class="form-input-dark"
+                               value="{{ old('medical_details.pasien.citizen_id') }}"
                                placeholder="Contoh: 100234">
+                    </div>
+
+                    <div>
+                        <label class="block text-sky-200 text-sm font-semibold mb-2">
+                            <i class="fas fa-briefcase mr-1.5 text-sky-400"></i>Pekerjaan Pasien
+                        </label>
+                        <input type="text" name="medical_details[pasien][pekerjaan]" class="form-input-dark"
+                               value="{{ old('medical_details.pasien.pekerjaan') }}"
+                               placeholder="Contoh: Pegawai Swasta, Mekanik, Nelayan, dll">
                     </div>
                 </div>
             </div>

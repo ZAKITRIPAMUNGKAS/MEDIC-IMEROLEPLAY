@@ -1623,6 +1623,7 @@ Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->gro
     // ── Pendaftaran Pelatihan (Operasi, Surat Menyurat, Visum Hidup) ────────
     Route::prefix('pelatihan')->name('training.')->group(function () {
         Route::get('/',               [\App\Http\Controllers\Portal\TrainingController::class, 'index'])->name('index');
+        Route::post('/program/{key}', [\App\Http\Controllers\Portal\TrainingController::class, 'updateProgram'])->name('program.update');
         Route::get('/{type}',         [\App\Http\Controllers\Portal\TrainingController::class, 'showForm'])->name('form');
         Route::post('/{type}',        [\App\Http\Controllers\Portal\TrainingController::class, 'submitForm'])->name('submit');
     });

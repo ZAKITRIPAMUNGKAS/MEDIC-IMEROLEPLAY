@@ -97,8 +97,21 @@ class InterviewController extends Controller
                 ->get()
             : collect();
 
+        // Daftar seluruh pendaftar yang lolos wawancara / rekomendasi untuk pengumuman
+        $passedCandidates = RecruitmentApplication::with(['period', 'latestInterview.interviewer'])
+            ->where('hospital', $user->hospital ?? 'alta')
+            ->where(function ($q) {
+                $q->where('status', 'accepted')
+                  ->orWhereHas('candidateInterviews', function ($iq) {
+                      $iq->where('result', 'recommended');
+                  });
+            })
+            ->latest()
+            ->get();
+
         return view('portal.interview.index', compact(
             'candidates',
+            'passedCandidates',
             'completedInterviews',
             'pendingApplications',
             'recentDecisions',

@@ -307,6 +307,10 @@
                             <span class="text-xs text-sky-300 block font-semibold">Citizen ID / KTP</span>
                             <span class="text-sky-300 font-mono font-bold">{{ $med['pasien']['citizen_id'] ?? ($med['pasien']['alamat'] ?? '-') }}</span>
                         </div>
+                        <div class="bg-white/5 p-3 rounded-xl">
+                            <span class="text-xs text-sky-300 block font-semibold">Pekerjaan Pasien</span>
+                            <span class="text-white font-semibold">{{ $med['pasien']['pekerjaan'] ?? '-' }}</span>
+                        </div>
                     </div>
                 </div>
 

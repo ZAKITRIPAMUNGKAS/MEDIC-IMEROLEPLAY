@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
+use App\Models\TrainingProgram;
 use App\Models\TrainingApplication;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -32,69 +33,46 @@ class TrainingController extends Controller
             ->latest()
             ->paginate(15);
 
-        $trainings = [
-            [
-                'key'         => 'operasi',
-                'title'       => 'FORMULIR PENDAFTARAN PELATIHAN OPERASI FASE XIII',
-                'short_title' => 'Pelatihan Operasi',
-                'organizer'   => 'Divisi PND (People & Development) - MOT',
-                'desc'        => 'Pendaftaran Pelatihan Operasi dibuka pada 5–7 September 2026. Kegiatan pelatihan akan dilaksanakan pada 8 September 2026 oleh Department People & Development bagian MOT (Medical of Trainer) sebagai upaya meningkatkan pengetahuan dan keterampilan peserta terkait prosedur operasi dan keselamatan pasien.',
-                'badge'       => 'PND - MOT',
-                'badge_color' => 'emerald',
-                'icon'        => 'fa-procedures',
-                'route'       => route('portal.training.form', 'operasi'),
-            ],
-            [
-                'key'         => 'surat-menyurat',
-                'title'       => 'Formulir Pendaftaran Surat Menyurat',
-                'short_title' => 'Pelatihan Surat Menyurat',
-                'organizer'   => 'Divisi PND (People & Development)',
-                'desc'        => 'Pelatihan administrasi dan penulisan surat menyurat resmi IME Medical Center. Persyaratan minimal jabatan adalah Co-Ass.',
-                'requirement' => 'Minimal Co-Ass',
-                'badge'       => 'Min. Co-Ass',
-                'badge_color' => 'blue',
-                'icon'        => 'fa-envelope-open-text',
-                'route'       => route('portal.training.form', 'surat-menyurat'),
-            ],
-            [
-                'key'         => 'visum-hidup',
-                'title'       => 'PENDAFTARAN PELATIHAN VISUM HIDUP',
-                'short_title' => 'Pelatihan Visum Hidup',
-                'organizer'   => 'MSL bersama People & Development Department',
-                'desc'        => 'PELATIHAN VISUM HIDUP yang diselenggarakan oleh Medical Science & Laboratory bersama People & Development Department – IME Medical Center. Semua Dokter Umum WAJIB mengikuti dan opsional bagi dokter spesialis. Peserta akan mendapatkan sertifikat.',
-                'requirement' => 'Wajib Dokter Umum / Opsional Spesialis',
-                'badge'       => 'MSL & PND',
-                'badge_color' => 'purple',
-                'icon'        => 'fa-notes-medical',
-                'route'       => route('portal.training.form', 'visum-hidup'),
-            ],
-            [
-                'key'         => 'rekam-medis',
-                'title'       => 'PENDAFTARAN PELATIHAN REKAM MEDIS',
-                'short_title' => 'Pelatihan Rekam Medis',
-                'organizer'   => 'Medical Science & Laboratory (MSL) – IME Medical Center',
-                'desc'        => 'Pelatihan Rekam Medis diselenggarakan oleh divisi Medical Science & Laboratory (MSL) IME Medical Center. Pelatihan ini mencakup tata cara pengisian rekam medis, pengarsipan data klinis pasien, dan standar dokumentasi medis sesuai prosedur rumah sakit.',
-                'requirement' => 'Semua Staf Medis',
-                'badge'       => 'MSL',
-                'badge_color' => 'cyan',
-                'icon'        => 'fa-file-medical-alt',
-                'route'       => route('portal.training.form', 'rekam-medis'),
-            ],
-            [
-                'key'         => 'pemulsaran-jenazah',
-                'title'       => 'PENDAFTARAN PELATIHAN PEMULSARAN JENAZAH',
-                'short_title' => 'Pelatihan Pemulsaran Jenazah',
-                'organizer'   => 'People & Development Department – IME Medical Center',
-                'desc'        => 'Pelatihan Pemulsaran Jenazah diselenggarakan oleh Divisi People & Development IME Medical Center. Peserta akan mempelajari prosedur penanganan jenazah secara profesional sesuai dengan standar medis dan etika yang berlaku.',
-                'requirement' => 'Semua Staf Medis',
-                'badge'       => 'PND',
-                'badge_color' => 'amber',
-                'icon'        => 'fa-ribbon',
-                'route'       => route('portal.training.form', 'pemulsaran-jenazah'),
-            ],
-        ];
+        $trainings = TrainingProgram::getAllPrograms();
 
-        return view('portal.training.index', compact('trainings', 'myApplications', 'user'));
+        $canManagePrograms = $user->isAdmin() || $user->isExecutiveOrAbove() || $user->isInDivision('pnd');
+
+        return view('portal.training.index', compact('trainings', 'myApplications', 'user', 'canManagePrograms'));
+    }
+
+    /**
+     * Update dynamic training schedule / details (PND / Admin only)
+     */
+    public function updateProgram(Request $request, string $key)
+    {
+        $user = Auth::user();
+        if (!$user->isAdmin() && !$user->isExecutiveOrAbove() && !$user->isInDivision('pnd')) {
+            abort(403, 'Hanya divisi PND atau Administrator yang berwenang mengubah jadwal pelatihan.');
+        }
+
+        $validated = $request->validate([
+            'title'       => 'required|string|max:255',
+            'organizer'   => 'required|string|max:255',
+            'desc'        => 'required|string|max:2000',
+            'requirement' => 'nullable|string|max:255',
+            'badge'       => 'nullable|string|max:100',
+            'badge_color' => 'nullable|string|in:emerald,blue,purple,cyan,amber',
+            'is_active'   => 'nullable|boolean',
+        ], [
+            'title.required'     => 'Judul formulir / pelatihan wajib diisi.',
+            'organizer.required' => 'Divisi penyelenggara wajib diisi.',
+            'desc.required'      => 'Deskripsi dan tanggal pelaksanaan wajib diisi.',
+        ]);
+
+        $validated['is_active'] = $request->has('is_active') ? true : false;
+
+        $saved = TrainingProgram::saveProgram($key, $validated);
+
+        if (!$saved) {
+            return back()->with('error', 'Program pelatihan tidak ditemukan atau gagal diperbarui.');
+        }
+
+        return back()->with('success', "Jadwal dan informasi pelatihan \"{$validated['title']}\" berhasil diperbarui!");
     }
 
     /**

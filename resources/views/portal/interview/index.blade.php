@@ -32,6 +32,15 @@
             </div>
 
             <div class="flex flex-col sm:flex-row items-end sm:items-center gap-3">
+                <button type="button" onclick="openCopyAnnouncementModal()"
+                        class="relative px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-md">
+                    <i class="fas fa-bullhorn text-emerald-200"></i>
+                    <span>Salin Pengumuman Lolos</span>
+                    <span class="px-2 py-0.5 rounded-full bg-white/20 text-white text-[11px] font-mono">
+                        {{ $passedCandidates->count() }}
+                    </span>
+                </button>
+
                 @if($canManageInterviewers)
                 <button type="button" onclick="document.getElementById('interviewerManagementCard').classList.toggle('hidden')"
                         class="relative px-4 py-2 bg-indigo-600/30 hover:bg-indigo-600/50 border border-indigo-500/40 text-indigo-200 hover:text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition-all shadow-md">
@@ -411,6 +420,239 @@
         </div>
         @endif
 
+        {{-- MODAL SALIN PENGUMUMAN LOLOS INTERVIEW --}}
+        <div id="copyAnnouncementModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm hidden animate-fade-in">
+            <div class="relative w-full max-w-2xl bg-slate-900 border border-emerald-500/30 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+                {{-- Modal Header --}}
+                <div class="px-6 py-4 border-b border-white/10 bg-gradient-to-r from-emerald-900/40 via-teal-900/30 to-slate-900 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 text-lg">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                                Salin Nama Lolos Interview
+                                <span class="px-2.5 py-0.5 rounded-full text-xs font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/30" id="modalCountBadge">
+                                    {{ $passedCandidates->count() }} Calon
+                                </span>
+                            </h3>
+                            <p class="text-xs text-slate-400">Siap ditempel ke Discord Announcement / Forum Roleplay</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="closeCopyAnnouncementModal()" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center transition-colors">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                {{-- Modal Body --}}
+                <div class="p-6 space-y-4 overflow-y-auto flex-1">
+                    {{-- Source Filter Option --}}
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl bg-white/5 border border-white/10 text-xs">
+                        <div class="text-slate-300 font-medium flex items-center gap-1.5">
+                            <i class="fas fa-filter text-emerald-400"></i> Sumber Data:
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label class="inline-flex items-center gap-1.5 cursor-pointer text-slate-300 hover:text-white">
+                                <input type="radio" name="candidateSource" value="all_passed" checked onchange="renderAnnouncementText()" class="text-emerald-500 focus:ring-emerald-400">
+                                <span>Seluruh Calon Lolos ({{ $passedCandidates->count() }})</span>
+                            </label>
+                            <label class="inline-flex items-center gap-1.5 cursor-pointer text-slate-300 hover:text-white ml-2">
+                                <input type="radio" name="candidateSource" value="current_table" onchange="renderAnnouncementText()" class="text-emerald-500 focus:ring-emerald-400">
+                                <span>Halaman Ini ({{ $candidates->count() }})</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    {{-- Format Selection Tabs --}}
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+                            Pilih Format Tampilan:
+                        </label>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <button type="button" onclick="setFormat('discord')" id="btnFormatDiscord"
+                                    class="format-btn px-3 py-2 rounded-xl text-xs font-semibold border transition-all text-center flex items-center justify-center gap-1.5 bg-emerald-500/20 border-emerald-500 text-white shadow-sm">
+                                <i class="fab fa-discord text-indigo-400"></i> Format Discord Lengkap
+                            </button>
+                            <button type="button" onclick="setFormat('simple')" id="btnFormatSimple"
+                                    class="format-btn px-3 py-2 rounded-xl text-xs font-semibold border transition-all text-center flex items-center justify-center gap-1.5 bg-white/5 border-white/10 text-slate-300 hover:bg-white/10">
+                                <i class="fas fa-list-ol text-amber-400"></i> Hanya List Nama
+                            </button>
+                            <button type="button" onclick="setFormat('mention')" id="btnFormatMention"
+                                    class="format-btn px-3 py-2 rounded-xl text-xs font-semibold border transition-all text-center flex items-center justify-center gap-1.5 bg-white/5 border-white/10 text-slate-300 hover:bg-white/10">
+                                <i class="fas fa-at text-sky-400"></i> Nama &amp; Tag Discord
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Preview Textarea --}}
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="text-xs text-slate-400">Teks Siap Salin (Dapat Anda edit langsung bila diperlukan):</span>
+                            <span class="text-[11px] text-emerald-400 font-mono" id="copySuccessHint" style="display:none;">
+                                <i class="fas fa-check-circle"></i> Berhasil disalin!
+                            </span>
+                        </div>
+                        <textarea id="announcementPreview" rows="10"
+                                  class="w-full bg-slate-950 text-emerald-300 font-mono text-xs p-4 rounded-xl border border-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-400 leading-relaxed resize-none"></textarea>
+                    </div>
+                </div>
+
+                {{-- Modal Footer --}}
+                <div class="px-6 py-4 border-t border-white/10 bg-white/5 flex items-center justify-between gap-3">
+                    <button type="button" onclick="closeCopyAnnouncementModal()"
+                            class="px-4 py-2 bg-white/10 hover:bg-white/15 text-slate-300 hover:text-white rounded-xl text-xs font-semibold transition-colors">
+                        Tutup
+                    </button>
+                    <button type="button" onclick="copyAnnouncementToClipboard()" id="btnCopyClipboard"
+                            class="px-5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-bold shadow-lg transition-all flex items-center gap-2">
+                        <i class="fas fa-copy"></i>
+                        <span id="copyBtnText">Salin ke Clipboard</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
+
+{{-- Data JSON untuk Calon Lolos & Script Pendukung --}}
+<script>
+    const allPassedCandidates = @json($passedCandidates->map(function ($c) {
+        $latest = $c->latestInterview ?? $c->candidateInterviews->last();
+        return [
+            'id'       => $c->id,
+            'ic_name'  => $c->ic_name,
+            'cid'      => $c->cid,
+            'discord'  => $c->discord_username ? '@' . ltrim($c->discord_username, '@') : '-',
+            'batch'    => $c->period?->batch_name ?? 'Recruitment Batch',
+            'role'     => $latest?->recommended_role_label ?? 'Staf Medis',
+            'status'   => $c->status,
+        ];
+    }));
+
+    const currentPageCandidates = @json($candidates->map(function ($c) {
+        $latest = $c->latestInterview ?? $c->candidateInterviews->last();
+        return [
+            'id'       => $c->id,
+            'ic_name'  => $c->ic_name,
+            'cid'      => $c->cid,
+            'discord'  => $c->discord_username ? '@' . ltrim($c->discord_username, '@') : '-',
+            'batch'    => $c->period?->batch_name ?? 'Recruitment Batch',
+            'role'     => $latest?->recommended_role_label ?? 'Staf Medis',
+            'status'   => $c->status,
+        ];
+    }));
+
+    let currentFormat = 'discord';
+
+    function openCopyAnnouncementModal() {
+        document.getElementById('copyAnnouncementModal').classList.remove('hidden');
+        renderAnnouncementText();
+    }
+
+    function closeCopyAnnouncementModal() {
+        document.getElementById('copyAnnouncementModal').classList.add('hidden');
+    }
+
+    function setFormat(fmt) {
+        currentFormat = fmt;
+        document.querySelectorAll('.format-btn').forEach(btn => {
+            btn.classList.remove('bg-emerald-500/20', 'border-emerald-500', 'text-white');
+            btn.classList.add('bg-white/5', 'border-white/10', 'text-slate-300');
+        });
+
+        if (fmt === 'discord') {
+            document.getElementById('btnFormatDiscord').classList.add('bg-emerald-500/20', 'border-emerald-500', 'text-white');
+            document.getElementById('btnFormatDiscord').classList.remove('bg-white/5', 'border-white/10', 'text-slate-300');
+        } else if (fmt === 'simple') {
+            document.getElementById('btnFormatSimple').classList.add('bg-emerald-500/20', 'border-emerald-500', 'text-white');
+            document.getElementById('btnFormatSimple').classList.remove('bg-white/5', 'border-white/10', 'text-slate-300');
+        } else if (fmt === 'mention') {
+            document.getElementById('btnFormatMention').classList.add('bg-emerald-500/20', 'border-emerald-500', 'text-white');
+            document.getElementById('btnFormatMention').classList.remove('bg-white/5', 'border-white/10', 'text-slate-300');
+        }
+
+        renderAnnouncementText();
+    }
+
+    function getSelectedList() {
+        const source = document.querySelector('input[name="candidateSource"]:checked')?.value || 'all_passed';
+        return source === 'all_passed' ? allPassedCandidates : currentPageCandidates;
+    }
+
+    function renderAnnouncementText() {
+        const list = getSelectedList();
+        const badge = document.getElementById('modalCountBadge');
+        if (badge) badge.innerText = `${list.length} Calon`;
+
+        const textarea = document.getElementById('announcementPreview');
+        if (!textarea) return;
+
+        if (list.length === 0) {
+            textarea.value = 'Belum ada data calon pendaftar yang lolos wawancara.';
+            return;
+        }
+
+        let output = '';
+
+        if (currentFormat === 'discord') {
+            output += '📢 **PENGUMUMAN HASIL KELULUSAN WAWANCARA CALON STAF MEDIS**\n';
+            output += '**ALTA MEDICAL CENTER — IME ROLEPLAY**\n';
+            output += '────────────────────────────────────────────\n';
+            output += 'Selamat kepada para calon staf yang dinyatakan **LOLOS** tahap wawancara dan direkomendasikan bergabung:\n\n';
+
+            list.forEach((item, index) => {
+                output += `${index + 1}. **${item.ic_name}** (CID: \`${item.cid}\`) — Jabatan: *${item.role}* | Discord: ${item.discord}\n`;
+            });
+
+            output += '\n────────────────────────────────────────────\n';
+            output += '📌 *Bagi nama-nama di atas, silakan menunggu instruksi lanjutan dari Divisi People & Development (PND) terkait jadwal briefing dan orientasi.*';
+        } else if (currentFormat === 'simple') {
+            list.forEach((item, index) => {
+                output += `${index + 1}. ${item.ic_name}\n`;
+            });
+        } else if (currentFormat === 'mention') {
+            list.forEach((item, index) => {
+                output += `${index + 1}. ${item.ic_name} (${item.discord})\n`;
+            });
+        }
+
+        textarea.value = output;
+    }
+
+    function copyAnnouncementToClipboard() {
+        const textarea = document.getElementById('announcementPreview');
+        if (!textarea) return;
+
+        textarea.select();
+        textarea.setSelectionRange(0, 99999);
+
+        navigator.clipboard.writeText(textarea.value).then(() => {
+            const btn = document.getElementById('btnCopyClipboard');
+            const btnText = document.getElementById('copyBtnText');
+            const hint = document.getElementById('copySuccessHint');
+
+            if (btn && btnText) {
+                btnText.innerText = 'Tersalin!';
+                btn.classList.remove('from-emerald-600', 'to-teal-600');
+                btn.classList.add('from-teal-600', 'to-cyan-600');
+
+                if (hint) {
+                    hint.style.display = 'inline-block';
+                }
+
+                setTimeout(() => {
+                    btnText.innerText = 'Salin ke Clipboard';
+                    btn.classList.remove('from-teal-600', 'to-cyan-600');
+                    btn.classList.add('from-emerald-600', 'to-teal-600');
+                    if (hint) {
+                        hint.style.display = 'none';
+                    }
+                }, 2500);
+            }
+        }).catch(err => {
+            alert('Gagal menyalin otomatis. Silakan salin teks secara manual dari kotak preview.');
+        });
+    }
+</script>
 @endsection

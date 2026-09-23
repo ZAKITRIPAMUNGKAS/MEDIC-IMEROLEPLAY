@@ -88,14 +88,23 @@
                                 flex items-center justify-center text-xl shadow-inner">
                                 <i class="fas {{ $t['icon'] }}"></i>
                             </div>
-                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider
-                                @if($t['key'] === 'operasi') bg-emerald-500/20 text-emerald-300 border border-emerald-500/30
-                                @elseif($t['key'] === 'surat-menyurat') bg-blue-500/20 text-blue-300 border border-blue-500/30
-                                @elseif($t['key'] === 'rekam-medis') bg-cyan-500/20 text-cyan-300 border border-cyan-500/30
-                                @elseif($t['key'] === 'pemulsaran-jenazah') bg-amber-500/20 text-amber-300 border border-amber-500/30
-                                @else bg-purple-500/20 text-purple-300 border border-purple-500/30 @endif">
-                                {{ $t['badge'] }}
-                            </span>
+                            <div class="flex items-center gap-2">
+                                @if($canManagePrograms)
+                                <button type="button" onclick="openEditProgramModal({{ json_encode($t) }})"
+                                        class="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-[10px] font-bold flex items-center gap-1 transition-all shadow-sm"
+                                        title="Ubah Jadwal & Tanggal Pelatihan">
+                                    <i class="fas fa-calendar-alt text-amber-400"></i> Edit Jadwal
+                                </button>
+                                @endif
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider
+                                    @if($t['key'] === 'operasi') bg-emerald-500/20 text-emerald-300 border border-emerald-500/30
+                                    @elseif($t['key'] === 'surat-menyurat') bg-blue-500/20 text-blue-300 border border-blue-500/30
+                                    @elseif($t['key'] === 'rekam-medis') bg-cyan-500/20 text-cyan-300 border border-cyan-500/30
+                                    @elseif($t['key'] === 'pemulsaran-jenazah') bg-amber-500/20 text-amber-300 border border-amber-500/30
+                                    @else bg-purple-500/20 text-purple-300 border border-purple-500/30 @endif">
+                                    {{ $t['badge'] }}
+                                </span>
+                            </div>
                         </div>
 
                         {{-- Title & Organizer --}}
@@ -114,6 +123,7 @@
                     </div>
 
                     <div class="pt-4 border-t border-white/10 mt-auto">
+                        @if(!isset($t['is_active']) || $t['is_active'])
                         <a href="{{ $t['route'] }}" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-xs tracking-wide transition-all shadow-md
                             @if($t['key'] === 'operasi') bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-600/20
                             @elseif($t['key'] === 'surat-menyurat') bg-blue-600 hover:bg-blue-500 text-white shadow-blue-600/20
@@ -124,6 +134,11 @@
                             <span>Isi Formulir Pendaftaran</span>
                             <i class="fas fa-arrow-right text-[10px] ml-1 group-hover:translate-x-1 transition-transform"></i>
                         </a>
+                        @else
+                        <div class="w-full py-2.5 px-4 rounded-xl bg-white/5 border border-white/10 text-center text-xs font-semibold text-slate-400">
+                            <i class="fas fa-lock mr-1.5 text-amber-400"></i> Pendaftaran Sedang Ditutup
+                        </div>
+                        @endif
                     </div>
                 </div>
                 @endforeach
@@ -235,6 +250,129 @@
             </div>
             @endif
         </div>
+
+        {{-- MODAL EDIT JADWAL & PROGRAM PELATIHAN (PND / ADMIN) --}}
+        @if($canManagePrograms)
+        <div id="editProgramModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden animate-fade-in">
+            <div class="relative w-full max-w-2xl bg-slate-900 border border-amber-500/30 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+                {{-- Header Modal --}}
+                <div class="px-6 py-4 border-b border-white/10 bg-gradient-to-r from-amber-900/40 via-yellow-900/20 to-slate-900 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 text-lg">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                                Edit Jadwal &amp; Info Pelatihan
+                            </h3>
+                            <p class="text-xs text-amber-200/70" id="modalProgramSubTitle">Sesuaikan tanggal pelaksanaan dan deskripsi kegiatan</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="closeEditProgramModal()" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center transition-colors">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                {{-- Form Edit --}}
+                <form id="editProgramForm" method="POST" action="" class="p-6 space-y-4 overflow-y-auto flex-1 text-xs">
+                    @csrf
+
+                    <div>
+                        <label class="block text-slate-200 font-bold mb-1.5 uppercase tracking-wider">
+                            Judul Formulir / Program Pelatihan <span class="text-rose-400">*</span>
+                        </label>
+                        <input type="text" name="title" id="formProgramTitle" required
+                               class="w-full bg-slate-800 text-white border border-white/20 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-slate-200 font-bold mb-1.5 uppercase tracking-wider">
+                                Divisi Penyelenggara <span class="text-rose-400">*</span>
+                            </label>
+                            <input type="text" name="organizer" id="formProgramOrganizer" required
+                                   class="w-full bg-slate-800 text-white border border-white/20 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400">
+                        </div>
+                        <div>
+                            <label class="block text-slate-200 font-bold mb-1.5 uppercase tracking-wider">
+                                Badge / Kategori Tag
+                            </label>
+                            <input type="text" name="badge" id="formProgramBadge"
+                                   placeholder="Contoh: PND - MOT"
+                                   class="w-full bg-slate-800 text-white border border-white/20 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-200 font-bold mb-1.5 uppercase tracking-wider">
+                            Jadwal &amp; Deskripsi Pelatihan (Tanggal Kegiatan) <span class="text-rose-400">*</span>
+                        </label>
+                        <p class="text-[11px] text-amber-300/80 mb-1.5">
+                            *Ubah tanggal pendaftaran, tanggal pelaksanaan, atau keterangan gelombang/fase di kolom ini:
+                        </p>
+                        <textarea name="desc" id="formProgramDesc" rows="4" required
+                                  class="w-full bg-slate-800 text-white border border-white/20 rounded-xl p-3 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400 leading-relaxed"></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-slate-200 font-bold mb-1.5 uppercase tracking-wider">
+                                Persyaratan Minimal Jabatan
+                            </label>
+                            <input type="text" name="requirement" id="formProgramRequirement"
+                                   placeholder="Contoh: Minimal Co-Ass / Semua Staf"
+                                   class="w-full bg-slate-800 text-white border border-white/20 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-amber-400">
+                        </div>
+
+                        <div class="flex items-center pt-6">
+                            <label class="inline-flex items-center gap-2 cursor-pointer text-slate-200 font-semibold select-none">
+                                <input type="checkbox" name="is_active" id="formProgramIsActive" value="1"
+                                       class="w-4 h-4 rounded text-amber-500 focus:ring-amber-400 bg-slate-800 border-white/30">
+                                <span>Buka Pendaftaran (Formulir Aktif)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    {{-- Footer Modal --}}
+                    <div class="pt-4 border-t border-white/10 flex items-center justify-end gap-3 mt-6">
+                        <button type="button" onclick="closeEditProgramModal()"
+                                class="px-4 py-2 bg-white/10 hover:bg-white/15 text-slate-300 hover:text-white rounded-xl text-xs font-semibold transition-colors">
+                            Batal
+                        </button>
+                        <button type="submit"
+                                class="px-5 py-2 bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-white rounded-xl text-xs font-bold shadow-lg transition-all flex items-center gap-1.5">
+                            <i class="fas fa-check"></i>
+                            <span>Simpan Perubahan Jadwal</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            function openEditProgramModal(program) {
+                const modal = document.getElementById('editProgramModal');
+                const form = document.getElementById('editProgramForm');
+                if (!modal || !form) return;
+
+                form.action = "{{ url('portal/pelatihan/program') }}/" + program.key;
+                document.getElementById('modalProgramSubTitle').innerText = program.title;
+                document.getElementById('formProgramTitle').value = program.title || '';
+                document.getElementById('formProgramOrganizer').value = program.organizer || '';
+                document.getElementById('formProgramBadge').value = program.badge || '';
+                document.getElementById('formProgramDesc').value = program.desc || '';
+                document.getElementById('formProgramRequirement').value = program.requirement || '';
+                document.getElementById('formProgramIsActive').checked = program.is_active !== false;
+
+                modal.classList.remove('hidden');
+            }
+
+            function closeEditProgramModal() {
+                const modal = document.getElementById('editProgramModal');
+                if (modal) modal.classList.add('hidden');
+            }
+        </script>
+        @endif
 
     </div>
 </div>
