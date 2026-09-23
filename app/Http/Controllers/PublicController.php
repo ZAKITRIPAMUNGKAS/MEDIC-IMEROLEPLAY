@@ -317,12 +317,15 @@ class PublicController extends Controller
         $appointmentTime = $appointmentDateTime->format('H:i');
 
         // Validasi: Cek apakah karakter dengan nama yang sama sudah mengisi form jenis yang sama hari ini (case-insensitive)
-        // Hanya cek form dengan status 'pending' atau 'approved', form 'rejected' bisa diisi lagi
-        $existingForm = MedicalForm::whereRaw('LOWER(character_name) = LOWER(?)', [$request->character_name])
-            ->where('form_type', $request->form_type)
-            ->whereDate('created_at', today())
-            ->whereIn('status', ['pending', 'approved'])
-            ->first();
+        // Hanya cek form dengan status 'pending' atau 'approved', form 'rejected' bisa diisi lagi (kecuali janji temu)
+        $existingForm = null;
+        if ($request->form_type !== 'janji_temu') {
+            $existingForm = MedicalForm::whereRaw('LOWER(character_name) = LOWER(?)', [$request->character_name])
+                ->where('form_type', $request->form_type)
+                ->whereDate('created_at', today())
+                ->whereIn('status', ['pending', 'approved'])
+                ->first();
+        }
 
         if ($existingForm) {
             $hospitalName = $request->hospital === 'alta' ? 'Alta Hospital' : 'Roxwood Hospital';
@@ -490,12 +493,15 @@ class PublicController extends Controller
         }
 
         // Validasi: Cek apakah karakter dengan nama yang sama sudah mengisi form jenis yang sama hari ini (case-insensitive)
-        // Hanya cek form dengan status 'pending' atau 'approved', form 'rejected' bisa diisi lagi
-        $existingForm = MedicalForm::whereRaw('LOWER(character_name) = LOWER(?)', [$request->character_name])
-            ->where('form_type', $request->form_type)
-            ->whereDate('created_at', today())
-            ->whereIn('status', ['pending', 'approved'])
-            ->first();
+        // Hanya cek form dengan status 'pending' atau 'approved', form 'rejected' bisa diisi lagi (kecuali janji temu yang boleh diisi beberapa kali)
+        $existingForm = null;
+        if ($request->form_type !== 'janji_temu') {
+            $existingForm = MedicalForm::whereRaw('LOWER(character_name) = LOWER(?)', [$request->character_name])
+                ->where('form_type', $request->form_type)
+                ->whereDate('created_at', today())
+                ->whereIn('status', ['pending', 'approved'])
+                ->first();
+        }
 
         // Validasi #9: Cooldown Operasi Plastik (7 hari sejak approved)
         if ($request->form_type === 'operasi_plastik' && $request->filled('citizen_id')) {
@@ -833,9 +839,9 @@ class PublicController extends Controller
 
         $form = MedicalForm::create($formCreateData);
 
-        // Kirim notifikasi ke dokter yang dipilih jika ada
-        if (!empty($targetDoctorName)) {
-            $this->notifyDoctorAboutAppointment($form, $targetDoctorName);
+        // Kirim notifikasi ke dokter & pengawas/admin untuk janji temu atau jika ada dokter yang dipilih
+        if ($request->form_type === 'janji_temu' || !empty($targetDoctorName)) {
+            $this->notifyDoctorAboutAppointment($form, $targetDoctorName ?: ($formData['doctor_name'] ?? 'Dokter Medis'));
         }
 
         // Webhook system removed for better performance
@@ -845,7 +851,29 @@ class PublicController extends Controller
     }
 
     /**
-     * Cari user dokter dari nama yang diinputkan / dari jadwal dokter dengan pencarian fleksibel
+     * Normalisasi nama untuk pencarian toleran tanda baca, gelar, prefix RH, dan spasi
+     */
+    private function normalizeDoctorName(string $name): string
+    {
+        $str = strtolower(trim($name));
+        // Hilangkan prefix RH - atau RH- atau [RH]
+        $str = preg_replace('/^(\[rh\]|rh\s*[-–—]?)\s*/i', '', $str);
+        // Hilangkan gelar depan
+        $str = preg_replace('/^(dr\.|drg\.|dokter|prof\.|prof|ners|sked)\s+/i', '', $str);
+        // Hilangkan gelar belakang setelah koma
+        $str = preg_replace('/,.*$/', '', $str);
+        // Hilangkan sebutan gelar spesialis
+        $str = preg_replace('/\bsp\s*\.[a-z]+\b/i', '', $str);
+        $str = preg_replace('/\b(dr|drg|dokter|prof|sp|ners|sked|md)\b\.?/i', '', $str);
+        // Ganti semua tanda baca dengan spasi (termasuk titik seperti di "L." agar cocok dengan "L")
+        $str = preg_replace('/[^\p{L}\p{N}\s]/u', ' ', $str);
+        // Rapikan spasi berlebih
+        $str = preg_replace('/\s+/', ' ', $str);
+        return trim($str);
+    }
+
+    /**
+     * Cari user dokter dari nama yang diinputkan / dari jadwal dokter dengan pencarian fleksibel dan toleran
      */
     private function findDoctorUser(?string $doctorName): ?User
     {
@@ -867,54 +895,72 @@ class PublicController extends Controller
             return $doctor;
         }
 
-        // 3. Bersihkan gelar depan (dr., drg., dokter, prof.) dan gelar belakang (, Sp.KJ, , S.Ked, dll)
-        $cleanName = preg_replace('/^(dr\.|drg\.|dr\s|drg\s|dokter\s|prof\.\s*|prof\s*)/i', '', $rawName);
-        $cleanName = preg_replace('/,.*$/', '', $cleanName);
-        $cleanName = trim($cleanName);
+        $normTarget = $this->normalizeDoctorName($rawName);
+        if (empty($normTarget)) {
+            return null;
+        }
 
-        if (!empty($cleanName)) {
-            $doctor = User::whereRaw('LOWER(TRIM(name)) = ?', [strtolower($cleanName)])->first();
-            if ($doctor) {
-                return $doctor;
-            }
+        // Ambil semua user aktif untuk pencarian memori toleran
+        $activeUsers = User::where('is_active', true)->get(['id', 'name', 'role_id']);
 
-            $doctor = User::whereRaw('LOWER(name) LIKE ?', ['%' . strtolower($cleanName) . '%'])->first();
-            if ($doctor) {
-                return $doctor;
+        // 3. Exact match pada nama yang dinormalisasi (contoh: "Aurelya L Keenan" == "Aurelya L. Keenan")
+        foreach ($activeUsers as $u) {
+            if ($this->normalizeDoctorName($u->name) === $normTarget) {
+                return $u;
             }
         }
 
-        // 4. Cek apakah ada nama user di DB yang terkandung di dalam $rawName atau $cleanName
-        $users = User::where('is_active', true)->get(['id', 'name', 'role_id']);
-        foreach ($users as $u) {
-            $uClean = preg_replace('/^(dr\.|drg\.|dokter)\s*/i', '', $u->name);
-            $uClean = preg_replace('/,.*$/', '', $uClean);
-            $uClean = strtolower(trim($uClean));
-
-            if (!empty($uClean) && strlen($uClean) >= 3) {
-                if (str_contains(strtolower($rawName), $uClean) || str_contains($uClean, strtolower($cleanName ?: $rawName))) {
+        // 4. Substring match antara nama yang dinormalisasi
+        foreach ($activeUsers as $u) {
+            $uNorm = $this->normalizeDoctorName($u->name);
+            if (!empty($uNorm) && strlen($uNorm) >= 4) {
+                if (str_contains($uNorm, $normTarget) || str_contains($normTarget, $uNorm)) {
                     return $u;
                 }
             }
         }
 
-        // 5. Cek kecocokan kata pertama dan terakhir
-        $words = array_values(array_filter(explode(' ', preg_replace('/[^a-zA-Z0-9\s]/', ' ', $cleanName ?: $rawName)), function ($w) {
-            return strlen(trim($w)) >= 3 && !in_array(strtolower(trim($w)), ['dan', 'the', 'bin', 'binti']);
+        // 5. Cek kecocokan kata penting (panjang >= 3)
+        $targetWords = array_values(array_filter(explode(' ', $normTarget), function ($w) {
+            return strlen($w) >= 3 && !in_array($w, ['dan', 'the', 'bin', 'binti']);
         }));
 
-        if (count($words) >= 2) {
-            $firstWord = strtolower($words[0]);
-            $lastWord = strtolower(end($words));
+        if (!empty($targetWords)) {
+            $bestMatch = null;
+            $maxMatchedWords = 0;
 
-            $doctor = User::where('is_active', true)
-                ->whereRaw('LOWER(name) LIKE ?', ['%' . $firstWord . '%'])
-                ->whereRaw('LOWER(name) LIKE ?', ['%' . $lastWord . '%'])
-                ->first();
+            foreach ($activeUsers as $u) {
+                $uNorm = $this->normalizeDoctorName($u->name);
+                $uWords = array_values(array_filter(explode(' ', $uNorm), function ($w) {
+                    return strlen($w) >= 3;
+                }));
 
-            if ($doctor) {
-                return $doctor;
+                $matched = count(array_intersect($targetWords, $uWords));
+                if ($matched > $maxMatchedWords) {
+                    $maxMatchedWords = $matched;
+                    $bestMatch = $u;
+                }
             }
+
+            if ($bestMatch && ($maxMatchedWords >= 2 || (count($targetWords) === 1 && $maxMatchedWords === 1))) {
+                return $bestMatch;
+            }
+        }
+
+        // 6. Fuzzy similarity score (Levenshtein / similar_text) di atas 75%
+        $bestSimilarity = 0;
+        $fuzzyUser = null;
+        foreach ($activeUsers as $u) {
+            $uNorm = $this->normalizeDoctorName($u->name);
+            similar_text($normTarget, $uNorm, $percent);
+            if ($percent > $bestSimilarity) {
+                $bestSimilarity = $percent;
+                $fuzzyUser = $u;
+            }
+        }
+
+        if ($bestSimilarity >= 75 && $fuzzyUser) {
+            return $fuzzyUser;
         }
 
         return null;
@@ -922,25 +968,15 @@ class PublicController extends Controller
 
     /**
      * Kirim notifikasi pesan internal ke dokter yang dipilih untuk janji temu / konsultasi
+     * Serta kirimkan salinan notifikasi ke admin/manajer agar selalu terpantau di Pesan Internal
      */
     private function notifyDoctorAboutAppointment(MedicalForm $form, ?string $doctorName): void
     {
-        if (empty($doctorName) || $doctorName === 'Dokter Spesialis') {
-            return;
-        }
-
         try {
             $doctor = $this->findDoctorUser($doctorName);
 
-            if (!$doctor) {
-                \Illuminate\Support\Facades\Log::warning("[Appointment Notif] Dokter tidak ditemukan di tabel users untuk nama: '{$doctorName}' (Form ID: {$form->id})");
-                return;
-            }
-
-            // Tentukan sender_id sistem (BUKAN dokter penerima agar pesan tidak di-filter oleh MemberMessages)
-            // Prioritas 1: User dengan role admin atau manajemen yang bukan dokter ini
-            $systemSender = User::where('id', '!=', $doctor->id)
-                ->where('is_active', true)
+            // Cari user Admin / Manajer
+            $adminUsers = User::where('is_active', true)
                 ->where(function ($q) {
                     $q->whereHas('role', function ($rq) {
                         $rq->where('name', 'admin')
@@ -948,27 +984,16 @@ class PublicController extends Controller
                            ->orWhere('name', 'like', '%manajer%')
                            ->orWhere('name', 'like', '%manager%')
                            ->orWhere('level', '>=', 5);
-                    });
+                    })
+                    ->orWhere('name', 'like', '%admin%');
                 })
                 ->orderBy('id', 'asc')
-                ->first();
+                ->get();
 
-            // Prioritas 2: User aktif manapun yang bukan dokter ini
-            if (!$systemSender) {
-                $systemSender = User::where('id', '!=', $doctor->id)
-                    ->where('is_active', true)
-                    ->orderBy('id', 'asc')
-                    ->first();
-            }
-
-            // Prioritas 3: User manapun di sistem (fallback darurat)
-            if (!$systemSender) {
-                $systemSender = User::where('id', '!=', $doctor->id)
-                    ->orderBy('id', 'asc')
-                    ->first();
-            }
-
-            $senderId = $systemSender ? $systemSender->id : $doctor->id;
+            // Default sender sistem: Admin pertama atau user ID 1 atau user pertama
+            $defaultSystemSender = $adminUsers->first() 
+                ?? User::where('is_active', true)->orderBy('id', 'asc')->first() 
+                ?? User::orderBy('id', 'asc')->first();
 
             $formData = $form->form_data ?? [];
             $apptDate = $formData['appointment_date'] ?? now()->format('Y-m-d');
@@ -990,34 +1015,109 @@ class PublicController extends Controller
                 'spesialis_ortopedi' => 'Poli Spesialis Ortopedi',
             ];
             $poliLabel = $formTypeNames[$form->form_type] ?? ($formData['poli'] ?? 'Janji Temu');
+            $targetDoctorDisplay = $doctor ? $doctor->name : ($doctorName ?: 'Dokter Medis');
 
-            $msgBody = "📅 **[NOTIFIKASI JANJI TEMU PASIEN BARU]**\n"
-                     . "Pasien (Warga Tanpa Akun) telah membuat janji temu dengan Anda:\n\n"
-                     . "• **Nama Pasien:** {$form->character_name}\n"
-                     . "• **Citizen ID (KTP):** " . ($form->citizen_id ?: '-') . "\n"
-                     . "• **Layanan / Poli:** {$poliLabel}\n"
-                     . "• **Jadwal Janji Temu:** {$apptDate} (Pukul {$apptTime} WIB)\n"
-                     . "• **No. HP Pasien:** {$patientPhone}\n"
-                     . "• **Keluhan / Keperluan:** {$symptoms}\n"
-                     . "• **Rumah Sakit:** {$hospitalName}\n\n"
-                     . "📌 *Notifikasi otomatis dari Sistem Janji Temu. Silakan periksa detail dan lakukan follow up melalui Dashboard Staf atau Detail Formulir.*";
+            // 1. KIRIM NOTIFIKASI KE DOKTER TERPILIH (JIKA DOKTER MEMILIKI AKUN)
+            if ($doctor) {
+                // Sender untuk dokter harus BUKAN dokter itu sendiri
+                $docSender = ($defaultSystemSender && $defaultSystemSender->id !== $doctor->id)
+                    ? $defaultSystemSender
+                    : User::where('id', '!=', $doctor->id)->first();
 
-            // Simpan ke pesan internal dokter
-            \App\Models\MemberMessage::create([
-                'sender_id'   => $senderId,
-                'receiver_id' => $doctor->id,
-                'message'     => $msgBody,
-                'is_read'     => false,
-            ]);
+                if ($docSender) {
+                    $msgForDoctor = "📅 **[NOTIFIKASI JANJI TEMU PASIEN BARU]**\n"
+                                  . "Pasien (Warga Tanpa Akun) telah membuat janji temu dengan Anda:\n\n"
+                                  . "• **Nama Pasien:** {$form->character_name}\n"
+                                  . "• **Citizen ID (KTP):** " . ($form->citizen_id ?: '-') . "\n"
+                                  . "• **Layanan / Poli:** {$poliLabel}\n"
+                                  . "• **Jadwal Janji Temu:** {$apptDate} (Pukul {$apptTime} WIB)\n"
+                                  . "• **No. HP Pasien:** {$patientPhone}\n"
+                                  . "• **Keluhan / Keperluan:** {$symptoms}\n"
+                                  . "• **Rumah Sakit:** {$hospitalName}\n\n"
+                                  . "📌 *Notifikasi otomatis dari Sistem Janji Temu (#{$form->id}). Silakan periksa detail dan lakukan follow up.*";
 
-            \Illuminate\Support\Facades\Log::info("[Appointment Notif] Berhasil mengirim notifikasi pesan ke dokter ID {$doctor->id} ({$doctor->name}) dari sender ID {$senderId} untuk Form ID #{$form->id}");
+                    \App\Models\MemberMessage::create([
+                        'sender_id'   => $docSender->id,
+                        'receiver_id' => $doctor->id,
+                        'message'     => $msgForDoctor,
+                        'is_read'     => false,
+                    ]);
 
-            // Kirim notifikasi Telegram jika bot Telegram aktif
+                    \Illuminate\Support\Facades\Log::info("[Appointment Notif] Berhasil mengirim pesan internal ke dokter ID {$doctor->id} ({$doctor->name}) dari sender ID {$docSender->id}");
+                }
+            } else {
+                \Illuminate\Support\Facades\Log::warning("[Appointment Notif] Dokter '{$doctorName}' tidak memiliki user akun langsung. Notifikasi dialihkan ke Admin.");
+            }
+
+            // 2. KIRIM SALINAN NOTIFIKASI KE ADMIN / MANAJEMEN
+            // Memastikan admin atau pimpinan yang login dapat memantau / memeriksa pesan janji temu di 'Pesan Internal'
+            $adminRecipients = $adminUsers->filter(function ($admin) use ($doctor) {
+                return !$doctor || $admin->id !== $doctor->id;
+            });
+
+            // Kirim ke maksimal 3 admin/manajer aktif
+            foreach ($adminRecipients->take(3) as $admin) {
+                $adminSender = ($doctor && $doctor->id !== $admin->id) 
+                    ? $doctor 
+                    : User::where('id', '!=', $admin->id)->first();
+
+                if ($adminSender) {
+                    $docStatus = $doctor ? "👨‍⚕️ {$doctor->name}" : "👨‍⚕️ {$doctorName} *(Akun portal belum terhubung)*";
+                    $msgForAdmin = "📅 **[NOTIFIKASI JANJI TEMU PASIEN BARU]**\n"
+                                 . "Ada pasien membuat janji temu baru di sistem:\n\n"
+                                 . "• **Dokter Terpilih:** {$docStatus}\n"
+                                 . "• **Nama Pasien:** {$form->character_name}\n"
+                                 . "• **Citizen ID (KTP):** " . ($form->citizen_id ?: '-') . "\n"
+                                 . "• **Layanan / Poli:** {$poliLabel}\n"
+                                 . "• **Jadwal Janji Temu:** {$apptDate} (Pukul {$apptTime} WIB)\n"
+                                 . "• **No. HP Pasien:** {$patientPhone}\n"
+                                 . "• **Keluhan / Keperluan:** {$symptoms}\n"
+                                 . "• **Rumah Sakit:** {$hospitalName}\n\n"
+                                 . "📌 *Salinan notifikasi pengawasan janji temu (#{$form->id}).*";
+
+                    \App\Models\MemberMessage::create([
+                        'sender_id'   => $adminSender->id,
+                        'receiver_id' => $admin->id,
+                        'message'     => $msgForAdmin,
+                        'is_read'     => false,
+                    ]);
+
+                    \Illuminate\Support\Facades\Log::info("[Appointment Notif] Salinan notifikasi dikirim ke Admin ID {$admin->id} ({$admin->name}) dari sender ID {$adminSender->id}");
+                }
+            }
+
+            // 3. DISPATCH WEBHOOK DISCORD JIKA ADA (Optional background)
+            try {
+                $discordWebhook = env('DISCORD_WEBHOOK_JANJI_TEMU') ?: env('DISCORD_WEBHOOK_ABSENSI');
+                if (!empty($discordWebhook)) {
+                    \Illuminate\Support\Facades\Http::post($discordWebhook, [
+                        'embeds' => [
+                            [
+                                'title' => "📅 Janji Temu Pasien Baru ({$hospitalName})",
+                                'color' => 3447003,
+                                'fields' => [
+                                    ['name' => 'Dokter', 'value' => (string)$targetDoctorDisplay, 'inline' => true],
+                                    ['name' => 'Pasien', 'value' => (string)$form->character_name, 'inline' => true],
+                                    ['name' => 'Poli', 'value' => (string)$poliLabel, 'inline' => true],
+                                    ['name' => 'Jadwal', 'value' => "{$apptDate} ({$apptTime} WIB)", 'inline' => true],
+                                    ['name' => 'No. HP', 'value' => (string)$patientPhone, 'inline' => true],
+                                    ['name' => 'Keluhan', 'value' => mb_strimwidth((string)$symptoms, 0, 200, '...'), 'inline' => false],
+                                ],
+                                'timestamp' => now()->toISOString(),
+                            ]
+                        ]
+                    ]);
+                }
+            } catch (\Throwable $dcEx) {
+                \Illuminate\Support\Facades\Log::warning("[Appointment Notif] Gagal kirim Webhook Discord: " . $dcEx->getMessage());
+            }
+
+            // 4. TELEGRAM DISPATCH JIKA DIKONFIGURASI
             try {
                 $telegramService = app(\App\Services\TelegramService::class);
                 if ($telegramService->isConfigured()) {
                     $tgMsg = "📅 <b>Janji Temu Pasien Baru!</b>\n\n"
-                           . "👨‍⚕️ <b>Dokter:</b> " . htmlspecialchars($doctor->name) . "\n"
+                           . "👨‍⚕️ <b>Dokter:</b> " . htmlspecialchars($targetDoctorDisplay) . "\n"
                            . "👤 <b>Pasien:</b> " . htmlspecialchars($form->character_name) . " (" . htmlspecialchars($form->citizen_id ?: '-') . ")\n"
                            . "🏥 <b>RS:</b> " . htmlspecialchars($hospitalName) . "\n"
                            . "🩺 <b>Poli:</b> " . htmlspecialchars($poliLabel) . "\n"
@@ -1032,7 +1132,7 @@ class PublicController extends Controller
             }
 
         } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::warning("[Appointment Notif] Gagal mengirim notifikasi janji temu ke dokter: {$e->getMessage()}");
+            \Illuminate\Support\Facades\Log::error("[Appointment Notif Error] Gagal memproses notifikasi janji temu: " . $e->getMessage() . " di baris " . $e->getLine());
         }
     }
 
