@@ -1,256 +1,314 @@
 @extends('layouts.app')
 
-@section('title', 'Cek Status Pendaftaran - Paramedic IME Medical Center')
+@section('title', 'Cek Status Pendaftaran - IME Medical Center')
 
 @section('content')
-<div class="min-h-screen bg-[#f0ede6] py-10 px-4 sm:px-6 flex items-center justify-center">
-    <div class="max-w-3xl w-full space-y-6">
+<div class="min-h-screen py-10 px-4 sm:px-6" style="background: linear-gradient(135deg, #1e3a5f 0%, #0f2540 50%, #0a1a30 100%);">
+    <div class="max-w-2xl mx-auto space-y-5">
 
-        <!-- SEARCH FORM CARD -->
-        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
-            <!-- Header Bronze / Gold Bar -->
-            <div class="bg-[#9c834a] px-6 py-4 flex items-center justify-between text-white">
-                <div class="flex items-center gap-2.5">
-                    <span class="text-xl">🔍</span>
-                    <h1 class="text-base sm:text-lg font-black uppercase tracking-wider">
+        {{-- ── SEARCH CARD ── --}}
+        <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+            {{-- Header --}}
+            <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between gap-3"
+                 style="background: linear-gradient(90deg, rgba(156,131,74,0.35) 0%, rgba(30,58,95,0.5) 100%);">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <span class="text-xl shrink-0">🔍</span>
+                    <h1 class="text-sm sm:text-base font-black uppercase tracking-wider text-white truncate">
                         Cek Status Pendaftaran Paramedic
                     </h1>
                 </div>
-                <a href="{{ route('public.recruitment') }}" class="text-xs bg-white/20 hover:bg-white/30 text-white px-3 py-1 rounded-full font-bold transition">
-                    <i class="fas fa-arrow-left mr-1"></i> Form Oprec
+                <a href="{{ route('public.recruitment') }}"
+                   class="shrink-0 text-xs bg-white/15 hover:bg-white/25 text-white px-3 py-1.5 rounded-full font-bold transition flex items-center gap-1">
+                    <i class="fas fa-arrow-left text-[10px]"></i> Form Oprec
                 </a>
             </div>
 
-            <!-- Form Content -->
-            <div class="p-6 sm:p-8 space-y-6">
-                <p class="text-slate-600 text-sm">
-                    Masukkan <strong>Citizen ID (CID)</strong> karakter FiveM Anda untuk memeriksa status berkas, antrian interview, dan keputusan penerimaan secara langsung.
+            {{-- Form --}}
+            <div class="p-6 space-y-5">
+                <p class="text-slate-300 text-sm leading-relaxed">
+                    Masukkan <strong class="text-white">Citizen ID (CID)</strong> karakter FiveM Anda
+                    untuk memeriksa status berkas, antrian interview, dan keputusan penerimaan secara langsung.
                 </p>
 
-                <form method="GET" action="{{ route('public.recruitment.status') }}" class="flex flex-col sm:flex-row gap-3">
+                <form method="GET" action="{{ route('public.recruitment.status') }}"
+                      class="flex flex-col sm:flex-row gap-3">
                     <div class="relative flex-1">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 font-bold text-sm">#</span>
-                        <input type="text" name="cid" value="{{ $cid }}" placeholder="Contoh: DR3CHXY4" 
-                               class="w-full pl-9 pr-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#9c834a] uppercase font-mono text-sm tracking-wider shadow-sm font-semibold"
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400 font-bold text-sm pointer-events-none">#</span>
+                        <input type="text" name="cid" value="{{ $cid }}"
+                               placeholder="Contoh: DR3CHXY4"
+                               class="w-full pl-8 pr-4 py-3 rounded-xl bg-white/10 border border-white/20 focus:outline-none focus:ring-2 focus:ring-[#9c834a] text-white uppercase font-mono text-sm tracking-wider placeholder-slate-500 transition"
                                required autofocus />
                     </div>
-                    <button type="submit" class="px-6 py-3 bg-[#9c834a] hover:bg-[#856e3c] text-white font-black text-sm rounded-xl transition shadow-md flex items-center justify-center gap-2">
+                    <button type="submit"
+                            class="px-6 py-3 font-black text-sm rounded-xl text-white shadow-lg transition flex items-center justify-center gap-2 whitespace-nowrap"
+                            style="background: linear-gradient(135deg, #9c834a, #b89b60);">
                         <i class="fas fa-search"></i> Cek Status
                     </button>
                 </form>
 
                 @if($searched && $applications->isEmpty())
-                    <div class="bg-amber-50 border border-amber-300 rounded-xl p-4 text-amber-900 text-xs sm:text-sm flex items-start gap-3">
-                        <i class="fas fa-exclamation-triangle text-amber-600 text-lg mt-0.5"></i>
-                        <div>
-                            <strong>Tidak ditemukan berkas pendaftaran dengan Citizen ID: #{{ strtoupper($cid) }}</strong>
-                            <p class="text-amber-800 mt-1">Pastikan Citizen ID yang Anda masukkan sama persis dengan yang Anda isi di formulir pendaftaran.</p>
+                    <div class="bg-amber-500/15 border border-amber-500/30 rounded-xl p-4 flex items-start gap-3">
+                        <i class="fas fa-exclamation-triangle text-amber-400 text-lg mt-0.5 shrink-0"></i>
+                        <div class="text-sm">
+                            <p class="text-amber-300 font-bold">Berkas tidak ditemukan untuk CID: <code class="font-mono">#{{ strtoupper($cid) }}</code></p>
+                            <p class="text-amber-200/80 text-xs mt-1">Pastikan Citizen ID yang Anda masukkan sama persis dengan yang Anda isi di formulir pendaftaran.</p>
                         </div>
                     </div>
                 @endif
             </div>
         </div>
 
-        <!-- SEARCH RESULTS LIST -->
+        {{-- ── RESULTS ── --}}
         @if($searched && $applications->isNotEmpty())
             @foreach($applications as $app)
                 @php
-                    $status = strtolower($app->status);
-                    $periodName = $app->period?->batch_name ?? 'Recruitment Alta Hospital';
+                    $status     = strtolower($app->status);
+                    $periodName = $app->period?->batch_name ?? 'Alta Hospital Medical Center';
 
-                    // Progress steps calculation
-                    // 1: submitted/pending, 2: reviewed, 3: interview, 4: accepted / rejected
                     $currentStep = 1;
-                    if ($status === 'reviewed') $currentStep = 2;
-                    elseif ($status === 'interview') $currentStep = 3;
-                    elseif (in_array($status, ['accepted', 'approved', 'rejected'])) $currentStep = 4;
+                    if ($status === 'reviewed')                               $currentStep = 2;
+                    elseif ($status === 'interview')                          $currentStep = 3;
+                    elseif (in_array($status, ['accepted','approved','rejected'])) $currentStep = 4;
+
+                    $steps = [
+                        ['label' => 'Berkas Masuk',      'icon' => 'fa-inbox'],
+                        ['label' => 'Verifikasi Berkas',  'icon' => 'fa-clipboard-check'],
+                        ['label' => 'Wawancara',          'icon' => 'fa-microphone-alt'],
+                        ['label' => 'Keputusan',          'icon' => 'fa-gavel'],
+                    ];
                 @endphp
 
-                <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
-                    <div class="px-6 py-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-slate-50">
-                        <div>
-                            <span class="text-xs text-slate-500 font-semibold uppercase tracking-wider block">Calon Paramedis</span>
-                            <h2 class="text-base sm:text-lg font-black text-slate-900">{{ $app->ic_name }}</h2>
-                            <span class="text-xs text-slate-500 font-mono">CID: #{{ $app->cid }} &bull; {{ $periodName }}</span>
-                        </div>
+                <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
 
-                        {{-- Main Status Badge --}}
-                        <div>
-                            @if(in_array($status, ['accepted', 'approved']))
-                                <span class="px-4 py-1.5 bg-emerald-500 text-white font-black rounded-full text-xs uppercase tracking-wide shadow flex items-center gap-1.5">
-                                    <i class="fas fa-check-circle"></i> Diterima (Lolos)
+                    {{-- Card Header: Identity + Badge --}}
+                    <div class="px-6 py-4 border-b border-white/10 bg-white/5">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <div class="min-w-0">
+                                <span class="text-[11px] text-slate-400 font-bold uppercase tracking-widest block mb-0.5">
+                                    Calon Paramedis
                                 </span>
-                            @elseif($status === 'rejected')
-                                <span class="px-4 py-1.5 bg-rose-500 text-white font-black rounded-full text-xs uppercase tracking-wide shadow flex items-center gap-1.5">
-                                    <i class="fas fa-times-circle"></i> Belum Lolos
-                                </span>
-                            @elseif($status === 'interview')
-                                <span class="px-4 py-1.5 bg-sky-500 text-white font-black rounded-full text-xs uppercase tracking-wide shadow flex items-center gap-1.5 animate-pulse">
-                                    <i class="fas fa-microphone-alt"></i> Tahap Wawancara
-                                </span>
-                            @elseif($status === 'reviewed')
-                                <span class="px-4 py-1.5 bg-indigo-500 text-white font-black rounded-full text-xs uppercase tracking-wide shadow flex items-center gap-1.5">
-                                    <i class="fas fa-clipboard-check"></i> Berkas Lolos
-                                </span>
-                            @else
-                                <span class="px-4 py-1.5 bg-amber-500 text-white font-black rounded-full text-xs uppercase tracking-wide shadow flex items-center gap-1.5">
-                                    <i class="fas fa-hourglass-half"></i> Sedang Ditinjau
-                                </span>
-                            @endif
+                                <h2 class="text-lg font-black text-white leading-tight truncate">{{ $app->ic_name }}</h2>
+                                <p class="text-xs text-slate-400 font-mono mt-0.5">
+                                    CID: <span class="text-slate-200">#{{ $app->cid }}</span>
+                                    &nbsp;&bull;&nbsp;
+                                    <span class="text-slate-200">{{ $periodName }}</span>
+                                </p>
+                            </div>
+
+                            {{-- Status Badge --}}
+                            <div class="shrink-0">
+                                @if(in_array($status, ['accepted','approved']))
+                                    <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-500 text-white font-black rounded-full text-xs uppercase tracking-wide shadow">
+                                        <i class="fas fa-check-circle"></i> Diterima
+                                    </span>
+                                @elseif($status === 'rejected')
+                                    <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-rose-500 text-white font-black rounded-full text-xs uppercase tracking-wide shadow">
+                                        <i class="fas fa-times-circle"></i> Belum Lolos
+                                    </span>
+                                @elseif($status === 'interview')
+                                    <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-sky-500 text-white font-black rounded-full text-xs uppercase tracking-wide shadow animate-pulse">
+                                        <i class="fas fa-microphone-alt"></i> Wawancara
+                                    </span>
+                                @elseif($status === 'reviewed')
+                                    <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-indigo-500 text-white font-black rounded-full text-xs uppercase tracking-wide shadow">
+                                        <i class="fas fa-clipboard-check"></i> Berkas Lolos
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-amber-500 text-white font-black rounded-full text-xs uppercase tracking-wide shadow">
+                                        <i class="fas fa-hourglass-half"></i> Ditinjau
+                                    </span>
+                                @endif
+                            </div>
                         </div>
                     </div>
 
-                    <div class="p-6 sm:p-8 space-y-6">
-                        <!-- PROGRESS STEPPER TIMELINE -->
-                        <div class="py-2">
-                            <div class="relative flex items-center justify-between">
-                                <!-- Background Line -->
-                                <div class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-slate-200 w-full z-0"></div>
-                                <div class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-gradient-to-r from-[#9c834a] to-emerald-500 z-0 transition-all duration-500"
-                                     style="width: {{ $status === 'rejected' ? '100%' : (($currentStep - 1) / 3 * 100) }}%"></div>
+                    <div class="p-5 sm:p-6 space-y-5">
 
-                                <!-- Step 1: Submit -->
-                                <div class="relative z-10 flex flex-col items-center">
-                                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shadow {{ $currentStep >= 1 ? 'bg-[#9c834a] text-white' : 'bg-slate-200 text-slate-500' }}">
-                                        1
-                                    </div>
-                                    <span class="text-[11px] font-bold text-slate-700 mt-1 text-center">Berkas Masuk</span>
-                                </div>
+                        {{-- ── PROGRESS STEPPER ── --}}
+                        <div class="relative">
+                            {{-- Connector line background --}}
+                            <div class="absolute top-4 left-4 right-4 h-0.5 bg-white/10 z-0"></div>
+                            {{-- Connector line filled --}}
+                            @php
+                                $fillPct = $status === 'rejected' ? 100 : (($currentStep - 1) / 3 * 100);
+                            @endphp
+                            <div class="absolute top-4 left-4 h-0.5 z-0 transition-all duration-500 rounded-full"
+                                 style="width: calc({{ $fillPct }}% - 2rem); background: linear-gradient(90deg, #9c834a, #5eead4);"></div>
 
-                                <!-- Step 2: Review -->
-                                <div class="relative z-10 flex flex-col items-center">
-                                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shadow {{ $currentStep >= 2 ? 'bg-[#9c834a] text-white' : 'bg-slate-200 text-slate-500' }}">
-                                        2
-                                    </div>
-                                    <span class="text-[11px] font-bold text-slate-700 mt-1 text-center">Verifikasi Berkas</span>
-                                </div>
+                            {{-- Steps --}}
+                            <div class="relative z-10 flex justify-between">
+                                @foreach($steps as $i => $step)
+                                    @php
+                                        $stepNum  = $i + 1;
+                                        $isActive = $stepNum === $currentStep;
+                                        $isDone   = $stepNum < $currentStep;
+                                        $isFail   = ($status === 'rejected' && $stepNum === 4);
 
-                                <!-- Step 3: Interview -->
-                                <div class="relative z-10 flex flex-col items-center">
-                                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shadow {{ $currentStep >= 3 ? 'bg-sky-500 text-white ring-4 ring-sky-100' : 'bg-slate-200 text-slate-500' }}">
-                                        3
-                                    </div>
-                                    <span class="text-[11px] font-bold text-slate-700 mt-1 text-center">Wawancara</span>
-                                </div>
-
-                                <!-- Step 4: Decision -->
-                                <div class="relative z-10 flex flex-col items-center">
-                                    <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shadow {{ $status === 'rejected' ? 'bg-rose-500 text-white' : ($currentStep >= 4 ? 'bg-emerald-500 text-white ring-4 ring-emerald-100' : 'bg-slate-200 text-slate-500') }}">
-                                        {!! $status === 'rejected' ? '<i class="fas fa-times"></i>' : ($currentStep >= 4 ? '<i class="fas fa-check"></i>' : '4') !!}
-                                    </div>
-                                    <span class="text-[11px] font-bold text-slate-700 mt-1 text-center">Keputusan</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- STATUS DETAIL BOX -->
-                        <div class="rounded-2xl p-5 border text-sm {{ in_array($status, ['accepted', 'approved']) ? 'bg-emerald-50/70 border-emerald-300 text-emerald-950' : ($status === 'rejected' ? 'bg-rose-50/70 border-rose-300 text-rose-950' : ($status === 'interview' ? 'bg-sky-50/70 border-sky-300 text-sky-950' : 'bg-amber-50/70 border-amber-300 text-amber-950')) }}">
-                            
-                            @if(in_array($status, ['accepted', 'approved']))
-                                <div class="space-y-3">
-                                    <div class="flex items-center gap-2 text-emerald-800 font-black text-base">
-                                        <i class="fas fa-award text-xl text-emerald-600"></i>
-                                        <span>SELAMAT! ANDA RESMI DITERIMA SEBAGAI PARAMEDIS</span>
-                                    </div>
-                                    <p class="leading-relaxed">
-                                        Selamat bergabung di <strong>Alta Hospital Medical Center</strong>! Anda terdaftar sebagai anggota <strong>{{ $periodName }}</strong>.
-                                    </p>
-                                    <div class="bg-white/80 rounded-xl p-3.5 border border-emerald-200 text-xs space-y-1 text-emerald-900">
-                                        <div><strong>Status Akun:</strong> <span class="text-emerald-700 font-bold">AKTIF & TERDAFTAR</span></div>
-                                        <div><strong>ID Anggota / CID:</strong> <code class="font-mono bg-emerald-100 px-1.5 py-0.5 rounded text-emerald-900 font-bold">#{{ $app->cid }}</code></div>
-                                        <div><strong>Badge Angkatan:</strong> <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold border bg-purple-500/20 text-purple-700 border-purple-500/30 font-mono">{{ $periodName }}</span></div>
-                                    </div>
-                                    <div class="pt-2">
-                                        <a href="{{ route('staff.login') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs shadow transition">
-                                            <i class="fas fa-sign-in-alt"></i> Masuk ke Portal Staf
-                                        </a>
-                                    </div>
-                                </div>
-
-                            @elseif($status === 'rejected')
-                                <div class="space-y-2">
-                                    <div class="flex items-center gap-2 text-rose-800 font-black text-base">
-                                        <i class="fas fa-times-circle text-xl text-rose-600"></i>
-                                        <span>MOHON MAAF, ANDA BELUM LOLOS PADA PERIODE INI</span>
-                                    </div>
-                                    <p class="text-slate-700 leading-relaxed text-xs sm:text-sm">
-                                        Terima kasih atas ketertarikan dan partisipasi Anda. Jangan berkecil hati, Anda tetap dapat mencoba kembali pada pembukaan rekrutmen batch berikutnya.
-                                    </p>
-                                    @if(!empty($app->reviewer_notes))
-                                        <div class="mt-3 p-3 bg-white/80 rounded-xl border border-rose-200 text-xs text-rose-900">
-                                            <strong class="block mb-1 text-rose-950 font-bold"><i class="fas fa-comment-dots mr-1"></i> Catatan Penilai:</strong>
-                                            {{ $app->reviewer_notes }}
+                                        if ($isFail)       $circleClass = 'bg-rose-500 text-white ring-2 ring-rose-400/40';
+                                        elseif ($isActive && in_array($status, ['accepted','approved'])) $circleClass = 'bg-emerald-500 text-white ring-2 ring-emerald-400/40';
+                                        elseif ($isActive) $circleClass = 'bg-sky-500 text-white ring-2 ring-sky-400/40';
+                                        elseif ($isDone)   $circleClass = 'bg-[#9c834a] text-white';
+                                        else               $circleClass = 'bg-white/10 text-slate-500';
+                                    @endphp
+                                    <div class="flex flex-col items-center gap-1.5 w-1/4">
+                                        <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shadow-lg transition-all {{ $circleClass }}">
+                                            @if($isFail)
+                                                <i class="fas fa-times text-[10px]"></i>
+                                            @elseif($isDone || ($isActive && in_array($status, ['accepted','approved'])))
+                                                <i class="fas fa-check text-[10px]"></i>
+                                            @else
+                                                {{ $stepNum }}
+                                            @endif
                                         </div>
-                                    @endif
-                                </div>
-
-                            @elseif($status === 'interview')
-                                <div class="space-y-2">
-                                    <div class="flex items-center gap-2 text-sky-800 font-black text-base">
-                                        <i class="fas fa-headset text-xl text-sky-600"></i>
-                                        <span>TAHAP WAWANCARA (INTERVIEW)</span>
+                                        <span class="text-[10px] font-semibold text-center leading-tight
+                                            {{ $isActive ? 'text-white' : ($isDone ? 'text-slate-300' : 'text-slate-500') }}">
+                                            {{ $step['label'] }}
+                                        </span>
                                     </div>
-                                    <p class="text-slate-700 leading-relaxed text-xs sm:text-sm">
-                                        Berkas pendaftaran Anda telah <strong>LOLOS VERIFIKASI</strong>. Anda saat ini masuk dalam antrian wawancara dengan tim Interviewer Alta Hospital.
-                                    </p>
-                                    <p class="text-xs text-sky-900 font-semibold bg-white/70 p-3 rounded-xl border border-sky-200">
-                                        📢 Silakan pantau pengumuman antrian atau hubungi pihak Interviewer di Discord resmi Rumah Sakit untuk jadwal wawancara Anda.
-                                    </p>
-                                </div>
-
-                            @elseif($status === 'reviewed')
-                                <div class="space-y-2">
-                                    <div class="flex items-center gap-2 text-indigo-800 font-black text-base">
-                                        <i class="fas fa-file-signature text-xl text-indigo-600"></i>
-                                        <span>BERKAS TELAH DIVERIFIKASI</span>
-                                    </div>
-                                    <p class="text-slate-700 leading-relaxed text-xs sm:text-sm">
-                                        Dokumen persyaratan Anda (KTP, SKB, Surat Kesehatan) telah diverifikasi oleh tim IE/PND dan memenuhi syarat awal. Berkas Anda sedang diarahkan ke tim pewawancara.
-                                    </p>
-                                </div>
-
-                            @else
-                                <div class="space-y-2">
-                                    <div class="flex items-center gap-2 text-amber-800 font-black text-base">
-                                        <i class="fas fa-clock text-xl text-amber-600"></i>
-                                        <span>BERKAS DALAM ANTRIAN PENINJAUAN</span>
-                                    </div>
-                                    <p class="text-slate-700 leading-relaxed text-xs sm:text-sm">
-                                        Formulir pendaftaran Anda sudah masuk ke sistem dan sedang menunggu antrian pengecekan oleh divisi <strong>Industrial & Employee Relations (IE)</strong>. Mohon menunggu dengan sabar.
-                                    </p>
-                                </div>
-                            @endif
-
+                                @endforeach
+                            </div>
                         </div>
 
-                        <!-- APPLICATION META -->
-                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs pt-2 border-t border-slate-100 text-slate-600">
-                            <div>
-                                <span class="block text-slate-400 text-[10px] uppercase font-bold">Waktu Pendaftaran</span>
-                                <span class="font-semibold text-slate-800">{{ $app->created_at?->format('d/m/Y H:i') ?? '-' }} WIB</span>
+                        {{-- ── STATUS DETAIL BOX ── --}}
+                        @if(in_array($status, ['accepted','approved']))
+                            <div class="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 space-y-3">
+                                <div class="flex items-center gap-2 text-emerald-300 font-black text-sm">
+                                    <i class="fas fa-award text-base shrink-0"></i>
+                                    <span>SELAMAT! ANDA RESMI DITERIMA SEBAGAI PARAMEDIS</span>
+                                </div>
+                                <p class="text-slate-300 text-sm leading-relaxed">
+                                    Selamat bergabung di <strong class="text-white">Alta Hospital Medical Center</strong>!
+                                    Anda terdaftar sebagai anggota <strong class="text-white">{{ $periodName }}</strong>.
+                                </p>
+
+                                {{-- Login Info Box --}}
+                                <div class="rounded-xl bg-white/5 border border-white/10 p-4 space-y-3">
+                                    <p class="text-xs font-black text-emerald-300 uppercase tracking-wider flex items-center gap-1.5">
+                                        <i class="fas fa-key"></i> Informasi Akun Portal Staf
+                                    </p>
+                                    <div class="space-y-1.5 text-xs text-slate-300">
+                                        <div class="flex items-start gap-2">
+                                            <i class="fas fa-circle-check text-emerald-400 mt-0.5 shrink-0 text-[10px]"></i>
+                                            <span>Akun Anda sudah <strong class="text-white">AKTIF & TERDAFTAR</strong> secara otomatis di sistem.</span>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <i class="fas fa-circle-check text-emerald-400 mt-0.5 shrink-0 text-[10px]"></i>
+                                            <span><strong class="text-white">Tidak perlu daftar ulang.</strong> Langsung login menggunakan email & password yang Anda buat saat mendaftar.</span>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <i class="fas fa-circle-check text-emerald-400 mt-0.5 shrink-0 text-[10px]"></i>
+                                            <span>CID Anda: <code class="font-mono bg-emerald-500/20 px-1.5 py-0.5 rounded text-emerald-300 font-bold">#{{ $app->cid }}</code></span>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <i class="fas fa-circle-check text-emerald-400 mt-0.5 shrink-0 text-[10px]"></i>
+                                            <span>Badge angkatan Anda: <span class="font-bold text-white">{{ $periodName }}</span></span>
+                                        </div>
+                                        <div class="flex items-start gap-2">
+                                            <i class="fas fa-circle-info text-sky-400 mt-0.5 shrink-0 text-[10px]"></i>
+                                            <span class="text-sky-300">Belum punya akun? Hubungi Admin / HRD melalui Discord untuk dibuatkan akun.</span>
+                                        </div>
+                                    </div>
+                                    <a href="{{ route('staff.login') }}"
+                                       class="mt-1 w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-black text-xs text-white shadow-lg transition"
+                                       style="background: linear-gradient(135deg, #059669, #10b981);">
+                                        <i class="fas fa-sign-in-alt"></i> Login ke Portal Staf Sekarang
+                                    </a>
+                                </div>
                             </div>
-                            <div>
-                                <span class="block text-slate-400 text-[10px] uppercase font-bold">Kategori RS</span>
-                                <span class="font-semibold text-slate-800 uppercase">{{ $app->hospital }} Hospital</span>
+
+                        @elseif($status === 'rejected')
+                            <div class="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 space-y-3">
+                                <div class="flex items-center gap-2 text-rose-300 font-black text-sm">
+                                    <i class="fas fa-times-circle text-base shrink-0"></i>
+                                    <span>MOHON MAAF, ANDA BELUM LOLOS PADA PERIODE INI</span>
+                                </div>
+                                <p class="text-slate-300 text-sm leading-relaxed">
+                                    Terima kasih atas ketertarikan dan partisipasi Anda. Jangan berkecil hati —
+                                    Anda tetap dapat mencoba kembali pada pembukaan rekrutmen batch berikutnya.
+                                </p>
+                                @if(!empty($app->reviewer_notes))
+                                    <div class="rounded-xl bg-white/5 border border-rose-500/20 p-3 text-xs text-slate-300">
+                                        <p class="font-bold text-rose-300 mb-1 flex items-center gap-1">
+                                            <i class="fas fa-comment-dots text-[10px]"></i> Catatan Penilai:
+                                        </p>
+                                        {{ $app->reviewer_notes }}
+                                    </div>
+                                @endif
                             </div>
-                            <div>
-                                <span class="block text-slate-400 text-[10px] uppercase font-bold">Discord</span>
-                                <span class="font-semibold text-slate-800 font-mono">{{ $app->discord_username ?? '-' }}</span>
+
+                        @elseif($status === 'interview')
+                            <div class="rounded-xl border border-sky-500/30 bg-sky-500/10 p-4 space-y-2">
+                                <div class="flex items-center gap-2 text-sky-300 font-black text-sm">
+                                    <i class="fas fa-headset text-base shrink-0"></i>
+                                    <span>TAHAP WAWANCARA (INTERVIEW)</span>
+                                </div>
+                                <p class="text-slate-300 text-sm leading-relaxed">
+                                    Berkas pendaftaran Anda telah <strong class="text-white">LOLOS VERIFIKASI</strong>.
+                                    Anda saat ini masuk dalam antrian wawancara dengan tim Interviewer Alta Hospital.
+                                </p>
+                                <div class="rounded-xl bg-white/5 border border-sky-500/20 p-3 text-xs text-sky-300 font-semibold">
+                                    📢 Pantau pengumuman antrian dan hubungi Interviewer melalui Discord resmi Rumah Sakit untuk informasi jadwal wawancara Anda.
+                                </div>
                             </div>
-                            <div>
-                                <span class="block text-slate-400 text-[10px] uppercase font-bold">Update Terakhir</span>
-                                <span class="font-semibold text-slate-800">{{ $app->updated_at?->diffForHumans() ?? '-' }}</span>
+
+                        @elseif($status === 'reviewed')
+                            <div class="rounded-xl border border-indigo-500/30 bg-indigo-500/10 p-4 space-y-2">
+                                <div class="flex items-center gap-2 text-indigo-300 font-black text-sm">
+                                    <i class="fas fa-file-signature text-base shrink-0"></i>
+                                    <span>BERKAS TELAH DIVERIFIKASI</span>
+                                </div>
+                                <p class="text-slate-300 text-sm leading-relaxed">
+                                    Dokumen persyaratan Anda (KTP, SKB, Surat Kesehatan) telah diverifikasi oleh tim IE/PND
+                                    dan memenuhi syarat awal. Berkas Anda sedang diarahkan ke tim pewawancara.
+                                </p>
+                            </div>
+
+                        @else
+                            <div class="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 space-y-2">
+                                <div class="flex items-center gap-2 text-amber-300 font-black text-sm">
+                                    <i class="fas fa-clock text-base shrink-0"></i>
+                                    <span>BERKAS DALAM ANTRIAN PENINJAUAN</span>
+                                </div>
+                                <p class="text-slate-300 text-sm leading-relaxed">
+                                    Formulir pendaftaran Anda sudah masuk ke sistem dan sedang menunggu antrian pengecekan
+                                    oleh divisi <strong class="text-white">Industrial &amp; Employee Relations (IE)</strong>.
+                                    Mohon menunggu dengan sabar.
+                                </p>
+                            </div>
+                        @endif
+
+                        {{-- ── APPLICATION META ── --}}
+                        <div class="border-t border-white/10 pt-4">
+                            <div class="grid grid-cols-2 gap-x-4 gap-y-3">
+                                <div>
+                                    <span class="block text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-0.5">Waktu Pendaftaran</span>
+                                    <span class="text-xs text-slate-300 font-semibold">{{ $app->created_at?->format('d/m/Y H:i') ?? '-' }} WIB</span>
+                                </div>
+                                <div>
+                                    <span class="block text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-0.5">Kategori RS</span>
+                                    <span class="text-xs text-slate-300 font-semibold uppercase">{{ $app->hospital }} Hospital</span>
+                                </div>
+                                <div>
+                                    <span class="block text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-0.5">Discord</span>
+                                    <span class="text-xs text-slate-300 font-mono font-semibold break-all">{{ $app->discord_username ?? '-' }}</span>
+                                </div>
+                                <div>
+                                    <span class="block text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-0.5">Update Terakhir</span>
+                                    <span class="text-xs text-slate-300 font-semibold">{{ $app->updated_at?->diffForHumans() ?? '-' }}</span>
+                                </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             @endforeach
         @endif
 
-        <!-- FOOTER NAV -->
-        <div class="text-center pt-2">
-            <a href="{{ route('public.index') }}" class="text-xs text-slate-500 hover:text-slate-800 transition font-semibold">
-                <i class="fas fa-home mr-1"></i> Kembali ke Beranda Utama IME Medical Center
+        {{-- Footer --}}
+        <div class="text-center pb-4">
+            <a href="{{ route('public.index') }}"
+               class="text-xs text-slate-500 hover:text-slate-300 transition font-semibold inline-flex items-center gap-1.5">
+                <i class="fas fa-home text-[10px]"></i> Kembali ke Beranda IME Medical Center
             </a>
         </div>
 
