@@ -470,69 +470,87 @@
     </div>
 </div>
 
+<style>
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(245, 158, 11, 0.45);
+    border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(245, 158, 11, 0.75);
+}
+</style>
+
 {{-- ═══════════════════════════════════════════════════════════════════════════ --}}
 {{-- MODAL HITUNG & TERBITKAN DENDA PTDH OLEH IE --}}
 {{-- ═══════════════════════════════════════════════════════════════════════════ --}}
-<div id="ptdhModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm hidden p-3 overflow-y-auto">
-    <div class="bg-gray-900 border border-amber-500/40 rounded-xl w-full max-w-lg p-4 sm:p-5 shadow-2xl my-auto relative max-h-[92vh] flex flex-col">
+<div id="ptdhModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md hidden p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-slate-900 border border-amber-500/50 rounded-2xl w-full max-w-2xl lg:max-w-3xl p-5 sm:p-6 shadow-2xl my-auto relative max-h-[94vh] flex flex-col backdrop-blur-2xl">
         {{-- Header: Compact & Clean --}}
-        <div class="flex items-center justify-between pb-3 border-b border-white/10 shrink-0">
-            <div class="flex items-center gap-2.5">
-                <span class="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 text-sm">
+        <div class="flex items-center justify-between pb-3.5 border-b border-white/10 shrink-0">
+            <div class="flex items-center gap-3">
+                <span class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 text-base shadow-inner">
                     <i class="fas fa-gavel"></i>
                 </span>
                 <div>
-                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
                         Hitung Denda PTDH
-                        <span class="text-[10px] bg-rose-500/20 text-rose-300 px-1.5 py-0.5 rounded border border-rose-500/30">Manual IE</span>
+                        <span class="text-[10px] bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded-full border border-rose-500/30 font-extrabold uppercase tracking-wider">Manual IE</span>
                     </h3>
-                    <p class="text-[11px] text-white/50">Terbitkan kalkulasi denda PTDH langsung ke tahap upload bukti.</p>
+                    <p class="text-xs text-white/50">Terbitkan kalkulasi denda PTDH langsung ke tahap upload bukti.</p>
                 </div>
             </div>
-            <button type="button" onclick="closeModal('ptdhModal')" class="text-white/40 hover:text-white p-1 rounded-lg text-sm transition-colors">
+            <button type="button" onclick="closeModal('ptdhModal')" class="text-white/40 hover:text-white p-1.5 rounded-xl hover:bg-white/10 text-base transition-colors">
                 <i class="fas fa-times"></i>
             </button>
         </div>
 
-        <form id="ptdhForm" action="{{ route('portal.resignation.ptdh-store') }}" method="POST" class="space-y-3 pt-3 overflow-y-auto pr-1 text-xs">
+        <form id="ptdhForm" action="{{ route('portal.resignation.ptdh-store') }}" method="POST" class="space-y-4 pt-3.5 overflow-y-auto pr-1 text-xs custom-scrollbar">
             @csrf
 
             {{-- Pemilihan Staf Medis (Searchable Dropdown: Aktif & Paused) --}}
             <div class="relative" id="ptdhSelectContainer">
-                <label class="block text-[11px] font-bold text-amber-300 uppercase tracking-wider mb-1 flex items-center justify-between">
+                <label class="block text-xs font-bold text-amber-300 uppercase tracking-wider mb-1.5 flex items-center justify-between">
                     <span class="flex items-center gap-1.5">
                         <i class="fas fa-user-md"></i> Pilih Anggota Medis (Aktif &amp; Paused) <span class="text-rose-400">*</span>
                     </span>
-                    <span class="text-[9px] text-white/40 normal-case font-normal">Termasuk akun pemutihan / di-pause</span>
+                    <span class="text-[10px] text-white/40 normal-case font-normal">Termasuk akun pemutihan / di-pause</span>
                 </label>
 
                 <input type="hidden" id="ptdh_user_id" name="user_id" required>
 
                 {{-- Trigger Button --}}
                 <button type="button" id="ptdhSelectTrigger" onclick="togglePtdhDropdown()"
-                        class="w-full px-3 py-2 bg-black/60 border border-white/20 rounded-lg text-white text-xs flex items-center justify-between text-left focus:outline-none focus:border-amber-400 hover:border-white/30 transition shadow-inner">
+                        class="w-full px-3.5 py-2.5 bg-black/60 border border-white/20 rounded-xl text-white text-xs sm:text-sm flex items-center justify-between text-left focus:outline-none focus:border-amber-400 hover:border-white/30 transition shadow-inner">
                     <span id="ptdh_select_text" class="text-white/60 truncate flex items-center gap-2">
-                        <i class="fas fa-search text-white/30 text-[10px]"></i>
+                        <i class="fas fa-search text-white/30 text-xs"></i>
                         <span>-- Cari &amp; Pilih Anggota Medis (Nama / CID / ID) --</span>
                     </span>
-                    <i class="fas fa-chevron-down text-white/40 text-[10px] ml-2 shrink-0 transition-transform" id="ptdh_select_arrow"></i>
+                    <i class="fas fa-chevron-down text-white/40 text-xs ml-2 shrink-0 transition-transform" id="ptdh_select_arrow"></i>
                 </button>
 
                 {{-- Popover Dropdown Panel --}}
-                <div id="ptdhDropdownPanel" class="hidden absolute left-0 right-0 top-full mt-1 bg-slate-900/98 border border-white/20 rounded-xl shadow-2xl z-50 p-2 space-y-2 backdrop-blur-xl">
+                <div id="ptdhDropdownPanel" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-slate-900 border border-amber-500/40 rounded-2xl shadow-2xl z-50 p-2.5 space-y-2 backdrop-blur-2xl">
                     {{-- Search Field --}}
                     <div class="relative">
-                        <i class="fas fa-search absolute left-2.5 top-1/2 -translate-y-1/2 text-white/40 text-xs"></i>
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-white/40 text-sm"></i>
                         <input type="text" id="ptdh_search_input" placeholder="Ketik nama, ID staf, citizen ID, jabatan..."
                                autocomplete="off"
-                               class="w-full pl-8 pr-7 py-1.5 bg-black/60 border border-white/15 rounded-lg text-white text-xs placeholder-white/40 focus:outline-none focus:border-amber-400">
-                        <button type="button" onclick="clearPtdhSearch()" id="ptdh_clear_search" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white text-xs">
+                               class="w-full pl-9 pr-8 py-2.5 bg-black/60 border border-white/20 rounded-xl text-white text-xs sm:text-sm placeholder-white/40 focus:outline-none focus:border-amber-400 shadow-inner">
+                        <button type="button" onclick="clearPtdhSearch()" id="ptdh_clear_search" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white text-sm">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
 
                     {{-- List of Members --}}
-                    <div id="ptdh_members_list" class="max-h-56 overflow-y-auto space-y-1 pr-1 custom-scrollbar text-xs">
+                    <div id="ptdh_members_list" class="max-h-72 sm:max-h-80 overflow-y-auto space-y-1.5 pr-1.5 custom-scrollbar text-xs">
                         @if(isset($staffList))
                             @foreach($staffList as $staff)
                                 @php
@@ -540,25 +558,25 @@
                                     $roleTitle = $staff->medicRole?->display_name ?? $staff->role?->display_name ?? 'Staf';
                                     $searchString = strtolower($staff->name . ' ' . ($staff->staff_id ?? '') . ' ' . ($staff->citizen_id ?? '') . ' ' . ($staff->role?->display_name ?? '') . ' ' . ($staff->medicRole?->display_name ?? '') . ' ' . ($staff->batch ?? '') . ' ' . ($isPaused ? 'paused nonaktif pemutihan' : 'aktif'));
                                 @endphp
-                                <div class="ptdh-member-item p-2 hover:bg-white/10 rounded-lg cursor-pointer flex items-center justify-between transition border border-transparent hover:border-white/10"
+                                <div class="ptdh-member-item p-2.5 sm:p-3 hover:bg-white/10 rounded-xl cursor-pointer flex items-center justify-between transition border border-transparent hover:border-amber-500/30"
                                      data-id="{{ $staff->id }}"
                                      data-search="{{ $searchString }}"
                                      onclick="selectPtdhMember({{ $staff->id }}, '{{ addslashes($staff->name) }}', '{{ addslashes($roleTitle) }}', '{{ $staff->staff_id ?? '-' }}', '{{ $staff->citizen_id ?? '-' }}', {{ $isPaused ? 'true' : 'false' }})">
                                     <div class="min-w-0 pr-2">
-                                        <div class="font-bold text-white truncate flex items-center gap-1.5">
+                                        <div class="font-bold text-white text-xs sm:text-sm truncate flex items-center gap-2">
                                             <span>{{ $staff->name }}</span>
                                             @if($isPaused)
-                                                <span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                                                    <i class="fas fa-pause text-[8px] mr-0.5"></i>Paused
+                                                <span class="text-[9px] px-2 py-0.5 rounded-full font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                                                    <i class="fas fa-pause text-[8px] mr-1"></i>Paused
                                                 </span>
                                             @else
-                                                <span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                                                <span class="text-[9px] px-2 py-0.5 rounded-full font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
                                                     Aktif
                                                 </span>
                                             @endif
                                         </div>
-                                        <div class="text-[10px] text-white/50 truncate mt-0.5">
-                                            <span class="text-amber-200/80">{{ $roleTitle }}</span>
+                                        <div class="text-[11px] text-white/50 truncate mt-1">
+                                            <span class="text-amber-200/90 font-medium">{{ $roleTitle }}</span>
                                             &bull; ID: <span class="font-mono text-white/70">{{ $staff->staff_id ?? '-' }}</span>
                                             &bull; CID: <span class="font-mono text-white/70">{{ $staff->citizen_id ?? '-' }}</span>
                                             @if($staff->batch)
@@ -566,7 +584,7 @@
                                             @endif
                                         </div>
                                     </div>
-                                    <i class="fas fa-check text-amber-400 text-xs hidden ptdh-check-icon shrink-0"></i>
+                                    <i class="fas fa-check text-amber-400 text-sm ptdh-check-icon shrink-0" style="display: none;"></i>
                                 </div>
                             @endforeach
                         @endif
@@ -793,7 +811,7 @@ function selectPtdhMember(id, name, role, staffId, citizenId, isPaused) {
         const isMatch = el.getAttribute('data-id') == id;
         el.classList.toggle('bg-white/10', isMatch);
         const icon = el.querySelector('.ptdh-check-icon');
-        if (icon) icon.classList.toggle('hidden', !isMatch);
+        if (icon) icon.style.display = isMatch ? 'inline-block' : 'none';
     });
 
     // Update trigger text

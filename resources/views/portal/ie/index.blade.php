@@ -12,8 +12,25 @@
     @if(session('success'))
     <div class="mb-4 p-4 bg-emerald-500/20 border border-emerald-500/40 rounded-xl text-emerald-300 text-sm flex items-center gap-2"><i class="fas fa-check-circle"></i> {{ session('success') }}</div>
     @endif
-    {{-- Form Terbitkan --}}
-    {{-- Form Terbitkan --}}
+<style>
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(56, 189, 248, 0.45);
+    border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(56, 189, 248, 0.75);
+}
+</style>
+
+    {{-- Form Terbitkan Kontrak Medis --}}
     <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 mb-6">
         <h3 class="text-white font-semibold mb-4 flex items-center gap-2"><i class="fas fa-plus-circle text-sky-400"></i> Terbitkan Kontrak Medis Baru</h3>
         <form method="POST" action="{{ route('portal.ie.store') }}" enctype="multipart/form-data" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -26,8 +43,8 @@
 
                 {{-- Trigger Button --}}
                 <button type="button" id="contractSelectTrigger" onclick="toggleContractDropdown()"
-                        class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-xl text-white text-sm flex items-center justify-between text-left focus:outline-none focus:border-sky-400 hover:border-white/30 transition">
-                    <span id="contract_select_text" class="text-white/40 truncate flex items-center gap-1.5">
+                        class="w-full px-3.5 py-2.5 bg-white/10 border border-white/20 rounded-xl text-white text-sm flex items-center justify-between text-left focus:outline-none focus:border-sky-400 hover:border-white/30 transition shadow-inner">
+                    <span id="contract_select_text" class="text-white/40 truncate flex items-center gap-2">
                         <i class="fas fa-search text-white/30 text-xs"></i>
                         <span>— Cari &amp; Pilih Anggota —</span>
                     </span>
@@ -35,18 +52,18 @@
                 </button>
 
                 {{-- Popover Dropdown Panel --}}
-                <div id="contractDropdownPanel" class="hidden absolute left-0 right-0 top-full mt-1 bg-slate-900/98 border border-white/20 rounded-xl shadow-2xl z-50 p-2 space-y-2 backdrop-blur-xl">
+                <div id="contractDropdownPanel" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-slate-900 border border-sky-500/40 rounded-2xl shadow-2xl z-50 p-2.5 space-y-2 backdrop-blur-2xl">
                     <div class="relative">
-                        <i class="fas fa-search absolute left-2.5 top-1/2 -translate-y-1/2 text-white/40 text-xs"></i>
+                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-white/40 text-sm"></i>
                         <input type="text" id="contract_search_input" placeholder="Cari nama, ID staf, citizen ID..."
                                autocomplete="off"
-                               class="w-full pl-8 pr-7 py-1.5 bg-black/60 border border-white/15 rounded-lg text-white text-xs placeholder-white/40 focus:outline-none focus:border-sky-400">
-                        <button type="button" onclick="clearContractSearch()" id="contract_clear_search" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white text-xs">
+                               class="w-full pl-9 pr-8 py-2.5 bg-black/60 border border-white/20 rounded-xl text-white text-sm placeholder-white/40 focus:outline-none focus:border-sky-400 shadow-inner">
+                        <button type="button" onclick="clearContractSearch()" id="contract_clear_search" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white text-sm">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
 
-                    <div id="contract_members_list" class="max-h-60 overflow-y-auto space-y-1 pr-1 custom-scrollbar text-xs">
+                    <div id="contract_members_list" class="max-h-72 sm:max-h-80 overflow-y-auto space-y-1.5 pr-1.5 custom-scrollbar text-xs">
                         @if(isset($staffList))
                             @foreach($staffList as $s)
                                 @php
@@ -54,18 +71,18 @@
                                     $roleTitle = $s->medicRole?->display_name ?? $s->role?->display_name ?? 'Staf';
                                     $searchString = strtolower($s->name . ' ' . ($s->staff_id ?? '') . ' ' . ($s->citizen_id ?? '') . ' ' . ($s->role?->display_name ?? '') . ' ' . ($s->medicRole?->display_name ?? '') . ' ' . ($isPaused ? 'paused nonaktif' : 'aktif'));
                                 @endphp
-                                <div class="contract-member-item p-2 hover:bg-white/10 rounded-lg cursor-pointer flex items-center justify-between transition border border-transparent hover:border-white/10"
+                                <div class="contract-member-item p-2.5 sm:p-3 hover:bg-white/10 rounded-xl cursor-pointer flex items-center justify-between transition border border-transparent hover:border-sky-500/30"
                                      data-id="{{ $s->id }}"
                                      data-search="{{ $searchString }}"
                                      onclick="selectContractMember({{ $s->id }}, '{{ addslashes($s->name) }}', '{{ $s->staff_id ?? '-' }}', '{{ addslashes($roleTitle) }}', {{ $isPaused ? 'true' : 'false' }})">
                                     <div class="min-w-0 pr-2">
-                                        <div class="font-bold text-white truncate flex items-center gap-1.5">
+                                        <div class="font-bold text-white text-xs sm:text-sm truncate flex items-center gap-2">
                                             <span>{{ $s->name }}</span>
                                             @if($isPaused)
-                                                <span class="text-[9px] px-1.5 py-0.2 rounded font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">Paused</span>
+                                                <span class="text-[9px] px-2 py-0.5 rounded-full font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">Paused</span>
                                             @endif
                                         </div>
-                                        <div class="text-[10px] text-white/50 truncate mt-0.5">
+                                        <div class="text-[11px] text-white/50 truncate mt-1">
                                             <span class="text-sky-300 font-semibold">{{ $roleTitle }}</span>
                                             &bull; ID: <span class="font-mono text-white/70">{{ $s->staff_id ?? '-' }}</span>
                                             @if(!empty($s->citizen_id))
@@ -73,7 +90,7 @@
                                             @endif
                                         </div>
                                     </div>
-                                    <i class="fas fa-check text-sky-400 text-xs hidden contract-check-icon shrink-0"></i>
+                                    <i class="fas fa-check text-sky-400 text-sm contract-check-icon shrink-0" style="display: none;"></i>
                                 </div>
                             @endforeach
                         @endif
@@ -231,7 +248,7 @@ function selectContractMember(id, name, staffId, roleTitle, isPaused) {
         const isMatch = el.getAttribute('data-id') == id;
         el.classList.toggle('bg-white/10', isMatch);
         const icon = el.querySelector('.contract-check-icon');
-        if (icon) icon.classList.toggle('hidden', !isMatch);
+        if (icon) icon.style.display = isMatch ? 'inline-block' : 'none';
     });
 
     const pausedBadge = isPaused ? '<span class="text-[9px] px-1.5 py-0.2 rounded font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 ml-1">Paused</span>' : '';
