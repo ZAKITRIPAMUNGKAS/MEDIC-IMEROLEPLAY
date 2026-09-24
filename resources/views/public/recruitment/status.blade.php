@@ -184,59 +184,102 @@
 
                         {{-- ── STATUS DETAIL BOX ── --}}
                         @if(in_array($status, ['accepted','approved']))
-                            <div class="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 space-y-3">
-                                <div class="flex items-center gap-2 text-emerald-300 font-black text-sm">
-                                    <i class="fas fa-award text-base shrink-0"></i>
-                                    <span>SELAMAT! ANDA RESMI DITERIMA SEBAGAI PARAMEDIS</span>
+                            @php
+                                $maskedEmail = '-';
+                                if (!empty($app->email)) {
+                                    $parts = explode('@', $app->email);
+                                    $userPart = substr($parts[0], 0, 3) . '***';
+                                    $domainPart = $parts[1] ?? '';
+                                    $maskedEmail = $userPart . ($domainPart ? '@' . $domainPart : '');
+                                }
+                            @endphp
+                            <div class="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-950/40 via-emerald-900/15 to-slate-900/70 p-5 sm:p-6 shadow-xl backdrop-blur-md space-y-4">
+                                {{-- Header Badge & Title --}}
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-white/10">
+                                    <div class="space-y-1">
+                                        <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-bold text-[11px] uppercase tracking-wider border border-emerald-500/30">
+                                            <i class="fas fa-award text-xs text-emerald-400"></i>
+                                            Hasil Evaluasi Akhir
+                                        </div>
+                                        <h3 class="text-base sm:text-lg font-black text-white tracking-wide">
+                                            SELAMAT! ANDA RESMI DITERIMA SEBAGAI PARAMEDIS
+                                        </h3>
+                                    </div>
+                                    <span class="inline-flex items-center gap-1.5 self-start sm:self-center px-3 py-1 bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-bold text-xs rounded-xl shadow-sm">
+                                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                        {{ $periodName }}
+                                    </span>
                                 </div>
-                                <p class="text-slate-300 text-sm leading-relaxed">
-                                    Selamat bergabung di <strong class="text-white">Alta Hospital Medical Center</strong>!
-                                    Anda terdaftar sebagai anggota <strong class="text-white">{{ $periodName }}</strong>.
+
+                                <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+                                    Selamat bergabung di <strong class="text-white font-bold">Alta Hospital Medical Center</strong>! Anda telah dinyatakan lolos seluruh tahapan seleksi rekrutmen dan resmi terdaftar di database rumah sakit.
                                 </p>
 
-                                {{-- Login Info Box --}}
-                                <div class="rounded-xl bg-white/5 border border-white/10 p-4 space-y-3">
-                                    <p class="text-xs font-black text-emerald-300 uppercase tracking-wider flex items-center gap-1.5">
-                                        <i class="fas fa-key"></i> Informasi Akun Portal Staf
-                                    </p>
-                                    <div class="space-y-1.5 text-xs text-slate-300">
-                                        <div class="flex items-start gap-2">
-                                            <i class="fas fa-circle-check text-emerald-400 mt-0.5 shrink-0 text-[10px]"></i>
-                                            <span>Akun Anda sudah <strong class="text-white">AKTIF & TERDAFTAR</strong> secara otomatis di sistem.</span>
+                                {{-- Structured Credential Cards Grid --}}
+                                <div class="rounded-xl bg-slate-900/60 border border-white/10 p-4 space-y-3.5">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-2 text-xs font-black text-emerald-300 uppercase tracking-wider">
+                                            <i class="fas fa-id-badge text-emerald-400"></i>
+                                            Informasi Kredensial Portal Staf
                                         </div>
-                                        <div class="flex items-start gap-2">
-                                            <i class="fas fa-circle-check text-emerald-400 mt-0.5 shrink-0 text-[10px]"></i>
-                                            <span><strong class="text-white">Tidak perlu daftar ulang.</strong> Langsung login menggunakan email & password yang Anda buat saat mendaftar.</span>
-                                        </div>
-                                        @if(!empty($app->email))
-                                        <div class="flex items-start gap-2">
-                                            <i class="fas fa-circle-check text-emerald-400 mt-0.5 shrink-0 text-[10px]"></i>
-                                            <span>
-                                                Email login Anda:
-                                                <code class="font-mono bg-emerald-500/20 px-1.5 py-0.5 rounded text-emerald-200 font-bold">
-                                                    {{ substr($app->email, 0, 3) }}***@{{ explode('@', $app->email)[1] ?? '' }}
-                                                </code>
+                                        <span class="text-[11px] font-semibold text-emerald-400/90 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                                            <i class="fas fa-check-circle text-[10px]"></i> Akun Aktif Otomatis
+                                        </span>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
+                                        {{-- Tile 1: Email --}}
+                                        <div class="bg-white/5 border border-white/5 rounded-lg p-2.5 flex flex-col justify-between">
+                                            <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Email Login</span>
+                                            <span class="font-mono font-bold text-emerald-200 mt-1 truncate" title="{{ $maskedEmail }}">
+                                                {{ $maskedEmail }}
                                             </span>
                                         </div>
-                                        @endif
-                                        <div class="flex items-start gap-2">
-                                            <i class="fas fa-circle-check text-emerald-400 mt-0.5 shrink-0 text-[10px]"></i>
-                                            <span>CID Anda: <code class="font-mono bg-emerald-500/20 px-1.5 py-0.5 rounded text-emerald-300 font-bold">#{{ $app->cid }}</code></span>
+
+                                        {{-- Tile 2: Citizen ID --}}
+                                        <div class="bg-white/5 border border-white/5 rounded-lg p-2.5 flex flex-col justify-between">
+                                            <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Citizen ID (CID)</span>
+                                            <span class="font-mono font-bold text-white mt-1">
+                                                #{{ $app->cid }}
+                                            </span>
                                         </div>
-                                        <div class="flex items-start gap-2">
-                                            <i class="fas fa-circle-check text-emerald-400 mt-0.5 shrink-0 text-[10px]"></i>
-                                            <span>Badge angkatan Anda: <span class="font-bold text-white">{{ $periodName }}</span></span>
-                                        </div>
-                                        <div class="flex items-start gap-2">
-                                            <i class="fas fa-circle-info text-sky-400 mt-0.5 shrink-0 text-[10px]"></i>
-                                            <span class="text-sky-300">Belum punya akun? Hubungi Admin / HRD melalui Discord untuk dibuatkan akun.</span>
+
+                                        {{-- Tile 3: Angkatan --}}
+                                        <div class="bg-white/5 border border-white/5 rounded-lg p-2.5 flex flex-col justify-between">
+                                            <span class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Badge Angkatan</span>
+                                            <span class="font-semibold text-white mt-1 truncate">
+                                                {{ $periodName }}
+                                            </span>
                                         </div>
                                     </div>
-                                    <a href="{{ route('staff.login') }}"
-                                       class="mt-1 w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-black text-xs text-white shadow-lg transition"
-                                       style="background: linear-gradient(135deg, #059669, #10b981);">
-                                        <i class="fas fa-sign-in-alt"></i> Login ke Portal Staf Sekarang
-                                    </a>
+
+                                    {{-- Helpful Instructions Note --}}
+                                    <div class="rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-3 text-xs space-y-1.5 text-slate-300">
+                                        <div class="flex items-start gap-2">
+                                            <i class="fas fa-check-circle text-emerald-400 mt-0.5 shrink-0 text-xs"></i>
+                                            <span>
+                                                <strong class="text-white font-bold">Tidak perlu daftar ulang.</strong>
+                                                Gunakan email di atas dan password yang Anda tentukan saat pengisian formulir untuk masuk ke portal.
+                                            </span>
+                                        </div>
+                                        <div class="flex items-start gap-2 text-slate-400">
+                                            <i class="fas fa-headset text-sky-400 mt-0.5 shrink-0 text-xs"></i>
+                                            <span>
+                                                Mengalami kendala saat login atau lupa kata sandi? Hubungi tim HRD / Administrator melalui Discord resmi.
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {{-- Action Button --}}
+                                    <div class="pt-1">
+                                        <a href="{{ route('staff.login') }}"
+                                           class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 py-2.5 rounded-xl font-black text-xs text-white shadow-lg transition-all duration-200 hover:brightness-110 active:scale-[0.99]"
+                                           style="background: linear-gradient(135deg, #059669 0%, #10b981 100%); box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.35);">
+                                            <i class="fas fa-sign-in-alt"></i>
+                                            <span>Login ke Portal Staf Sekarang</span>
+                                            <i class="fas fa-arrow-right text-[10px] opacity-80"></i>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
 
@@ -414,17 +457,26 @@
                                 </div>
                             </div>
 
-                        @elseif(!empty($app->email) && !in_array($status, ['rejected']))
-                            {{-- Email sudah terisi -- tampilkan konfirmasi --}}
+                        @elseif(!empty($app->email) && !in_array($status, ['accepted', 'approved', 'rejected']))
+                            {{-- Email sudah terisi -- tampilkan konfirmasi (untuk tahap review/interview) --}}
+                            @php
+                                $maskedEmailNotice = '-';
+                                if (!empty($app->email)) {
+                                    $parts = explode('@', $app->email);
+                                    $userPart = substr($parts[0], 0, 3) . '***';
+                                    $domainPart = $parts[1] ?? '';
+                                    $maskedEmailNotice = $userPart . ($domainPart ? '@' . $domainPart : '');
+                                }
+                            @endphp
                             <div class="border-t border-white/10 pt-4">
                                 <div class="rounded-xl bg-emerald-500/10 border border-emerald-500/30 p-3 flex items-center gap-2.5 text-xs text-emerald-300">
                                     <i class="fas fa-shield-check text-emerald-400 shrink-0"></i>
                                     <span>
-                                        Akun portal sudah siap. Email login:
+                                        Akun portal sudah disiapkan. Email login:
                                         <code class="font-mono bg-emerald-500/20 px-1.5 py-0.5 rounded text-emerald-200 font-bold">
-                                            {{ substr($app->email, 0, 3) }}***@{{ explode('@', $app->email)[1] ?? '' }}
+                                            {{ $maskedEmailNotice }}
                                         </code>
-                                        — Simpan email dan password Anda.
+                                        — Simpan email dan password Anda. Akun akan aktif otomatis jika dinyatakan lolos.
                                     </span>
                                 </div>
                             </div>
