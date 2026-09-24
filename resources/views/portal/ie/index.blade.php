@@ -13,12 +13,16 @@
     <div class="mb-4 p-4 bg-emerald-500/20 border border-emerald-500/40 rounded-xl text-emerald-300 text-sm flex items-center gap-2"><i class="fas fa-check-circle"></i> {{ session('success') }}</div>
     @endif
 <style>
+.custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(56, 189, 248, 0.45) #0b1329;
+}
 .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
     height: 6px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.35);
+    background: #0b1329;
     border-radius: 9999px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
@@ -31,7 +35,7 @@
 </style>
 
     {{-- Form Terbitkan Kontrak Medis --}}
-    <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 mb-6">
+    <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 mb-6 shadow-xl">
         <h3 class="text-white font-semibold mb-4 flex items-center gap-2"><i class="fas fa-plus-circle text-sky-400"></i> Terbitkan Kontrak Medis Baru</h3>
         <form method="POST" action="{{ route('portal.ie.store') }}" enctype="multipart/form-data" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             @csrf
@@ -43,27 +47,33 @@
 
                 {{-- Trigger Button --}}
                 <button type="button" id="contractSelectTrigger" onclick="toggleContractDropdown()"
-                        class="w-full px-3.5 py-2.5 bg-white/10 border border-white/20 rounded-xl text-white text-sm flex items-center justify-between text-left focus:outline-none focus:border-sky-400 hover:border-white/30 transition shadow-inner">
+                        class="w-full px-3.5 py-2.5 bg-slate-900/80 border border-white/15 hover:border-sky-400/50 rounded-xl text-white text-sm flex items-center justify-between text-left focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400/30 transition shadow-inner">
                     <span id="contract_select_text" class="text-white/40 truncate flex items-center gap-2">
                         <i class="fas fa-search text-white/30 text-xs"></i>
                         <span>— Cari &amp; Pilih Anggota —</span>
                     </span>
-                    <i class="fas fa-chevron-down text-white/40 text-xs ml-2 shrink-0 transition-transform" id="contract_select_arrow"></i>
+                    <i class="fas fa-chevron-down text-white/40 text-xs ml-2 shrink-0 transition-transform duration-200" id="contract_select_arrow"></i>
                 </button>
 
                 {{-- Popover Dropdown Panel --}}
-                <div id="contractDropdownPanel" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-slate-900 border border-sky-500/40 rounded-2xl shadow-2xl z-50 p-2.5 space-y-2 backdrop-blur-2xl">
+                <div id="contractDropdownPanel"
+                     style="background-color: #0d1527 !important; background: #0d1527 !important; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(56, 189, 248, 0.35); z-index: 100;"
+                     class="hidden absolute left-0 w-full sm:w-[480px] max-w-[92vw] top-full mt-2 border border-sky-500/40 rounded-2xl p-3 space-y-2.5">
+                    
+                    {{-- Search Input --}}
                     <div class="relative">
-                        <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-white/40 text-sm"></i>
-                        <input type="text" id="contract_search_input" placeholder="Cari nama, ID staf, citizen ID..."
+                        <i class="fas fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-sky-400/70 text-xs"></i>
+                        <input type="text" id="contract_search_input" placeholder="Cari nama, ID staf, citizen ID, jabatan..."
                                autocomplete="off"
-                               class="w-full pl-9 pr-8 py-2.5 bg-black/60 border border-white/20 rounded-xl text-white text-sm placeholder-white/40 focus:outline-none focus:border-sky-400 shadow-inner">
-                        <button type="button" onclick="clearContractSearch()" id="contract_clear_search" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white text-sm">
-                            <i class="fas fa-times"></i>
+                               style="background-color: #060b18 !important;"
+                               class="w-full pl-9 pr-8 py-2.5 bg-slate-950 border border-white/15 focus:border-sky-400 rounded-xl text-white text-xs sm:text-sm placeholder-white/40 focus:outline-none focus:ring-1 focus:ring-sky-400/30 transition shadow-inner">
+                        <button type="button" onclick="clearContractSearch()" id="contract_clear_search" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white text-xs p-1">
+                            <i class="fas fa-times-circle"></i>
                         </button>
                     </div>
 
-                    <div id="contract_members_list" class="max-h-72 sm:max-h-80 overflow-y-auto space-y-1.5 pr-1.5 custom-scrollbar text-xs">
+                    {{-- Members List --}}
+                    <div id="contract_members_list" class="max-h-72 sm:max-h-80 overflow-y-auto space-y-1.5 pr-1 custom-scrollbar text-xs">
                         @if(isset($staffList))
                             @foreach($staffList as $s)
                                 @php
@@ -71,31 +81,39 @@
                                     $roleTitle = $s->medicRole?->display_name ?? $s->role?->display_name ?? 'Staf';
                                     $searchString = strtolower($s->name . ' ' . ($s->staff_id ?? '') . ' ' . ($s->citizen_id ?? '') . ' ' . ($s->role?->display_name ?? '') . ' ' . ($s->medicRole?->display_name ?? '') . ' ' . ($isPaused ? 'paused nonaktif' : 'aktif'));
                                 @endphp
-                                <div class="contract-member-item p-2.5 sm:p-3 hover:bg-white/10 rounded-xl cursor-pointer flex items-center justify-between transition border border-transparent hover:border-sky-500/30"
+                                <div class="contract-member-item p-2.5 rounded-xl cursor-pointer flex items-center justify-between transition border border-white/5 hover:border-sky-500/40 hover:bg-sky-500/10"
+                                     style="background-color: rgba(255, 255, 255, 0.03);"
                                      data-id="{{ $s->id }}"
                                      data-search="{{ $searchString }}"
                                      onclick="selectContractMember({{ $s->id }}, '{{ addslashes($s->name) }}', '{{ $s->staff_id ?? '-' }}', '{{ addslashes($roleTitle) }}', {{ $isPaused ? 'true' : 'false' }})">
-                                    <div class="min-w-0 pr-2">
-                                        <div class="font-bold text-white text-xs sm:text-sm truncate flex items-center gap-2">
-                                            <span>{{ $s->name }}</span>
-                                            @if($isPaused)
-                                                <span class="text-[9px] px-2 py-0.5 rounded-full font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">Paused</span>
-                                            @endif
+                                    <div class="flex items-center gap-3 min-w-0 pr-2">
+                                        <div class="w-8 h-8 rounded-lg bg-sky-500/15 border border-sky-500/25 flex items-center justify-center text-sky-400 shrink-0 text-xs">
+                                            <i class="fas fa-user-md"></i>
                                         </div>
-                                        <div class="text-[11px] text-white/50 truncate mt-1">
-                                            <span class="text-sky-300 font-semibold">{{ $roleTitle }}</span>
-                                            &bull; ID: <span class="font-mono text-white/70">{{ $s->staff_id ?? '-' }}</span>
-                                            @if(!empty($s->citizen_id))
-                                                &bull; CID: <span class="font-mono text-white/70">{{ $s->citizen_id }}</span>
-                                            @endif
+                                        <div class="min-w-0">
+                                            <div class="font-bold text-white text-xs sm:text-sm truncate flex items-center gap-2">
+                                                <span>{{ $s->name }}</span>
+                                                @if($isPaused)
+                                                    <span class="text-[9px] px-2 py-0.5 rounded-full font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                                                        <i class="fas fa-pause text-[8px] mr-0.5"></i>Paused
+                                                    </span>
+                                                @endif
+                                            </div>
+                                            <div class="text-[11px] text-white/50 truncate mt-0.5 flex items-center gap-1.5 flex-wrap">
+                                                <span class="px-1.5 py-0.2 rounded text-[10px] bg-sky-500/20 text-sky-300 font-semibold border border-sky-500/30">{{ $roleTitle }}</span>
+                                                <span>&bull; ID: <span class="font-mono text-white/80">{{ $s->staff_id ?? '-' }}</span></span>
+                                                @if(!empty($s->citizen_id))
+                                                    <span>&bull; CID: <span class="font-mono text-white/80">{{ $s->citizen_id }}</span></span>
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
-                                    <i class="fas fa-check text-sky-400 text-sm contract-check-icon shrink-0" style="display: none;"></i>
+                                    <i class="fas fa-check-circle text-sky-400 text-base contract-check-icon shrink-0 mr-1" style="display: none;"></i>
                                 </div>
                             @endforeach
                         @endif
-                        <div id="contract_no_results" class="hidden py-6 text-center text-white/40 text-xs">
-                            <i class="fas fa-user-slash text-xl mb-1 block"></i>
+                        <div id="contract_no_results" class="hidden py-8 text-center text-white/40 text-xs">
+                            <i class="fas fa-user-slash text-2xl mb-2 text-white/30 block"></i>
                             Tidak ada anggota yang cocok dengan pencarian.
                         </div>
                     </div>
@@ -104,23 +122,27 @@
 
             <div>
                 <label class="block text-xs text-white/50 mb-1">Judul Kontrak *</label>
-                <input type="text" name="title" required maxlength="255" value="Surat Perjanjian Kontrak Medis" class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-xl text-white text-sm focus:outline-none focus:border-sky-400">
+                <input type="text" name="title" required maxlength="255" value="Surat Perjanjian Kontrak Medis"
+                       class="w-full px-3.5 py-2.5 bg-slate-900/80 border border-white/15 focus:border-sky-400 rounded-xl text-white text-sm focus:outline-none focus:ring-1 focus:ring-sky-400/30 transition shadow-inner">
             </div>
 
             <div>
                 <label class="block text-xs text-white/50 mb-1">Tanggal Terbit *</label>
-                <input type="date" name="issue_date" value="{{ date('Y-m-d') }}" required class="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-xl text-white text-sm focus:outline-none focus:border-sky-400">
+                <input type="date" name="issue_date" value="{{ date('Y-m-d') }}" required
+                       class="w-full px-3.5 py-2.5 bg-slate-900/80 border border-white/15 focus:border-sky-400 rounded-xl text-white text-sm focus:outline-none focus:ring-1 focus:ring-sky-400/30 transition shadow-inner">
             </div>
 
-            <div class="col-span-1 sm:col-span-3 p-3 bg-sky-500/10 border border-sky-500/25 rounded-xl text-sky-200 text-xs flex items-start gap-2.5">
-                <i class="fas fa-magic text-sky-400 mt-0.5 shrink-0"></i>
-                <div class="leading-relaxed text-[11px]">
-                    <strong class="text-white">Cetak Dokumen &amp; Nomor Registrasi Otomatis:</strong> Nomor kontrak akan dibuat otomatis oleh sistem secara berurutan (format: <code class="font-mono text-sky-300 bg-sky-500/20 px-1 py-0.5 rounded">001/IER-IMC/KK/IX/2026</code>) dengan masa berlaku tetap/permanen. Sistem men-generate template dokumen resmi dengan Stempel Resmi &amp; Tanda Tangan Digital yang langsung tersimpan di profil anggota.
+            <div class="col-span-1 sm:col-span-3 p-3.5 bg-sky-500/10 border border-sky-500/25 rounded-xl text-sky-200 text-xs flex items-start gap-3 shadow-sm">
+                <div class="w-8 h-8 rounded-lg bg-sky-500/20 border border-sky-500/30 flex items-center justify-center text-sky-400 shrink-0 mt-0.5">
+                    <i class="fas fa-magic text-sm"></i>
+                </div>
+                <div class="leading-relaxed text-[12px]">
+                    <strong class="text-white font-semibold">Cetak Dokumen &amp; Nomor Registrasi Otomatis:</strong> Nomor kontrak akan dibuat otomatis oleh sistem secara berurutan (format: <code class="font-mono text-sky-300 bg-sky-500/20 px-1.5 py-0.5 rounded border border-sky-500/30">001/IER-IMC/KK/IX/2026</code>) dengan masa berlaku permanen. Dokumen resmi dilengkapi Stempel Resmi &amp; Tanda Tangan Digital yang langsung tersimpan di profil anggota.
                 </div>
             </div>
 
             <div class="col-span-1 sm:col-span-3">
-                <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold rounded-xl text-sm hover:from-sky-400 hover:to-blue-500 transition-all flex items-center gap-2 shadow-lg">
+                <button type="submit" class="px-6 py-2.5 bg-gradient-to-r from-sky-500 to-blue-600 text-white font-semibold rounded-xl text-sm hover:from-sky-400 hover:to-blue-500 transition-all flex items-center gap-2 shadow-lg shadow-sky-500/25 cursor-pointer">
                     <i class="fas fa-magic"></i> Terbitkan Kontrak &amp; Generate Dokumen ke Profil
                 </button>
             </div>
@@ -246,16 +268,21 @@ function selectContractMember(id, name, staffId, roleTitle, isPaused) {
 
     document.querySelectorAll('.contract-member-item').forEach(el => {
         const isMatch = el.getAttribute('data-id') == id;
-        el.classList.toggle('bg-white/10', isMatch);
+        el.classList.toggle('border-sky-500/60', isMatch);
+        el.classList.toggle('bg-sky-500/20', isMatch);
         const icon = el.querySelector('.contract-check-icon');
         if (icon) icon.style.display = isMatch ? 'inline-block' : 'none';
     });
 
-    const pausedBadge = isPaused ? '<span class="text-[9px] px-1.5 py-0.2 rounded font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 ml-1">Paused</span>' : '';
+    const pausedBadge = isPaused ? '<span class="text-[9px] px-1.5 py-0.5 rounded-full font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 ml-1">Paused</span>' : '';
     document.getElementById('contract_select_text').innerHTML = `
-        <span class="font-bold text-white">${name}</span>
-        ${pausedBadge}
-        <span class="text-white/50 text-xs">(${staffId} &bull; ${roleTitle})</span>
+        <div class="flex items-center gap-2 truncate">
+            <span class="w-2 h-2 rounded-full bg-sky-400 shrink-0"></span>
+            <span class="font-bold text-white text-xs sm:text-sm truncate">${name}</span>
+            ${pausedBadge}
+            <span class="px-1.5 py-0.5 rounded text-[10px] bg-sky-500/20 text-sky-300 font-semibold border border-sky-500/30 truncate">${roleTitle}</span>
+            <span class="text-white/40 text-xs font-mono shrink-0">(${staffId})</span>
+        </div>
     `;
 
     closeContractDropdown();

@@ -471,12 +471,16 @@
 </div>
 
 <style>
+.custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(245, 158, 11, 0.45) #0b1329;
+}
 .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
     height: 6px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.35);
+    background: #0b1329;
     border-radius: 9999px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
@@ -537,7 +541,9 @@
                 </button>
 
                 {{-- Popover Dropdown Panel --}}
-                <div id="ptdhDropdownPanel" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-slate-900 border border-amber-500/40 rounded-2xl shadow-2xl z-50 p-2.5 space-y-2 backdrop-blur-2xl">
+                <div id="ptdhDropdownPanel"
+                     style="background-color: #0f172a !important; background: #0f172a !important; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(245, 158, 11, 0.4); z-index: 100;"
+                     class="hidden absolute left-0 right-0 top-full mt-1.5 border border-amber-500/40 rounded-2xl p-2.5 space-y-2">
                     {{-- Search Field --}}
                     <div class="relative">
                         <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-white/40 text-sm"></i>
