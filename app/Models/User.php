@@ -751,71 +751,38 @@ class User extends Authenticatable
         $creditScore  = $this->getCreditBalance();
         $checklist    = [];
 
-        // ── Trainee ke jenjang awal ───────────────────────────────────────────
-        if ($currentName === 'trainee') {
+        // ── Dokter Umum ke Dokter Spesialis ───────────────────────────────────
+        if (in_array($targetName, ['dokter_spesialis', 'dokter spesialis', 'spesialis']) || in_array($currentName, ['dokter_umum', 'dokter umum'])) {
             $checklist[] = [
-                'key'   => 'credit_score_80',
-                'label' => 'Credit Score minimal 80 poin (saat ini: ' . $creditScore . ')',
-                'met'   => $creditScore >= 80,
+                'key'   => 'credit_score_85',
+                'label' => 'Credit Score minimal 85 poin (saat ini: ' . $creditScore . ')',
+                'met'   => $creditScore >= 85,
             ];
-            $trainingDays = $this->getDaysActiveSinceJoining();
+            $daysInRole = $this->getDaysInCurrentRole();
             $checklist[] = [
-                'key'   => 'training_days_7',
-                'label' => 'Masa training minimal 7 hari (saat ini: ' . $trainingDays . ' hari)',
-                'met'   => $trainingDays >= 7,
+                'key'   => 'role_active_20_days',
+                'label' => 'Masa aktif Dokter Umum minimal 20 hari (saat ini: ' . $daysInRole . ' hari)',
+                'met'   => $daysInRole >= 20,
             ];
-            $dutyHours = $this->getTotalDutyHours();
+            // Terdaftar aktif dalam Dokter Residen — cek stase aktif / completed
+            $isResiden = $this->staseApplications()
+                ->where('passed', true)
+                ->exists();
             $checklist[] = [
-                'key'   => 'duty_hours_15',
-                'label' => 'Jam terbang on-duty minimal 15 jam (saat ini: ' . $dutyHours . ' jam)',
-                'met'   => $dutyHours >= 15,
-            ];
-            $hasVehicle = $this->hasCertification('vehicle_land') || $this->hasCertification('vehicle_heli');
-            $checklist[] = [
-                'key'   => 'vehicle_cert',
-                'label' => 'Memiliki sertifikat kendaraan (GA)',
-                'met'   => $hasVehicle,
-            ];
-            return $checklist;
-        }
-
-        // ── Perawat & Co-ass ke tingkat berikutnya ────────────────────────────
-        if (in_array($currentName, ['perawat', 'co_ass'])) {
-            $checklist[] = [
-                'key'   => 'credit_score_80',
-                'label' => 'Credit Score minimal 80 poin (saat ini: ' . $creditScore . ')',
-                'met'   => $creditScore >= 80,
+                'key'   => 'residen_active',
+                'label' => 'Terdaftar aktif dalam program Dokter Residen (lulus minimal 1 stase)',
+                'met'   => $isResiden,
             ];
             $checklist[] = [
-                'key'   => 'operation_cert',
-                'label' => 'Memiliki sertifikat operasi (PND)',
-                'met'   => $this->hasCertification('operation_cert'),
-            ];
-            $assistantMinor = $this->getAssistantMinorOperationCount();
-            $checklist[] = [
-                'key'   => 'assistant_minor_5',
-                'label' => 'Asisten Operasi Minor minimal 5x (saat ini: ' . $assistantMinor . 'x)',
-                'met'   => $assistantMinor >= 5,
-            ];
-            $assistantMayor = $this->getAssistantMayorOperationCount();
-            $checklist[] = [
-                'key'   => 'assistant_mayor_1',
-                'label' => 'Pernah menjadi Asisten Operasi Mayor (saat ini: ' . $assistantMayor . 'x)',
-                'met'   => $assistantMayor >= 1,
-            ];
-            $checklist[] = [
-                'key'   => 'medical_contract',
-                'label' => 'Memiliki Surat Perjanjian Kontrak Medis (IE)',
-                'met'   => $this->hasCertification('medical_contract'),
+                'key'   => 'case_study_file',
+                'label' => 'Laporan Studi Kasus spesialisasi (dilampirkan saat submit)',
+                'met'   => false, // dicek saat submit
             ];
             return $checklist;
         }
 
         // ── Co-ass ke Dokter Umum ─────────────────────────────────────────────
-        if ($currentName === 'co_ass' && in_array($targetName, ['dokter_umum', 'dokter umum'])) {
-            // (dihandle blok di atas, tapi kita override khusus jika target = dokter_umum)
-            // Reset dan rebuild
-            $checklist = [];
+        if (in_array($targetName, ['dokter_umum', 'dokter umum', 'dokter']) || in_array($currentName, ['co_ass', 'coass', 'co-ass'])) {
             $checklist[] = [
                 'key'   => 'credit_score_80',
                 'label' => 'Credit Score minimal 80 poin (saat ini: ' . $creditScore . ')',
@@ -852,32 +819,62 @@ class User extends Authenticatable
             return $checklist;
         }
 
-        // ── Dokter Umum ke Dokter Spesialis ───────────────────────────────────
-        if (in_array($currentName, ['dokter_umum', 'dokter umum'])) {
+        // ── Perawat ke Co-ass ─────────────────────────────────────────────────
+        if (in_array($targetName, ['co_ass', 'coass', 'co-ass']) || in_array($currentName, ['perawat'])) {
             $checklist[] = [
-                'key'   => 'credit_score_85',
-                'label' => 'Credit Score minimal 85 poin (saat ini: ' . $creditScore . ')',
-                'met'   => $creditScore >= 85,
-            ];
-            $daysInRole = $this->getDaysInCurrentRole();
-            $checklist[] = [
-                'key'   => 'role_active_20_days',
-                'label' => 'Masa aktif Dokter Umum minimal 20 hari (saat ini: ' . $daysInRole . ' hari)',
-                'met'   => $daysInRole >= 20,
-            ];
-            // Terdaftar aktif dalam Dokter Residen — cek stase aktif / completed
-            $isResiden = $this->staseApplications()
-                ->where('passed', true)
-                ->exists();
-            $checklist[] = [
-                'key'   => 'residen_active',
-                'label' => 'Terdaftar aktif dalam program Dokter Residen (lulus minimal 1 stase)',
-                'met'   => $isResiden,
+                'key'   => 'credit_score_80',
+                'label' => 'Credit Score minimal 80 poin (saat ini: ' . $creditScore . ')',
+                'met'   => $creditScore >= 80,
             ];
             $checklist[] = [
-                'key'   => 'case_study_file',
-                'label' => 'Laporan Studi Kasus spesialisasi (dilampirkan saat submit)',
-                'met'   => false, // dicek saat submit
+                'key'   => 'operation_cert',
+                'label' => 'Memiliki sertifikat operasi (PND)',
+                'met'   => $this->hasCertification('operation_cert'),
+            ];
+            $assistantMinor = $this->getAssistantMinorOperationCount();
+            $checklist[] = [
+                'key'   => 'assistant_minor_5',
+                'label' => 'Asisten Operasi Minor minimal 5x (saat ini: ' . $assistantMinor . 'x)',
+                'met'   => $assistantMinor >= 5,
+            ];
+            $assistantMayor = $this->getAssistantMayorOperationCount();
+            $checklist[] = [
+                'key'   => 'assistant_mayor_1',
+                'label' => 'Pernah menjadi Asisten Operasi Mayor (saat ini: ' . $assistantMayor . 'x)',
+                'met'   => $assistantMayor >= 1,
+            ];
+            $checklist[] = [
+                'key'   => 'medical_contract',
+                'label' => 'Memiliki Surat Perjanjian Kontrak Medis (IE)',
+                'met'   => $this->hasCertification('medical_contract'),
+            ];
+            return $checklist;
+        }
+
+        // ── Trainee ke jenjang awal (Perawat) ──────────────────────────────────
+        if (in_array($targetName, ['perawat']) || $currentName === 'trainee') {
+            $checklist[] = [
+                'key'   => 'credit_score_80',
+                'label' => 'Credit Score minimal 80 poin (saat ini: ' . $creditScore . ')',
+                'met'   => $creditScore >= 80,
+            ];
+            $trainingDays = $this->getDaysActiveSinceJoining();
+            $checklist[] = [
+                'key'   => 'training_days_7',
+                'label' => 'Masa training minimal 7 hari (saat ini: ' . $trainingDays . ' hari)',
+                'met'   => $trainingDays >= 7,
+            ];
+            $dutyHours = $this->getTotalDutyHours();
+            $checklist[] = [
+                'key'   => 'duty_hours_15',
+                'label' => 'Jam terbang on-duty minimal 15 jam (saat ini: ' . $dutyHours . ' jam)',
+                'met'   => $dutyHours >= 15,
+            ];
+            $hasVehicle = $this->hasCertification('vehicle_land') || $this->hasCertification('vehicle_heli');
+            $checklist[] = [
+                'key'   => 'vehicle_cert',
+                'label' => 'Memiliki sertifikat kendaraan (GA)',
+                'met'   => $hasVehicle,
             ];
             return $checklist;
         }
