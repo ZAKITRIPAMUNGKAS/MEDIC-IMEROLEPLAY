@@ -266,36 +266,124 @@ Route::get('/run-migrate', function () {
     }
 });
 
-// FIX: Tambah kolom email & password_temp ke recruitment_applications (kolom sempat hilang/belum ada di production)
+// FIX: Tambah kolom email & password_temp ke recruitment_applications serta perbaiki candidate_interviews
 // DELETE AFTER USE!
 Route::get('/fix-recruitment-email-columns', function () {
+    return redirect('/fix-interview-tables');
+});
+
+Route::get('/fix-interview-tables', function () {
     $results = [];
     try {
-        if (!\Illuminate\Support\Facades\Schema::hasTable('recruitment_applications')) {
-            return '❌ Tabel recruitment_applications tidak ditemukan.';
+        // 1. recruitment_applications
+        if (\Illuminate\Support\Facades\Schema::hasTable('recruitment_applications')) {
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('recruitment_applications', 'email')) {
+                \Illuminate\Support\Facades\Schema::table('recruitment_applications', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->string('email')->nullable()->after('discord_username');
+                });
+                $results[] = '✅ Kolom <b>email</b> berhasil ditambahkan ke tabel recruitment_applications.';
+            } else {
+                $results[] = 'ℹ️ Kolom email pada recruitment_applications sudah ada.';
+            }
+
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('recruitment_applications', 'password_temp')) {
+                \Illuminate\Support\Facades\Schema::table('recruitment_applications', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->string('password_temp')->nullable()->after('email');
+                });
+                $results[] = '✅ Kolom <b>password_temp</b> berhasil ditambahkan ke tabel recruitment_applications.';
+            } else {
+                $results[] = 'ℹ️ Kolom password_temp pada recruitment_applications sudah ada.';
+            }
         }
 
-        if (!\Illuminate\Support\Facades\Schema::hasColumn('recruitment_applications', 'email')) {
-            \Illuminate\Support\Facades\Schema::table('recruitment_applications', function (\Illuminate\Database\Schema\Blueprint $table) {
-                $table->string('email')->nullable()->after('discord_username');
+        // 2. candidate_interviews
+        if (!\Illuminate\Support\Facades\Schema::hasTable('candidate_interviews')) {
+            \Illuminate\Support\Facades\Schema::create('candidate_interviews', function (\Illuminate\Database\Schema\Blueprint $table) {
+                $table->id();
+                $table->unsignedBigInteger('recruitment_application_id')->nullable();
+                $table->unsignedBigInteger('user_id')->nullable();
+                $table->unsignedBigInteger('interviewer_id');
+                $table->string('result', 30)->default('recommended');
+                $table->string('recommendation', 30)->nullable();
+                $table->string('recommended_role', 50)->nullable();
+                $table->text('notes')->nullable();
+                $table->timestamp('interviewed_at')->nullable();
+                $table->timestamps();
             });
-            $results[] = '✅ Kolom <b>email</b> berhasil ditambahkan ke tabel recruitment_applications.';
+            $results[] = '✅ Tabel <b>candidate_interviews</b> baru berhasil dibuat.';
         } else {
-            $results[] = 'ℹ️ Kolom email sudah ada.';
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('candidate_interviews', 'recruitment_application_id')) {
+                \Illuminate\Support\Facades\Schema::table('candidate_interviews', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->unsignedBigInteger('recruitment_application_id')->nullable()->after('id');
+                });
+                $results[] = '✅ Kolom <b>recruitment_application_id</b> berhasil ditambahkan ke candidate_interviews.';
+            } else {
+                $results[] = 'ℹ️ Kolom recruitment_application_id sudah ada.';
+            }
+
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('candidate_interviews', 'result')) {
+                \Illuminate\Support\Facades\Schema::table('candidate_interviews', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->string('result', 30)->default('recommended')->after('interviewer_id');
+                });
+                $results[] = '✅ Kolom <b>result</b> berhasil ditambahkan ke candidate_interviews.';
+            } else {
+                $results[] = 'ℹ️ Kolom result sudah ada.';
+            }
+
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('candidate_interviews', 'interviewed_at')) {
+                \Illuminate\Support\Facades\Schema::table('candidate_interviews', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->timestamp('interviewed_at')->nullable()->after('notes');
+                });
+                $results[] = '✅ Kolom <b>interviewed_at</b> berhasil ditambahkan ke candidate_interviews.';
+            } else {
+                $results[] = 'ℹ️ Kolom interviewed_at sudah ada.';
+            }
+
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('candidate_interviews', 'recommended_role')) {
+                \Illuminate\Support\Facades\Schema::table('candidate_interviews', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->string('recommended_role', 50)->nullable()->after('result');
+                });
+                $results[] = '✅ Kolom <b>recommended_role</b> berhasil ditambahkan ke candidate_interviews.';
+            } else {
+                $results[] = 'ℹ️ Kolom recommended_role sudah ada.';
+            }
+
+            try {
+                \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS = 0;');
+                \Illuminate\Support\Facades\DB::statement('ALTER TABLE candidate_interviews MODIFY user_id BIGINT UNSIGNED NULL');
+                \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS = 1;');
+                $results[] = '✅ Kolom user_id pada candidate_interviews diubah menjadi NULLABLE.';
+            } catch (\Throwable $e) {
+                try { \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS = 1;'); } catch (\Throwable $ignored) {}
+                $results[] = '⚠️ user_id: ' . $e->getMessage();
+            }
+
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasColumn('candidate_interviews', 'recommendation')) {
+                    \Illuminate\Support\Facades\DB::statement('ALTER TABLE candidate_interviews MODIFY recommendation VARCHAR(30) NULL');
+                }
+            } catch (\Throwable $e) {}
         }
 
-        if (!\Illuminate\Support\Facades\Schema::hasColumn('recruitment_applications', 'password_temp')) {
-            \Illuminate\Support\Facades\Schema::table('recruitment_applications', function (\Illuminate\Database\Schema\Blueprint $table) {
-                $table->string('password_temp')->nullable()->after('email');
-            });
-            $results[] = '✅ Kolom <b>password_temp</b> berhasil ditambahkan ke tabel recruitment_applications.';
-        } else {
-            $results[] = 'ℹ️ Kolom password_temp sudah ada.';
+        // 3. users table columns
+        if (\Illuminate\Support\Facades\Schema::hasTable('users')) {
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('users', 'batch')) {
+                \Illuminate\Support\Facades\Schema::table('users', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->string('batch', 50)->nullable()->after('hospital');
+                });
+                $results[] = '✅ Kolom <b>batch</b> berhasil ditambahkan ke tabel users.';
+            }
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('users', 'medic_role_id')) {
+                \Illuminate\Support\Facades\Schema::table('users', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->unsignedBigInteger('medic_role_id')->nullable()->after('sub_role_id');
+                });
+                $results[] = '✅ Kolom <b>medic_role_id</b> berhasil ditambahkan ke tabel users.';
+            }
         }
 
         $results[] = '';
-        $results[] = '🎉 Selesai! Formulir rekrutmen kini bisa menerima email & password pelamar.';
-        $results[] = '🗑️ <b>Hapus route /fix-recruitment-email-columns dari routes/web.php setelah ini!</b>';
+        $results[] = '🎉 Selesai! Semua tabel rekrutmen & evaluasi wawancara sudah sinkron dan siap digunakan.';
+        $results[] = '🗑️ <b>Hapus route /fix-interview-tables dari routes/web.php setelah selesai!</b>';
     } catch (\Exception $e) {
         $results[] = '❌ Error: ' . $e->getMessage();
     }

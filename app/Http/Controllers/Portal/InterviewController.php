@@ -298,111 +298,185 @@ class InterviewController extends Controller
             'notes.required' => 'Catatan penilaian wawancara wajib diisi.',
         ]);
 
-        $targetUser = $candidate->user ?? ($candidate->cid ? User::where('citizen_id', $candidate->cid)->first() : null);
-        $candidateUserId = $candidate->user_id ?? ($targetUser ? $targetUser->id : null);
-
-        $interviewData = [
-            'recruitment_application_id' => $candidate->id,
-            'user_id'                    => $candidateUserId,
-            'interviewer_id'             => Auth::id(),
-            'result'                     => $validated['result'],
-            'recommended_role'           => $validated['result'] === 'recommended' ? $validated['recommended_role'] : null,
-            'notes'                      => $validated['notes'],
-            'interviewed_at'             => now(),
-        ];
-
-        // Safety check if database table column is missing in any environment
         try {
-            CandidateInterview::create($interviewData);
-        } catch (\Illuminate\Database\QueryException $e) {
-            // If user_id is strictly not null in DB legacy schema, fallback to interviewer id
-            if ($e->getCode() === '23000' && !$candidateUserId) {
-                $interviewData['user_id'] = Auth::id();
-                CandidateInterview::create($interviewData);
+            // Pastikan schema candidate_interviews ter-update
+            CandidateInterview::ensureSchema();
+
+            $batchName = $candidate->period?->batch_name;
+
+            // 1. Cari target user yang sudah ada berdasarkan relasi, citizen_id, staff_id, atau email
+            $targetUser = $candidate->user 
+                ?? ($candidate->cid ? User::where('citizen_id', $candidate->cid)->first() : null)
+                ?? ($candidate->cid ? User::where('staff_id', $candidate->cid)->first() : null)
+                ?? (!empty($candidate->email) ? User::where('email', strtolower(trim($candidate->email)))->first() : null);
+
+            $roleLabels = [
+                'trainee'     => 'Trainee',
+                'perawat'     => 'Perawat',
+                'co_ass'      => 'Co-Ass',
+                'dokter_umum' => 'Dokter Umum',
+            ];
+            $roleLabel = $roleLabels[$validated['recommended_role'] ?? ''] ?? 'Staf';
+
+            // 2. Jika RECOMMENDED (Diterima): Buat atau update akun User TERLEBIH DAHULU
+            if ($validated['result'] === 'recommended') {
+                $targetRole = !empty($validated['recommended_role']) 
+                    ? StaffRole::where('name', $validated['recommended_role'])->first() 
+                    : (StaffRole::where('name', 'trainee')->first() ?? StaffRole::orderBy('level', 'asc')->first());
+
+                if ($targetUser) {
+                    $userUpdates = [
+                        'is_active' => true,
+                    ];
+                    if ($targetRole) {
+                        $userUpdates['role_id'] = $targetRole->id;
+                        if (\Illuminate\Support\Facades\Schema::hasColumn('users', 'medic_role_id')) {
+                            $userUpdates['medic_role_id'] = $targetRole->id;
+                        }
+                    }
+                    if (!empty($batchName) && \Illuminate\Support\Facades\Schema::hasColumn('users', 'batch')) {
+                        $userUpdates['batch'] = $batchName;
+                    }
+                    if (empty($targetUser->citizen_id) && $candidate->cid) {
+                        $userUpdates['citizen_id'] = $candidate->cid;
+                    }
+                    if (empty($targetUser->staff_id) && $candidate->cid) {
+                        $userUpdates['staff_id'] = $candidate->cid;
+                    }
+                    $targetUser->update($userUpdates);
+                } else {
+                    // Buat email yang pasti unik
+                    $accountEmail = !empty($candidate->email) ? strtolower(trim($candidate->email)) : null;
+                    if (empty($accountEmail) || User::where('email', $accountEmail)->exists()) {
+                        $baseEmail = \Illuminate\Support\Str::slug($candidate->ic_name, '') ?: 'medic';
+                        $accountEmail = $baseEmail . rand(100, 999) . '@medic.alta';
+                        while (User::where('email', $accountEmail)->exists()) {
+                            $accountEmail = $baseEmail . rand(1000, 99999) . '@medic.alta';
+                        }
+                    }
+
+                    $accountPassword = !empty($candidate->password_temp)
+                        ? \Illuminate\Support\Facades\Hash::make($candidate->password_temp)
+                        : \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(10));
+
+                    $userData = [
+                        'name'          => $candidate->ic_name,
+                        'email'         => $accountEmail,
+                        'citizen_id'    => $candidate->cid,
+                        'staff_id'      => $candidate->cid,
+                        'password'      => $accountPassword,
+                        'role_id'       => $targetRole?->id,
+                        'hospital'      => 'alta',
+                        'is_active'     => true,
+                    ];
+
+                    if (\Illuminate\Support\Facades\Schema::hasColumn('users', 'medic_role_id')) {
+                        $userData['medic_role_id'] = $targetRole?->id;
+                    }
+                    if (!empty($batchName) && \Illuminate\Support\Facades\Schema::hasColumn('users', 'batch')) {
+                        $userData['batch'] = $batchName;
+                    }
+
+                    // Dobel cek sebelum create jika citizen_id atau staff_id ada
+                    $existingStaff = User::where('staff_id', $candidate->cid)
+                        ->orWhere('citizen_id', $candidate->cid)
+                        ->first();
+
+                    if ($existingStaff) {
+                        $existingStaff->update([
+                            'is_active' => true,
+                            'role_id'   => $targetRole?->id,
+                        ]);
+                        $targetUser = $existingStaff;
+                    } else {
+                        $targetUser = User::create($userData);
+                    }
+                }
+
+                if ($targetUser) {
+                    $candidate->update([
+                        'user_id'        => $targetUser->id,
+                        'status'         => 'accepted',
+                        'reviewer_notes' => "Lolos Wawancara. Direkomendasikan sebagai {$roleLabel} oleh " . Auth::user()->name . ". Catatan: " . $validated['notes'],
+                        'reviewed_by'    => Auth::id(),
+                        'reviewed_at'    => now(),
+                    ]);
+                }
             } else {
-                throw $e;
-            }
-        }
-
-        $roleLabels = [
-            'trainee'     => 'Trainee',
-            'perawat'     => 'Perawat',
-            'co_ass'      => 'Co-Ass',
-            'dokter_umum' => 'Dokter Umum',
-        ];
-        $roleLabel = $roleLabels[$validated['recommended_role'] ?? ''] ?? 'Staf';
-
-        $batchName = $candidate->period?->batch_name;
-
-        if ($validated['result'] === 'recommended') {
-            $candidate->update([
-                'status'         => 'accepted',
-                'reviewer_notes' => "Lolos Wawancara. Direkomendasikan sebagai {$roleLabel} oleh " . Auth::user()->name . ". Catatan: " . $validated['notes'],
-            ]);
-
-            $targetRole = !empty($validated['recommended_role']) 
-                ? StaffRole::where('name', $validated['recommended_role'])->first() 
-                : (StaffRole::where('name', 'trainee')->first() ?? StaffRole::orderBy('level', 'asc')->first());
-
-            if ($targetUser) {
-                $userUpdates = [
-                    'is_active' => true,
-                ];
-                if ($targetRole) {
-                    $userUpdates['role_id'] = $targetRole->id;
-                    $userUpdates['medic_role_id'] = $targetRole->id;
-                }
-                if (!empty($batchName)) {
-                    $userUpdates['batch'] = $batchName;
-                }
-                $targetUser->update($userUpdates);
-                if (!$candidate->user_id) {
-                    $candidate->update(['user_id' => $targetUser->id]);
-                }
-            } else {
-                // Auto create akun aktif langsung
-                $dummyEmail = \Illuminate\Support\Str::slug($candidate->ic_name, '') . rand(100, 999) . '@medic.alta';
-                $newUser = User::create([
-                    'name'          => $candidate->ic_name,
-                    'email'         => $dummyEmail,
-                    'citizen_id'    => $candidate->cid,
-                    'staff_id'      => $candidate->cid,
-                    'password'      => \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(10)),
-                    'role_id'       => $targetRole?->id,
-                    'medic_role_id' => $targetRole?->id,
-                    'hospital'      => 'alta',
-                    'batch'         => $batchName,
-                    'is_active'     => true,
+                // NOT RECOMMENDED (Ditolak)
+                $candidate->update([
+                    'status'         => 'rejected',
+                    'reviewer_notes' => "Tidak lolos wawancara oleh " . Auth::user()->name . ". Catatan: " . $validated['notes'],
+                    'reviewed_by'    => Auth::id(),
+                    'reviewed_at'    => now(),
                 ]);
-                $candidate->update(['user_id' => $newUser->id]);
-            }
-        } else {
-            $candidate->update([
-                'status'         => 'rejected',
-                'reviewer_notes' => "Tidak lolos wawancara oleh " . Auth::user()->name . ". Catatan: " . $validated['notes'],
-            ]);
 
-            // Jika tidak lolos, hapus akun sementara agar database bersih dan tidak bisa login
-            if ($targetUser && !$targetUser->isAdmin()) {
-                if ($targetUser->role?->name === 'trainee' || !$targetUser->is_active) {
-                    $targetUser->delete();
-                    $candidate->update(['user_id' => null]);
+                // Jika tidak lolos, hapus akun sementara jika baru dibuat sebagai trainee
+                if ($targetUser && !$targetUser->isAdmin()) {
+                    if ($targetUser->role?->name === 'trainee' || !$targetUser->is_active) {
+                        $targetUser->delete();
+                        $candidate->update(['user_id' => null]);
+                        $targetUser = null;
+                    }
                 }
             }
-        }
 
-        $successMsg = "Hasil wawancara untuk calon {$candidate->ic_name} (CID: {$candidate->cid}) berhasil disimpan.";
+            // 3. Simpan data CandidateInterview (user_id dijamin ada jika recommended)
+            $candidateUserId = $targetUser?->id ?? $candidate->user_id;
 
-        if ($request->ajax() || $request->wantsJson()) {
-            return response()->json([
-                'success'      => true,
-                'message'      => $successMsg,
-                'redirect_url' => route('portal.interview.index'),
+            $interviewData = [
+                'recruitment_application_id' => $candidate->id,
+                'user_id'                    => $candidateUserId,
+                'interviewer_id'             => Auth::id(),
+                'result'                     => $validated['result'],
+                'recommendation'             => $validated['result'],
+                'recommended_role'           => $validated['result'] === 'recommended' ? $validated['recommended_role'] : null,
+                'notes'                      => $validated['notes'],
+                'interviewed_at'             => now(),
+            ];
+
+            try {
+                CandidateInterview::create($interviewData);
+            } catch (\Throwable $e) {
+                \Log::warning('CandidateInterview create warning: ' . $e->getMessage());
+                // Fallback jika user_id masih tidak boleh null di DB legacy
+                if (!$candidateUserId) {
+                    $interviewData['user_id'] = Auth::id();
+                    try {
+                        CandidateInterview::create($interviewData);
+                    } catch (\Throwable $e2) {
+                        \Log::error('CandidateInterview fallback creation also failed: ' . $e2->getMessage());
+                    }
+                }
+            }
+
+            $successMsg = "Hasil wawancara untuk calon {$candidate->ic_name} (CID: {$candidate->cid}) berhasil disimpan.";
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success'      => true,
+                    'message'      => $successMsg,
+                    'redirect_url' => route('portal.interview.index'),
+                ]);
+            }
+
+            return redirect()->route('portal.interview.index')
+                ->with('success', $successMsg);
+        } catch (\Throwable $e) {
+            \Log::error('Interview storeEvaluation error: ' . $e->getMessage(), [
+                'candidate_id' => $candidate->id,
+                'trace'        => $e->getTraceAsString(),
             ]);
-        }
 
-        return redirect()->route('portal.interview.index')
-            ->with('success', $successMsg);
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal menyimpan hasil wawancara: ' . $e->getMessage(),
+                ], 500);
+            }
+
+            return back()->with('error', 'Gagal menyimpan hasil wawancara: ' . $e->getMessage())->withInput();
+        }
     }
 
     /**

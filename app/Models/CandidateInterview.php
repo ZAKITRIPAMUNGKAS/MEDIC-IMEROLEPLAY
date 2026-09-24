@@ -11,6 +11,7 @@ class CandidateInterview extends Model
         'recruitment_application_id',
         'interviewer_id',
         'result',
+        'recommendation',
         'recommended_role',
         'notes',
         'interviewed_at',
@@ -36,13 +37,49 @@ class CandidateInterview extends Model
 
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('candidate_interviews')) {
+                // 1. recruitment_application_id
                 if (!\Illuminate\Support\Facades\Schema::hasColumn('candidate_interviews', 'recruitment_application_id')) {
                     \Illuminate\Support\Facades\Schema::table('candidate_interviews', function ($table) {
-                        $table->unsignedBigInteger('recruitment_application_id')->nullable()->after('user_id');
+                        $table->unsignedBigInteger('recruitment_application_id')->nullable();
                     });
                 }
+
+                // 2. result
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('candidate_interviews', 'result')) {
+                    \Illuminate\Support\Facades\Schema::table('candidate_interviews', function ($table) {
+                        $table->string('result', 30)->default('recommended')->after('interviewer_id');
+                    });
+                    if (\Illuminate\Support\Facades\Schema::hasColumn('candidate_interviews', 'recommendation')) {
+                        \Illuminate\Support\Facades\DB::statement("UPDATE candidate_interviews SET result = recommendation WHERE result IS NULL OR result = ''");
+                    }
+                }
+
+                // 3. recommendation (nullable for legacy DB)
+                if (\Illuminate\Support\Facades\Schema::hasColumn('candidate_interviews', 'recommendation')) {
+                    try {
+                        \Illuminate\Support\Facades\DB::statement('ALTER TABLE candidate_interviews MODIFY recommendation VARCHAR(30) NULL');
+                    } catch (\Throwable $e) {}
+                }
+
+                // 4. interviewed_at
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('candidate_interviews', 'interviewed_at')) {
+                    \Illuminate\Support\Facades\Schema::table('candidate_interviews', function ($table) {
+                        $table->timestamp('interviewed_at')->nullable()->after('notes');
+                    });
+                }
+
+                // 5. recommended_role
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('candidate_interviews', 'recommended_role')) {
+                    \Illuminate\Support\Facades\Schema::table('candidate_interviews', function ($table) {
+                        $table->string('recommended_role', 50)->nullable()->after('result');
+                    });
+                }
+
+                // 6. user_id nullable (disable FK checks during alter)
                 try {
+                    \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS = 0');
                     \Illuminate\Support\Facades\DB::statement('ALTER TABLE candidate_interviews MODIFY user_id BIGINT UNSIGNED NULL');
+                    \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS = 1');
                 } catch (\Throwable $e) {}
             }
         } catch (\Throwable $e) {}
