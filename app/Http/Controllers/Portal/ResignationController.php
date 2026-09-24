@@ -395,12 +395,11 @@ class ResignationController extends Controller
         $requests = $query->paginate(30)->withQueryString();
         $stage    = 'ie';
 
-        $staffList = User::where('is_active', true)
-            ->where('hospital', Auth::user()->hospital ?? 'alta')
+        $staffList = User::where('hospital', Auth::user()->hospital ?? 'alta')
             ->whereNotNull('role_id')
             ->with(['role', 'medicRole'])
             ->orderByRoleLevel()
-            ->get(['id', 'name', 'staff_id', 'citizen_id', 'role_id', 'medic_role_id', 'batch']);
+            ->get(['id', 'name', 'staff_id', 'citizen_id', 'role_id', 'medic_role_id', 'batch', 'is_active', 'status']);
 
         return view('portal.resignation.manage', compact('requests', 'stage', 'staffList'));
     }
@@ -437,16 +436,31 @@ class ResignationController extends Controller
 
         $baseSalary = $paidBaseSalary;
 
-        // Persentase denda berdasarkan peran klinis
-        $userMedic = $targetUser->effective_medic_role?->name ?? $targetUser->role?->name ?? '';
-        $posName = strtolower(trim(str_replace([' ', '-'], '_', (string) ($userMedic ?: $targetUser->role?->display_name ?? ''))));
-
-        if (str_contains($posName, 'dokter_umum') || str_contains($posName, 'dokter umum')) {
-            $pct = 25.0;
-        } elseif (str_contains($posName, 'perawat') || str_contains($posName, 'co_ass') || str_contains($posName, 'coass') || str_contains($posName, 'trainee')) {
-            $pct = 30.0;
+        // Persentase denda berdasarkan peran klinis: Dokter Umum 25%, Perawat & Co-Ass 30%
+        $reqPct = (float) $request->get('fine_percentage', 0);
+        if ($reqPct > 0) {
+            $pct = $reqPct;
         } else {
-            $pct = 30.0;
+            $userMedic = $targetUser->effective_medic_role?->name ?? $targetUser->role?->name ?? '';
+            $posName = strtolower(trim(str_replace([' ', '-', '_'], '', (string) ($userMedic ?: $targetUser->role?->display_name ?? ''))));
+            $roleDisplay = strtolower(trim((string) ($targetUser->role?->display_name ?? '')));
+
+            $isDokter = str_contains($posName, 'dokterumum') || 
+                        str_contains($posName, 'dokter') || 
+                        str_contains($roleDisplay, 'dokter');
+
+            $isPerawatCoAss = str_contains($posName, 'perawat') || 
+                              str_contains($posName, 'coass') || 
+                              str_contains($posName, 'trainee') ||
+                              str_contains($roleDisplay, 'perawat') ||
+                              str_contains($roleDisplay, 'co-ass') ||
+                              str_contains($roleDisplay, 'coass');
+
+            if ($isDokter && !$isPerawatCoAss) {
+                $pct = 25.0;
+            } else {
+                $pct = 30.0;
+            }
         }
 
         $baseFine = (int) round($baseSalary * $pct / 100);
@@ -488,6 +502,7 @@ class ResignationController extends Controller
 
         $validated = $request->validate([
             'user_id'             => 'required|exists:users,id',
+            'fine_percentage'     => 'nullable|numeric|min:1|max:100',
             'ptdh_additional_fee' => 'required|integer|min:0',
             'reason_ic'           => 'nullable|string|max:2000',
             'reason_ooc'          => 'nullable|string|max:2000',
@@ -515,16 +530,31 @@ class ResignationController extends Controller
 
         $baseSalary = $paidBaseSalary;
 
-        // Persentase denda
-        $userMedic = $targetUser->effective_medic_role?->name ?? $targetUser->role?->name ?? '';
-        $posName = strtolower(trim(str_replace([' ', '-'], '_', (string) ($userMedic ?: $targetUser->role?->display_name ?? ''))));
-
-        if (str_contains($posName, 'dokter_umum') || str_contains($posName, 'dokter umum')) {
-            $pct = 25.0;
-        } elseif (str_contains($posName, 'perawat') || str_contains($posName, 'co_ass') || str_contains($posName, 'coass') || str_contains($posName, 'trainee')) {
-            $pct = 30.0;
+        // Persentase denda: gunakan pilihan user jika ada, atau hitung otomatis (Dokter Umum 25%, Perawat & Co-Ass 30%)
+        $reqPct = (float) ($validated['fine_percentage'] ?? 0);
+        if ($reqPct > 0) {
+            $pct = $reqPct;
         } else {
-            $pct = 30.0;
+            $userMedic = $targetUser->effective_medic_role?->name ?? $targetUser->role?->name ?? '';
+            $posName = strtolower(trim(str_replace([' ', '-', '_'], '', (string) ($userMedic ?: $targetUser->role?->display_name ?? ''))));
+            $roleDisplay = strtolower(trim((string) ($targetUser->role?->display_name ?? '')));
+
+            $isDokter = str_contains($posName, 'dokterumum') || 
+                        str_contains($posName, 'dokter') || 
+                        str_contains($roleDisplay, 'dokter');
+
+            $isPerawatCoAss = str_contains($posName, 'perawat') || 
+                              str_contains($posName, 'coass') || 
+                              str_contains($posName, 'trainee') ||
+                              str_contains($roleDisplay, 'perawat') ||
+                              str_contains($roleDisplay, 'co-ass') ||
+                              str_contains($roleDisplay, 'coass');
+
+            if ($isDokter && !$isPerawatCoAss) {
+                $pct = 25.0;
+            } else {
+                $pct = 30.0;
+            }
         }
 
         $baseFine      = (int) round($baseSalary * $pct / 100);

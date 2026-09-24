@@ -39,11 +39,11 @@ class IeContractController extends Controller
 
         $contracts = $query->paginate(30)->withQueryString();
 
-        $staffList = User::where('is_active', true)
-            ->where('hospital', $user->hospital ?? 'alta')
+        $staffList = User::where('hospital', $user->hospital ?? 'alta')
             ->whereNotNull('role_id')
+            ->with(['role', 'medicRole'])
             ->orderByRoleLevel()
-            ->get(['id', 'name', 'staff_id']);
+            ->get(['id', 'name', 'staff_id', 'citizen_id', 'role_id', 'medic_role_id', 'batch', 'is_active']);
 
         return view('portal.ie.index', compact('contracts', 'staffList'));
     }
@@ -61,7 +61,7 @@ class IeContractController extends Controller
             'title'              => 'required|string|max:255',
             'certificate_number' => 'nullable|string|max:100',
             'issue_date'         => 'required|date',
-            'expiry_date'        => 'nullable|date|after_or_equal:issue_date',
+            'expiry_date'        => 'nullable|date',
             'notes'              => 'nullable|string|max:500',
             'file'               => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:10240',
         ]);
@@ -71,12 +71,23 @@ class IeContractController extends Controller
             $filePath = $request->file('file')->store('certifications/ie', 'public');
         }
 
+        // Auto-generate nomor kontrak resmi IE jika tidak diisi manual
+        $certNumber = $validated['certificate_number'] ?? null;
+        if (empty($certNumber)) {
+            $issueDate = \Carbon\Carbon::parse($validated['issue_date'] ?? now());
+            $monthRomans = [1=>'I', 2=>'II', 3=>'III', 4=>'IV', 5=>'V', 6=>'VI', 7=>'VII', 8=>'VIII', 9=>'IX', 10=>'X', 11=>'XI', 12=>'XII'];
+            $roman = $monthRomans[(int)$issueDate->format('n')] ?? 'IX';
+            $year = $issueDate->format('Y');
+            $count = MemberCertification::where('type', 'medical_contract')->whereYear('issue_date', $year)->count() + 1;
+            $certNumber = sprintf('%03d/IER-IMC/KK/%s/%s', $count, $roman, $year);
+        }
+
         $cert = MemberCertification::create([
             'user_id'            => $validated['user_id'],
             'type'               => 'medical_contract',
             'division'           => 'ie',
             'title'              => $validated['title'],
-            'certificate_number' => $validated['certificate_number'] ?? null,
+            'certificate_number' => $certNumber,
             'issued_by_user_id'  => Auth::id(),
             'issue_date'         => $validated['issue_date'],
             'expiry_date'        => $validated['expiry_date'] ?? null,

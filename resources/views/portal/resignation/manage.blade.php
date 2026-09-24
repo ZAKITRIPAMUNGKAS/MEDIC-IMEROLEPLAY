@@ -497,22 +497,85 @@
         <form id="ptdhForm" action="{{ route('portal.resignation.ptdh-store') }}" method="POST" class="space-y-3 pt-3 overflow-y-auto pr-1 text-xs">
             @csrf
 
-            {{-- Pemilihan Staf Medis --}}
-            <div>
-                <label class="block text-[11px] font-bold text-amber-300 uppercase tracking-wider mb-1 flex items-center gap-1.5">
-                    <i class="fas fa-user-md"></i> Pilih Anggota Medis Aktif <span class="text-rose-400">*</span>
+            {{-- Pemilihan Staf Medis (Searchable Dropdown: Aktif & Paused) --}}
+            <div class="relative" id="ptdhSelectContainer">
+                <label class="block text-[11px] font-bold text-amber-300 uppercase tracking-wider mb-1 flex items-center justify-between">
+                    <span class="flex items-center gap-1.5">
+                        <i class="fas fa-user-md"></i> Pilih Anggota Medis (Aktif &amp; Paused) <span class="text-rose-400">*</span>
+                    </span>
+                    <span class="text-[9px] text-white/40 normal-case font-normal">Termasuk akun pemutihan / di-pause</span>
                 </label>
-                <select id="ptdh_user_id" name="user_id" required onchange="fetchPtdhCalculation(this.value)"
-                        class="w-full px-3 py-2 bg-black/50 border border-white/20 rounded-lg text-white text-xs focus:outline-none focus:border-amber-400 cursor-pointer">
-                    <option value="" class="bg-slate-900 text-white/60">-- Pilih Staf Medis yang akan di-PTDH --</option>
-                    @if(isset($staffList))
-                        @foreach($staffList as $staff)
-                        <option value="{{ $staff->id }}" class="bg-slate-900 text-white">
-                            {{ $staff->name }} ({{ $staff->role?->display_name ?? 'Staf' }} | ID: {{ $staff->staff_id ?? '-' }} | Citizen: {{ $staff->citizen_id ?? '-' }})
-                        </option>
-                        @endforeach
-                    @endif
-                </select>
+
+                <input type="hidden" id="ptdh_user_id" name="user_id" required>
+
+                {{-- Trigger Button --}}
+                <button type="button" id="ptdhSelectTrigger" onclick="togglePtdhDropdown()"
+                        class="w-full px-3 py-2 bg-black/60 border border-white/20 rounded-lg text-white text-xs flex items-center justify-between text-left focus:outline-none focus:border-amber-400 hover:border-white/30 transition shadow-inner">
+                    <span id="ptdh_select_text" class="text-white/60 truncate flex items-center gap-2">
+                        <i class="fas fa-search text-white/30 text-[10px]"></i>
+                        <span>-- Cari &amp; Pilih Anggota Medis (Nama / CID / ID) --</span>
+                    </span>
+                    <i class="fas fa-chevron-down text-white/40 text-[10px] ml-2 shrink-0 transition-transform" id="ptdh_select_arrow"></i>
+                </button>
+
+                {{-- Popover Dropdown Panel --}}
+                <div id="ptdhDropdownPanel" class="hidden absolute left-0 right-0 top-full mt-1 bg-slate-900/98 border border-white/20 rounded-xl shadow-2xl z-50 p-2 space-y-2 backdrop-blur-xl">
+                    {{-- Search Field --}}
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-2.5 top-1/2 -translate-y-1/2 text-white/40 text-xs"></i>
+                        <input type="text" id="ptdh_search_input" placeholder="Ketik nama, ID staf, citizen ID, jabatan..."
+                               autocomplete="off"
+                               class="w-full pl-8 pr-7 py-1.5 bg-black/60 border border-white/15 rounded-lg text-white text-xs placeholder-white/40 focus:outline-none focus:border-amber-400">
+                        <button type="button" onclick="clearPtdhSearch()" id="ptdh_clear_search" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white text-xs">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    {{-- List of Members --}}
+                    <div id="ptdh_members_list" class="max-h-56 overflow-y-auto space-y-1 pr-1 custom-scrollbar text-xs">
+                        @if(isset($staffList))
+                            @foreach($staffList as $staff)
+                                @php
+                                    $isPaused = !$staff->is_active;
+                                    $roleTitle = $staff->medicRole?->display_name ?? $staff->role?->display_name ?? 'Staf';
+                                    $searchString = strtolower($staff->name . ' ' . ($staff->staff_id ?? '') . ' ' . ($staff->citizen_id ?? '') . ' ' . ($staff->role?->display_name ?? '') . ' ' . ($staff->medicRole?->display_name ?? '') . ' ' . ($staff->batch ?? '') . ' ' . ($isPaused ? 'paused nonaktif pemutihan' : 'aktif'));
+                                @endphp
+                                <div class="ptdh-member-item p-2 hover:bg-white/10 rounded-lg cursor-pointer flex items-center justify-between transition border border-transparent hover:border-white/10"
+                                     data-id="{{ $staff->id }}"
+                                     data-search="{{ $searchString }}"
+                                     onclick="selectPtdhMember({{ $staff->id }}, '{{ addslashes($staff->name) }}', '{{ addslashes($roleTitle) }}', '{{ $staff->staff_id ?? '-' }}', '{{ $staff->citizen_id ?? '-' }}', {{ $isPaused ? 'true' : 'false' }})">
+                                    <div class="min-w-0 pr-2">
+                                        <div class="font-bold text-white truncate flex items-center gap-1.5">
+                                            <span>{{ $staff->name }}</span>
+                                            @if($isPaused)
+                                                <span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                                                    <i class="fas fa-pause text-[8px] mr-0.5"></i>Paused
+                                                </span>
+                                            @else
+                                                <span class="text-[9px] px-1.5 py-0.5 rounded font-bold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                                                    Aktif
+                                                </span>
+                                            @endif
+                                        </div>
+                                        <div class="text-[10px] text-white/50 truncate mt-0.5">
+                                            <span class="text-amber-200/80">{{ $roleTitle }}</span>
+                                            &bull; ID: <span class="font-mono text-white/70">{{ $staff->staff_id ?? '-' }}</span>
+                                            &bull; CID: <span class="font-mono text-white/70">{{ $staff->citizen_id ?? '-' }}</span>
+                                            @if($staff->batch)
+                                                &bull; <span class="text-white/60">{{ $staff->batch }}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <i class="fas fa-check text-amber-400 text-xs hidden ptdh-check-icon shrink-0"></i>
+                                </div>
+                            @endforeach
+                        @endif
+                        <div id="ptdh_no_results" class="hidden py-6 text-center text-white/40 text-xs">
+                            <i class="fas fa-user-slash text-xl mb-1 block"></i>
+                            Tidak ada anggota yang cocok dengan pencarian.
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {{-- Loading Spinner --}}
@@ -538,8 +601,18 @@
                         <span id="ptdh_disp_citizen" class="font-medium text-white/80 truncate block"></span>
                     </div>
                     <div>
-                        <span class="text-white/40 block text-[9px] uppercase font-semibold">Persentase</span>
-                        <span id="ptdh_disp_percentage" class="font-bold text-amber-300"></span>
+                        <span class="text-white/40 block text-[9px] uppercase font-semibold">Persentase Denda</span>
+                        <div class="flex items-center gap-1 mt-1">
+                            <button type="button" id="btn_pct_30" onclick="setPtdhPercentage(30)"
+                                    class="px-2 py-0.5 rounded border text-[10px] font-bold transition flex items-center gap-1 bg-amber-500/30 text-amber-300 border-amber-400">
+                                <span>30%</span> <span class="text-[8px] opacity-75 font-normal">(Perawat/Co-Ass)</span>
+                            </button>
+                            <button type="button" id="btn_pct_25" onclick="setPtdhPercentage(25)"
+                                    class="px-2 py-0.5 rounded border text-[10px] font-bold transition flex items-center gap-1 bg-white/5 text-white/60 border-white/10 hover:bg-white/10">
+                                <span>25%</span> <span class="text-[8px] opacity-75 font-normal">(Dokter Umum)</span>
+                            </button>
+                        </div>
+                        <input type="hidden" name="fine_percentage" id="ptdh_fine_percentage" value="30">
                     </div>
                 </div>
 
@@ -630,13 +703,135 @@
 
 <script>
 let currentBaseFine = 0;
+let currentBaseSalary = 0;
+let currentPercentage = 30;
 
 function closeModal(id) {
     document.getElementById(id).classList.add('hidden');
+    if (id === 'ptdhModal') {
+        closePtdhDropdown();
+    }
 }
 
 function openPtdhModal() {
     document.getElementById('ptdhModal').classList.remove('hidden');
+}
+
+function togglePtdhDropdown() {
+    const panel = document.getElementById('ptdhDropdownPanel');
+    const arrow = document.getElementById('ptdh_select_arrow');
+    const isOpen = !panel.classList.contains('hidden');
+    if (isOpen) {
+        closePtdhDropdown();
+    } else {
+        panel.classList.remove('hidden');
+        arrow.classList.add('rotate-180');
+        const input = document.getElementById('ptdh_search_input');
+        input.value = '';
+        filterPtdhMembers('');
+        setTimeout(() => input.focus(), 50);
+    }
+}
+
+function closePtdhDropdown() {
+    const panel = document.getElementById('ptdhDropdownPanel');
+    const arrow = document.getElementById('ptdh_select_arrow');
+    if (panel) panel.classList.add('hidden');
+    if (arrow) arrow.classList.remove('rotate-180');
+}
+
+function clearPtdhSearch() {
+    const input = document.getElementById('ptdh_search_input');
+    input.value = '';
+    filterPtdhMembers('');
+    input.focus();
+}
+
+function filterPtdhMembers(query) {
+    const q = query.toLowerCase().trim();
+    const items = document.querySelectorAll('.ptdh-member-item');
+    const clearBtn = document.getElementById('ptdh_clear_search');
+    if (clearBtn) clearBtn.classList.toggle('hidden', q.length === 0);
+
+    let count = 0;
+    items.forEach(el => {
+        const text = el.getAttribute('data-search') || '';
+        if (text.includes(q)) {
+            el.classList.remove('hidden');
+            count++;
+        } else {
+            el.classList.add('hidden');
+        }
+    });
+
+    const noRes = document.getElementById('ptdh_no_results');
+    if (noRes) noRes.classList.toggle('hidden', count > 0);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('ptdh_search_input');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            filterPtdhMembers(this.value);
+        });
+    }
+
+    // Close on click outside
+    document.addEventListener('click', function(e) {
+        const container = document.getElementById('ptdhSelectContainer');
+        if (container && !container.contains(e.target)) {
+            closePtdhDropdown();
+        }
+    });
+});
+
+function selectPtdhMember(id, name, role, staffId, citizenId, isPaused) {
+    document.getElementById('ptdh_user_id').value = id;
+
+    // Highlight selected item
+    document.querySelectorAll('.ptdh-member-item').forEach(el => {
+        const isMatch = el.getAttribute('data-id') == id;
+        el.classList.toggle('bg-white/10', isMatch);
+        const icon = el.querySelector('.ptdh-check-icon');
+        if (icon) icon.classList.toggle('hidden', !isMatch);
+    });
+
+    // Update trigger text
+    const pausedBadge = isPaused ? '<span class="text-[9px] px-1.5 py-0.2 rounded font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 ml-1">Paused</span>' : '';
+    document.getElementById('ptdh_select_text').innerHTML = `
+        <span class="font-bold text-white">${name}</span>
+        ${pausedBadge}
+        <span class="text-white/50 text-[11px]">(${role} &bull; ID: ${staffId} &bull; CID: ${citizenId})</span>
+    `;
+
+    closePtdhDropdown();
+    fetchPtdhCalculation(id);
+}
+
+function setPtdhPercentage(pct) {
+    currentPercentage = pct;
+    const hiddenInput = document.getElementById('ptdh_fine_percentage');
+    if (hiddenInput) hiddenInput.value = pct;
+
+    const btn30 = document.getElementById('btn_pct_30');
+    const btn25 = document.getElementById('btn_pct_25');
+
+    if (btn30 && btn25) {
+        if (pct === 25) {
+            btn25.className = 'px-2 py-0.5 rounded border text-[10px] font-bold transition flex items-center gap-1 bg-amber-500/30 text-amber-300 border-amber-400 shadow-sm';
+            btn30.className = 'px-2 py-0.5 rounded border text-[10px] font-semibold transition flex items-center gap-1 bg-white/5 text-white/60 border-white/10 hover:bg-white/10';
+        } else {
+            btn30.className = 'px-2 py-0.5 rounded border text-[10px] font-bold transition flex items-center gap-1 bg-amber-500/30 text-amber-300 border-amber-400 shadow-sm';
+            btn25.className = 'px-2 py-0.5 rounded border text-[10px] font-semibold transition flex items-center gap-1 bg-white/5 text-white/60 border-white/10 hover:bg-white/10';
+        }
+    }
+
+    if (currentBaseSalary > 0) {
+        currentBaseFine = Math.round(currentBaseSalary * pct / 100);
+        document.getElementById('ptdh_disp_base_fine').innerText = currentBaseFine.toLocaleString('id-ID');
+        document.getElementById('ptdh_disp_base_formula').innerText = pct + '% dari gapok ($' + currentBaseSalary.toLocaleString('id-ID') + ')';
+        recalculatePtdhTotal();
+    }
 }
 
 function fetchPtdhCalculation(userId) {
@@ -664,15 +859,18 @@ function fetchPtdhCalculation(userId) {
             return;
         }
 
-        currentBaseFine = data.base_fine;
+        currentBaseSalary = data.base_salary;
+        currentBaseFine   = data.base_fine;
 
         document.getElementById('ptdh_disp_name').innerText = data.name;
         document.getElementById('ptdh_disp_position').innerText = data.position;
         document.getElementById('ptdh_disp_citizen').innerText = (data.citizen_id || '-') + (data.batch ? ' • ' + data.batch : '');
-        document.getElementById('ptdh_disp_percentage').innerText = data.fine_percentage + '%';
         document.getElementById('ptdh_disp_salary').innerText = data.base_salary_formatted;
         document.getElementById('ptdh_disp_base_fine').innerText = data.base_fine_formatted;
-        document.getElementById('ptdh_disp_base_formula').innerText = data.fine_percentage + '% dari gapok ($' + data.base_salary_formatted + ')';
+        document.getElementById('ptdh_disp_base_formula').innerText = (data.fine_percentage || 30) + '% dari gapok ($' + data.base_salary_formatted + ')';
+
+        // Apply percentage button state
+        setPtdhPercentage(data.fine_percentage || 30);
 
         // Set additional fee input
         document.getElementById('ptdh_additional_fee').value = data.default_additional_fee;

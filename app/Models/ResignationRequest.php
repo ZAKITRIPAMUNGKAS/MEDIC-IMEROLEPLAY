@@ -210,16 +210,30 @@ class ResignationRequest extends Model
             }
         }
 
-        // Prioritaskan cek jabatan medis klinis jika ada
-        $userMedic = $this->user?->effective_medic_role?->name ?? $this->user?->role?->name ?? '';
-        $posName = strtolower(trim(str_replace([' ', '-'], '_', (string) ($userMedic ?: $this->position))));
-
-        if (str_contains($posName, 'dokter_umum') || str_contains($posName, 'dokter umum')) {
-            $pct = 25.0;
-        } elseif (str_contains($posName, 'perawat') || str_contains($posName, 'co_ass') || str_contains($posName, 'coass') || str_contains($posName, 'trainee')) {
-            $pct = 30.0;
+        if ($this->fine_percentage && (float) $this->fine_percentage > 0) {
+            $pct = (float) $this->fine_percentage;
         } else {
-            $pct = 30.0;
+            // Prioritaskan cek jabatan medis klinis jika ada: Dokter Umum 25%, Perawat & Co-Ass 30%
+            $userMedic = $this->user?->effective_medic_role?->name ?? $this->user?->role?->name ?? '';
+            $posName = strtolower(trim(str_replace([' ', '-', '_'], '', (string) ($userMedic ?: $this->position))));
+            $posDisplay = strtolower(trim((string) $this->position));
+
+            $isDokter = str_contains($posName, 'dokterumum') || 
+                        str_contains($posName, 'dokter') || 
+                        str_contains($posDisplay, 'dokter');
+
+            $isPerawatCoAss = str_contains($posName, 'perawat') || 
+                              str_contains($posName, 'coass') || 
+                              str_contains($posName, 'trainee') ||
+                              str_contains($posDisplay, 'perawat') ||
+                              str_contains($posDisplay, 'co-ass') ||
+                              str_contains($posDisplay, 'coass');
+
+            if ($isDokter && !$isPerawatCoAss) {
+                $pct = 25.0;
+            } else {
+                $pct = 30.0;
+            }
         }
 
         $this->fine_percentage = $pct;
