@@ -18,9 +18,7 @@
 
         <!-- Modal Body Container -->
         <div class="relative bg-white rounded-2xl sm:rounded-3xl shadow-2xl max-w-3xl w-full my-auto overflow-hidden border border-slate-200 p-2 sm:p-4 animate-fade-in-up">
-            <img id="regulasiImg"
-                 src=""
-                 data-src="{{ asset('images/REGULASI_IME_MEDICAL_CENTER.jpg') }}"
+            <img src="{{ asset('images/REGULASI_IME_MEDICAL_CENTER.jpg') }}"
                  alt="Regulasi iMe Medical Center"
                  class="w-full h-auto object-contain rounded-xl sm:rounded-2xl shadow-md block">
         </div>
@@ -365,12 +363,11 @@
                     <!-- CARD 07: PHOTO CARD -->
                     <div class="bg-slate-900 reveal-on-scroll rounded-[24px] overflow-hidden shadow-lg border border-slate-200 relative min-h-[200px] group">
                         <img src="{{ asset('images/gambar 2.png') }}"
-                             alt="Tim Medis Terpercaya Alta &amp; Roxwood Hospital"
-                             loading="lazy"
+                             alt="Tim Medis Terpercaya Alta & Roxwood Hospital"
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent p-6 flex flex-col justify-end">
                             <span class="text-xs font-bold text-sky-300">Tim Medis Terpercaya</span>
-                            <h4 class="text-sm font-bold text-white">Alta &amp; Roxwood Hospital</h4>
+                            <h4 class="text-sm font-bold text-white">Alta & Roxwood Hospital</h4>
                         </div>
                     </div>
 
@@ -837,15 +834,7 @@
 <script>
     function showRegulationModal() {
         const modal = document.getElementById('regulationModal');
-        if (modal) {
-            // Lazy-load the regulation image only when modal is opened
-            const img = document.getElementById('regulasiImg');
-            if (img && img.dataset.src && !img.src.includes(img.dataset.src)) {
-                img.src = img.dataset.src;
-            }
-            modal.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-        }
+        if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
     }
     function closeRegulationModal() {
         const modal = document.getElementById('regulationModal');
