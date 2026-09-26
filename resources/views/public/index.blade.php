@@ -139,7 +139,7 @@
                             <div class="flex items-center gap-2.5 sm:gap-4 overflow-x-auto custom-scrollbar pb-1">
                                 <!-- Logo iMe Roleplay -->
                                 <div class="flex items-center gap-2 bg-white px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm hover:border-sky-500/60 transition-all hover:scale-105 group shrink-0 animate-float-1">
-                                    <img src="{{ asset('images/logoime.webp') }}" alt="iMe Roleplay Logo" class="w-6 h-6 sm:w-7 sm:h-7 object-contain group-hover:rotate-12 transition-transform duration-300">
+                                    <img src="{{ asset('images/logoime.webp') }}" alt="iMe Roleplay Logo" class="w-6 h-6 sm:w-7 sm:h-7 object-contain group-hover:rotate-12 transition-transform duration-300" style="height: 28px; width: 28px; max-width: 28px; max-height: 28px; object-fit: contain;">
                                     <div class="leading-tight">
                                         <span class="text-[11px] sm:text-xs font-bold text-slate-800 block">iMe Network</span>
                                         <span class="text-[8px] sm:text-[9px] text-sky-600 font-semibold">Roleplay Community</span>
@@ -148,7 +148,7 @@
 
                                 <!-- Logo Alta Medical Center / EMS -->
                                 <div class="flex items-center gap-2 bg-white px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm hover:border-sky-500/60 transition-all hover:scale-105 group shrink-0 animate-float-2">
-                                    <img src="{{ asset('images/logo_ems.webp') }}" alt="Alta Medical Center" class="w-6 h-6 sm:w-7 sm:h-7 object-contain group-hover:scale-110 transition-transform duration-300">
+                                    <img src="{{ asset('images/logo_ems.webp') }}" alt="Alta Medical Center" class="w-6 h-6 sm:w-7 sm:h-7 object-contain group-hover:scale-110 transition-transform duration-300" style="height: 28px; width: 28px; max-width: 28px; max-height: 28px; object-fit: contain;">
                                     <div class="leading-tight">
                                         <span class="text-[11px] sm:text-xs font-bold text-slate-800 block">Alta Hospital</span>
                                         <span class="text-[8px] sm:text-[9px] text-sky-600 font-semibold">Medical Center</span>
@@ -157,7 +157,7 @@
 
                                 <!-- Logo Roxwood Hospital -->
                                 <div class="flex items-center gap-2 bg-white px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm hover:border-purple-500/60 transition-all hover:scale-105 group shrink-0 animate-float-3">
-                                    <img src="{{ asset('images/logo rhv2.png') }}" alt="Roxwood Hospital" class="w-6 h-6 sm:w-7 sm:h-7 object-contain group-hover:rotate-[-12deg] transition-transform duration-300">
+                                    <img src="{{ asset('images/logo rhv2.png') }}" alt="Roxwood Hospital" class="w-6 h-6 sm:w-7 sm:h-7 object-contain group-hover:rotate-[-12deg] transition-transform duration-300" style="height: 28px; width: 28px; max-width: 28px; max-height: 28px; object-fit: contain;">
                                     <div class="leading-tight">
                                         <span class="text-[11px] sm:text-xs font-bold text-slate-800 block">Roxwood Hospital</span>
                                         <span class="text-[8px] sm:text-[9px] text-purple-600 font-semibold">Medical Services</span>

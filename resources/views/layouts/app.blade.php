@@ -21,13 +21,26 @@
 
 
     <!-- Tailwind CSS (Local - Compiled) -->
-    <link href="{{ asset('css/app.css') }}?v={{ time() }}" rel="stylesheet">
+    <link href="{{ asset('css/app.css') }}?v=v2_{{ time() }}" rel="stylesheet">
 
     <!-- Google Fonts (Local) -->
-    <link href="{{ asset('css/inter-font.css') }}?v={{ time() }}" rel="stylesheet">
+    <link href="{{ asset('css/inter-font.css') }}?v=v2_{{ time() }}" rel="stylesheet">
 
     <!-- Font Awesome (Local) -->
-    <link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}?v=v2_{{ time() }}">
+
+    <script>
+        // Auto-purge stale service worker caches (e.g. ime-medis-cache-v1)
+        if ('caches' in window) {
+            caches.keys().then(function(names) {
+                names.forEach(function(name) {
+                    if (name !== 'ime-medis-cache-v2') {
+                        caches.delete(name);
+                    }
+                });
+            });
+        }
+    </script>
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
@@ -1344,9 +1357,9 @@
                 {{-- Brand Logo --}}
                 <a href="{{ route('public.index') }}" class="flex-shrink-0 flex items-center gap-2.5 group">
                     <div class="flex items-center gap-1.5 bg-white/95 px-2 py-1 rounded-xl shadow-md group-hover:shadow-lg group-hover:bg-white transition-all duration-300">
-                        <img src="{{ asset('images/motionlife-logo.png') }}" alt="EMS Alta" class="h-6 w-6 object-contain" title="Alta Hospital (EMS)">
+                        <img src="{{ asset('images/motionlife-logo.png') }}" alt="EMS Alta" class="h-6 w-6 object-contain" style="height: 24px; width: 24px; max-width: 24px; max-height: 24px; object-fit: contain;" title="Alta Hospital (EMS)">
                         <div class="h-4 w-px bg-slate-300"></div>
-                        <img src="{{ asset('images/logo rhv2.png') }}" alt="Roxwood Hospital" class="h-6 w-6 object-contain" title="Roxwood Hospital">
+                        <img src="{{ asset('images/logo rhv2.png') }}" alt="Roxwood Hospital" class="h-6 w-6 object-contain" style="height: 24px; width: 24px; max-width: 24px; max-height: 24px; object-fit: contain;" title="Roxwood Hospital">
                     </div>
                     <div class="leading-none">
                         <div class="text-sm font-bold text-white tracking-widest uppercase group-hover:text-sky-200 transition-colors duration-300">iMe</div>
@@ -2153,9 +2166,9 @@
                 <div class="flex justify-center items-center gap-2.5 mb-4">
                     <!-- Logo Alta & Roxwood Hospital -->
                     <div class="flex items-center gap-1.5 bg-white px-2.5 py-1.5 rounded-xl elegant-shadow">
-                        <img src="{{ asset('images/motionlife-logo.png') }}" alt="Alta Hospital" class="h-6 w-6 object-contain">
+                        <img src="{{ asset('images/motionlife-logo.png') }}" alt="Alta Hospital" class="h-6 w-6 object-contain" style="height: 24px; width: 24px; max-width: 24px; max-height: 24px; object-fit: contain;">
                         <div class="h-4 w-px bg-slate-300"></div>
-                        <img src="{{ asset('images/logo rhv2.png') }}" alt="Roxwood Hospital" class="h-6 w-6 object-contain">
+                        <img src="{{ asset('images/logo rhv2.png') }}" alt="Roxwood Hospital" class="h-6 w-6 object-contain" style="height: 24px; width: 24px; max-width: 24px; max-height: 24px; object-fit: contain;">
                     </div>
                     <span class="text-lg font-semibold text-white">iMe ROLEPLAY</span>
                 </div>
