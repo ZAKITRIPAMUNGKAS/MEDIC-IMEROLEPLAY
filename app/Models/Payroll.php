@@ -22,6 +22,7 @@ class Payroll extends Model
         'paid_at',
         'paid_by',
         'notes',
+        'cancel_reason',
     ];
 
     protected $casts = [
@@ -114,7 +115,11 @@ class Payroll extends Model
      */
     public function getFormattedBaseSalaryAttribute()
     {
-        return \App\Helpers\PayrollHelper::formatCurrency($this->base_salary);
+        try {
+            return \App\Helpers\PayrollHelper::formatCurrency((int) ($this->base_salary ?? 0));
+        } catch (\Throwable $e) {
+            return '$ 0';
+        }
     }
 
     /**

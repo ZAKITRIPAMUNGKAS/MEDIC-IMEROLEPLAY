@@ -106,7 +106,7 @@ class SalarySetting extends Model
     }
 
     /**
-     * Find salary setting by role name
+     * Find salary setting by role name (with alias support for ID/EN)
      * 
      * @param string|null $roleName
      * @return SalarySetting|null
@@ -117,12 +117,53 @@ class SalarySetting extends Model
             return null;
         }
 
-        return static::where(function ($query) use ($roleName) {
+        // Direct search first
+        $setting = static::where(function ($query) use ($roleName) {
             $query->where('role_name', $roleName)
                 ->orWhereRaw('LOWER(role_name) = ?', [strtolower($roleName)]);
         })
             ->where('is_active', true)
             ->first();
+
+        if ($setting) {
+            return $setting;
+        }
+
+        // Mapping dictionary between Indonesian and English / aliases
+        $roleAliases = [
+            'dokter_spesialis' => ['specialist_doctor', 'dokter spesialis', 'spesialis'],
+            'specialist_doctor' => ['dokter_spesialis', 'dokter spesialis', 'spesialis'],
+            'dokter_umum' => ['general_doctor', 'dokter umum'],
+            'general_doctor' => ['dokter_umum', 'dokter umum'],
+            'dokter_muda' => ['co_ass', 'co-ass', 'coass', 'dokter muda'],
+            'co_ass' => ['dokter_muda', 'co-ass', 'coass', 'dokter muda'],
+            'perawat' => ['nurse', 'paramedic'],
+            'nurse' => ['perawat', 'paramedic'],
+            'paramedic' => ['nurse', 'perawat'],
+            'trainee' => ['magang'],
+            'manajer' => ['manager', 'staff_manager'],
+            'manager' => ['manajer', 'staff_manager'],
+            'staff_manager' => ['manajer', 'manager', 'staff manager'],
+            'executive' => ['eksekutif', 'admin'],
+        ];
+
+        $lowerRole = strtolower(trim($roleName));
+        if (isset($roleAliases[$lowerRole])) {
+            foreach ($roleAliases[$lowerRole] as $alias) {
+                $setting = static::where(function ($query) use ($alias) {
+                    $query->where('role_name', $alias)
+                        ->orWhereRaw('LOWER(role_name) = ?', [strtolower($alias)]);
+                })
+                    ->where('is_active', true)
+                    ->first();
+
+                if ($setting) {
+                    return $setting;
+                }
+            }
+        }
+
+        return null;
     }
 
     /**

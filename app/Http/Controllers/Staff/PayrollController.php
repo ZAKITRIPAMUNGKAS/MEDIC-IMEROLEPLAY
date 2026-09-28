@@ -61,7 +61,7 @@ class PayrollController extends Controller
                 ->get();
 
             return view('staff.payroll.index', compact('payrolls', 'filters', 'summary', 'recentNotifications'));
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             \Log::error('Error in staff payroll index', [
                 'user_id' => Auth::id(),
                 'error' => $e->getMessage(),
@@ -69,7 +69,7 @@ class PayrollController extends Controller
             ]);
             
             return redirect()->route('staff.dashboard')
-                ->with('error', 'Terjadi kesalahan saat memuat data gaji. Silakan coba lagi.');
+                ->with('error', 'Terjadi kesalahan saat memuat data gaji: ' . $e->getMessage());
         }
     }
 
@@ -99,7 +99,7 @@ class PayrollController extends Controller
             $payroll->load(['user.role', 'paidBy', 'notifications']);
             
             return view('staff.payroll.show', compact('payroll'));
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             \Log::error('Error in staff payroll show', [
                 'payroll_id' => $id ?? null,
                 'user_id' => Auth::id(),
@@ -108,7 +108,7 @@ class PayrollController extends Controller
             ]);
             
             return redirect()->route('staff.payroll.index')
-                ->with('error', 'Terjadi kesalahan saat memuat detail gaji. Silakan coba lagi.');
+                ->with('error', 'Terjadi kesalahan saat memuat detail gaji: ' . $e->getMessage());
         }
     }
 

@@ -1460,6 +1460,9 @@
                                     <button type="button" onclick="triggerPwaInstall()" class="pwa-install-trigger w-full text-left flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
                                         <i class="fas fa-download w-4 text-sky-500 text-sm"></i> Instal Aplikasi
                                     </button>
+                                    <a href="{{ route('staff.payroll.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
+                                        <i class="fas fa-money-bill-wave w-4 text-emerald-500 text-sm"></i> Gaji Saya
+                                    </a>
                                     @if(auth()->user()->isAdmin() || strtolower(trim(auth()->user()->role?->name ?? '')) !== 'trainee')
                                         <a href="{{ route('staff.operations.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
                                             <i class="fas fa-file-medical w-4 text-emerald-500 text-sm"></i> Rekam Medis
@@ -1694,15 +1697,18 @@
                             <div class="absolute right-0 top-full mt-2 w-52 bg-white rounded-xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible translate-y-1 group-hover:translate-y-0 transition-all duration-200 z-[9999] dropdown-scrollable" style="max-height: calc(100vh - 110px) !important; max-height: calc(100dvh - 110px) !important; overflow-y: auto !important; overflow-x: hidden !important; -webkit-overflow-scrolling: touch !important; overscroll-behavior: contain !important;">
                                 <div class="px-3 pt-2.5 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-gray-400 border-b border-gray-100">Penggajian</div>
                                 <div class="py-1">
+                                    <a href="{{ route('staff.payroll.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-50 transition-colors">
+                                        <i class="fas fa-money-bill-wave w-4 text-emerald-500 text-sm"></i> Gaji Saya
+                                    </a>
                                     @if(auth()->user()->hasPermission('manage_payroll'))
-                                        <a href="{{ route('admin.payroll.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-list w-4 text-slate-500 text-sm"></i> Daftar Gaji</a>
+                                        <div class="my-1 border-t border-gray-100"></div>
+                                        <div class="px-3 pt-1 pb-1 text-[9px] font-bold uppercase tracking-wider text-gray-400">Kelola Admin</div>
+                                        <a href="{{ route('admin.payroll.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-list w-4 text-slate-500 text-sm"></i> Daftar Gaji Staf</a>
                                         <a href="{{ route('admin.salary-settings.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-sliders-h w-4 text-blue-500 text-sm"></i> Atur Gaji</a>
                                         @if(auth()->user()->isAdmin())
                                             <div class="my-1 border-t border-gray-100"></div>
                                             <a href="{{ route('admin.reimbursements.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-file-invoice-dollar w-4 text-green-500 text-sm"></i> Reimbursement</a>
                                         @endif
-                                    @else
-                                        <a href="{{ route('staff.payroll.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"><i class="fas fa-money-bill-wave w-4 text-green-500 text-sm"></i> Gaji Saya</a>
                                     @endif
                                 </div>
                             </div>
@@ -1827,17 +1833,17 @@
                             <span>Penilaian Manajer</span>
                         </a>
 
+                        <a href="{{ route('staff.payroll.index') }}"
+                            class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
+                            <i class="fas fa-money-bill-wave w-5 text-emerald-400 text-sm"></i>
+                            <span>Gaji Saya</span>
+                        </a>
+
                         @if(auth()->user()->hasPermission('manage_payroll'))
                             <a href="{{ route('admin.payroll.index') }}"
                                 class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
                                 <i class="fas fa-list w-5 text-emerald-400 text-sm"></i>
-                                <span>Kelola Penggajian</span>
-                            </a>
-                        @else
-                            <a href="{{ route('staff.payroll.index') }}"
-                                class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
-                                <i class="fas fa-money-bill-wave w-5 text-emerald-400 text-sm"></i>
-                                <span>Gaji Saya</span>
+                                <span>Kelola Penggajian (Admin)</span>
                             </a>
                         @endif
                     </div>

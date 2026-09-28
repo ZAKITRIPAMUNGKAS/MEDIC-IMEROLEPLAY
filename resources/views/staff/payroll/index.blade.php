@@ -184,7 +184,14 @@
                                 </td>
                                 <td class="px-4 sm:px-6 py-4">
                                     @if($payroll->paid_at)
-                                        <div class="text-sm text-white">{{ $payroll->paid_at ? $payroll->paid_at->format('d M Y') : '-' }}</div>
+                                        @php
+                                            try {
+                                                $paidAtTxt = $payroll->paid_at instanceof \DateTimeInterface ? $payroll->paid_at->format('d M Y') : \Carbon\Carbon::parse($payroll->paid_at)->format('d M Y');
+                                            } catch (\Throwable $e) {
+                                                $paidAtTxt = (string) $payroll->paid_at;
+                                            }
+                                        @endphp
+                                        <div class="text-sm text-white">{{ $paidAtTxt }}</div>
                                         <div class="text-xs text-gray-300">oleh {{ optional($payroll->paidBy)->name ?? 'Admin' }}</div>
                                     @else
                                         <div class="text-sm text-gray-400">-</div>

@@ -295,6 +295,9 @@
                         <table class="min-w-full divide-y divide-white/10">
                             <thead class="bg-white/5">
                                 <tr>
+                                    <th class="px-3 sm:px-4 py-3 sm:py-4 text-center w-10">
+                                        <input type="checkbox" onchange="toggleSelectWeek(this)" class="select-all-week rounded border-white/30 bg-white/10 text-sky-400 focus:ring-sky-400 cursor-pointer" title="Pilih Semua Pending Minggu Ini">
+                                    </th>
                                     <th class="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-300 uppercase tracking-wider">Staf</th>
                                     <th class="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-300 uppercase tracking-wider">Periode</th>
                                     <th class="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-300 uppercase tracking-wider">Total Jam</th>
@@ -311,7 +314,14 @@
                                         $userEmail = $payroll->user->email ?? 'N/A';
                                         $userInitials = substr($userName, 0, 2);
                                     @endphp
-                                    <tr class="table-row-hover transition-all duration-200">
+                                    <tr class="table-row-hover transition-all duration-200" id="payroll-row-{{ $payroll->id }}">
+                                        <td class="px-3 sm:px-4 py-4 text-center">
+                                            @if($payroll->status === 'pending')
+                                                <input type="checkbox" name="selected_payrolls[]" value="{{ $payroll->id }}" data-amount="{{ $payroll->calculated_salary }}" onchange="updateSelectedCount()" class="payroll-checkbox rounded border-white/30 bg-white/10 text-sky-400 focus:ring-sky-400 cursor-pointer">
+                                            @else
+                                                <i class="fas fa-check text-green-400 text-xs" title="Sudah Dibayar"></i>
+                                            @endif
+                                        </td>
                                         <td class="px-4 sm:px-6 py-4">
                                             <div class="flex items-center">
                                                 <div class="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10">
@@ -353,9 +363,9 @@
                                             @if($payroll->paid_at)
                                                 @php
                                                     try {
-                                                        $paidAtFormatted = $payroll->paid_at->format('d M Y');
-                                                    } catch (\Exception $e) {
-                                                        $paidAtFormatted = $payroll->paid_at ?? '-';
+                                                        $paidAtFormatted = $payroll->paid_at instanceof \DateTimeInterface ? $payroll->paid_at->format('d M Y') : \Carbon\Carbon::parse($payroll->paid_at)->format('d M Y');
+                                                    } catch (\Throwable $e) {
+                                                        $paidAtFormatted = (string) ($payroll->paid_at ?? '-');
                                                     }
                                                 @endphp
                                                 <div class="text-sm text-white">{{ $paidAtFormatted }}</div>
@@ -367,7 +377,8 @@
                                         <td class="px-4 sm:px-6 py-4">
                                             <div class="flex space-x-2">
                                                 <a href="{{ route('admin.payroll.show', $payroll) }}" 
-                                                   class="text-sky-400 hover:text-sky-300 transition-colors duration-200">
+                                                   class="text-sky-400 hover:text-sky-300 transition-colors duration-200"
+                                                   title="Lihat Rincian Gaji">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
                                                 @if($payroll->status === 'pending')
@@ -376,8 +387,9 @@
                                                             title="Regenerate - Hitung ulang dengan formula terbaru">
                                                         <i class="fas fa-sync-alt"></i>
                                                     </button>
-                                                    <button onclick="markAsPaid({{ $payroll->id }})" 
-                                                            class="text-green-400 hover:text-green-300 transition-colors duration-200">
+                                                    <button type="button" onclick="markAsPaid({{ $payroll->id }}, '{{ addslashes($userName) }}', '{{ $payroll->formatted_salary ?? '$ 0' }}')" 
+                                                            class="text-green-400 hover:text-green-300 transition-colors duration-200 p-1 hover:bg-green-500/20 rounded"
+                                                            title="Ceklis / Tandai Gaji Sudah Dibayar">
                                                         <i class="fas fa-check"></i>
                                                     </button>
                                                     <button onclick="cancelPayroll({{ $payroll->id }})" 
@@ -436,33 +448,136 @@
 </div>
 
 
-<!-- Mark as Paid Modal -->
-<div id="markPaidModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
-    <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="bg-white rounded-2xl p-6 w-full max-w-md">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Tandai sebagai Dibayar</h3>
-            <form id="markPaidForm" method="POST">
-                @csrf
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Catatan (Opsional)</label>
-                        <textarea name="notes" rows="3" 
-                                  class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
-                                  placeholder="Tambahkan catatan untuk pembayaran ini..."></textarea>
-                    </div>
-                </div>
-                <div class="flex justify-end space-x-3 mt-6">
-                    <button type="button" onclick="closeMarkPaidModal()" 
-                            class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors duration-200">
-                        Batal
-                    </button>
-                    <button type="submit" 
-                            class="px-6 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg hover:from-green-600 hover:to-emerald-600 transition-all duration-300">
-                        Tandai Dibayar
-                    </button>
-                </div>
-            </form>
+<!-- Floating Bulk Action Bar -->
+<div id="bulkActionBar" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40 hidden transition-all duration-300">
+    <div class="bg-slate-900/95 backdrop-blur-md border-2 border-emerald-400/60 text-white px-6 py-4 rounded-2xl shadow-2xl flex flex-col sm:flex-row items-center gap-4">
+        <div class="flex items-center space-x-3 text-center sm:text-left">
+            <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+                <i class="fas fa-check-double"></i>
+            </div>
+            <div>
+                <span id="selectedCount" class="font-bold text-emerald-400 text-lg">0</span>
+                <span class="text-sm text-gray-200">gaji dipilih</span>
+                <span class="text-xs text-gray-300 block">Total: <strong id="selectedTotalAmount" class="text-emerald-300 text-sm">$ 0</strong></span>
+            </div>
         </div>
+        <div class="flex items-center space-x-3">
+            <button type="button" onclick="openBulkMarkPaidModal()" class="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-sm rounded-xl shadow-lg transition-all transform hover:scale-105 flex items-center">
+                <i class="fas fa-check mr-2"></i>Bayar Semua yang Diceklis
+            </button>
+            <button type="button" onclick="clearSelectedCheckboxes()" class="px-3 py-2 text-gray-400 hover:text-white text-xs">
+                Batal
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Single Mark as Paid Modal -->
+<div id="markPaidModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-2xl mx-4 border border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-green-100 text-green-600 flex items-center justify-center text-lg font-bold">
+                    <i class="fas fa-money-check-alt"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900">Tandai Gaji Dibayar</h3>
+                    <p class="text-xs text-gray-500">Konfirmasi pembayaran gaji staf</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeMarkPaidModal()" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-sm"></i>
+            </button>
+        </div>
+
+        <div class="bg-slate-50 border border-gray-100 rounded-xl p-4 mb-4">
+            <div class="flex justify-between text-sm mb-1.5">
+                <span class="text-gray-500">Nama Staf:</span>
+                <span id="singleStaffName" class="font-bold text-gray-900">-</span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <span class="text-gray-500">Nominal Gaji:</span>
+                <span id="singleStaffAmount" class="font-extrabold text-green-600 text-base">$ 0</span>
+            </div>
+        </div>
+
+        <form id="markPaidForm" method="POST" onsubmit="handleSingleMarkPaidSubmit(this)">
+            @csrf
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Catatan Pembayaran (Opsional)</label>
+                    <textarea name="notes" rows="3" 
+                              class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-400 focus:border-green-400 text-gray-900 text-sm"
+                              placeholder="Contoh: Ditransfer via Bank / Kasir"></textarea>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="closeMarkPaidModal()" 
+                        class="px-5 py-2.5 text-gray-600 hover:text-gray-800 text-sm font-medium rounded-xl hover:bg-gray-100 transition-colors">
+                    Batal
+                </button>
+                <button type="submit" id="singleMarkPaidSubmitBtn"
+                        class="px-6 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl hover:from-green-600 hover:to-emerald-700 text-sm font-bold transition-all duration-300 shadow-lg flex items-center">
+                    <span class="btn-text flex items-center"><i class="fas fa-check mr-2"></i>Konfirmasi Bayar</span>
+                    <span class="btn-loading hidden flex items-center"><i class="fas fa-spinner fa-spin mr-2"></i>Memproses...</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Bulk Mark as Paid Modal -->
+<div id="bulkMarkPaidModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-2xl mx-4 border border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg font-bold">
+                    <i class="fas fa-check-double"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900">Bayar Gaji yang Diceklis</h3>
+                    <p class="text-xs text-gray-500">Tandai banyak gaji sekaligus</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeBulkMarkPaidModal()" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-sm"></i>
+            </button>
+        </div>
+
+        <div class="bg-slate-50 border border-gray-100 rounded-xl p-4 mb-4">
+            <div class="flex justify-between text-sm mb-1.5">
+                <span class="text-gray-500">Total Staf Diceklis:</span>
+                <span id="bulkModalCount" class="font-bold text-gray-900">0 staf</span>
+            </div>
+            <div class="flex justify-between text-sm">
+                <span class="text-gray-500">Total Nominal:</span>
+                <span id="bulkModalTotal" class="font-extrabold text-emerald-600 text-base">$ 0</span>
+            </div>
+        </div>
+
+        <form id="bulkMarkPaidForm" method="POST" action="{{ route('admin.payroll.bulk-mark-paid') }}" onsubmit="handleBulkMarkPaidSubmit(this)">
+            @csrf
+            <div id="bulkPayrollInputs"></div>
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Catatan Pembayaran (Opsional)</label>
+                    <textarea name="notes" rows="3" 
+                              class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 text-gray-900 text-sm"
+                              placeholder="Contoh: Pembayaran serentak mingguan"></textarea>
+                </div>
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="closeBulkMarkPaidModal()" 
+                        class="px-5 py-2.5 text-gray-600 hover:text-gray-800 text-sm font-medium rounded-xl hover:bg-gray-100 transition-colors">
+                    Batal
+                </button>
+                <button type="submit" id="bulkMarkPaidSubmitBtn"
+                        class="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl hover:from-emerald-600 hover:to-teal-700 text-sm font-bold transition-all duration-300 shadow-lg flex items-center">
+                    <span class="btn-text flex items-center"><i class="fas fa-check mr-2"></i>Bayar Semua</span>
+                    <span class="btn-loading hidden flex items-center"><i class="fas fa-spinner fa-spin mr-2"></i>Memproses...</span>
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -541,14 +656,144 @@
 
 <script>
 
-function markAsPaid(payrollId) {
-    document.getElementById('markPaidForm').action = `/admin/payroll/${payrollId}/mark-paid`;
+function markAsPaid(payrollId, staffName = '', formattedSalary = '') {
+    const form = document.getElementById('markPaidForm');
+    form.action = `/admin/payroll/${payrollId}/mark-paid`;
+    
+    document.getElementById('singleStaffName').textContent = staffName || 'Staf';
+    document.getElementById('singleStaffAmount').textContent = formattedSalary || '$ 0';
+    
+    // Reset submit button state
+    const submitBtn = document.getElementById('singleMarkPaidSubmitBtn');
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.querySelector('.btn-text')?.classList.remove('hidden');
+        submitBtn.querySelector('.btn-loading')?.classList.add('hidden');
+    }
+    
     document.getElementById('markPaidModal').classList.remove('hidden');
 }
 
 function closeMarkPaidModal() {
     document.getElementById('markPaidModal').classList.add('hidden');
 }
+
+function handleSingleMarkPaidSubmit(form) {
+    const submitBtn = document.getElementById('singleMarkPaidSubmitBtn');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.querySelector('.btn-text')?.classList.add('hidden');
+        submitBtn.querySelector('.btn-loading')?.classList.remove('hidden');
+    }
+    return true;
+}
+
+// Bulk Selection Logic
+function toggleSelectWeek(sourceEl) {
+    const table = sourceEl.closest('table');
+    if (!table) return;
+    const checkboxes = table.querySelectorAll('.payroll-checkbox');
+    checkboxes.forEach(cb => {
+        cb.checked = sourceEl.checked;
+    });
+    updateSelectedCount();
+}
+
+function updateSelectedCount() {
+    const allChecked = document.querySelectorAll('.payroll-checkbox:checked');
+    const count = allChecked.length;
+    let totalAmount = 0;
+
+    allChecked.forEach(cb => {
+        const amt = parseFloat(cb.getAttribute('data-amount')) || 0;
+        totalAmount += amt;
+    });
+
+    const bulkBar = document.getElementById('bulkActionBar');
+    const selectedCountEl = document.getElementById('selectedCount');
+    const selectedTotalEl = document.getElementById('selectedTotalAmount');
+
+    if (count > 0) {
+        bulkBar.classList.remove('hidden');
+        selectedCountEl.textContent = count;
+        selectedTotalEl.textContent = '$ ' + totalAmount.toLocaleString('en-US');
+    } else {
+        bulkBar.classList.add('hidden');
+        // Uncheck all select-all headers
+        document.querySelectorAll('.select-all-week').forEach(h => h.checked = false);
+    }
+}
+
+function clearSelectedCheckboxes() {
+    document.querySelectorAll('.payroll-checkbox').forEach(cb => cb.checked = false);
+    document.querySelectorAll('.select-all-week').forEach(h => h.checked = false);
+    updateSelectedCount();
+}
+
+function openBulkMarkPaidModal() {
+    const allChecked = document.querySelectorAll('.payroll-checkbox:checked');
+    if (allChecked.length === 0) {
+        alert('Silakan pilih minimal satu data gaji yang ingin dibayar.');
+        return;
+    }
+
+    const inputsContainer = document.getElementById('bulkPayrollInputs');
+    inputsContainer.innerHTML = '';
+    let totalAmount = 0;
+
+    allChecked.forEach(cb => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'payroll_ids[]';
+        input.value = cb.value;
+        inputsContainer.appendChild(input);
+
+        const amt = parseFloat(cb.getAttribute('data-amount')) || 0;
+        totalAmount += amt;
+    });
+
+    document.getElementById('bulkModalCount').textContent = `${allChecked.length} staf`;
+    document.getElementById('bulkModalTotal').textContent = '$ ' + totalAmount.toLocaleString('en-US');
+
+    const submitBtn = document.getElementById('bulkMarkPaidSubmitBtn');
+    if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.querySelector('.btn-text')?.classList.remove('hidden');
+        submitBtn.querySelector('.btn-loading')?.classList.add('hidden');
+    }
+
+    document.getElementById('bulkMarkPaidModal').classList.remove('hidden');
+}
+
+function closeBulkMarkPaidModal() {
+    document.getElementById('bulkMarkPaidModal').classList.add('hidden');
+}
+
+function handleBulkMarkPaidSubmit(form) {
+    const submitBtn = document.getElementById('bulkMarkPaidSubmitBtn');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.querySelector('.btn-text')?.classList.add('hidden');
+        submitBtn.querySelector('.btn-loading')?.classList.remove('hidden');
+    }
+    return true;
+}
+
+// Close modals when clicking outside
+window.addEventListener('click', function(e) {
+    const markPaidModal = document.getElementById('markPaidModal');
+    if (e.target === markPaidModal) {
+        closeMarkPaidModal();
+    }
+    const bulkMarkPaidModal = document.getElementById('bulkMarkPaidModal');
+    if (e.target === bulkMarkPaidModal) {
+        closeBulkMarkPaidModal();
+    }
+    const generateModal = document.getElementById('generateModal');
+    if (e.target === generateModal) {
+        closeGenerateModal();
+    }
+});
 
 function cancelPayroll(payrollId) {
     const reason = prompt('Masukkan alasan pembatalan gaji (Sesi dan jam akan tetap hangus):');
@@ -627,16 +872,6 @@ function closeGenerateModal() {
     document.getElementById('generateModal').classList.add('hidden');
 }
 
-// Close modal when clicking outside
-const generateModal = document.getElementById('generateModal');
-if (generateModal) {
-    generateModal.addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeGenerateModal();
-        }
-    });
-}
-
 function regeneratePayroll(payrollId) {
     if (confirm('Apakah Anda yakin ingin regenerate gaji ini?\n\nGaji akan dihitung ulang menggunakan formula terbaru berdasarkan data attendance saat ini.')) {
         const form = document.createElement('form');
@@ -676,7 +911,6 @@ function regenerateWeek(weekStart) {
         form.submit();
     }
 }
-
 
 </script>
 @endsection

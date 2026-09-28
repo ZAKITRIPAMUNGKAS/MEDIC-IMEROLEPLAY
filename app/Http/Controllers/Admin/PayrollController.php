@@ -505,8 +505,26 @@ class PayrollController extends Controller
                 $totalSeconds = $attendances->sum('session_duration');
                 $totalHours = PayrollHelper::convertSecondsToHours($totalSeconds);
                 $roleName = optional($user->role)->name;
+                if (!$roleName && $user->effective_medic_role) {
+                    $roleName = $user->effective_medic_role->name;
+                }
+                if (!$roleName && $user->medicRole) {
+                    $roleName = $user->medicRole->name;
+                }
+
                 $customSalary = $user->custom_salary ?? 0;
                 $baseSalary = PayrollHelper::getBaseSalary($roleName, $customSalary);
+
+                // Fallback to effective medic role if base salary is 0
+                if ($baseSalary <= 0 && $user->effective_medic_role && $user->effective_medic_role->name !== $roleName) {
+                    $altRole = $user->effective_medic_role->name;
+                    $altBase = PayrollHelper::getBaseSalary($altRole, $customSalary);
+                    if ($altBase > 0) {
+                        $roleName = $altRole;
+                        $baseSalary = $altBase;
+                    }
+                }
+
                 $calculatedSalary = PayrollHelper::computeWeeklySalary($roleName, $totalSeconds, $customSalary);
 
                 // Log for debugging
@@ -619,9 +637,67 @@ class PayrollController extends Controller
 
             return redirect()->back()->with('success', 'Gaji berhasil ditandai sebagai dibayar dan notifikasi dikirim ke staf.');
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+            Log::error('markAsPaid failed: ' . $e->getMessage(), ['payroll_id' => $payroll->id, 'trace' => $e->getTraceAsString()]);
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat memproses pembayaran gaji: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Bulk mark payrolls as paid
+     */
+    public function bulkMarkAsPaid(Request $request)
+    {
+        $request->validate([
+            'payroll_ids' => 'required|array|min:1',
+            'payroll_ids.*' => 'exists:payrolls,id',
+            'notes' => 'nullable|string|max:500',
+        ], [
+            'payroll_ids.required' => 'Pilih minimal satu data gaji yang ingin ditandai dibayar.',
+            'payroll_ids.min' => 'Pilih minimal satu data gaji yang ingin ditandai dibayar.',
+        ]);
+
+        $payrollIds = $request->payroll_ids;
+        $payrolls = Payroll::whereIn('id', $payrollIds)
+            ->where('status', 'pending')
+            ->get();
+
+        if ($payrolls->isEmpty()) {
+            return redirect()->back()->with('error', 'Tidak ada gaji berstatus Pending yang dapat ditandai dibayar.');
+        }
+
+        $successCount = 0;
+        $adminId = auth()->id();
+        $notes = $request->notes;
+
+        DB::beginTransaction();
+        try {
+            foreach ($payrolls as $payroll) {
+                $payroll->markAsPaid($adminId);
+
+                if ($notes) {
+                    $payroll->update(['notes' => $notes]);
+                }
+
+                // Send notification safely
+                try {
+                    $this->sendSalaryPaidNotification($payroll);
+                } catch (\Throwable $te) {
+                    Log::warning('Failed notifying payroll ' . $payroll->id . ': ' . $te->getMessage());
+                }
+
+                $successCount++;
+            }
+
+            DB::commit();
+
+            return redirect()->back()->with('success', "Berhasil menandai {$successCount} data gaji sebagai dibayar.");
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            Log::error('bulkMarkAsPaid failed: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return redirect()->back()->with('error', 'Gagal memproses ceklis gaji: ' . $e->getMessage());
         }
     }
 
@@ -702,8 +778,22 @@ class PayrollController extends Controller
 
             $totalHours = PayrollHelper::convertSecondsToHours($totalSeconds);
             $roleName = optional($payroll->user->role)->name;
+            if (!$roleName && $payroll->user->effective_medic_role) {
+                $roleName = $payroll->user->effective_medic_role->name;
+            }
+            if (!$roleName && $payroll->user->medicRole) {
+                $roleName = $payroll->user->medicRole->name;
+            }
             $customSalary = $payroll->user->custom_salary ?? 0;
             $baseSalary = PayrollHelper::getBaseSalary($roleName, $customSalary);
+            if ($baseSalary <= 0 && $payroll->user->effective_medic_role && $payroll->user->effective_medic_role->name !== $roleName) {
+                $altRole = $payroll->user->effective_medic_role->name;
+                $altBase = PayrollHelper::getBaseSalary($altRole, $customSalary);
+                if ($altBase > 0) {
+                    $roleName = $altRole;
+                    $baseSalary = $altBase;
+                }
+            }
             $calculatedSalary = PayrollHelper::computeWeeklySalary($roleName, $totalSeconds, $customSalary);
 
             $oldSalary = $payroll->calculated_salary;
@@ -727,7 +817,7 @@ class PayrollController extends Controller
                 " → New: $" . number_format($calculatedSalary, 0, '.', ',')
             );
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error regenerating payroll', [
                 'payroll_id' => $payroll->id,
@@ -777,8 +867,22 @@ class PayrollController extends Controller
 
                 $totalHours = PayrollHelper::convertSecondsToHours($totalSeconds);
                 $roleName = optional($payroll->user->role)->name;
+                if (!$roleName && $payroll->user->effective_medic_role) {
+                    $roleName = $payroll->user->effective_medic_role->name;
+                }
+                if (!$roleName && $payroll->user->medicRole) {
+                    $roleName = $payroll->user->medicRole->name;
+                }
                 $customSalary = $payroll->user->custom_salary ?? 0;
                 $baseSalary = PayrollHelper::getBaseSalary($roleName, $customSalary);
+                if ($baseSalary <= 0 && $payroll->user->effective_medic_role && $payroll->user->effective_medic_role->name !== $roleName) {
+                    $altRole = $payroll->user->effective_medic_role->name;
+                    $altBase = PayrollHelper::getBaseSalary($altRole, $customSalary);
+                    if ($altBase > 0) {
+                        $roleName = $altRole;
+                        $baseSalary = $altBase;
+                    }
+                }
                 $calculatedSalary = PayrollHelper::computeWeeklySalary($roleName, $totalSeconds, $customSalary);
 
                 $oldSalary = $payroll->calculated_salary;
@@ -1193,6 +1297,12 @@ class PayrollController extends Controller
     private function sendSalaryPaidNotification(Payroll $payroll)
     {
         try {
+            $paidAtFormatted = $payroll->paid_at instanceof \DateTimeInterface
+                ? $payroll->paid_at->format('Y-m-d H:i:s')
+                : (is_string($payroll->paid_at) && !empty($payroll->paid_at)
+                    ? $payroll->paid_at
+                    : now()->format('Y-m-d H:i:s'));
+
             // Create notification record
             $notification = PayrollNotification::create([
                 'payroll_id' => $payroll->id,
@@ -1202,14 +1312,14 @@ class PayrollController extends Controller
                 'metadata' => [
                     'amount' => $payroll->calculated_salary,
                     'period' => $payroll->period_description,
-                    'paid_at' => $payroll->paid_at->format('Y-m-d H:i:s'),
+                    'paid_at' => $paidAtFormatted,
                 ],
             ]);
 
             // Mark notification as sent (NotificationService removed)
             $notification->markAsSent();
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('Failed to send salary paid notification', [
                 'payroll_id' => $payroll->id,
                 'user_id' => $payroll->user_id,

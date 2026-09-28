@@ -750,6 +750,60 @@
 
             <div class="flex flex-col gap-8">
 
+                {{-- Status & Informasi Gaji Saya --}}
+                @php
+                    try {
+                        $latestUserPayroll = \App\Models\Payroll::where('user_id', auth()->id())->latest('period_start')->first();
+                        $pendingUserPayrollsCount = \App\Models\Payroll::where('user_id', auth()->id())->where('status', 'pending')->count();
+                    } catch (\Throwable $e) {
+                        $latestUserPayroll = null;
+                        $pendingUserPayrollsCount = 0;
+                    }
+                @endphp
+                <div class="card backdrop-blur-xl border-2 border-emerald-400/60 rounded-3xl shadow-2xl elegant-card elegant-stagger overflow-hidden"
+                    style="background: linear-gradient(135deg, rgba(6, 78, 59, 0.9) 0%, rgba(12, 74, 110, 0.95) 100%);">
+                    <div class="p-5 sm:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center text-white text-xl sm:text-2xl shadow-xl shrink-0">
+                                <i class="fas fa-wallet"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <h3 class="text-base sm:text-lg font-bold text-white">Slip &amp; Status Gaji Saya</h3>
+                                    @if($pendingUserPayrollsCount > 0)
+                                        <span class="px-2 py-0.5 bg-yellow-400/20 text-yellow-300 border border-yellow-400/40 text-[10px] font-bold rounded-full animate-pulse">
+                                            {{ $pendingUserPayrollsCount }} Pending
+                                        </span>
+                                    @endif
+                                </div>
+                                @if($latestUserPayroll)
+                                    <p class="text-xs sm:text-sm text-emerald-100">
+                                        Periode: <strong class="text-white">{{ $latestUserPayroll->period_description }}</strong> • 
+                                        Gaji: <strong class="text-emerald-300">{{ $latestUserPayroll->formatted_salary }}</strong>
+                                        @if($latestUserPayroll->status === 'paid')
+                                            <span class="ml-1 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-green-500/20 text-green-300 border border-green-400/30">
+                                                <i class="fas fa-check-circle mr-1"></i>Sudah Dibayar
+                                            </span>
+                                        @elseif($latestUserPayroll->status === 'pending')
+                                            <span class="ml-1 inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-yellow-500/20 text-yellow-300 border border-yellow-400/30">
+                                                <i class="fas fa-clock mr-1"></i>Menunggu Pembayaran
+                                            </span>
+                                        @endif
+                                    </p>
+                                @else
+                                    <p class="text-xs sm:text-sm text-emerald-100">Belum ada slip gaji yang dibuat. Gaji akan tercatat saat admin memproses rekap absensi.</p>
+                                @endif
+                            </div>
+                        </div>
+                        <a href="{{ route('staff.payroll.index') }}"
+                            class="w-full md:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold text-xs sm:text-sm shadow-lg shadow-emerald-500/25 transition-all transform hover:scale-105 shrink-0">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                            <span>Buka Gaji Saya</span>
+                            <i class="fas fa-arrow-right text-xs"></i>
+                        </a>
+                    </div>
+                </div>
+
                 <!-- Total Jam Kerja Minggu Ini & Akumulasi EMS -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Total Jam Kerja Minggu Ini -->

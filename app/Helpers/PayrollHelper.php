@@ -87,12 +87,12 @@ class PayrollHelper
     /**
      * Format currency amount
      *
-     * @param int $amount
+     * @param int|float|null $amount
      * @return string
      */
-    public static function formatCurrency(int $amount): string
+    public static function formatCurrency($amount = 0): string
     {
-        return '$ ' . number_format($amount, 0, '.', ',');
+        return '$ ' . number_format((int) ($amount ?? 0), 0, '.', ',');
     }
 
     /**

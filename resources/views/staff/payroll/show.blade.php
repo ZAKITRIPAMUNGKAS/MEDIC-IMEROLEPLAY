@@ -45,10 +45,17 @@
                 </div>
                 
                 @if($payroll->paid_at)
+                    @php
+                        try {
+                            $paidAtShow = $payroll->paid_at instanceof \DateTimeInterface ? $payroll->paid_at->format('d M Y H:i') : \Carbon\Carbon::parse($payroll->paid_at)->format('d M Y H:i');
+                        } catch (\Throwable $e) {
+                            $paidAtShow = (string) $payroll->paid_at;
+                        }
+                    @endphp
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-md mx-auto">
                         <div class="bg-white/5 rounded-lg p-4">
                             <p class="text-sm text-gray-300">Dibayar Pada</p>
-                            <p class="text-white font-medium">{{ $payroll->paid_at->format('d M Y H:i') }}</p>
+                            <p class="text-white font-medium">{{ $paidAtShow }}</p>
                         </div>
                         <div class="bg-white/5 rounded-lg p-4">
                             <p class="text-sm text-gray-300">Dibayar Oleh</p>
@@ -73,11 +80,15 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div class="text-center">
                                 <p class="text-sm text-gray-300">Tanggal Mulai</p>
-                                <p class="text-white font-medium">{{ $payroll->period_start->format('d M Y') }}</p>
+                                <p class="text-white font-medium">
+                                    {{ $payroll->period_start instanceof \DateTimeInterface ? $payroll->period_start->format('d M Y') : \Carbon\Carbon::parse($payroll->period_start)->format('d M Y') }}
+                                </p>
                             </div>
                             <div class="text-center">
                                 <p class="text-sm text-gray-300">Tanggal Akhir</p>
-                                <p class="text-white font-medium">{{ $payroll->period_end->format('d M Y') }}</p>
+                                <p class="text-white font-medium">
+                                    {{ $payroll->period_end instanceof \DateTimeInterface ? $payroll->period_end->format('d M Y') : \Carbon\Carbon::parse($payroll->period_end)->format('d M Y') }}
+                                </p>
                             </div>
                         </div>
                     </div>

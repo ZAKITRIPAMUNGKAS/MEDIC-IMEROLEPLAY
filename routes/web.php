@@ -1406,6 +1406,8 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
         ->middleware('permission:manage_payroll')->name('payroll.generate');
     Route::post('/payroll/remove-duplicates', [\App\Http\Controllers\Admin\PayrollController::class, 'removeDuplicates'])
         ->middleware('permission:manage_payroll')->name('payroll.remove-duplicates');
+    Route::post('/payroll/bulk-mark-paid', [\App\Http\Controllers\Admin\PayrollController::class, 'bulkMarkAsPaid'])
+        ->middleware('permission:manage_payroll')->name('payroll.bulk-mark-paid');
     Route::get('/payroll/{payroll}', [\App\Http\Controllers\Admin\PayrollController::class, 'show'])
         ->middleware('permission:manage_payroll')->name('payroll.show');
     Route::post('/payroll/{payroll}/mark-paid', [\App\Http\Controllers\Admin\PayrollController::class, 'markAsPaid'])
