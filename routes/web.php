@@ -1776,16 +1776,24 @@ Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->gro
 
 // ── Komisi Disiplin (Comdis) & Credit Score (Khusus Alta Hospital) ───────
 Route::middleware(['auth', 'alta_only'])->prefix('credit-score')->name('credit-score.')->group(function () {
-    Route::get('/',              [\App\Http\Controllers\CreditScoreController::class, 'index'])->name('index');
-    Route::get('/{user}',        [\App\Http\Controllers\CreditScoreController::class, 'show'])->name('show');
-    Route::get('/{user}/input',  [\App\Http\Controllers\CreditScoreController::class, 'inputForm'])->name('input');
-    Route::post('/{user}/input', [\App\Http\Controllers\CreditScoreController::class, 'inputStore'])->name('input.store');
+    Route::get('/',                 [\App\Http\Controllers\CreditScoreController::class, 'index'])->name('index');
+    Route::get('/{user}',           [\App\Http\Controllers\CreditScoreController::class, 'show'])->name('show');
+    Route::get('/{user}/input',     [\App\Http\Controllers\CreditScoreController::class, 'inputForm'])->name('input');
+    Route::post('/{user}/input',    [\App\Http\Controllers\CreditScoreController::class, 'inputStore'])->name('input.store');
+    Route::get('/{user}/edit',      [\App\Http\Controllers\CreditScoreController::class, 'editForm'])->name('edit');
+    Route::post('/{user}/edit',     [\App\Http\Controllers\CreditScoreController::class, 'updateScore'])->name('update');
+    Route::put('/log/{log}',        [\App\Http\Controllers\CreditScoreController::class, 'updateLog'])->name('log.update');
+    Route::delete('/log/{log}',     [\App\Http\Controllers\CreditScoreController::class, 'destroyLog'])->name('log.destroy');
 });
 
 // Alias jika diakses melalui /portal/credit-score
 Route::middleware(['auth', 'alta_only'])->prefix('portal/credit-score')->group(function () {
-    Route::get('/',              [\App\Http\Controllers\CreditScoreController::class, 'index']);
-    Route::get('/{user}',        [\App\Http\Controllers\CreditScoreController::class, 'show']);
-    Route::get('/{user}/input',  [\App\Http\Controllers\CreditScoreController::class, 'inputForm']);
-    Route::post('/{user}/input', [\App\Http\Controllers\CreditScoreController::class, 'inputStore']);
+    Route::get('/',                 [\App\Http\Controllers\CreditScoreController::class, 'index']);
+    Route::get('/{user}',           [\App\Http\Controllers\CreditScoreController::class, 'show']);
+    Route::get('/{user}/input',     [\App\Http\Controllers\CreditScoreController::class, 'inputForm']);
+    Route::post('/{user}/input',    [\App\Http\Controllers\CreditScoreController::class, 'inputStore']);
+    Route::get('/{user}/edit',      [\App\Http\Controllers\CreditScoreController::class, 'editForm']);
+    Route::post('/{user}/edit',     [\App\Http\Controllers\CreditScoreController::class, 'updateScore']);
+    Route::put('/log/{log}',        [\App\Http\Controllers\CreditScoreController::class, 'updateLog']);
+    Route::delete('/log/{log}',     [\App\Http\Controllers\CreditScoreController::class, 'destroyLog']);
 });

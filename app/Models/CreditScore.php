@@ -111,4 +111,26 @@ class CreditScore extends Model
 
         return $this->balance;
     }
+
+    /**
+     * Set / Edit saldo langsung. Return saldo baru.
+     */
+    public function setScore(int $newScore, int $issuedBy, string $reason): int
+    {
+        $oldBalance = $this->balance ?? 100;
+        $diff = $newScore - $oldBalance;
+        $this->balance = $newScore;
+        $this->save();
+
+        CreditScoreLog::create([
+            'user_id'       => $this->user_id,
+            'issued_by'     => $issuedBy,
+            'amount'        => $diff,
+            'balance_after' => $this->balance,
+            'reason'        => $reason ?: 'Penyesuaian / Edit langsung skor oleh Comdis',
+            'type'          => $diff >= 0 ? 'add' : 'deduct',
+        ]);
+
+        return $this->balance;
+    }
 }

@@ -4,9 +4,12 @@
 <div class="min-h-screen pt-20 pb-10" style="background: linear-gradient(135deg, #0b1329 0%, #0c2461 50%, #0b1329 100%);">
 <div class="max-w-2xl mx-auto px-4 sm:px-6">
 
-    <div class="mb-6">
+    <div class="mb-6 flex items-center justify-between">
         <a href="{{ route('credit-score.show', $user) }}" class="inline-flex items-center gap-2 text-sm text-sky-400 hover:text-sky-300">
             <i class="fas fa-arrow-left"></i> Kembali ke Detail
+        </a>
+        <a href="{{ route('credit-score.edit', $user) }}" class="text-xs text-purple-400 hover:text-purple-300 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-500/10 border border-purple-500/20">
+            <i class="fas fa-edit"></i> Halaman Edit Skor Langsung &rarr;
         </a>
     </div>
 
@@ -16,8 +19,8 @@
                 <i class="fas fa-balance-scale"></i>
             </div>
             <div>
-                <h1 class="text-xl font-bold text-white">Input Credit Score Comdis</h1>
-                <p class="text-xs text-gray-400">Penyesuaian skor pelanggaran atau penghargaan staf Alta Hospital</p>
+                <h1 class="text-xl font-bold text-white">Input / Edit Credit Score Comdis</h1>
+                <p class="text-xs text-gray-400">Penyesuaian skor pelanggaran, penghargaan, atau edit langsung nilai staf Alta Hospital</p>
             </div>
         </div>
 
@@ -39,9 +42,9 @@
             {{-- Jenis Tindakan --}}
             <div>
                 <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">Jenis Penyesuaian</label>
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <label class="cursor-pointer">
-                        <input type="radio" name="type" value="deduct" checked class="peer sr-only">
+                        <input type="radio" name="type" value="deduct" checked class="peer sr-only" onchange="onTypeChange('deduct')">
                         <div class="p-3.5 rounded-xl border border-white/10 bg-white/5 text-center peer-checked:border-rose-500 peer-checked:bg-rose-500/20 transition-all">
                             <i class="fas fa-minus-circle text-rose-400 text-lg mb-1 block"></i>
                             <div class="font-bold text-white text-sm">Pengurangan</div>
@@ -49,28 +52,36 @@
                         </div>
                     </label>
                     <label class="cursor-pointer">
-                        <input type="radio" name="type" value="add" class="peer sr-only">
+                        <input type="radio" name="type" value="add" class="peer sr-only" onchange="onTypeChange('add')">
                         <div class="p-3.5 rounded-xl border border-white/10 bg-white/5 text-center peer-checked:border-emerald-500 peer-checked:bg-emerald-500/20 transition-all">
                             <i class="fas fa-plus-circle text-emerald-400 text-lg mb-1 block"></i>
                             <div class="font-bold text-white text-sm">Penambahan</div>
                             <div class="text-[11px] text-gray-400">Prestasi / Pemulihan</div>
                         </div>
                     </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="type" value="set" class="peer sr-only" onchange="onTypeChange('set')">
+                        <div class="p-3.5 rounded-xl border border-white/10 bg-white/5 text-center peer-checked:border-purple-500 peer-checked:bg-purple-500/20 transition-all">
+                            <i class="fas fa-sliders-h text-purple-400 text-lg mb-1 block"></i>
+                            <div class="font-bold text-white text-sm">Edit Langsung</div>
+                            <div class="text-[11px] text-gray-400">Atur Nilai Skor Baru</div>
+                        </div>
+                    </label>
                 </div>
                 @error('type') <p class="text-xs text-rose-400 mt-1">{{ $message }}</p> @enderror
             </div>
 
-            {{-- Jumlah Poin --}}
+            {{-- Jumlah Poin / Nilai Skor --}}
             <div>
-                <label for="amount" class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1.5">Jumlah Poin (1 - 100)</label>
-                <input type="number" id="amount" name="amount" min="1" max="100" value="{{ old('amount', 5) }}" required
+                <label id="amountLabel" for="amount" class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1.5">Jumlah Poin (1 - 100)</label>
+                <input type="number" id="amount" name="amount" min="0" max="100" value="{{ old('amount', 5) }}" required
                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 text-sm">
                 @error('amount') <p class="text-xs text-rose-400 mt-1">{{ $message }}</p> @enderror
             </div>
 
             {{-- Alasan --}}
             <div>
-                <label for="reason" class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1.5">Alasan / Dasar Pelanggaran</label>
+                <label id="reasonLabel" for="reason" class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1.5">Alasan / Dasar Pelanggaran</label>
                 <textarea id="reason" name="reason" rows="4" required placeholder="Jelaskan dasar pemberian sanksi atau penghargaan..."
                           class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 text-sm">{{ old('reason') }}</textarea>
                 @error('reason') <p class="text-xs text-rose-400 mt-1">{{ $message }}</p> @enderror
@@ -89,4 +100,25 @@
 
 </div>
 </div>
+
+<script>
+function onTypeChange(type) {
+    const label = document.getElementById('amountLabel');
+    const input = document.getElementById('amount');
+    const reasonLabel = document.getElementById('reasonLabel');
+    if (type === 'set') {
+        label.textContent = 'Nilai Credit Score Baru (0 - 100)';
+        input.value = {{ $creditScore->score }};
+        reasonLabel.textContent = 'Alasan / Dasar Edit Nilai Skor';
+    } else if (type === 'add') {
+        label.textContent = 'Jumlah Poin Penambahan (1 - 100)';
+        input.value = 5;
+        reasonLabel.textContent = 'Alasan / Prestasi Penghargaan';
+    } else {
+        label.textContent = 'Jumlah Poin Pengurangan (1 - 100)';
+        input.value = 5;
+        reasonLabel.textContent = 'Alasan / Dasar Pelanggaran SOP';
+    }
+}
+</script>
 @endsection

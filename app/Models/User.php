@@ -167,8 +167,16 @@ class User extends Authenticatable
      */
     public function isInDivision(string ...$divisions): bool
     {
-        if (!$this->subRole) return false;
-        return in_array(strtolower($this->subRole->name), array_map('strtolower', $divisions));
+        $divs = array_map('strtolower', $divisions);
+        if ($this->subRole) {
+            if (in_array(strtolower($this->subRole->name), $divs) || in_array(strtolower($this->subRole->short_name ?? ''), $divs)) {
+                return true;
+            }
+        }
+        if ($this->role && in_array(strtolower($this->role->name), $divs)) {
+            return true;
+        }
+        return false;
     }
 
     /**

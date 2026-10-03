@@ -9,9 +9,14 @@
             <i class="fas fa-arrow-left"></i> Kembali ke Daftar
         </a>
         @if(auth()->user()->isInDivision('comdis') || auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove())
-        <a href="{{ route('credit-score.input', $user) }}" class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white rounded-xl text-sm font-semibold shadow-lg shadow-amber-500/20">
-            <i class="fas fa-plus-minus"></i> Input Poin Comdis
-        </a>
+        <div class="flex items-center gap-2">
+            <a href="{{ route('credit-score.input', $user) }}" class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white rounded-xl text-sm font-semibold shadow-lg shadow-amber-500/20">
+                <i class="fas fa-plus-minus"></i> Input Poin Comdis
+            </a>
+            <a href="{{ route('credit-score.edit', $user) }}" class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white rounded-xl text-sm font-semibold shadow-lg shadow-purple-500/20">
+                <i class="fas fa-edit"></i> Edit Skor Langsung
+            </a>
+        </div>
         @endif
     </div>
 
@@ -67,6 +72,9 @@
                         <th class="px-5 py-3">Perubahan</th>
                         <th class="px-5 py-3">Alasan / Catatan</th>
                         <th class="px-5 py-3">Petugas Comdis</th>
+                        @if(auth()->user()->isInDivision('comdis') || auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove())
+                        <th class="px-5 py-3 text-center">Aksi Comdis</th>
+                        @endif
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-white/5">
@@ -82,20 +90,43 @@
                             </span>
                             @else
                             <span class="inline-flex items-center gap-1 text-xs font-bold text-rose-400 px-2 py-0.5 rounded-lg bg-rose-500/10 border border-rose-500/20">
-                                <i class="fas fa-minus"></i> -{{ $log->amount }}
+                                <i class="fas fa-minus"></i> {{ $log->amount }}
                             </span>
                             @endif
+                            <div class="text-[10px] text-gray-400 mt-0.5">Saldo: {{ $log->balance_after }}</div>
                         </td>
                         <td class="px-5 py-3.5 text-gray-200">
-                            {{ $log->reason }}
+                            <span id="log-reason-{{ $log->id }}">{{ $log->reason }}</span>
                         </td>
                         <td class="px-5 py-3.5 text-xs text-gray-400">
                             {{ $log->issuedBy?->name ?? 'Sistem' }}
                         </td>
+                        @if(auth()->user()->isInDivision('comdis') || auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove())
+                        <td class="px-5 py-3.5 text-center">
+                            <div class="flex items-center justify-center gap-2">
+                                <button type="button"
+                                        onclick="openEditLogModal({{ $log->id }}, '{{ addslashes($log->reason) }}')"
+                                        class="px-2 py-1 text-xs rounded bg-white/10 hover:bg-white/20 text-sky-300 transition-colors"
+                                        title="Edit Catatan Alasan">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </button>
+                                <form action="{{ route('credit-score.log.destroy', $log) }}" method="POST"
+                                      onsubmit="return confirm('Batalkan catatan ini dan kembalikan saldo credit score anggota?');"
+                                      class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="px-2 py-1 text-xs rounded bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition-colors"
+                                            title="Hapus Catatan & Rollback Skor">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                        @endif
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="4" class="px-5 py-8 text-center text-gray-400">
+                        <td colspan="{{ (auth()->user()->isInDivision('comdis') || auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove()) ? 5 : 4 }}" class="px-5 py-8 text-center text-gray-400">
                             Belum ada riwayat perubahan credit score untuk anggota ini.
                         </td>
                     </tr>
@@ -112,4 +143,43 @@
 
 </div>
 </div>
+
+{{-- Edit Log Modal --}}
+<div id="editLogModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+    <div class="bg-[#0b1329] border border-white/20 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl">
+        <div class="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-white/5">
+            <h3 class="text-white font-bold text-sm">Edit Catatan Alasan</h3>
+            <button type="button" onclick="closeEditLogModal()" class="text-gray-400 hover:text-white">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <form id="editLogForm" method="POST" action="" class="p-6 space-y-4">
+            @csrf
+            @method('PUT')
+            <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1.5">Alasan / Catatan</label>
+                <textarea id="editLogReason" name="reason" rows="3" required class="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white text-xs placeholder-gray-500 focus:outline-none focus:border-sky-500"></textarea>
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button type="button" onclick="closeEditLogModal()" class="px-4 py-2 rounded-xl border border-white/10 text-gray-300 text-xs font-semibold hover:bg-white/5">Batal</button>
+                <button type="submit" class="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-xl text-xs font-semibold">Simpan</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openEditLogModal(logId, currentReason) {
+    document.getElementById('editLogForm').action = `/credit-score/log/${logId}`;
+    document.getElementById('editLogReason').value = currentReason;
+    const modal = document.getElementById('editLogModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+}
+function closeEditLogModal() {
+    const modal = document.getElementById('editLogModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+</script>
 @endsection

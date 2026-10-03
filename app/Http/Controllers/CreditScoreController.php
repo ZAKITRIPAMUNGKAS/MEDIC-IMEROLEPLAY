@@ -19,13 +19,13 @@ class CreditScoreController extends Controller
     private function canManage(): bool
     {
         $user = auth()->user();
-        return $user && ($user->isAdmin() || $user->isInDivision('comdis'));
+        return $user && ($user->isAdmin() || $user->isExecutiveOrAbove() || $user->isInDivision('comdis'));
     }
 
     private function canViewAll(): bool
     {
         $user = auth()->user();
-        return $user && ($user->isAdmin() || $user->isInDivision('comdis', 'pnd', 'ie'));
+        return $user && ($user->isAdmin() || $user->isExecutiveOrAbove() || $user->isInDivision('comdis', 'pnd', 'ie'));
     }
 
     private function ensureTablesExist(): void
@@ -169,8 +169,8 @@ class CreditScoreController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'type'   => 'required|in:add,deduct',
-            'amount' => 'required|integer|min:1|max:100',
+            'type'   => 'required|in:add,deduct,set',
+            'amount' => 'required|integer|min:0|max:100',
             'reason' => 'required|string|max:500',
         ]);
 
@@ -180,7 +180,14 @@ class CreditScoreController extends Controller
 
         $creditScore = CreditScore::getOrCreate($user->id);
 
-        if ($request->type === 'add') {
+        if ($request->type === 'set') {
+            $newBalance = $creditScore->setScore(
+                (int) $request->amount,
+                auth()->id(),
+                $request->reason
+            );
+            $action = "diatur menjadi {$newBalance} poin";
+        } elseif ($request->type === 'add') {
             $newBalance = $creditScore->add(
                 (int) $request->amount,
                 auth()->id(),
@@ -199,5 +206,107 @@ class CreditScoreController extends Controller
         return redirect()
             ->route('credit-score.show', $user)
             ->with('success', "Credit Score {$user->name} berhasil {$action}. Saldo sekarang: {$newBalance}.");
+    }
+
+    /**
+     * GET /credit-score/{user}/edit
+     * Form edit / atur langsung saldo Credit Score — khusus Comdis.
+     */
+    public function editForm(User $user)
+    {
+        $this->ensureTablesExist();
+        if (!$this->canManage()) {
+            abort(403, 'Hanya Divisi Comdis yang dapat mengedit Credit Score.');
+        }
+
+        if (strtolower(trim($user->hospital ?? 'alta')) !== 'alta') {
+            return redirect()->route('credit-score.index')->with('error', 'Credit Score hanya berlaku untuk anggota Alta Hospital.');
+        }
+
+        $creditScore = CreditScore::getOrCreate($user->id);
+        return view('credit-score.edit', compact('user', 'creditScore'));
+    }
+
+    /**
+     * POST /credit-score/{user}/edit
+     * Simpan perubahan saldo langsung oleh Comdis.
+     */
+    public function updateScore(Request $request, User $user)
+    {
+        $this->ensureTablesExist();
+        if (!$this->canManage()) {
+            abort(403, 'Hanya Divisi Comdis yang dapat mengedit Credit Score.');
+        }
+
+        if (strtolower(trim($user->hospital ?? 'alta')) !== 'alta') {
+            return back()->with('error', 'Credit Score hanya berlaku untuk anggota Alta Hospital.');
+        }
+
+        $validator = Validator::make($request->all(), [
+            'score'  => 'required|integer|min:0|max:100',
+            'reason' => 'required|string|max:500',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $creditScore = CreditScore::getOrCreate($user->id);
+        $newBalance = $creditScore->setScore((int) $request->score, auth()->id(), $request->reason);
+
+        return redirect()
+            ->route('credit-score.show', $user)
+            ->with('success', "Credit Score {$user->name} berhasil diubah menjadi {$newBalance}.");
+    }
+
+    /**
+     * PUT /credit-score/log/{log}
+     * Update catatan alasan riwayat Credit Score — khusus Comdis.
+     */
+    public function updateLog(Request $request, CreditScoreLog $log)
+    {
+        $this->ensureTablesExist();
+        if (!$this->canManage()) {
+            abort(403, 'Hanya Divisi Comdis yang dapat mengedit riwayat Credit Score.');
+        }
+
+        $validator = Validator::make($request->all(), [
+            'reason' => 'required|string|max:500',
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $log->update(['reason' => $request->reason]);
+
+        return back()->with('success', 'Catatan alasan pelanggaran/penghargaan berhasil diperbarui.');
+    }
+
+    /**
+     * DELETE /credit-score/log/{log}
+     * Batalkan / hapus catatan log transaksi yang keliru & kembalikan saldo skornya — khusus Comdis.
+     */
+    public function destroyLog(CreditScoreLog $log)
+    {
+        $this->ensureTablesExist();
+        if (!$this->canManage()) {
+            abort(403, 'Hanya Divisi Comdis yang dapat menghapus catatan Credit Score.');
+        }
+
+        $creditScore = CreditScore::where('user_id', $log->user_id)->first();
+        if ($creditScore) {
+            if ($log->type === 'add') {
+                $creditScore->balance -= $log->amount;
+            } elseif ($log->type === 'deduct') {
+                $creditScore->balance += abs($log->amount);
+            }
+            if ($creditScore->balance < 0) $creditScore->balance = 0;
+            $creditScore->save();
+        }
+
+        $log->delete();
+
+        return back()->with('success', 'Catatan riwayat transaksi berhasil dihapus dan saldo Credit Score telah dikembalikan.');
     }
 }
