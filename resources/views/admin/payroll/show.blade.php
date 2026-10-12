@@ -138,11 +138,16 @@
         @endif
 
         <!-- Notifications -->
-        @if($payroll->notifications->count() > 0)
+        @php
+            $displayNotifications = $payroll->notifications->unique(function ($n) {
+                return $n->notification_type . '_' . $n->message;
+            });
+        @endphp
+        @if($displayNotifications->count() > 0)
             <div class="glass-effect rounded-2xl elegant-shadow-lg p-4 sm:p-6">
                 <h3 class="text-lg sm:text-xl font-semibold text-white mb-4">Riwayat Notifikasi</h3>
                 <div class="space-y-3">
-                    @foreach($payroll->notifications as $notification)
+                    @foreach($displayNotifications as $notification)
                         <div class="bg-white/5 rounded-lg p-4">
                             <div class="flex items-center justify-between">
                                 <div>

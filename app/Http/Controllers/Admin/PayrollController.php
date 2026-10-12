@@ -1295,11 +1295,41 @@ class PayrollController extends Controller
     private function sendSalaryPendingNotification(Payroll $payroll, $isUpdate = false)
     {
         try {
-            // Create notification record
             $message = $isUpdate
                 ? "Gaji Anda untuk periode {$payroll->period_description} telah di-update sebesar {$payroll->formatted_salary}. Status: Pending"
                 : "Gaji Anda untuk periode {$payroll->period_description} telah di-generate sebesar {$payroll->formatted_salary}. Status: Pending";
 
+            // Check if a pending notification already exists for this payroll
+            $existing = PayrollNotification::where('payroll_id', $payroll->id)
+                ->where('notification_type', 'salary_pending')
+                ->latest()
+                ->first();
+
+            if ($existing) {
+                $existingAmount = isset($existing->metadata['amount']) ? (float)$existing->metadata['amount'] : null;
+                $currentAmount = (float)$payroll->calculated_salary;
+
+                // If identical amount and message, skip creating redundant notification
+                if ($existingAmount === $currentAmount && $existing->message === $message) {
+                    return;
+                }
+
+                // If amount changed or message updated, update existing notification
+                $existing->update([
+                    'message' => $message,
+                    'status' => 'sent',
+                    'sent_at' => now(),
+                    'metadata' => [
+                        'amount' => $payroll->calculated_salary,
+                        'period' => $payroll->period_description,
+                        'updated_at' => now()->format('Y-m-d H:i:s'),
+                        'is_update' => true,
+                    ],
+                ]);
+                return;
+            }
+
+            // Create notification record if none exists
             $notification = PayrollNotification::create([
                 'payroll_id' => $payroll->id,
                 'user_id' => $payroll->user_id,
@@ -1336,6 +1366,15 @@ class PayrollController extends Controller
     private function sendSalaryPaidNotification(Payroll $payroll)
     {
         try {
+            // Prevent duplicate paid notifications for the same payroll
+            $existing = PayrollNotification::where('payroll_id', $payroll->id)
+                ->where('notification_type', 'salary_paid')
+                ->first();
+
+            if ($existing) {
+                return;
+            }
+
             $paidAtFormatted = $payroll->paid_at instanceof \DateTimeInterface
                 ? $payroll->paid_at->format('Y-m-d H:i:s')
                 : (is_string($payroll->paid_at) && !empty($payroll->paid_at)

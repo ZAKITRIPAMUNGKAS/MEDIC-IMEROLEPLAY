@@ -52,13 +52,16 @@ class PayrollController extends Controller
             // Calculate summary statistics
             $summary = $this->calculateSummary($user->id, $filters);
 
-            // Get recent notifications
+            // Get recent notifications (deduplicate identical notifications per payroll and type)
             $recentNotifications = PayrollNotification::where('user_id', $user->id)
                 ->where('status', 'sent')
                 ->whereNotNull('sent_at')
                 ->orderBy('sent_at', 'desc')
-                ->limit(5)
-                ->get();
+                ->get()
+                ->unique(function ($notification) {
+                    return $notification->payroll_id . '_' . $notification->notification_type . '_' . $notification->message;
+                })
+                ->take(5);
 
             return view('staff.payroll.index', compact('payrolls', 'filters', 'summary', 'recentNotifications'));
         } catch (\Throwable $e) {
