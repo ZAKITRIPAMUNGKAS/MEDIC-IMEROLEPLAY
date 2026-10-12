@@ -85,7 +85,7 @@ class AutoGeneratePayrollCommand extends Command
                             $lastWeekStart->toDateString(), 
                             $lastWeekEnd->toDateString()
                         ])
-                        ->where('session_type', 'work')
+                        ->whereIn('session_type', ['work', 'meeting'])
                         ->whereNotNull('session_duration')
                         ->where('session_duration', '>', 0)
                         ->where('is_active', false) // Only completed sessions
@@ -101,8 +101,26 @@ class AutoGeneratePayrollCommand extends Command
                     $totalSeconds = $attendances->sum('session_duration');
                     $totalHours = PayrollHelper::convertSecondsToHours($totalSeconds);
                     $roleName = optional($user->role)->name;
-                    $baseSalary = PayrollHelper::getBaseSalary($roleName);
-                    $calculatedSalary = PayrollHelper::computeWeeklySalary($roleName, $totalSeconds);
+                    if (!$roleName && $user->effective_medic_role) {
+                        $roleName = $user->effective_medic_role->name;
+                    }
+                    if (!$roleName && $user->medicRole) {
+                        $roleName = $user->medicRole->name;
+                    }
+
+                    $customSalary = $user->custom_salary ?? 0;
+                    $baseSalary = PayrollHelper::getBaseSalary($roleName, $customSalary);
+
+                    if ($baseSalary <= 0 && $user->effective_medic_role && $user->effective_medic_role->name !== $roleName) {
+                        $altRole = $user->effective_medic_role->name;
+                        $altBase = PayrollHelper::getBaseSalary($altRole, $customSalary);
+                        if ($altBase > 0) {
+                            $roleName = $altRole;
+                            $baseSalary = $altBase;
+                        }
+                    }
+
+                    $calculatedSalary = PayrollHelper::computeWeeklySalary($roleName, $totalSeconds, $customSalary);
 
                     // Skip if calculated salary is 0 or less
                     if ($calculatedSalary <= 0) {

@@ -434,21 +434,13 @@ class PayrollController extends Controller
             'user_ids.*' => 'exists:users,id',
         ]);
 
-        // Check if last week payroll already exists (auto-generate runs on Sunday 23:59)
+        // Check if last week payroll already exists (for informational purposes)
         $lastWeekStart = now()->subWeek()->startOfWeek();
         $lastWeekEnd = now()->subWeek()->endOfWeek();
         $lastWeekPayrollExists = Payroll::whereBetween('period_start', [
             $lastWeekStart->format('Y-m-d'),
             $lastWeekEnd->format('Y-m-d')
         ])->exists();
-
-        // Disable manual generate if it's Monday or later and last week payroll already exists
-        $isAfterSunday = now()->isMonday() || now()->isTuesday() || now()->isWednesday() ||
-            now()->isThursday() || now()->isFriday() || now()->isSaturday();
-
-        if ($isAfterSunday && $lastWeekPayrollExists) {
-            return redirect()->back()->with('error', 'Generate gaji sudah dilakukan secara otomatis pada hari Minggu jam 23:59. Tidak dapat melakukan generate manual setelah auto-generate.');
-        }
 
         $periodStart = Carbon::parse($request->period_start);
         $periodEnd = Carbon::parse($request->period_end);
@@ -496,17 +488,10 @@ class PayrollController extends Controller
         DB::beginTransaction();
         try {
             foreach ($users as $user) {
-                // Check if payroll already exists for this period (overlapping check)
-                // Use overlapping logic: (StartA <= EndB) and (EndA >= StartB)
+                // Check if payroll already exists for this exact period
                 $existingPayroll = Payroll::where('user_id', $user->id)
-                    ->where(function ($query) use ($periodStart, $periodEnd) {
-                        $query->whereBetween('period_start', [$periodStart->format('Y-m-d'), $periodEnd->format('Y-m-d')])
-                            ->orWhereBetween('period_end', [$periodStart->format('Y-m-d'), $periodEnd->format('Y-m-d')])
-                            ->orWhere(function ($q) use ($periodStart, $periodEnd) {
-                                $q->where('period_start', '<=', $periodStart->format('Y-m-d'))
-                                    ->where('period_end', '>=', $periodEnd->format('Y-m-d'));
-                            });
-                    })
+                    ->where('period_start', $periodStart->format('Y-m-d'))
+                    ->where('period_end', $periodEnd->format('Y-m-d'))
                     ->first();
 
                 // Get attendance data for the period
@@ -573,42 +558,39 @@ class PayrollController extends Controller
                     continue;
                 }
 
-                // Prepare payroll data
-                $payrollData = [
-                    'user_id' => $user->id,
-                    'period_start' => $periodStart->format('Y-m-d'),
-                    'period_end' => $periodEnd->format('Y-m-d'),
-                    'total_hours' => $totalHours,
-                    'base_salary' => $baseSalary,
-                    'calculated_salary' => $calculatedSalary,
-                    'notes' => "Generated manually on " . now()->format('Y-m-d H:i:s') . " for {$user->name}",
-                ];
-
                 if ($existingPayroll) {
-                    // Check if payroll is already paid before update
-                    $wasPaid = $existingPayroll->isPaid();
-
-                    // Update existing payroll
-                    // Preserve paid status, paid_at, and paid_by if already paid
-                    if (!$wasPaid) {
-                        $payrollData['status'] = 'pending';
-                    } else {
-                        // Remove status from update data if already paid to preserve it
-                        unset($payrollData['status']);
+                    // NEVER overwrite or modify a payroll that is already marked as paid
+                    if ($existingPayroll->isPaid()) {
+                        $errors[] = "Gaji untuk {$user->name} pada periode ini sudah dibayar, dilewati.";
+                        continue;
                     }
 
-                    $existingPayroll->update($payrollData);
-                    $payroll = $existingPayroll->fresh(); // Refresh to get updated attributes
+                    // Update existing pending payroll (recalculate)
+                    $existingPayroll->update([
+                        'total_hours' => $totalHours,
+                        'base_salary' => $baseSalary,
+                        'calculated_salary' => $calculatedSalary,
+                        'status' => 'pending',
+                        'notes' => "Updated manually on " . now()->format('Y-m-d H:i:s') . " for {$user->name}",
+                    ]);
 
-                    // Send notification when payroll is updated (only if not paid)
-                    if (!$wasPaid) {
-                        $this->sendSalaryPendingNotification($payroll, true);
-                    }
+                    $payroll = $existingPayroll->fresh();
+
+                    // Send notification when payroll is updated
+                    $this->sendSalaryPendingNotification($payroll, true);
                     $updatedCount++;
                 } else {
                     // Create new payroll record
-                    $payrollData['status'] = 'pending';
-                    $payroll = Payroll::create($payrollData);
+                    $payroll = Payroll::create([
+                        'user_id' => $user->id,
+                        'period_start' => $periodStart->format('Y-m-d'),
+                        'period_end' => $periodEnd->format('Y-m-d'),
+                        'total_hours' => $totalHours,
+                        'base_salary' => $baseSalary,
+                        'calculated_salary' => $calculatedSalary,
+                        'status' => 'pending',
+                        'notes' => "Generated manually on " . now()->format('Y-m-d H:i:s') . " for {$user->name}",
+                    ]);
 
                     // Send notification when payroll is generated
                     $this->sendSalaryPendingNotification($payroll, false);
