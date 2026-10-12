@@ -61,11 +61,20 @@ class GenerateMissingPayrollCommand extends Command
 
         $this->info("👥 Ditemukan {$userIdsWithAttendance->count()} staf yang memiliki jam dinas di periode ini.");
 
-        // Cek siapa yang sudah punya payroll di periode ini
-        $existingUserIds = Payroll::where('period_start', $periodStart->toDateString())
-            ->where('period_end', $periodEnd->toDateString())
-            ->pluck('user_id')
-            ->toArray();
+        // Cek siapa yang sudah punya payroll di periode / minggu ini
+        $existingUserIds = Payroll::where(function ($q) use ($periodStart, $periodEnd) {
+            $q->where(function ($exact) use ($periodStart, $periodEnd) {
+                $exact->where('period_start', $periodStart->toDateString())
+                      ->where('period_end', $periodEnd->toDateString());
+            })
+            ->orWhere('period_start', $periodStart->toDateString())
+            ->orWhereBetween('period_start', [
+                $periodStart->copy()->startOfWeek()->toDateString(),
+                $periodStart->copy()->endOfWeek()->toDateString()
+            ]);
+        })
+        ->pluck('user_id')
+        ->toArray();
 
         $missingUserIds = $userIdsWithAttendance->diff($existingUserIds);
 

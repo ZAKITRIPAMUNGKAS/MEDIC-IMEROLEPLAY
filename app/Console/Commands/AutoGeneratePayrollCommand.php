@@ -73,10 +73,20 @@ class AutoGeneratePayrollCommand extends Command
         try {
             foreach ($users as $user) {
                 try {
-                    // Check if payroll already exists for this period
+                    // Check if payroll already exists for this user in this week
                     $existingPayroll = Payroll::where('user_id', $user->id)
-                        ->where('period_start', $lastWeekStart->format('Y-m-d'))
-                        ->where('period_end', $lastWeekEnd->format('Y-m-d'))
+                        ->where(function ($q) use ($lastWeekStart, $lastWeekEnd) {
+                            $q->where(function ($exact) use ($lastWeekStart, $lastWeekEnd) {
+                                $exact->where('period_start', $lastWeekStart->toDateString())
+                                      ->where('period_end', $lastWeekEnd->toDateString());
+                            })
+                            ->orWhere('period_start', $lastWeekStart->toDateString())
+                            ->orWhereBetween('period_start', [
+                                $lastWeekStart->copy()->startOfWeek()->toDateString(),
+                                $lastWeekStart->copy()->endOfWeek()->toDateString()
+                            ]);
+                        })
+                        ->orderByRaw("CASE WHEN status = 'paid' THEN 0 ELSE 1 END")
                         ->first();
 
                     // Get attendance data for the period

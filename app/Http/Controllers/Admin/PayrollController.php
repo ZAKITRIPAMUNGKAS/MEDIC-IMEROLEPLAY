@@ -488,10 +488,20 @@ class PayrollController extends Controller
         DB::beginTransaction();
         try {
             foreach ($users as $user) {
-                // Check if payroll already exists for this exact period
+                // Check if payroll already exists for this user in this week/period
                 $existingPayroll = Payroll::where('user_id', $user->id)
-                    ->where('period_start', $periodStart->format('Y-m-d'))
-                    ->where('period_end', $periodEnd->format('Y-m-d'))
+                    ->where(function ($q) use ($periodStart, $periodEnd) {
+                        $q->where(function ($exact) use ($periodStart, $periodEnd) {
+                            $exact->where('period_start', $periodStart->toDateString())
+                                  ->where('period_end', $periodEnd->toDateString());
+                        })
+                        ->orWhere('period_start', $periodStart->toDateString())
+                        ->orWhereBetween('period_start', [
+                            $periodStart->copy()->startOfWeek()->toDateString(),
+                            $periodStart->copy()->endOfWeek()->toDateString()
+                        ]);
+                    })
+                    ->orderByRaw("CASE WHEN status = 'paid' THEN 0 ELSE 1 END")
                     ->first();
 
                 // Get attendance data for the period
@@ -565,14 +575,29 @@ class PayrollController extends Controller
                         continue;
                     }
 
-                    // Update existing pending payroll (recalculate)
+                    // Update existing pending payroll (recalculate and standardize dates)
                     $existingPayroll->update([
+                        'period_start' => $periodStart->format('Y-m-d'),
+                        'period_end' => $periodEnd->format('Y-m-d'),
                         'total_hours' => $totalHours,
                         'base_salary' => $baseSalary,
                         'calculated_salary' => $calculatedSalary,
                         'status' => 'pending',
                         'notes' => "Updated manually on " . now()->format('Y-m-d H:i:s') . " for {$user->name}",
                     ]);
+
+                    // Clean up any extra pending duplicates for this user in this week
+                    Payroll::where('user_id', $user->id)
+                        ->where('id', '!=', $existingPayroll->id)
+                        ->where('status', '!=', 'paid')
+                        ->whereBetween('period_start', [
+                            $periodStart->copy()->startOfWeek()->toDateString(),
+                            $periodStart->copy()->endOfWeek()->toDateString()
+                        ])
+                        ->each(function ($extra) {
+                            $extra->notifications()->delete();
+                            $extra->delete();
+                        });
 
                     $payroll = $existingPayroll->fresh();
 
@@ -983,20 +1008,25 @@ class PayrollController extends Controller
     }
 
     /**
-     * Remove duplicate payrolls (keep only the latest)
+     * Remove duplicate payrolls (keep the best/standard record per user and week)
      */
     public function removeDuplicates(Request $request)
     {
         try {
             $force = $request->has('force');
 
-            // Find duplicates: same user_id, period_start, and period_end
-            $duplicates = Payroll::select('user_id', 'period_start', 'period_end', DB::raw('COUNT(*) as count'))
-                ->groupBy('user_id', 'period_start', 'period_end')
-                ->having('count', '>', 1)
-                ->get();
+            // Fetch all payrolls and group by user_id and week start
+            $allPayrolls = Payroll::with('user')->get();
+            $grouped = $allPayrolls->groupBy(function ($payroll) {
+                $weekStart = Carbon::parse($payroll->period_start)->startOfWeek()->format('Y-m-d');
+                return $payroll->user_id . '_' . $weekStart;
+            });
 
-            if ($duplicates->isEmpty()) {
+            $duplicateGroups = $grouped->filter(function ($group) {
+                return $group->count() > 1;
+            });
+
+            if ($duplicateGroups->isEmpty()) {
                 return redirect()->back()->with('success', 'Tidak ada data gaji duplikat ditemukan.');
             }
 
@@ -1006,34 +1036,43 @@ class PayrollController extends Controller
 
             DB::beginTransaction();
             try {
-                foreach ($duplicates as $duplicate) {
-                    // Get all payrolls for this user and period
-                    $payrolls = Payroll::where('user_id', $duplicate->user_id)
-                        ->where('period_start', $duplicate->period_start)
-                        ->where('period_end', $duplicate->period_end)
-                        ->orderBy('created_at', 'desc') // Order by created_at descending (newest first)
-                        ->orderBy('id', 'desc') // Also order by id as secondary sort
-                        ->get();
+                foreach ($duplicateGroups as $key => $payrolls) {
+                    // Sort to pick primary record:
+                    // 1. Paid status comes first (never delete paid)
+                    // 2. Standard week bounds (Monday to Sunday) preferred
+                    // 3. Newest ID
+                    $sorted = $payrolls->sort(function ($a, $b) {
+                        if ($a->isPaid() && !$b->isPaid()) return -1;
+                        if (!$a->isPaid() && $b->isPaid()) return 1;
 
-                    if ($payrolls->count() <= 1) {
-                        continue;
+                        $weekStart = Carbon::parse($a->period_start)->startOfWeek()->toDateString();
+                        $weekEnd = Carbon::parse($a->period_start)->endOfWeek()->toDateString();
+
+                        $aStandard = (Carbon::parse($a->period_start)->toDateString() === $weekStart && Carbon::parse($a->period_end)->toDateString() === $weekEnd);
+                        $bStandard = (Carbon::parse($b->period_start)->toDateString() === $weekStart && Carbon::parse($b->period_end)->toDateString() === $weekEnd);
+
+                        if ($aStandard && !$bStandard) return -1;
+                        if (!$aStandard && $bStandard) return 1;
+
+                        return $b->id <=> $a->id;
+                    })->values();
+
+                    $keepPayroll = $sorted->first();
+                    $deletePayrolls = $sorted->slice(1);
+
+                    // Normalize period_end if needed for pending keep record
+                    $correctEnd = Carbon::parse($keepPayroll->period_start)->endOfWeek()->toDateString();
+                    if (Carbon::parse($keepPayroll->period_end)->toDateString() !== $correctEnd && !$keepPayroll->isPaid()) {
+                        $keepPayroll->update(['period_end' => $correctEnd]);
                     }
 
-                    // Keep the first one (newest), delete the rest
-                    $keepPayroll = $payrolls->first();
-                    $deletePayrolls = $payrolls->skip(1);
-
                     foreach ($deletePayrolls as $payroll) {
-                        // Check if payroll is paid
                         if ($payroll->isPaid() && !$force) {
                             continue;
                         }
 
                         try {
-                            // Delete related notifications first
                             $payroll->notifications()->delete();
-
-                            // Delete the payroll
                             $payroll->delete();
                             $totalDeleted++;
                         } catch (\Exception $e) {
@@ -1045,7 +1084,7 @@ class PayrollController extends Controller
 
                 DB::commit();
 
-                $message = "Berhasil menghapus {$totalDeleted} data gaji duplikat. {$totalKept} data terbaru tetap disimpan.";
+                $message = "Berhasil menghapus {$totalDeleted} data gaji duplikat. {$totalKept} data valid tetap disimpan.";
                 if (!empty($errors)) {
                     $message .= " Terjadi " . count($errors) . " error.";
                 }

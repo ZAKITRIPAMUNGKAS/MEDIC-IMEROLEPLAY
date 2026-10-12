@@ -24,7 +24,7 @@ class RemoveDuplicatePayrollCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Remove duplicate payroll records, keeping only the latest one for each user and period';
+    protected $description = 'Remove duplicate payroll records, keeping only the best/standard record for each user and week';
 
     /**
      * Execute the console command.
@@ -40,19 +40,24 @@ class RemoveDuplicatePayrollCommand extends Command
             $this->warn('⚠️  DRY RUN MODE - No data will be deleted');
         }
 
-        // Find duplicates: same user_id, period_start, and period_end
-        // Group by these fields and find duplicates
-        $duplicates = Payroll::select('user_id', 'period_start', 'period_end', DB::raw('COUNT(*) as count'))
-            ->groupBy('user_id', 'period_start', 'period_end')
-            ->having('count', '>', 1)
-            ->get();
+        // Fetch all payrolls and group by user_id and week start
+        $allPayrolls = Payroll::with('user')->get();
+        
+        $grouped = $allPayrolls->groupBy(function ($payroll) {
+            $weekStart = Carbon::parse($payroll->period_start)->startOfWeek()->format('Y-m-d');
+            return $payroll->user_id . '_' . $weekStart;
+        });
 
-        if ($duplicates->isEmpty()) {
+        $duplicateGroups = $grouped->filter(function ($group) {
+            return $group->count() > 1;
+        });
+
+        if ($duplicateGroups->isEmpty()) {
             $this->info('✅ No duplicate payroll records found.');
             return 0;
         }
 
-        $this->info("📋 Found {$duplicates->count()} duplicate groups");
+        $this->info("📋 Found {$duplicateGroups->count()} duplicate week groups");
 
         $totalDeleted = 0;
         $totalKept = 0;
@@ -61,43 +66,62 @@ class RemoveDuplicatePayrollCommand extends Command
 
         DB::beginTransaction();
         try {
-            foreach ($duplicates as $duplicate) {
-                // Get all payrolls for this user and period
-                $payrolls = Payroll::where('user_id', $duplicate->user_id)
-                    ->where('period_start', $duplicate->period_start)
-                    ->where('period_end', $duplicate->period_end)
-                    ->orderBy('created_at', 'desc') // Order by created_at descending (newest first)
-                    ->orderBy('id', 'desc') // Also order by id as secondary sort
-                    ->get();
+            foreach ($duplicateGroups as $key => $payrolls) {
+                $user = $payrolls->first()->user;
+                $userName = $user->name ?? 'User #' . $payrolls->first()->user_id;
 
-                if ($payrolls->count() <= 1) {
-                    continue; // Skip if only one record (shouldn't happen, but just in case)
+                // Sort payrolls to pick the primary one to keep:
+                // 1. Paid status comes first (never discard already paid payroll)
+                // 2. Standard week bounds (Monday to Sunday) preferred
+                // 3. Newest ID
+                $sorted = $payrolls->sort(function ($a, $b) {
+                    if ($a->isPaid() && !$b->isPaid()) return -1;
+                    if (!$a->isPaid() && $b->isPaid()) return 1;
+
+                    $weekStart = Carbon::parse($a->period_start)->startOfWeek()->toDateString();
+                    $weekEnd = Carbon::parse($a->period_start)->endOfWeek()->toDateString();
+
+                    $aStandard = (Carbon::parse($a->period_start)->toDateString() === $weekStart && Carbon::parse($a->period_end)->toDateString() === $weekEnd);
+                    $bStandard = (Carbon::parse($b->period_start)->toDateString() === $weekStart && Carbon::parse($b->period_end)->toDateString() === $weekEnd);
+
+                    if ($aStandard && !$bStandard) return -1;
+                    if (!$aStandard && $bStandard) return 1;
+
+                    return $b->id <=> $a->id;
+                })->values();
+
+                $keepPayroll = $sorted->first();
+                $deletePayrolls = $sorted->slice(1);
+
+                $weekStartStr = Carbon::parse($keepPayroll->period_start)->startOfWeek()->format('d M Y');
+                $weekEndStr = Carbon::parse($keepPayroll->period_start)->endOfWeek()->format('d M Y');
+
+                $this->info("👤 {$userName} (Minggu: {$weekStartStr} - {$weekEndStr}):");
+                $this->info("   ✅ Menjaga: ID #{$keepPayroll->id} | Periode: {$keepPayroll->period_start} s/d {$keepPayroll->period_end} | Status: {$keepPayroll->status} | {$keepPayroll->formatted_salary}");
+
+                // Normalize period_end if it was non-standard (e.g. 2026-10-05 instead of Sunday 2026-10-04)
+                $correctEnd = Carbon::parse($keepPayroll->period_start)->endOfWeek()->toDateString();
+                if (Carbon::parse($keepPayroll->period_end)->toDateString() !== $correctEnd && !$keepPayroll->isPaid()) {
+                    if (!$dryRun) {
+                        $keepPayroll->update(['period_end' => $correctEnd]);
+                    }
+                    $this->line("   ℹ️  Normalisasi tanggal akhir ID #{$keepPayroll->id} menjadi {$correctEnd}");
                 }
-
-                // Keep the first one (newest), delete the rest
-                $keepPayroll = $payrolls->first();
-                $deletePayrolls = $payrolls->skip(1);
-
-                $this->info("👤 User ID: {$duplicate->user_id}, Period: {$duplicate->period_start} to {$duplicate->period_end}");
-                $this->info("   Keeping: Payroll ID {$keepPayroll->id} (created: {$keepPayroll->created_at})");
-                $this->info("   Status: {$keepPayroll->status}, Salary: {$keepPayroll->formatted_salary}");
 
                 foreach ($deletePayrolls as $payroll) {
                     // Check if payroll is paid
                     if ($payroll->isPaid() && !$force) {
-                        $this->warn("   ⚠️  Skipping Payroll ID {$payroll->id} - already paid (use --force to delete)");
+                        $this->warn("   ⚠️  Melewati ID #{$payroll->id} - sudah dibayar (gunakan --force untuk menghapus)");
                         continue;
                     }
 
                     if ($dryRun) {
-                        $this->line("   [DRY RUN] Would delete: Payroll ID {$payroll->id} (created: {$payroll->created_at})");
+                        $this->line("   [DRY RUN] Akan menghapus duplikat: ID #{$payroll->id} | Periode: {$payroll->period_start} s/d {$payroll->period_end} | Status: {$payroll->status}");
                         $deletedDetails[] = [
                             'id' => $payroll->id,
-                            'user_id' => $payroll->user_id,
-                            'user_name' => $payroll->user->name ?? 'N/A',
+                            'user_name' => $userName,
                             'period' => "{$payroll->period_start} to {$payroll->period_end}",
                             'status' => $payroll->status,
-                            'created_at' => $payroll->created_at,
                         ];
                         $totalDeleted++;
                     } else {
@@ -108,14 +132,12 @@ class RemoveDuplicatePayrollCommand extends Command
                             // Delete the payroll
                             $payroll->delete();
                             
-                            $this->line("   ✅ Deleted: Payroll ID {$payroll->id} (created: {$payroll->created_at})");
+                            $this->line("   🗑️  Dihapus duplikat: ID #{$payroll->id} | Periode: {$payroll->period_start} s/d {$payroll->period_end} | Status: {$payroll->status}");
                             $deletedDetails[] = [
                                 'id' => $payroll->id,
-                                'user_id' => $payroll->user_id,
-                                'user_name' => $payroll->user->name ?? 'N/A',
+                                'user_name' => $userName,
                                 'period' => "{$payroll->period_start} to {$payroll->period_end}",
                                 'status' => $payroll->status,
-                                'created_at' => $payroll->created_at,
                             ];
                             $totalDeleted++;
                         } catch (\Exception $e) {
@@ -131,17 +153,17 @@ class RemoveDuplicatePayrollCommand extends Command
 
             if ($dryRun) {
                 DB::rollBack();
-                $this->warn('⚠️  DRY RUN - Transaction rolled back, no changes made');
+                $this->warn('⚠️  DRY RUN - Transaksi dibatalkan, tidak ada data yang dihapus');
             } else {
                 DB::commit();
             }
 
             // Summary
             $this->newLine();
-            $this->info('📊 Summary:');
-            $this->info("✅ Kept: {$totalKept} payroll records (latest for each duplicate group)");
-            $this->info("🗑️  Deleted: {$totalDeleted} duplicate payroll records");
-            
+            $this->info('📊 Ringkasan Pembersihan:');
+            $this->info("✅ Duplikat Dihapus: {$totalDeleted}");
+            $this->info("💾 Data Dipertahankan: {$totalKept}");
+
             if (!empty($errors)) {
                 $this->error("❌ Errors: " . count($errors));
                 foreach ($errors as $error) {
@@ -149,38 +171,13 @@ class RemoveDuplicatePayrollCommand extends Command
                 }
             }
 
-            // Show detailed table if there are deleted records
-            if (!empty($deletedDetails)) {
-                $this->newLine();
-                $this->info('📋 Deleted Records Details:');
-                $this->table(
-                    ['ID', 'User ID', 'User Name', 'Period', 'Status', 'Created At'],
-                    array_map(function($detail) {
-                        return [
-                            $detail['id'],
-                            $detail['user_id'],
-                            $detail['user_name'],
-                            $detail['period'],
-                            $detail['status'],
-                            $detail['created_at'],
-                        ];
-                    }, $deletedDetails)
-                );
-            }
-
-            if ($dryRun) {
-                $this->warn('⚠️  This was a DRY RUN. Run without --dry-run to actually delete the records.');
-            } else {
-                $this->info('🎉 Duplicate removal completed!');
-            }
-
+            $this->info('🎉 Proses pembersihan duplikat selesai!');
             return 0;
 
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->error('❌ Transaction failed: ' . $e->getMessage());
+            $this->error('❌ Terjadi kesalahan: ' . $e->getMessage());
             return 1;
         }
     }
 }
-
