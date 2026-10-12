@@ -40,6 +40,17 @@ class AutoGeneratePayrollCommand extends Command
 
         $this->info("📅 Period: {$lastWeekStart->format('Y-m-d')} to {$lastWeekEnd->format('Y-m-d')}");
 
+        // Block auto-generation if there are pending meeting requests for last week
+        $pendingMeetingsCount = \App\Models\MeetingRequest::countPendingInPeriod(
+            $lastWeekStart->toDateString(),
+            $lastWeekEnd->toDateString()
+        );
+
+        if ($pendingMeetingsCount > 0) {
+            $this->warn("⚠️  Auto-generate dibatalkan: Terdapat {$pendingMeetingsCount} pengajuan meeting (Meeting Request) yang masih berstatus pending untuk periode {$lastWeekStart->format('Y-m-d')} s/d {$lastWeekEnd->format('Y-m-d')}. Semua meeting request harus di-ACC atau ditolak terlebih dahulu.");
+            return 1;
+        }
+
         // Get users to process - ordered by name
         $users = User::where('is_active', true)
             ->whereHas('role')

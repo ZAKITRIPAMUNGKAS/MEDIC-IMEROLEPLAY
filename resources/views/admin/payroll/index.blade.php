@@ -72,6 +72,31 @@
                 </div>
             </div>
 
+            <!-- Pending Meeting Requests Alert Banner -->
+            @if(isset($pendingMeetingRequestsCount) && $pendingMeetingRequestsCount > 0)
+                <div class="mb-6 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-400/40 backdrop-blur-md shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div class="flex items-start sm:items-center gap-3.5">
+                        <div class="w-11 h-11 rounded-xl bg-amber-500/30 text-amber-300 flex items-center justify-center flex-shrink-0 border border-amber-400/40 shadow-inner">
+                            <i class="fas fa-exclamation-triangle text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white text-base flex items-center gap-2">
+                                <span>Perhatian: Terdapat {{ $pendingMeetingRequestsCount }} Pengajuan Meeting Masih Pending</span>
+                                <span class="px-2 py-0.5 text-xs rounded-full bg-amber-400 text-amber-950 font-black uppercase tracking-wider">Perlu Tindakan</span>
+                            </h4>
+                            <p class="text-sm text-amber-100/90 mt-0.5">
+                                Generate gaji tidak dapat dilakukan jika terdapat pengajuan meeting yang belum di-ACC atau divalidasi pada periode tersebut agar jam kerja meeting staf masuk ke sistem penggajian.
+                            </p>
+                        </div>
+                    </div>
+                    <a href="{{ route('admin.meeting-requests.index', ['status' => 'pending']) }}" 
+                       class="w-full sm:w-auto px-4 py-2.5 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-slate-900 font-bold rounded-xl text-sm transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-amber-500/25 flex-shrink-0">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>Tinjau Meeting Request</span>
+                    </a>
+                </div>
+            @endif
+
             <!-- Week Navigation -->
             <div class="mb-6">
                 <div class="flex flex-wrap items-center justify-between gap-4">
@@ -637,6 +662,17 @@
                         <span class="text-sm text-blue-700">Generate gaji untuk semua staf aktif (diurutkan berdasarkan nama)</span>
                     </div>
                 </div>
+
+                @if(isset($pendingMeetingRequestsCount) && $pendingMeetingRequestsCount > 0)
+                    <div class="bg-amber-50 border border-amber-200 rounded-xl p-3.5">
+                        <div class="flex items-start space-x-2.5">
+                            <i class="fas fa-exclamation-triangle text-amber-500 mt-0.5 flex-shrink-0"></i>
+                            <div class="text-xs text-amber-800 leading-relaxed">
+                                <span class="font-bold">Perhatian:</span> Terdapat <strong>{{ $pendingMeetingRequestsCount }}</strong> pengajuan meeting yang masih pending. Jika berada di periode yang dipilih, generate gaji akan ditolak sampai seluruh meeting request di-ACC atau ditolak.
+                            </div>
+                        </div>
+                    </div>
+                @endif
             </div>
             
             <!-- Action Buttons -->

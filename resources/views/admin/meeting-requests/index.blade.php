@@ -98,6 +98,31 @@
                 </a>
             </div>
 
+            <!-- Payroll Integration Warning Banner -->
+            @if($pendingCount > 0)
+                <div class="mb-8 p-4 sm:p-5 rounded-2xl bg-amber-500/15 border border-amber-500/30 backdrop-blur-md text-amber-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-lg">
+                    <div class="flex items-start sm:items-center gap-3.5">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/25 text-amber-300 flex items-center justify-center flex-shrink-0 border border-amber-400/30">
+                            <i class="fas fa-money-bill-wave text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white text-sm sm:text-base flex items-center gap-2">
+                                <span>Keterkaitan Sistem Penggajian (Payroll)</span>
+                                <span class="px-2 py-0.5 text-[10px] rounded-full bg-amber-400 text-amber-950 font-black uppercase">Penting</span>
+                            </h4>
+                            <p class="text-xs sm:text-sm text-amber-200/90 mt-0.5">
+                                Generate gaji tidak dapat diproses jika terdapat <strong>{{ $pendingCount }}</strong> pengajuan meeting yang belum di-ACC atau ditolak pada periode tersebut. Pastikan semua jadwal meeting disetujui atau ditolak agar durasi dinas staf masuk ke kalkulasi absensi secara valid.
+                            </p>
+                        </div>
+                    </div>
+                    <a href="{{ route('admin.payroll.index') }}" 
+                       class="w-full sm:w-auto px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-xl text-xs transition-all border border-white/20 flex items-center justify-center gap-2 whitespace-nowrap flex-shrink-0">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>Menu Gaji</span>
+                    </a>
+                </div>
+            @endif
+
             <!-- Requests List -->
             <div class="space-y-5">
                 @if($requests->isEmpty())

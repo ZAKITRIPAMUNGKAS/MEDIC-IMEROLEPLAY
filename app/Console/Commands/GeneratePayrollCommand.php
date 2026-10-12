@@ -66,6 +66,18 @@ class GeneratePayrollCommand extends Command
 
         $this->info("📅 Period: {$periodStart->format('Y-m-d')} to {$periodEnd->format('Y-m-d')}");
 
+        // Block generation if there are pending meeting requests for this period
+        $pendingMeetingsCount = \App\Models\MeetingRequest::countPendingInPeriod(
+            $periodStart->toDateString(),
+            $periodEnd->toDateString(),
+            $userId
+        );
+
+        if ($pendingMeetingsCount > 0) {
+            $this->error("❌ Gagal generate gaji: Ditemukan {$pendingMeetingsCount} pengajuan meeting (Meeting Request) yang masih berstatus pending untuk periode ini. Harap ACC atau tolak semua meeting request terlebih dahulu.");
+            return 1;
+        }
+
         // Get users to process
         $users = User::where('is_active', true)
             ->whereHas('role')

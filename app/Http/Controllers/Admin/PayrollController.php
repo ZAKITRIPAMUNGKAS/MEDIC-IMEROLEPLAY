@@ -8,6 +8,7 @@ use App\Models\PayrollNotification;
 use App\Models\PayrollExport;
 use App\Models\User;
 use App\Models\Attendance;
+use App\Models\MeetingRequest;
 use App\Helpers\PayrollHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -317,6 +318,9 @@ class PayrollController extends Controller
             // Check if export already done this month
             $currentMonthExport = PayrollExport::getCurrentMonthExport();
 
+            // Total pending meeting requests
+            $pendingMeetingRequestsCount = MeetingRequest::pending()->count();
+
             return view('admin.payroll.index', compact(
                 'payrolls',
                 'users',
@@ -327,7 +331,8 @@ class PayrollController extends Controller
                 'weeks', // Added this to fix the error from your log
                 'canGenerateManually',
                 'lastWeekPayrollExists',
-                'currentMonthExport' // NEW: Monthly export tracking
+                'currentMonthExport', // NEW: Monthly export tracking
+                'pendingMeetingRequestsCount'
             ));
 
         } catch (\Exception $e) {
@@ -448,6 +453,28 @@ class PayrollController extends Controller
         $periodStart = Carbon::parse($request->period_start);
         $periodEnd = Carbon::parse($request->period_end);
         $userIds = $request->user_ids;
+
+        // Block generation if there are pending meeting requests in the target period
+        $pendingMeetings = MeetingRequest::getPendingInPeriod(
+            $periodStart->toDateString(),
+            $periodEnd->toDateString(),
+            $userIds
+        );
+
+        if ($pendingMeetings->isNotEmpty()) {
+            $count = $pendingMeetings->count();
+            $staffList = $pendingMeetings->pluck('user.name')->filter()->unique();
+            $namesSample = $staffList->take(3)->implode(', ');
+            $remaining = $staffList->count() - 3;
+            $staffText = $namesSample . ($remaining > 0 ? " dan {$remaining} staf lainnya" : "");
+
+            return redirect()->back()->with(
+                'error',
+                "Generate gaji tidak dapat dilakukan! Terdapat {$count} pengajuan meeting (Meeting Request) yang belum di-ACC atau divalidasi (masih pending) pada periode {$periodStart->format('d M Y')} s/d {$periodEnd->format('d M Y')}" .
+                ($staffText ? " (Staf: {$staffText})" : "") .
+                ". Pastikan semua pengajuan meeting telah disetujui (ACC) atau ditolak terlebih dahulu agar jam kerja meeting staf tercatat ke sistem absensi secara valid."
+            );
+        }
 
         // Get users to process - ordered by name
         $users = User::where('is_active', true)
@@ -765,6 +792,21 @@ class PayrollController extends Controller
             return redirect()->back()->with('error', 'Hanya gaji dengan status pending yang bisa di-regenerate.');
         }
 
+        // Check if user has pending meeting requests in this period
+        $pendingMeetings = MeetingRequest::getPendingInPeriod(
+            $payroll->period_start,
+            $payroll->period_end,
+            $payroll->user_id
+        );
+
+        if ($pendingMeetings->isNotEmpty()) {
+            $count = $pendingMeetings->count();
+            return redirect()->back()->with(
+                'error',
+                "Tidak dapat me-regenerate gaji {$payroll->user->name}! Masih terdapat {$count} pengajuan meeting staf ini yang belum di-ACC atau divalidasi pada periode tersebut."
+            );
+        }
+
         DB::beginTransaction();
         try {
             // Recalculate based on current attendance
@@ -836,10 +878,25 @@ class PayrollController extends Controller
             'week_start' => 'required|date',
         ]);
 
+        $weekStart = Carbon::parse($request->week_start);
+        $weekEnd = $weekStart->copy()->endOfWeek();
+
+        // Check for pending meeting requests in this week
+        $pendingMeetings = MeetingRequest::getPendingInPeriod(
+            $weekStart->toDateString(),
+            $weekEnd->toDateString()
+        );
+
+        if ($pendingMeetings->isNotEmpty()) {
+            $count = $pendingMeetings->count();
+            return redirect()->back()->with(
+                'error',
+                "Tidak dapat me-regenerate gaji minggu ini! Terdapat {$count} pengajuan meeting yang masih berstatus Pending pada periode {$weekStart->format('d M Y')} s/d {$weekEnd->format('d M Y')}. Harap proses (ACC atau tolak) semua meeting request terlebih dahulu."
+            );
+        }
+
         DB::beginTransaction();
         try {
-            $weekStart = Carbon::parse($request->week_start);
-            $weekEnd = $weekStart->copy()->endOfWeek();
 
             // Get all pending payrolls for this week
             $payrolls = Payroll::where('status', 'pending')

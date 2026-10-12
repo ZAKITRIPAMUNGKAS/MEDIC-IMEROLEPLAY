@@ -111,6 +111,56 @@ class MeetingRequest extends Model
 
     /*
     |--------------------------------------------------------------------------
+    | Period Validation Helpers
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * Check if there are any pending meeting requests in a date range for specified users
+     */
+    public static function hasPendingInPeriod($startDate, $endDate, $userIds = null): bool
+    {
+        return static::queryPendingInPeriod($startDate, $endDate, $userIds)->exists();
+    }
+
+    /**
+     * Get count of pending meeting requests in a date range
+     */
+    public static function countPendingInPeriod($startDate, $endDate, $userIds = null): int
+    {
+        return static::queryPendingInPeriod($startDate, $endDate, $userIds)->count();
+    }
+
+    /**
+     * Get pending meeting requests in a date range
+     */
+    public static function getPendingInPeriod($startDate, $endDate, $userIds = null)
+    {
+        return static::queryPendingInPeriod($startDate, $endDate, $userIds)
+            ->with('user')
+            ->get();
+    }
+
+    /**
+     * Base query for pending meeting requests in a date range
+     */
+    public static function queryPendingInPeriod($startDate, $endDate, $userIds = null)
+    {
+        $startStr = $startDate instanceof \DateTimeInterface ? $startDate->format('Y-m-d') : (string) $startDate;
+        $endStr = $endDate instanceof \DateTimeInterface ? $endDate->format('Y-m-d') : (string) $endDate;
+
+        $query = static::pending()
+            ->whereBetween('requested_date', [$startStr, $endStr]);
+
+        if (!empty($userIds)) {
+            $query->whereIn('user_id', (array) $userIds);
+        }
+
+        return $query;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
     | Duration Helpers
     |--------------------------------------------------------------------------
     */
