@@ -13,6 +13,20 @@
         </a>
     </div>
 
+    @if(session('error'))
+    <div class="mb-6 p-4 rounded-xl bg-rose-500/20 border border-rose-500/30 text-rose-300 text-sm flex items-start gap-3">
+        <i class="fas fa-exclamation-circle mt-0.5 text-base flex-shrink-0"></i>
+        <div>{{ session('error') }}</div>
+    </div>
+    @endif
+
+    @if(session('success'))
+    <div class="mb-6 p-4 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-sm flex items-start gap-3">
+        <i class="fas fa-check-circle mt-0.5 text-base flex-shrink-0"></i>
+        <div>{{ session('success') }}</div>
+    </div>
+    @endif
+
     <div class="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-xl">
         <div class="flex items-center gap-3 pb-5 border-b border-white/10 mb-6">
             <div class="w-12 h-12 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xl">
@@ -44,7 +58,7 @@
                 <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">Jenis Penyesuaian</label>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <label class="cursor-pointer">
-                        <input type="radio" name="type" value="deduct" checked class="peer sr-only" onchange="onTypeChange('deduct')">
+                        <input type="radio" name="type" value="deduct" {{ old('type', 'deduct') === 'deduct' ? 'checked' : '' }} class="peer sr-only" onchange="onTypeChange('deduct')">
                         <div class="p-3.5 rounded-xl border border-white/10 bg-white/5 text-center peer-checked:border-rose-500 peer-checked:bg-rose-500/20 transition-all">
                             <i class="fas fa-minus-circle text-rose-400 text-lg mb-1 block"></i>
                             <div class="font-bold text-white text-sm">Pengurangan</div>
@@ -52,7 +66,7 @@
                         </div>
                     </label>
                     <label class="cursor-pointer">
-                        <input type="radio" name="type" value="add" class="peer sr-only" onchange="onTypeChange('add')">
+                        <input type="radio" name="type" value="add" {{ old('type') === 'add' ? 'checked' : '' }} class="peer sr-only" onchange="onTypeChange('add')">
                         <div class="p-3.5 rounded-xl border border-white/10 bg-white/5 text-center peer-checked:border-emerald-500 peer-checked:bg-emerald-500/20 transition-all">
                             <i class="fas fa-plus-circle text-emerald-400 text-lg mb-1 block"></i>
                             <div class="font-bold text-white text-sm">Penambahan</div>
@@ -60,7 +74,7 @@
                         </div>
                     </label>
                     <label class="cursor-pointer">
-                        <input type="radio" name="type" value="set" class="peer sr-only" onchange="onTypeChange('set')">
+                        <input type="radio" name="type" value="set" {{ old('type') === 'set' ? 'checked' : '' }} class="peer sr-only" onchange="onTypeChange('set')">
                         <div class="p-3.5 rounded-xl border border-white/10 bg-white/5 text-center peer-checked:border-purple-500 peer-checked:bg-purple-500/20 transition-all">
                             <i class="fas fa-sliders-h text-purple-400 text-lg mb-1 block"></i>
                             <div class="font-bold text-white text-sm">Edit Langsung</div>
@@ -102,23 +116,30 @@
 </div>
 
 <script>
-function onTypeChange(type) {
+function onTypeChange(type, retainValue = false) {
     const label = document.getElementById('amountLabel');
     const input = document.getElementById('amount');
     const reasonLabel = document.getElementById('reasonLabel');
     if (type === 'set') {
         label.textContent = 'Nilai Credit Score Baru (0 - 100)';
-        input.value = {{ $creditScore->score }};
+        if (!retainValue) input.value = {{ $creditScore->score }};
         reasonLabel.textContent = 'Alasan / Dasar Edit Nilai Skor';
     } else if (type === 'add') {
         label.textContent = 'Jumlah Poin Penambahan (1 - 100)';
-        input.value = 5;
+        if (!retainValue) input.value = 5;
         reasonLabel.textContent = 'Alasan / Prestasi Penghargaan';
     } else {
         label.textContent = 'Jumlah Poin Pengurangan (1 - 100)';
-        input.value = 5;
+        if (!retainValue) input.value = 5;
         reasonLabel.textContent = 'Alasan / Dasar Pelanggaran SOP';
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const selected = document.querySelector('input[name="type"]:checked');
+    if (selected) {
+        onTypeChange(selected.value, true);
+    }
+});
 </script>
 @endsection

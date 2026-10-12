@@ -221,10 +221,10 @@ function openEditScoreModal(userId, name, staffId, currentScore) {
     document.getElementById('modalReasonInput').value = '';
 
     const form = document.getElementById('editScoreModalForm');
-    form.action = `/credit-score/${userId}/edit`;
+    form.action = "{{ url('credit-score') }}/" + userId + "/edit";
 
     const fullPageLink = document.getElementById('modalFullPageLink');
-    if (fullPageLink) fullPageLink.href = `/credit-score/${userId}/edit`;
+    if (fullPageLink) fullPageLink.href = "{{ url('credit-score') }}/" + userId + "/edit";
 
     updateModalDiff();
 

@@ -20,6 +20,20 @@
         @endif
     </div>
 
+    @if(session('error'))
+    <div class="mb-6 p-4 rounded-xl bg-rose-500/20 border border-rose-500/30 text-rose-300 text-sm flex items-start gap-3">
+        <i class="fas fa-exclamation-circle mt-0.5 text-base flex-shrink-0"></i>
+        <div>{{ session('error') }}</div>
+    </div>
+    @endif
+
+    @if(session('success'))
+    <div class="mb-6 p-4 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-sm flex items-start gap-3">
+        <i class="fas fa-check-circle mt-0.5 text-base flex-shrink-0"></i>
+        <div>{{ session('success') }}</div>
+    </div>
+    @endif
+
     {{-- Member Score Card --}}
     <div class="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-xl mb-6">
         <div class="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4">
@@ -81,7 +95,7 @@
                     @forelse($logs as $log)
                     <tr class="hover:bg-white/5 transition-colors">
                         <td class="px-5 py-3.5 text-xs text-gray-300 font-mono">
-                            {{ $log->created_at->format('d M Y, H:i') }}
+                            {{ $log->created_at ? $log->created_at->format('d M Y, H:i') : '-' }}
                         </td>
                         <td class="px-5 py-3.5">
                             @if($log->type === 'add')

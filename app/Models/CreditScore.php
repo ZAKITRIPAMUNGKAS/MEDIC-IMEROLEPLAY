@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class CreditScore extends Model
 {
@@ -38,25 +40,26 @@ class CreditScore extends Model
                 ['user_id' => $userId],
                 ['balance' => 100]
             );
-        } catch (\Illuminate\Database\QueryException $e) {
-            if (!\Illuminate\Support\Facades\Schema::hasTable('credit_scores')) {
-                \Illuminate\Support\Facades\Schema::create('credit_scores', function (\Illuminate\Database\Schema\Blueprint $table) {
-                    $table->id();
-                    $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-                    $table->integer('balance')->default(100);
-                    $table->timestamps();
-                    $table->unique('user_id');
-                });
-
-                if (!\Illuminate\Support\Facades\Schema::hasTable('credit_score_logs')) {
-                    \Illuminate\Support\Facades\Schema::create('credit_score_logs', function (\Illuminate\Database\Schema\Blueprint $table) {
+        } catch (\Throwable $e) {
+            try {
+                if (!Schema::hasTable('credit_scores')) {
+                    Schema::create('credit_scores', function ($table) {
                         $table->id();
-                        $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-                        $table->foreignId('issued_by')->constrained('users')->cascadeOnDelete();
+                        $table->unsignedBigInteger('user_id')->unique();
+                        $table->integer('balance')->default(100);
+                        $table->timestamps();
+                    });
+                }
+
+                if (!Schema::hasTable('credit_score_logs')) {
+                    Schema::create('credit_score_logs', function ($table) {
+                        $table->id();
+                        $table->unsignedBigInteger('user_id')->index();
+                        $table->unsignedBigInteger('issued_by')->nullable()->index();
                         $table->integer('amount');
                         $table->integer('balance_after');
-                        $table->string('reason');
-                        $table->enum('type', ['add', 'deduct'])->default('add');
+                        $table->text('reason')->nullable();
+                        $table->string('type', 20)->default('add');
                         $table->timestamps();
                         $table->index(['user_id', 'created_at']);
                     });
@@ -66,28 +69,37 @@ class CreditScore extends Model
                     ['user_id' => $userId],
                     ['balance' => 100]
                 );
+            } catch (\Throwable $ex) {
+                Log::error('CreditScore::getOrCreate fallback error: ' . $ex->getMessage());
+                $record = new self();
+                $record->user_id = $userId;
+                $record->balance = 100;
+                return $record;
             }
-            throw $e;
         }
     }
-
 
     /**
      * Tambah poin. Return saldo baru.
      */
-    public function add(int $amount, int $issuedBy, string $reason): int
+    public function add(int $amount, ?int $issuedBy = null, ?string $reason = ''): int
     {
-        $this->balance += $amount;
+        $current = (int) ($this->balance ?? 100);
+        $this->balance = min(100, max(0, $current + $amount));
         $this->save();
 
-        CreditScoreLog::create([
-            'user_id'       => $this->user_id,
-            'issued_by'     => $issuedBy,
-            'amount'        => $amount,
-            'balance_after' => $this->balance,
-            'reason'        => $reason,
-            'type'          => 'add',
-        ]);
+        try {
+            CreditScoreLog::create([
+                'user_id'       => $this->user_id,
+                'issued_by'     => $issuedBy ?? $this->user_id,
+                'amount'        => $amount,
+                'balance_after' => $this->balance,
+                'reason'        => mb_substr($reason ?: 'Penambahan poin Credit Score', 0, 500),
+                'type'          => 'add',
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('CreditScoreLog create error in add(): ' . $e->getMessage());
+        }
 
         return $this->balance;
     }
@@ -95,19 +107,24 @@ class CreditScore extends Model
     /**
      * Kurangi poin. Return saldo baru.
      */
-    public function deduct(int $amount, int $issuedBy, string $reason): int
+    public function deduct(int $amount, ?int $issuedBy = null, ?string $reason = ''): int
     {
-        $this->balance -= abs($amount);
+        $current = (int) ($this->balance ?? 100);
+        $this->balance = min(100, max(0, $current - abs($amount)));
         $this->save();
 
-        CreditScoreLog::create([
-            'user_id'       => $this->user_id,
-            'issued_by'     => $issuedBy,
-            'amount'        => -abs($amount),
-            'balance_after' => $this->balance,
-            'reason'        => $reason,
-            'type'          => 'deduct',
-        ]);
+        try {
+            CreditScoreLog::create([
+                'user_id'       => $this->user_id,
+                'issued_by'     => $issuedBy ?? $this->user_id,
+                'amount'        => -abs($amount),
+                'balance_after' => $this->balance,
+                'reason'        => mb_substr($reason ?: 'Pengurangan poin Credit Score', 0, 500),
+                'type'          => 'deduct',
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('CreditScoreLog create error in deduct(): ' . $e->getMessage());
+        }
 
         return $this->balance;
     }
@@ -115,21 +132,26 @@ class CreditScore extends Model
     /**
      * Set / Edit saldo langsung. Return saldo baru.
      */
-    public function setScore(int $newScore, int $issuedBy, string $reason): int
+    public function setScore(int $newScore, ?int $issuedBy = null, ?string $reason = ''): int
     {
-        $oldBalance = $this->balance ?? 100;
-        $diff = $newScore - $oldBalance;
-        $this->balance = $newScore;
+        $oldBalance = (int) ($this->balance ?? 100);
+        $clampedScore = min(100, max(0, $newScore));
+        $diff = $clampedScore - $oldBalance;
+        $this->balance = $clampedScore;
         $this->save();
 
-        CreditScoreLog::create([
-            'user_id'       => $this->user_id,
-            'issued_by'     => $issuedBy,
-            'amount'        => $diff,
-            'balance_after' => $this->balance,
-            'reason'        => $reason ?: 'Penyesuaian / Edit langsung skor oleh Comdis',
-            'type'          => $diff >= 0 ? 'add' : 'deduct',
-        ]);
+        try {
+            CreditScoreLog::create([
+                'user_id'       => $this->user_id,
+                'issued_by'     => $issuedBy ?? $this->user_id,
+                'amount'        => $diff,
+                'balance_after' => $this->balance,
+                'reason'        => mb_substr($reason ?: 'Penyesuaian / Edit langsung skor oleh Comdis', 0, 500),
+                'type'          => $diff >= 0 ? 'add' : 'deduct',
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('CreditScoreLog create error in setScore(): ' . $e->getMessage());
+        }
 
         return $this->balance;
     }

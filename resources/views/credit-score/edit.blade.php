@@ -13,6 +13,20 @@
         </a>
     </div>
 
+    @if(session('error'))
+    <div class="mb-6 p-4 rounded-xl bg-rose-500/20 border border-rose-500/30 text-rose-300 text-sm flex items-start gap-3">
+        <i class="fas fa-exclamation-circle mt-0.5 text-base flex-shrink-0"></i>
+        <div>{{ session('error') }}</div>
+    </div>
+    @endif
+
+    @if(session('success'))
+    <div class="mb-6 p-4 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 text-sm flex items-start gap-3">
+        <i class="fas fa-check-circle mt-0.5 text-base flex-shrink-0"></i>
+        <div>{{ session('success') }}</div>
+    </div>
+    @endif
+
     <div class="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-xl">
         <div class="flex items-center gap-3 pb-5 border-b border-white/10 mb-6">
             <div class="w-12 h-12 rounded-xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-400 text-xl">
