@@ -1798,9 +1798,22 @@ Route::middleware(['auth', 'alta_only'])->prefix('portal/credit-score')->group(f
     Route::delete('/log/{log}',     [\App\Http\Controllers\CreditScoreController::class, 'destroyLog']);
 });
 
-// Setup tabel Credit Score otomatis via web browser jika migration artisan terhenti
+// Setup tabel Credit Score otomatis & bersihkan cache routes
 Route::get('/credit-score-setup', function () {
     $results = [];
+
+    // 1. Bersihkan route & view cache
+    try {
+        \Illuminate\Support\Facades\Artisan::call('route:clear');
+        \Illuminate\Support\Facades\Artisan::call('view:clear');
+        \Illuminate\Support\Facades\Artisan::call('cache:clear');
+        \Illuminate\Support\Facades\Artisan::call('config:clear');
+        $results[] = "✅ Cache route, view, dan konfigurasi BERHASIL dibersihkan.";
+    } catch (\Throwable $e) {
+        $results[] = "⚠️ Pembersihan cache: " . $e->getMessage();
+    }
+
+    // 2. Buat tabel credit_scores
     try {
         \Illuminate\Support\Facades\DB::statement("
             CREATE TABLE IF NOT EXISTS `credit_scores` (
@@ -1818,6 +1831,7 @@ Route::get('/credit-score-setup', function () {
         $results[] = "❌ Tabel 'credit_scores' GAGAL: " . $e->getMessage();
     }
 
+    // 3. Buat tabel credit_score_logs
     try {
         \Illuminate\Support\Facades\DB::statement("
             CREATE TABLE IF NOT EXISTS `credit_score_logs` (
@@ -1840,11 +1854,11 @@ Route::get('/credit-score-setup', function () {
         $results[] = "❌ Tabel 'credit_score_logs' GAGAL: " . $e->getMessage();
     }
 
-    return response('<div style=\"font-family:sans-serif;padding:30px;background:#0f172a;color:#f8fafc;min-height:100vh;\">'
-        . '<h2 style=\"color:#38bdf8;margin-bottom:20px;\">Status Pembuatan Tabel Credit Score</h2>'
-        . '<div style=\"background:#1e293b;padding:20px;border-radius:10px;font-size:16px;line-height:2;\">'
+    return response('<div style="font-family:sans-serif;padding:30px;background:#0f172a;color:#f8fafc;min-height:100vh;">'
+        . '<h2 style="color:#38bdf8;margin-bottom:20px;">Status Setup Credit Score & Cache Clear</h2>'
+        . '<div style="background:#1e293b;padding:20px;border-radius:10px;font-size:16px;line-height:2;">'
         . implode('<br>', $results)
         . '</div>'
-        . '<div style=\"margin-top:25px;\"><a href=\"' . url('/credit-score') . '\" style=\"padding:12px 24px;background:#0284c7;color:#fff;text-decoration:none;border-radius:8px;font-weight:bold;\">Buka Halaman Credit Score &rarr;</a></div>'
+        . '<div style="margin-top:25px;"><a href="' . url('/credit-score') . '" style="padding:12px 24px;background:#0284c7;color:#fff;text-decoration:none;border-radius:8px;font-weight:bold;">Buka Halaman Credit Score &rarr;</a></div>'
         . '</div>');
-})->middleware('auth');
+});
