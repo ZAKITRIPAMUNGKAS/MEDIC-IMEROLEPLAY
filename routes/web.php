@@ -1797,3 +1797,54 @@ Route::middleware(['auth', 'alta_only'])->prefix('portal/credit-score')->group(f
     Route::put('/log/{log}',        [\App\Http\Controllers\CreditScoreController::class, 'updateLog']);
     Route::delete('/log/{log}',     [\App\Http\Controllers\CreditScoreController::class, 'destroyLog']);
 });
+
+// Setup tabel Credit Score otomatis via web browser jika migration artisan terhenti
+Route::get('/credit-score-setup', function () {
+    $results = [];
+    try {
+        \Illuminate\Support\Facades\DB::statement("
+            CREATE TABLE IF NOT EXISTS `credit_scores` (
+              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+              `user_id` bigint(20) unsigned NOT NULL,
+              `balance` int(11) NOT NULL DEFAULT 100,
+              `created_at` timestamp NULL DEFAULT NULL,
+              `updated_at` timestamp NULL DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              UNIQUE KEY `credit_scores_user_id_unique` (`user_id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        ");
+        $results[] = "✅ Tabel 'credit_scores' BERHASIL dibuat / sudah ada.";
+    } catch (\Throwable $e) {
+        $results[] = "❌ Tabel 'credit_scores' GAGAL: " . $e->getMessage();
+    }
+
+    try {
+        \Illuminate\Support\Facades\DB::statement("
+            CREATE TABLE IF NOT EXISTS `credit_score_logs` (
+              `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+              `user_id` bigint(20) unsigned NOT NULL,
+              `issued_by` bigint(20) unsigned DEFAULT NULL,
+              `amount` int(11) NOT NULL,
+              `balance_after` int(11) NOT NULL,
+              `reason` text DEFAULT NULL,
+              `type` varchar(20) DEFAULT 'add',
+              `created_at` timestamp NULL DEFAULT NULL,
+              `updated_at` timestamp NULL DEFAULT NULL,
+              PRIMARY KEY (`id`),
+              KEY `credit_score_logs_issued_by_index` (`issued_by`),
+              KEY `credit_score_logs_user_id_created_at_index` (`user_id`,`created_at`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+        ");
+        $results[] = "✅ Tabel 'credit_score_logs' BERHASIL dibuat / sudah ada.";
+    } catch (\Throwable $e) {
+        $results[] = "❌ Tabel 'credit_score_logs' GAGAL: " . $e->getMessage();
+    }
+
+    return response('<div style=\"font-family:sans-serif;padding:30px;background:#0f172a;color:#f8fafc;min-height:100vh;\">'
+        . '<h2 style=\"color:#38bdf8;margin-bottom:20px;\">Status Pembuatan Tabel Credit Score</h2>'
+        . '<div style=\"background:#1e293b;padding:20px;border-radius:10px;font-size:16px;line-height:2;\">'
+        . implode('<br>', $results)
+        . '</div>'
+        . '<div style=\"margin-top:25px;\"><a href=\"' . url('/credit-score') . '\" style=\"padding:12px 24px;background:#0284c7;color:#fff;text-decoration:none;border-radius:8px;font-weight:bold;\">Buka Halaman Credit Score &rarr;</a></div>'
+        . '</div>');
+})->middleware('auth');
