@@ -6,27 +6,27 @@
 <div class="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-7xl mx-auto">
         {{-- Header --}}
-        <div class="flex justify-between items-end mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
             <div>
-                <h1 class="text-4xl font-bold text-white mb-2">
-                    <i class="fas fa-trophy mr-3"></i>Duty Tracking & Ranking
+                <h1 class="text-3xl sm:text-4xl font-bold text-white mb-2">
+                    <i class="fas fa-trophy mr-3 text-yellow-400"></i>Duty Tracking & Ranking
                 </h1>
-                <p class="text-sky-200">Leaderboard dan tracking duty staff berdasarkan total waktu</p>
+                <p class="text-sky-200 text-sm sm:text-base">Leaderboard dan tracking duty staff berdasarkan total waktu</p>
             </div>
             
             @if($mode === 'weekly')
-            <a href="{{ route('admin.duty-tracking.export-weekly', ['weeks' => $selectedWeeks, 'hospital' => $hospital ?? 'all']) }}" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg font-medium transition-all shadow-lg flex items-center">
+            <a href="{{ route('admin.duty-tracking.export-weekly', ['weeks' => $selectedWeeks, 'hospital' => $hospital ?? 'all']) }}" class="inline-flex items-center justify-center bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl font-medium transition-all shadow-lg text-sm">
                 <i class="fas fa-file-excel mr-2"></i> Export Excel/CSV
             </a>
             @endif
         </div>
 
         {{-- Filter Section --}}
-        <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-lg p-6 mb-6 border border-white border-opacity-20">
-            <div class="flex space-x-4 mb-6 border-b border-white border-opacity-20 pb-2">
-                <a href="{{ route('admin.duty-tracking.index', ['mode' => 'live']) }}" class="px-4 py-2 font-medium {{ $mode === 'live' ? 'text-white border-b-2 border-sky-400' : 'text-sky-200 hover:text-white' }}">Laporan Live</a>
-                <a href="{{ route('admin.duty-tracking.index', ['mode' => 'monthly']) }}" class="px-4 py-2 font-medium {{ $mode === 'monthly' ? 'text-white border-b-2 border-sky-400' : 'text-sky-200 hover:text-white' }}">Laporan Bulanan</a>
-                <a href="{{ route('admin.duty-tracking.index', ['mode' => 'weekly']) }}" class="px-4 py-2 font-medium {{ $mode === 'weekly' ? 'text-white border-b-2 border-sky-400' : 'text-sky-200 hover:text-white' }}">Laporan Mingguan</a>
+        <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-2xl p-4 sm:p-6 mb-6 border border-white border-opacity-20 shadow-xl">
+            <div class="flex space-x-2 sm:space-x-4 mb-6 border-b border-white border-opacity-20 pb-2 overflow-x-auto whitespace-nowrap scrollbar-thin">
+                <a href="{{ route('admin.duty-tracking.index', ['mode' => 'live']) }}" class="px-4 py-2 text-sm sm:text-base font-medium flex-shrink-0 {{ $mode === 'live' ? 'text-white border-b-2 border-sky-400' : 'text-sky-200 hover:text-white' }}">Laporan Live</a>
+                <a href="{{ route('admin.duty-tracking.index', ['mode' => 'monthly']) }}" class="px-4 py-2 text-sm sm:text-base font-medium flex-shrink-0 {{ $mode === 'monthly' ? 'text-white border-b-2 border-sky-400' : 'text-sky-200 hover:text-white' }}">Laporan Bulanan</a>
+                <a href="{{ route('admin.duty-tracking.index', ['mode' => 'weekly']) }}" class="px-4 py-2 text-sm sm:text-base font-medium flex-shrink-0 {{ $mode === 'weekly' ? 'text-white border-b-2 border-sky-400' : 'text-sky-200 hover:text-white' }}">Laporan Mingguan</a>
             </div>
 
             <form method="GET" action="{{ route('admin.duty-tracking.index') }}" id="filterForm">
@@ -90,14 +90,14 @@
                 </div>
                 @endif
 
-                <div class="flex gap-2">
-                    <button type="submit" class="bg-sky-500 hover:bg-sky-600 text-white px-6 py-2 rounded-lg font-medium transition-all">
+                <div class="flex flex-wrap gap-2">
+                    <button type="submit" class="bg-sky-500 hover:bg-sky-600 text-white px-5 py-2 rounded-xl font-medium text-sm transition-all shadow-md">
                         <i class="fas fa-filter mr-2"></i>Tampilkan
                     </button>
-                    <a href="{{ route('admin.duty-tracking.index', ['mode' => $mode]) }}" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg font-medium transition-all">
+                    <a href="{{ route('admin.duty-tracking.index', ['mode' => $mode]) }}" class="bg-slate-700 hover:bg-slate-600 text-white px-5 py-2 rounded-xl font-medium text-sm transition-all shadow-md">
                         <i class="fas fa-redo mr-2"></i>Reset
                     </a>
-                    <button type="button" onclick="selectAll()" class="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-lg font-medium transition-all">
+                    <button type="button" onclick="selectAll()" class="bg-purple-600 hover:bg-purple-500 text-white px-5 py-2 rounded-xl font-medium text-sm transition-all shadow-md">
                         <i class="fas fa-check-double mr-2"></i>Pilih Semua
                     </button>
                 </div>
@@ -291,14 +291,21 @@
         @endif
 
         {{-- Rankings Table --}}
-        <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-lg overflow-hidden border border-white border-opacity-20">
-            <div class="px-6 py-4 bg-white bg-opacity-5 border-b border-white border-opacity-10">
-                <h3 class="text-lg font-bold text-white">
-                    <i class="fas fa-medal mr-2"></i>Leaderboard Duty Time
+        <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-2xl overflow-hidden border border-white border-opacity-20 shadow-xl">
+            <div class="px-6 py-4 bg-white bg-opacity-5 border-b border-white border-opacity-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <h3 class="text-lg font-bold text-white flex items-center">
+                    <i class="fas fa-medal mr-2 text-yellow-400"></i>Leaderboard Duty Time
                 </h3>
+                <div class="w-full sm:w-64">
+                    <div class="relative">
+                        <input type="text" id="dutySearchInput" placeholder="Cari staff / nama..." 
+                            class="w-full pl-9 pr-3 py-1.5 text-xs sm:text-sm rounded-xl bg-slate-900/60 border border-sky-400/30 text-white placeholder-sky-200/50 focus:ring-1 focus:ring-sky-400 focus:outline-none">
+                        <i class="fas fa-search absolute left-3 top-2.5 text-xs text-sky-300"></i>
+                    </div>
+                </div>
             </div>
 
-            <div class="overflow-x-auto">
+            <div class="table-responsive-container">
                 <table class="min-w-full divide-y divide-white divide-opacity-10" id="dutyTable">
                     <thead class="bg-white bg-opacity-5">
                         <tr>
@@ -468,7 +475,14 @@ function updateLiveTimers() {
     });
 }
 
-setInterval(updateLiveTimers, 1000);
-updateLiveTimers();
+// Instant Search in dutyTable
+document.getElementById('dutySearchInput')?.addEventListener('input', function(e) {
+    const term = e.target.value.toLowerCase();
+    const rows = document.querySelectorAll('#dutyTable tbody tr');
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(term) ? '' : 'none';
+    });
+});
 </script>
 @endsection

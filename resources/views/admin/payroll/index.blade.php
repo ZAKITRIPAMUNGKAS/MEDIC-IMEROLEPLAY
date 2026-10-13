@@ -110,15 +110,15 @@
                             @endif
                         </p>
                     </div>
-                    <div class="flex flex-wrap gap-2">
+                    <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-sky-600/40 w-full max-w-full">
                         @if(empty($filters['week']))
                             <a href="{{ route('admin.payroll.index', array_merge(request()->query(), ['week' => 'all'])) }}" 
-                               class="px-4 py-2 rounded-lg text-sm font-medium bg-green-500/20 text-green-300 hover:bg-green-500/30 transition-all duration-200">
+                               class="whitespace-nowrap flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium bg-green-500/20 text-green-300 hover:bg-green-500/30 transition-all duration-200">
                                 <i class="fas fa-calendar-alt mr-1"></i>Lihat Semua Minggu
                             </a>
                         @else
                             <a href="{{ route('admin.payroll.index', array_diff_key(request()->query(), ['week' => ''])) }}" 
-                               class="px-4 py-2 rounded-lg text-sm font-medium bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 transition-all duration-200">
+                               class="whitespace-nowrap flex-shrink-0 px-4 py-2 rounded-lg text-sm font-medium bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 transition-all duration-200">
                                 <i class="fas fa-calendar-week mr-1"></i>Minggu Ini
                             </a>
                         @endif
@@ -126,14 +126,14 @@
                         @if(!empty($filters['week']) && $filters['week'] !== 'all')
                             @foreach($availableWeeks ?? [] as $week)
                                 <a href="{{ route('admin.payroll.index', array_merge(request()->query(), ['week' => $week['date'] ?? ''])) }}" 
-                                   class="px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 {{ ($filters['week'] ?? '') == ($week['date'] ?? '') ? 'bg-sky-500 text-white shadow-lg' : 'bg-white/10 text-gray-300 hover:bg-white/20' }}">
+                                   class="whitespace-nowrap flex-shrink-0 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 {{ ($filters['week'] ?? '') == ($week['date'] ?? '') ? 'bg-sky-500 text-white shadow-lg font-bold' : 'bg-white/10 text-gray-300 hover:bg-white/20' }}">
                                     {{ $week['short_label'] ?? 'Unknown' }}
                                 </a>
                             @endforeach
                         @elseif(!empty($filters['week']) && $filters['week'] === 'all')
                             @foreach($availableWeeks ?? [] as $week)
                                 <a href="{{ route('admin.payroll.index', array_merge(request()->query(), ['week' => $week['date'] ?? ''])) }}" 
-                                   class="px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 bg-white/10 text-gray-300 hover:bg-white/20">
+                                   class="whitespace-nowrap flex-shrink-0 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 bg-white/10 text-gray-300 hover:bg-white/20">
                                     {{ $week['short_label'] ?? 'Unknown' }}
                                 </a>
                             @endforeach
@@ -263,11 +263,11 @@
             @foreach($payrolls as $weekStart => $weekPayrolls)
                 <div class="glass-effect rounded-2xl elegant-shadow-lg overflow-hidden mb-6">
                     <!-- Week Header -->
-                    <div class="bg-gradient-to-r from-sky-500/20 to-blue-500/20 px-6 py-4 border-b border-white/10">
-                        <div class="flex items-center justify-between">
+                    <div class="bg-gradient-to-r from-sky-500/20 to-blue-500/20 px-4 sm:px-6 py-4 border-b border-white/10">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                             <div>
-                                <h3 class="text-lg font-semibold text-white">
-                                    <i class="fas fa-calendar-week mr-2"></i>
+                                <h3 class="text-base sm:text-lg font-semibold text-white">
+                                    <i class="fas fa-calendar-week mr-2 text-sky-400"></i>
                                     @if($weekStart !== 'unknown' && !empty($weekStart))
                                         @php
                                             try {
@@ -288,25 +288,25 @@
                                         Minggu Tidak Diketahui
                                     @endif
                                 </h3>
-                                <p class="text-sm text-gray-300">{{ $weekPayrolls->count() ?? 0 }} gaji • Total: Rp {{ number_format($weekPayrolls->sum('calculated_salary') ?? 0, 0, ',', '.') }}</p>
+                                <p class="text-xs sm:text-sm text-gray-300">{{ $weekPayrolls->count() ?? 0 }} gaji • Total: Rp {{ number_format($weekPayrolls->sum('calculated_salary') ?? 0, 0, ',', '.') }}</p>
                                 @if($weekStart !== 'unknown' && $weekStart === now()->startOfWeek()->format('Y-m-d'))
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mt-1">
-                                        <i class="fas fa-star mr-1"></i>Minggu Ini
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-sky-500/20 text-sky-300 border border-sky-400/30 mt-1">
+                                        <i class="fas fa-star mr-1 text-sky-300"></i>Minggu Ini
                                     </span>
                                 @endif
                             </div>
-                            <div class="flex items-center space-x-4">
+                            <div class="flex flex-wrap items-center justify-between sm:justify-end gap-3 sm:gap-4 w-full sm:w-auto">
                                 <div class="text-right">
-                                    <div class="text-sm text-gray-300">Pending</div>
-                                    <div class="text-lg font-bold text-yellow-400">{{ $weekPayrolls->where('status', 'pending')->count() }}</div>
+                                    <div class="text-xs sm:text-sm text-gray-300">Pending</div>
+                                    <div class="text-base sm:text-lg font-bold text-amber-400">{{ $weekPayrolls->where('status', 'pending')->count() }}</div>
                                 </div>
                                 <div class="text-right">
-                                    <div class="text-sm text-gray-300">Dibayar</div>
-                                    <div class="text-lg font-bold text-green-400">{{ $weekPayrolls->where('status', 'paid')->count() }}</div>
+                                    <div class="text-xs sm:text-sm text-gray-300">Dibayar</div>
+                                    <div class="text-base sm:text-lg font-bold text-emerald-400">{{ $weekPayrolls->where('status', 'paid')->count() }}</div>
                                 </div>
                                 @if($weekPayrolls->where('status', 'pending')->count() > 0)
                                     <button onclick="regenerateWeek('{{ $weekStart }}')" 
-                                            class="px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-lg text-sm font-semibold transition-all duration-300 shadow-lg"
+                                            class="px-3.5 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white rounded-lg text-xs sm:text-sm font-semibold transition-all duration-300 shadow-lg flex items-center gap-1.5"
                                             title="Regenerate semua gaji pending minggu ini">
                                         <i class="fas fa-sync-alt mr-1"></i>Regenerate Minggu
                                     </button>
@@ -324,11 +324,11 @@
                                         <input type="checkbox" onchange="toggleSelectWeek(this)" class="select-all-week rounded border-white/30 bg-white/10 text-sky-400 focus:ring-sky-400 cursor-pointer" title="Pilih Semua Pending Minggu Ini">
                                     </th>
                                     <th class="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-300 uppercase tracking-wider">Staf</th>
-                                    <th class="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-300 uppercase tracking-wider">Periode</th>
+                                    <th class="hidden sm:table-cell px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-300 uppercase tracking-wider">Periode</th>
                                     <th class="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-300 uppercase tracking-wider">Total Jam</th>
                                     <th class="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-300 uppercase tracking-wider">Gaji</th>
                                     <th class="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-300 uppercase tracking-wider">Status</th>
-                                    <th class="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-300 uppercase tracking-wider">Dibayar</th>
+                                    <th class="hidden md:table-cell px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-300 uppercase tracking-wider">Dibayar</th>
                                     <th class="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-medium text-gray-300 uppercase tracking-wider">Aksi</th>
                                 </tr>
                             </thead>
@@ -354,37 +354,38 @@
                                                         <span class="text-white text-xs sm:text-sm font-medium">{{ $userInitials }}</span>
                                                     </div>
                                                 </div>
-                                                <div class="ml-3 sm:ml-4">
-                                                    <div class="text-sm sm:text-base font-medium text-white">{{ $userName }}</div>
-                                                    <div class="text-xs sm:text-sm text-gray-300">{{ $userEmail }}</div>
+                                                <div class="ml-3 sm:ml-4 min-w-0">
+                                                    <div class="text-sm sm:text-base font-medium text-white truncate max-w-[160px] sm:max-w-xs">{{ $userName }}</div>
+                                                    <div class="text-xs sm:text-sm text-gray-300 truncate max-w-[160px] sm:max-w-xs">{{ $userEmail }}</div>
+                                                    <div class="text-xs text-sky-300 sm:hidden mt-0.5">{{ $payroll->period_description ?? '-' }}</div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="px-4 sm:px-6 py-4">
+                                        <td class="hidden sm:table-cell px-4 sm:px-6 py-4">
                                             <div class="text-sm sm:text-base text-white">{{ $payroll->period_description ?? '-' }}</div>
                                         </td>
-                                        <td class="px-4 sm:px-6 py-4">
+                                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
                                             <div class="text-sm sm:text-base text-white">{{ $payroll->formatted_hours ?? '00:00:00' }}</div>
                                         </td>
-                                        <td class="px-4 sm:px-6 py-4">
-                                            <div class="text-sm sm:text-base font-semibold text-green-400">{{ $payroll->formatted_salary ?? '$ 0' }}</div>
+                                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
+                                            <div class="text-sm sm:text-base font-semibold text-emerald-300">{{ $payroll->formatted_salary ?? '$ 0' }}</div>
                                         </td>
-                                        <td class="px-4 sm:px-6 py-4">
+                                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
                                             @if($payroll->status === 'paid')
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                    <i class="fas fa-check-circle mr-1"></i>Dibayar
+                                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                                    <i class="fas fa-check-circle mr-1 text-emerald-400"></i>Dibayar
                                                 </span>
                                             @elseif($payroll->status === 'pending')
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                                    <i class="fas fa-clock mr-1"></i>Pending
+                                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                                    <i class="fas fa-clock mr-1 text-amber-400"></i>Pending
                                                 </span>
                                             @else
-                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                                    <i class="fas fa-times-circle mr-1"></i>Dibatalkan
+                                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                                                    <i class="fas fa-times-circle mr-1 text-rose-400"></i>Dibatalkan
                                                 </span>
                                             @endif
                                         </td>
-                                        <td class="px-4 sm:px-6 py-4">
+                                        <td class="hidden md:table-cell px-4 sm:px-6 py-4">
                                             @if($payroll->paid_at)
                                                 @php
                                                     try {
@@ -399,31 +400,31 @@
                                                 <div class="text-sm text-gray-400">-</div>
                                             @endif
                                         </td>
-                                        <td class="px-4 sm:px-6 py-4">
-                                            <div class="flex space-x-2">
+                                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
+                                            <div class="flex items-center space-x-2">
                                                 <a href="{{ route('admin.payroll.show', $payroll) }}" 
-                                                   class="text-sky-400 hover:text-sky-300 transition-colors duration-200"
+                                                   class="p-1.5 text-sky-400 hover:text-sky-300 hover:bg-sky-500/20 rounded transition-colors duration-200"
                                                    title="Lihat Rincian Gaji">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
                                                 @if($payroll->status === 'pending')
                                                     <button onclick="regeneratePayroll({{ $payroll->id }})" 
-                                                            class="text-purple-400 hover:text-purple-300 transition-colors duration-200"
+                                                            class="p-1.5 text-purple-400 hover:text-purple-300 hover:bg-purple-500/20 rounded transition-colors duration-200"
                                                             title="Regenerate - Hitung ulang dengan formula terbaru">
                                                         <i class="fas fa-sync-alt"></i>
                                                     </button>
                                                     <button type="button" onclick="markAsPaid({{ $payroll->id }}, '{{ addslashes($userName) }}', '{{ $payroll->formatted_salary ?? '$ 0' }}')" 
-                                                            class="text-green-400 hover:text-green-300 transition-colors duration-200 p-1 hover:bg-green-500/20 rounded"
+                                                            class="p-1.5 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/20 rounded transition-colors duration-200"
                                                             title="Ceklis / Tandai Gaji Sudah Dibayar">
                                                         <i class="fas fa-check"></i>
                                                     </button>
                                                     <button onclick="cancelPayroll({{ $payroll->id }})" 
-                                                            class="text-red-400 hover:text-red-300 transition-colors duration-200"
+                                                            class="p-1.5 text-rose-400 hover:text-rose-300 hover:bg-rose-500/20 rounded transition-colors duration-200"
                                                             title="Batalkan Gaji">
                                                         <i class="fas fa-times"></i>
                                                     </button>
                                                     <button onclick="deletePayroll({{ $payroll->id }})" 
-                                                            class="text-orange-400 hover:text-orange-300 transition-colors duration-200"
+                                                            class="p-1.5 text-orange-400 hover:text-orange-300 hover:bg-orange-500/20 rounded transition-colors duration-200"
                                                             title="Hapus Data Duplikat">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
@@ -498,31 +499,31 @@
 </div>
 
 <!-- Single Mark as Paid Modal -->
-<div id="markPaidModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-2xl mx-4 border border-gray-100">
+<div id="markPaidModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div class="bg-slate-900/95 backdrop-blur-xl rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-2xl mx-4 border border-sky-400/30 text-white">
         <div class="flex items-center justify-between mb-4">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-green-100 text-green-600 flex items-center justify-center text-lg font-bold">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-400/30 text-emerald-400 flex items-center justify-center text-lg font-bold">
                     <i class="fas fa-money-check-alt"></i>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold text-gray-900">Tandai Gaji Dibayar</h3>
-                    <p class="text-xs text-gray-500">Konfirmasi pembayaran gaji staf</p>
+                    <h3 class="text-lg font-bold text-white">Tandai Gaji Dibayar</h3>
+                    <p class="text-xs text-sky-200">Konfirmasi pembayaran gaji staf</p>
                 </div>
             </div>
-            <button type="button" onclick="closeMarkPaidModal()" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-700">
+            <button type="button" onclick="closeMarkPaidModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-gray-300 hover:text-white transition-colors">
                 <i class="fas fa-times text-sm"></i>
             </button>
         </div>
 
-        <div class="bg-slate-50 border border-gray-100 rounded-xl p-4 mb-4">
+        <div class="bg-white/5 border border-white/10 rounded-xl p-4 mb-4">
             <div class="flex justify-between text-sm mb-1.5">
-                <span class="text-gray-500">Nama Staf:</span>
-                <span id="singleStaffName" class="font-bold text-gray-900">-</span>
+                <span class="text-gray-400">Nama Staf:</span>
+                <span id="singleStaffName" class="font-bold text-white">-</span>
             </div>
             <div class="flex justify-between text-sm">
-                <span class="text-gray-500">Nominal Gaji:</span>
-                <span id="singleStaffAmount" class="font-extrabold text-green-600 text-base">$ 0</span>
+                <span class="text-gray-400">Nominal Gaji:</span>
+                <span id="singleStaffAmount" class="font-extrabold text-emerald-300 text-base">$ 0</span>
             </div>
         </div>
 
@@ -530,19 +531,19 @@
             @csrf
             <div class="space-y-4 mb-6">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Catatan Pembayaran (Opsional)</label>
+                    <label class="block text-sm font-semibold text-gray-300 mb-2">Catatan Pembayaran (Opsional)</label>
                     <textarea name="notes" rows="3" 
-                              class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-green-400 focus:border-green-400 text-gray-900 text-sm"
+                              class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 text-white placeholder-gray-400 text-sm transition-all"
                               placeholder="Contoh: Ditransfer via Bank / Kasir"></textarea>
                 </div>
             </div>
             <div class="flex justify-end space-x-3">
                 <button type="button" onclick="closeMarkPaidModal()" 
-                        class="px-5 py-2.5 text-gray-600 hover:text-gray-800 text-sm font-medium rounded-xl hover:bg-gray-100 transition-colors">
+                        class="px-5 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-xl hover:bg-white/10 transition-colors">
                     Batal
                 </button>
                 <button type="submit" id="singleMarkPaidSubmitBtn"
-                        class="px-6 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl hover:from-green-600 hover:to-emerald-700 text-sm font-bold transition-all duration-300 shadow-lg flex items-center">
+                        class="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl hover:from-emerald-600 hover:to-teal-700 text-sm font-bold transition-all duration-300 shadow-lg flex items-center">
                     <span class="btn-text flex items-center"><i class="fas fa-check mr-2"></i>Konfirmasi Bayar</span>
                     <span class="btn-loading hidden flex items-center"><i class="fas fa-spinner fa-spin mr-2"></i>Memproses...</span>
                 </button>
@@ -552,31 +553,31 @@
 </div>
 
 <!-- Bulk Mark as Paid Modal -->
-<div id="bulkMarkPaidModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-2xl mx-4 border border-gray-100">
+<div id="bulkMarkPaidModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div class="bg-slate-900/95 backdrop-blur-xl rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-2xl mx-4 border border-sky-400/30 text-white">
         <div class="flex items-center justify-between mb-4">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg font-bold">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-400/30 text-emerald-400 flex items-center justify-center text-lg font-bold">
                     <i class="fas fa-check-double"></i>
                 </div>
                 <div>
-                    <h3 class="text-lg font-bold text-gray-900">Bayar Gaji yang Diceklis</h3>
-                    <p class="text-xs text-gray-500">Tandai banyak gaji sekaligus</p>
+                    <h3 class="text-lg font-bold text-white">Bayar Gaji yang Diceklis</h3>
+                    <p class="text-xs text-sky-200">Tandai banyak gaji sekaligus</p>
                 </div>
             </div>
-            <button type="button" onclick="closeBulkMarkPaidModal()" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-700">
+            <button type="button" onclick="closeBulkMarkPaidModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-gray-300 hover:text-white transition-colors">
                 <i class="fas fa-times text-sm"></i>
             </button>
         </div>
 
-        <div class="bg-slate-50 border border-gray-100 rounded-xl p-4 mb-4">
+        <div class="bg-white/5 border border-white/10 rounded-xl p-4 mb-4">
             <div class="flex justify-between text-sm mb-1.5">
-                <span class="text-gray-500">Total Staf Diceklis:</span>
-                <span id="bulkModalCount" class="font-bold text-gray-900">0 staf</span>
+                <span class="text-gray-400">Total Staf Diceklis:</span>
+                <span id="bulkModalCount" class="font-bold text-white">0 staf</span>
             </div>
             <div class="flex justify-between text-sm">
-                <span class="text-gray-500">Total Nominal:</span>
-                <span id="bulkModalTotal" class="font-extrabold text-emerald-600 text-base">$ 0</span>
+                <span class="text-gray-400">Total Nominal:</span>
+                <span id="bulkModalTotal" class="font-extrabold text-emerald-300 text-base">$ 0</span>
             </div>
         </div>
 
@@ -585,15 +586,15 @@
             <div id="bulkPayrollInputs"></div>
             <div class="space-y-4 mb-6">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-2">Catatan Pembayaran (Opsional)</label>
+                    <label class="block text-sm font-semibold text-gray-300 mb-2">Catatan Pembayaran (Opsional)</label>
                     <textarea name="notes" rows="3" 
-                              class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 text-gray-900 text-sm"
+                              class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 text-white placeholder-gray-400 text-sm transition-all"
                               placeholder="Contoh: Pembayaran serentak mingguan"></textarea>
                 </div>
             </div>
             <div class="flex justify-end space-x-3">
                 <button type="button" onclick="closeBulkMarkPaidModal()" 
-                        class="px-5 py-2.5 text-gray-600 hover:text-gray-800 text-sm font-medium rounded-xl hover:bg-gray-100 transition-colors">
+                        class="px-5 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-xl hover:bg-white/10 transition-colors">
                     Batal
                 </button>
                 <button type="submit" id="bulkMarkPaidSubmitBtn"
@@ -607,23 +608,23 @@
 </div>
 
 <!-- Generate Payroll Modal -->
-<div id="generateModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
-    <div class="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl max-w-lg w-full mx-4 border border-white/20">
+<div id="generateModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div class="bg-slate-900/95 backdrop-blur-xl rounded-3xl shadow-2xl max-w-lg w-full mx-4 border border-sky-400/30 text-white">
         <!-- Header -->
-        <div class="px-8 py-6 border-b border-gray-200/50 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-3xl">
+        <div class="px-8 py-6 border-b border-white/10 bg-gradient-to-r from-sky-500/20 to-blue-500/20 rounded-t-3xl">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center">
+                    <div class="w-10 h-10 bg-gradient-to-r from-sky-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
                         <i class="fas fa-plus text-white text-lg"></i>
                     </div>
                     <div>
-                        <h3 class="text-xl font-bold text-gray-900">Generate Gaji</h3>
-                        <p class="text-sm text-gray-600">Buat gaji untuk periode tertentu</p>
+                        <h3 class="text-xl font-bold text-white">Generate Gaji</h3>
+                        <p class="text-sm text-sky-200">Buat gaji untuk periode tertentu</p>
                     </div>
                 </div>
                 <button onclick="closeGenerateModal()" 
-                        class="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-all duration-200 group">
-                    <i class="fas fa-times text-gray-500 group-hover:text-gray-700"></i>
+                        class="w-8 h-8 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-all duration-200 text-gray-300 hover:text-white">
+                    <i class="fas fa-times text-sm"></i>
                 </button>
             </div>
         </div>
@@ -636,38 +637,37 @@
                 <!-- Period Selection -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                            <i class="fas fa-calendar-alt text-blue-500 mr-2"></i>Periode Mulai
+                        <label class="block text-sm font-semibold text-gray-300 mb-2 flex items-center">
+                            <i class="fas fa-calendar-alt text-sky-400 mr-2"></i>Periode Mulai
                         </label>
                         <input type="date" name="period_start" required
                                value="{{ \Carbon\Carbon::now()->subWeek()->startOfWeek()->format('Y-m-d') }}"
-                               class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white">
+                               class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 text-white transition-all text-sm">
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                            <i class="fas fa-calendar-check text-blue-500 mr-2"></i>Periode Akhir
+                        <label class="block text-sm font-semibold text-gray-300 mb-2 flex items-center">
+                            <i class="fas fa-calendar-check text-sky-400 mr-2"></i>Periode Akhir
                         </label>
                         <input type="date" name="period_end" required
                                value="{{ \Carbon\Carbon::now()->subWeek()->endOfWeek()->format('Y-m-d') }}"
-                               class="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white">
+                               class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 text-white transition-all text-sm">
                     </div>
                 </div>
                 
-                
                 <!-- Info Box -->
-                <div class="bg-blue-50 border border-blue-200 rounded-xl p-3">
+                <div class="bg-sky-500/10 border border-sky-400/30 rounded-xl p-3">
                     <div class="flex items-center space-x-2">
-                        <i class="fas fa-info-circle text-blue-500"></i>
-                        <span class="text-sm text-blue-700">Generate gaji untuk semua staf aktif (diurutkan berdasarkan nama)</span>
+                        <i class="fas fa-info-circle text-sky-400"></i>
+                        <span class="text-sm text-sky-200">Generate gaji untuk semua staf aktif (diurutkan berdasarkan nama)</span>
                     </div>
                 </div>
 
                 @if(isset($pendingMeetingRequestsCount) && $pendingMeetingRequestsCount > 0)
-                    <div class="bg-amber-50 border border-amber-200 rounded-xl p-3.5">
+                    <div class="bg-amber-500/15 border border-amber-400/30 rounded-xl p-3.5">
                         <div class="flex items-start space-x-2.5">
-                            <i class="fas fa-exclamation-triangle text-amber-500 mt-0.5 flex-shrink-0"></i>
-                            <div class="text-xs text-amber-800 leading-relaxed">
+                            <i class="fas fa-exclamation-triangle text-amber-400 mt-0.5 flex-shrink-0"></i>
+                            <div class="text-xs text-amber-200 leading-relaxed">
                                 <span class="font-bold">Perhatian:</span> Terdapat <strong>{{ $pendingMeetingRequestsCount }}</strong> pengajuan meeting yang masih pending. Jika berada di periode yang dipilih, generate gaji akan ditolak sampai seluruh meeting request di-ACC atau ditolak.
                             </div>
                         </div>
@@ -676,13 +676,13 @@
             </div>
             
             <!-- Action Buttons -->
-            <div class="flex justify-end space-x-4 mt-8 pt-6 border-t border-gray-200/50">
+            <div class="flex justify-end space-x-4 mt-8 pt-6 border-t border-white/10">
                 <button type="button" onclick="closeGenerateModal()" 
-                        class="px-6 py-3 text-gray-600 hover:text-gray-800 font-medium transition-all duration-200 hover:bg-gray-100 rounded-xl">
+                        class="px-6 py-3 text-gray-300 hover:text-white font-medium transition-all duration-200 hover:bg-white/10 rounded-xl text-sm">
                     <i class="fas fa-times mr-2"></i>Batal
                 </button>
                 <button type="submit" 
-                        class="px-8 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                        class="px-8 py-3 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-sm">
                     <i class="fas fa-plus mr-2"></i>Generate Gaji
                 </button>
             </div>

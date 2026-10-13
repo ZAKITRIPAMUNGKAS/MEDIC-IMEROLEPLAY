@@ -322,14 +322,21 @@
 
         /* Cards */
         .card {
-            background: #fff;
+            background: var(--ml-surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--ml-border);
             border-radius: 1rem;
-            box-shadow: 0 10px 30px rgba(2, 6, 23, 0.06);
+            box-shadow: 0 10px 30px rgba(2, 6, 23, 0.25);
+            color: #ffffff;
         }
 
         .card-muted {
-            background: rgba(255, 255, 255, .85);
+            background: rgba(12, 74, 110, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--ml-border);
+            color: #e2e8f0;
         }
 
         /* Pills & badges */
@@ -339,8 +346,8 @@
             gap: .5rem;
             padding: .5rem .9rem;
             border-radius: 9999px;
-            background: #f1f5f9;
-            color: #0f172a;
+            background: rgba(14, 165, 233, 0.15);
+            color: #bae6fd;
             border: 1px solid var(--ml-border);
         }
 
@@ -351,29 +358,56 @@
             border-radius: .375rem;
             font-size: .75rem;
             border: 1px solid var(--ml-border);
-            background: #fff;
-            color: #0f172a;
+            background: rgba(14, 165, 233, 0.15);
+            color: #e0f2fe;
         }
 
         /* Stats */
         .stat-card {
-            background: linear-gradient(180deg, #ffffff, #f8fafc);
+            background: linear-gradient(180deg, rgba(12, 74, 110, 0.9), rgba(7, 89, 133, 0.75));
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--ml-border);
             border-radius: 1rem;
             padding: 1.25rem;
             text-align: center;
+            color: #ffffff;
+            box-shadow: 0 8px 24px rgba(2, 6, 23, 0.2);
         }
 
         .stat-card h4 {
             font-size: 1.75rem;
             font-weight: 800;
-            color: var(--ml-primary);
+            color: #38bdf8;
         }
 
         .stat-card p {
-            color: var(--ml-muted);
+            color: #cbd5e1;
             font-weight: 600;
             font-size: .9rem;
+        }
+
+        /* Responsive Table Container */
+        .table-responsive-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(14, 165, 233, 0.4) rgba(15, 23, 42, 0.4);
+        }
+        .table-responsive-container::-webkit-scrollbar {
+            height: 6px;
+        }
+        .table-responsive-container::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 9999px;
+        }
+        .table-responsive-container::-webkit-scrollbar-thumb {
+            background: rgba(14, 165, 233, 0.4);
+            border-radius: 9999px;
+        }
+        .table-responsive-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(14, 165, 233, 0.7);
         }
 
 

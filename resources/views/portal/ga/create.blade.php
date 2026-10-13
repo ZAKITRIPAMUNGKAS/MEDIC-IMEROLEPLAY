@@ -3,7 +3,7 @@
 @section('title', 'Terbitkan Sertifikat Kendaraan GA — Portal Alta Hospital')
 
 @section('content')
-<div class="min-h-screen pt-20 pb-10" style="background: linear-gradient(135deg, #0b1329 0%, #0c2461 50%, #0b1329 100%);">
+<div class="min-h-screen pt-20 pb-10" style="background: linear-gradient(180deg, #0c4a6e 0%, #075985 50%, #0369a1 100%);">
     <div class="max-w-5xl mx-auto px-4 sm:px-6">
         <div class="mb-6">
             <a href="{{ route('portal.ga.index') }}" class="text-white/50 hover:text-white text-sm flex items-center gap-1.5 mb-3 transition-colors">

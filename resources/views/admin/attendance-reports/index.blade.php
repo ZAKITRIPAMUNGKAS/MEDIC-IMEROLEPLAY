@@ -174,17 +174,17 @@
             <div class="backdrop-blur-xl border-2 border-sky-400/60 rounded-2xl shadow-2xl mb-8"
                 style="background-color: rgba(7, 89, 133, 0.9);">
                 <div class="border-b border-sky-400/20">
-                    <nav class="flex space-x-8 px-6" aria-label="Tabs">
+                    <nav class="flex space-x-4 sm:space-x-8 px-4 sm:px-6 overflow-x-auto whitespace-nowrap scrollbar-thin" aria-label="Tabs">
                         <button onclick="showTab('daily')" id="daily-tab"
-                            class="tab-button active py-4 px-1 border-b-2 border-sky-400 font-medium text-sm text-sky-400">
+                            class="tab-button active py-4 px-1 border-b-2 border-sky-400 font-medium text-sm text-sky-400 flex-shrink-0">
                             <i class="fas fa-calendar-day mr-2"></i>Laporan Harian
                         </button>
                         <button onclick="showTab('weekly')" id="weekly-tab"
-                            class="tab-button py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-300 hover:text-white hover:border-gray-300">
+                            class="tab-button py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-300 hover:text-white hover:border-gray-300 flex-shrink-0">
                             <i class="fas fa-calendar-week mr-2"></i>Laporan Mingguan
                         </button>
                         <button onclick="showTab('monthly')" id="monthly-tab"
-                            class="tab-button py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-300 hover:text-white hover:border-gray-300">
+                            class="tab-button py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-300 hover:text-white hover:border-gray-300 flex-shrink-0">
                             <i class="fas fa-calendar-alt mr-2"></i>Laporan Bulanan
                         </button>
                     </nav>

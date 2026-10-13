@@ -167,18 +167,18 @@
                                 <td class="px-4 sm:px-6 py-4">
                                     <div class="text-sm sm:text-base font-semibold text-green-400">{{ $payroll->formatted_salary }}</div>
                                 </td>
-                                <td class="px-4 sm:px-6 py-4">
+                                <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
                                     @if($payroll->status === 'paid')
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                            <i class="fas fa-check-circle mr-1"></i>Dibayar
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                            <i class="fas fa-check-circle mr-1 text-emerald-400"></i>Dibayar
                                         </span>
                                     @elseif($payroll->status === 'pending')
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                            <i class="fas fa-clock mr-1"></i>Pending
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                            <i class="fas fa-clock mr-1 text-amber-400"></i>Pending
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                            <i class="fas fa-times-circle mr-1"></i>Dibatalkan
+                                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                                            <i class="fas fa-times-circle mr-1 text-rose-400"></i>Dibatalkan
                                         </span>
                                     @endif
                                 </td>

@@ -30,15 +30,15 @@
                 <h3 class="text-lg sm:text-xl font-semibold text-white mb-4">Status Gaji</h3>
                 <div class="mb-6">
                     @if($payroll->status === 'paid')
-                        <div class="inline-flex items-center px-6 py-3 rounded-full text-lg font-medium bg-green-100 text-green-800">
+                        <div class="inline-flex items-center px-6 py-3 rounded-full text-base sm:text-lg font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shadow-lg">
                             <i class="fas fa-check-circle mr-3"></i>Gaji Sudah Dibayar
                         </div>
                     @elseif($payroll->status === 'pending')
-                        <div class="inline-flex items-center px-6 py-3 rounded-full text-lg font-medium bg-yellow-100 text-yellow-800">
+                        <div class="inline-flex items-center px-6 py-3 rounded-full text-base sm:text-lg font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 shadow-lg">
                             <i class="fas fa-clock mr-3"></i>Menunggu Pembayaran
                         </div>
                     @else
-                        <div class="inline-flex items-center px-6 py-3 rounded-full text-lg font-medium bg-red-100 text-red-800">
+                        <div class="inline-flex items-center px-6 py-3 rounded-full text-base sm:text-lg font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30 shadow-lg">
                             <i class="fas fa-times-circle mr-3"></i>Gaji Dibatalkan
                         </div>
                     @endif
@@ -177,10 +177,10 @@
                                             Belum dikirim
                                         @endif
                                     </p>
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-                                        @if($notification->status === 'sent') bg-green-100 text-green-800
-                                        @elseif($notification->status === 'failed') bg-red-100 text-red-800
-                                        @else bg-yellow-100 text-yellow-800 @endif">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium
+                                        @if($notification->status === 'sent') bg-emerald-500/20 text-emerald-300 border border-emerald-500/30
+                                        @elseif($notification->status === 'failed') bg-rose-500/20 text-rose-300 border border-rose-500/30
+                                        @else bg-amber-500/20 text-amber-300 border border-amber-500/30 @endif">
                                         {{ ucfirst($notification->status) }}
                                     </span>
                                 </div>

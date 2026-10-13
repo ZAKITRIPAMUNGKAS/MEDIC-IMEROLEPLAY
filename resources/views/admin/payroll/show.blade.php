@@ -72,16 +72,16 @@
                 <div class="space-y-4">
                     <div class="text-center">
                         @if($payroll->status === 'paid')
-                            <div class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                                <i class="fas fa-check-circle mr-2"></i>Dibayar
+                            <div class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                <i class="fas fa-check-circle mr-2 text-emerald-400"></i>Dibayar
                             </div>
                         @elseif($payroll->status === 'pending')
-                            <div class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
-                                <i class="fas fa-clock mr-2"></i>Pending
+                            <div class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                <i class="fas fa-clock mr-2 text-amber-400"></i>Pending
                             </div>
                         @else
-                            <div class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-red-100 text-red-800">
-                                <i class="fas fa-times-circle mr-2"></i>Dibatalkan
+                            <div class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30">
+                                <i class="fas fa-times-circle mr-2 text-rose-400"></i>Dibatalkan
                             </div>
                         @endif
                     </div>
@@ -170,10 +170,10 @@
                                             Belum dikirim
                                         @endif
                                     </p>
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-                                        @if($notification->status === 'sent') bg-green-100 text-green-800
-                                        @elseif($notification->status === 'failed') bg-red-100 text-red-800
-                                        @else bg-yellow-100 text-yellow-800 @endif">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold
+                                        @if($notification->status === 'sent') bg-emerald-500/20 text-emerald-300 border border-emerald-500/30
+                                        @elseif($notification->status === 'failed') bg-rose-500/20 text-rose-300 border border-rose-500/30
+                                        @else bg-amber-500/20 text-amber-300 border border-amber-500/30 @endif">
                                         {{ ucfirst($notification->status) }}
                                     </span>
                                 </div>
@@ -187,27 +187,40 @@
 </div>
 
 <!-- Mark as Paid Modal -->
-<div id="markPaidModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+<div id="markPaidModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden z-50">
     <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="bg-white rounded-2xl p-6 w-full max-w-md">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Tandai sebagai Dibayar</h3>
+        <div class="bg-slate-900/95 backdrop-blur-xl border border-sky-400/30 rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-2xl text-white">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-400/30 text-emerald-400 flex items-center justify-center text-lg font-bold">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-white">Tandai sebagai Dibayar</h3>
+                        <p class="text-xs text-sky-200">Konfirmasi status pembayaran staf</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeMarkPaidModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-gray-300 hover:text-white transition-colors">
+                    <i class="fas fa-times text-sm"></i>
+                </button>
+            </div>
             <form id="markPaidForm" method="POST">
                 @csrf
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Catatan (Opsional)</label>
+                        <label class="block text-sm font-semibold text-gray-300 mb-2">Catatan (Opsional)</label>
                         <textarea name="notes" rows="3" 
-                                  class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+                                  class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400 text-white placeholder-gray-400 text-sm transition-all"
                                   placeholder="Tambahkan catatan untuk pembayaran ini..."></textarea>
                     </div>
                 </div>
                 <div class="flex justify-end space-x-3 mt-6">
                     <button type="button" onclick="closeMarkPaidModal()" 
-                            class="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors duration-200">
+                            class="px-5 py-2.5 text-gray-300 hover:text-white text-sm font-medium rounded-xl hover:bg-white/10 transition-colors">
                         Batal
                     </button>
                     <button type="submit" 
-                            class="px-6 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg hover:from-green-600 hover:to-emerald-600 transition-all duration-300">
+                            class="px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl hover:from-emerald-600 hover:to-teal-700 text-sm font-bold transition-all duration-300 shadow-lg">
                         Tandai Dibayar
                     </button>
                 </div>

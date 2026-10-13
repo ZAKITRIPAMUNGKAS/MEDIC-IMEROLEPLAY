@@ -3,8 +3,10 @@
 @section('title', 'Kelola Recruitment Medis - Portal Alta Hospital')
 
 @section('content')
-<div class="min-h-screen bg-slate-900 text-slate-100 py-8 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-7xl mx-auto space-y-6">
+<div class="relative min-h-screen py-8 px-4 sm:px-6 lg:px-8 text-white">
+    <div class="absolute inset-0 bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700"></div>
+    <div class="absolute inset-0 bg-black bg-opacity-20"></div>
+    <div class="relative max-w-7xl mx-auto space-y-6">
 
         <!-- Top Header & Breadcrumb -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-5">

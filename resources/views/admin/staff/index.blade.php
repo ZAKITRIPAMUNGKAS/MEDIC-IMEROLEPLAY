@@ -152,6 +152,7 @@
                                             </div>
                                             <p class="text-gray-300 text-xs sm:text-sm truncate">{{ $user->email }}</p>
                                             <!-- Mobile: Show role and status -->
+                                            <div class="mt-1 flex flex-wrap gap-1 sm:hidden">
                                                 @if($user->isRoxwood())
                                                     <div class="inline-flex items-center px-2 py-1 bg-purple-500/20 text-purple-300 rounded-full text-xs font-medium border border-purple-500/30">
                                                         <i class="fas fa-hospital mr-1"></i>Roxwood

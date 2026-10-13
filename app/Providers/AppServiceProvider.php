@@ -20,8 +20,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Force HTTPS in production if APP_URL uses HTTPS
-        if (config('app.url') && str_starts_with(config('app.url'), 'https://')) {
+        // Force HTTPS in production if APP_URL uses HTTPS and not running locally
+        $isLocalHost = in_array(request()->getHost(), ['127.0.0.1', 'localhost']) || str_contains(request()->getHost(), '192.168.');
+        if (!$isLocalHost && app()->environment('production') && config('app.url') && str_starts_with(config('app.url'), 'https://')) {
             URL::forceScheme('https');
         }
 

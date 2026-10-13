@@ -81,7 +81,7 @@
 
         <!-- Settings Table -->
         <div class="glass-effect rounded-2xl elegant-shadow-lg overflow-hidden">
-            <div class="overflow-x-auto">
+            <div class="table-responsive-container">
                 <table class="min-w-full divide-y divide-white/10">
                     <thead class="bg-white/5">
                         <tr>
@@ -115,11 +115,11 @@
                                 </td>
                                 <td class="px-4 sm:px-6 py-4">
                                     @if($setting->is_active)
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                                             <i class="fas fa-check-circle mr-1"></i>Aktif
                                         </span>
                                     @else
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-500/20 text-rose-300 border border-rose-500/30">
                                             <i class="fas fa-pause-circle mr-1"></i>Nonaktif
                                         </span>
                                     @endif
@@ -163,19 +163,24 @@
 </div>
 
 <!-- Bulk Create Modal -->
-<div id="bulkCreateModal" class="fixed inset-0 bg-black bg-opacity-60 hidden z-50 backdrop-blur-sm">
+<div id="bulkCreateModal" class="fixed inset-0 bg-black/70 hidden z-50 backdrop-blur-sm">
     <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md transform transition-all duration-300 scale-95" id="bulkModalContent">
+        <div class="bg-slate-900/95 backdrop-blur-xl border border-sky-400/30 text-white rounded-3xl shadow-2xl w-full max-w-md transform transition-all duration-300 scale-95" id="bulkModalContent">
             <!-- Modal Header -->
-            <div class="px-8 py-6 border-b border-gray-100">
-                <div class="flex items-center">
-                    <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mr-4">
-                        <i class="fas fa-plus text-white text-lg"></i>
+            <div class="px-8 py-6 border-b border-white/10 bg-gradient-to-r from-sky-500/20 to-blue-500/20 rounded-t-3xl">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gradient-to-r from-sky-500 to-blue-600 rounded-xl flex items-center justify-center mr-4 shadow-lg">
+                            <i class="fas fa-plus text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white">Buat Setting untuk Semua Role</h3>
+                            <p class="text-xs text-sky-200 mt-1">Buat setting gaji default untuk semua role</p>
+                        </div>
                     </div>
-                    <div>
-                        <h3 class="text-2xl font-bold text-gray-900">Buat Setting untuk Semua Role</h3>
-                        <p class="text-sm text-gray-500 mt-1">Buat setting gaji dengan nilai default untuk semua role</p>
-                    </div>
+                    <button type="button" onclick="closeBulkCreateModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-gray-300 hover:text-white transition-colors">
+                        <i class="fas fa-times text-sm"></i>
+                    </button>
                 </div>
             </div>
 
@@ -184,25 +189,25 @@
                 @csrf
                 <div class="px-8 py-6 space-y-6">
                     <div class="space-y-2">
-                        <label class="block text-sm font-semibold text-gray-700">Gaji Per Minggu (Default)</label>
+                        <label class="block text-sm font-semibold text-gray-300">Gaji Per Minggu (Default)</label>
                         <div class="relative">
                             <input type="number" name="default_weekly_salary" required step="0.01" min="0"
-                                   class="w-full border-2 border-gray-200 rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700 font-medium"
+                                   class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 transition-all duration-200 text-white font-medium placeholder-gray-400"
                                    placeholder="Masukkan gaji per minggu">
-                            <div class="absolute inset-y-0 right-0 flex items-center pr-4">
-                                <span class="text-gray-400 font-medium">$</span>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                                <span class="text-sky-300 font-medium">$</span>
                             </div>
                         </div>
                     </div>
 
                     <div class="space-y-2">
-                        <label class="block text-sm font-semibold text-gray-700">Gaji Lembur Per Jam (Opsional)</label>
+                        <label class="block text-sm font-semibold text-gray-300">Gaji Lembur Per Jam (Opsional)</label>
                         <div class="relative">
                             <input type="number" name="default_overtime_rate" step="0.01" min="0"
-                                   class="w-full border-2 border-gray-200 rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-gray-700 font-medium"
+                                   class="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3.5 focus:ring-2 focus:ring-sky-400 focus:border-sky-400 transition-all duration-200 text-white font-medium placeholder-gray-400"
                                    placeholder="Masukkan gaji lembur per jam">
-                            <div class="absolute inset-y-0 right-0 flex items-center pr-4">
-                                <span class="text-gray-400 font-medium">$</span>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                                <span class="text-sky-300 font-medium">$</span>
                             </div>
                         </div>
                     </div>
@@ -210,14 +215,14 @@
                 </div>
 
                 <!-- Modal Footer -->
-                <div class="px-8 py-6 bg-gray-50 rounded-b-3xl">
+                <div class="px-8 py-6 bg-white/5 border-t border-white/10 rounded-b-3xl">
                     <div class="flex justify-end space-x-3">
                         <button type="button" onclick="closeBulkCreateModal()" 
-                                class="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 font-semibold">
+                                class="px-6 py-3 border border-white/20 text-gray-300 rounded-xl hover:bg-white/10 hover:text-white transition-all duration-200 font-semibold text-sm">
                             <i class="fas fa-times mr-2"></i>Batal
                         </button>
                         <button type="submit" 
-                                class="px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105">
+                                class="px-8 py-3 bg-gradient-to-r from-sky-500 to-blue-600 text-white rounded-xl hover:from-sky-600 hover:to-blue-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 text-sm">
                             <i class="fas fa-magic mr-2"></i>Buat Setting
                         </button>
                     </div>

@@ -4,8 +4,8 @@
 
 @section('content')
 <div class="relative min-h-screen py-8 px-4 sm:px-6 lg:px-8">
-    <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-rose-950/30 to-slate-900"></div>
-    <div class="absolute inset-0 bg-black/40"></div>
+    <div class="absolute inset-0 bg-gradient-to-br from-sky-900 via-sky-800 to-sky-700"></div>
+    <div class="absolute inset-0 bg-black bg-opacity-20"></div>
 
     <div class="relative max-w-6xl mx-auto text-white space-y-6">
 

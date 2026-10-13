@@ -3,7 +3,7 @@
 @section('title', 'Log Resign & Arsip Administrasi — Portal Alta Hospital')
 
 @section('content')
-<div class="min-h-screen pt-20 pb-12" style="background: linear-gradient(135deg, #0b1329 0%, #0c2461 50%, #0b1329 100%);">
+<div class="min-h-screen pt-20 pb-12" style="background: linear-gradient(180deg, #0c4a6e 0%, #075985 50%, #0369a1 100%);">
     <div class="max-w-7xl mx-auto px-4">
 
         {{-- Header --}}

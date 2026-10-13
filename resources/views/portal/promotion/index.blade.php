@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Kenaikan Jabatan — Portal Alta Hospital')
 @section('content')
-<div class="min-h-screen pt-20 pb-10" style="background: linear-gradient(135deg, #0b1329 0%, #0c2461 50%, #0b1329 100%);">
+<div class="min-h-screen pt-20 pb-10" style="background: linear-gradient(180deg, #0c4a6e 0%, #075985 50%, #0369a1 100%);">
 <div class="max-w-4xl mx-auto px-4">
     <div class="flex items-center justify-between mb-6">
         <div>
