@@ -423,9 +423,20 @@
                                                             title="Batalkan Gaji">
                                                         <i class="fas fa-times"></i>
                                                     </button>
-                                                    <button onclick="deletePayroll({{ $payroll->id }})" 
+                                                    <button onclick="deletePayroll({{ $payroll->id }}, false)" 
                                                             class="p-1.5 text-orange-400 hover:text-orange-300 hover:bg-orange-500/20 rounded transition-colors duration-200"
-                                                            title="Hapus Data Duplikat">
+                                                            title="Hapus Data Gaji">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                @elseif($payroll->status === 'paid')
+                                                    <button onclick="undoPayment({{ $payroll->id }})" 
+                                                            class="p-1.5 text-amber-400 hover:text-amber-300 hover:bg-amber-500/20 rounded transition-colors duration-200"
+                                                            title="Batalkan Status Dibayar (Kembalikan ke Pending)">
+                                                        <i class="fas fa-undo"></i>
+                                                    </button>
+                                                    <button onclick="deletePayroll({{ $payroll->id }}, true)" 
+                                                            class="p-1.5 text-rose-400 hover:text-rose-300 hover:bg-rose-500/20 rounded transition-colors duration-200"
+                                                            title="Hapus Data Duplikat / Gaji Ini">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 @endif
@@ -860,8 +871,29 @@ function cancelPayroll(payrollId) {
     }
 }
 
-function deletePayroll(payrollId) {
-    if (confirm('Apakah Anda yakin ingin menghapus data gaji ini? Data yang sudah dihapus tidak dapat dikembalikan.')) {
+function undoPayment(payrollId) {
+    if (confirm('Apakah Anda yakin ingin membatalkan status pembayaran gaji ini?\n\nStatus akan dikembalikan menjadi Pending.')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/admin/payroll/${payrollId}/undo`;
+        
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = '{{ csrf_token() }}';
+        
+        form.appendChild(csrfToken);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+function deletePayroll(payrollId, isPaid = false) {
+    const msg = isPaid 
+        ? 'PERHATIAN: Data gaji ini berstatus DIBAYAR / DICEKLIS.\n\nApakah Anda yakin ingin MENGHAPUS data duplikat ini?\nData yang dihapus tidak dapat dikembalikan.'
+        : 'Apakah Anda yakin ingin menghapus data gaji ini? Data yang sudah dihapus tidak dapat dikembalikan.';
+
+    if (confirm(msg)) {
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = `/admin/payroll/${payrollId}`;
@@ -884,7 +916,7 @@ function deletePayroll(payrollId) {
 }
 
 function removeDuplicates() {
-    if (confirm('Apakah Anda yakin ingin menghapus data gaji duplikat?\n\nScript ini akan:\n- Mencari data gaji dengan user, periode mulai, dan periode akhir yang sama\n- Menyimpan data yang terbaru (berdasarkan created_at)\n- Menghapus data duplikat yang lebih lama\n\nData yang sudah dibayar tidak akan dihapus kecuali menggunakan force mode.')) {
+    if (confirm('Apakah Anda yakin ingin membersihkan data gaji duplikat?\n\nScript ini akan:\n- Mencari data gaji staf yang memiliki duplikat di minggu yang sama\n- Menyimpan 1 data yang paling baru/valid\n- Menghapus data duplikat yang berlebih (termasuk duplikat yang berstatus sudah dibayar)\n\nLanjutkan?')) {
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = '/admin/payroll/remove-duplicates';
@@ -894,7 +926,13 @@ function removeDuplicates() {
         csrfToken.name = '_token';
         csrfToken.value = '{{ csrf_token() }}';
         
+        const forceInput = document.createElement('input');
+        forceInput.type = 'hidden';
+        forceInput.name = 'force';
+        forceInput.value = '1';
+        
         form.appendChild(csrfToken);
+        form.appendChild(forceInput);
         document.body.appendChild(form);
         form.submit();
     }

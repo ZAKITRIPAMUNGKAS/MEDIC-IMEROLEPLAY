@@ -746,10 +746,6 @@ class PayrollController extends Controller
             return redirect()->back()->with('error', 'Gaji ini belum dibayar.');
         }
 
-        if (!$payroll->paid_at || $payroll->paid_at->diffInMinutes(now()) > 60) {
-            return redirect()->back()->with('error', 'Batas waktu pembatalan (1 jam) telah habis.');
-        }
-
         DB::beginTransaction();
         try {
             $payroll->update([
@@ -991,18 +987,20 @@ class PayrollController extends Controller
      */
     public function destroy(Payroll $payroll)
     {
-        if ($payroll->isPaid()) {
-            return redirect()->back()->with('error', 'Gaji yang sudah dibayar tidak dapat dihapus.');
-        }
-
         try {
+            $staffName = $payroll->user->name ?? ('User #' . $payroll->user_id);
+            $period = $payroll->period_description;
+            $status = $payroll->status;
+
             // Delete related notifications first
             $payroll->notifications()->delete();
 
             // Delete the payroll
             $payroll->delete();
 
-            return redirect()->back()->with('success', 'Data gaji berhasil dihapus.');
+            Log::info("Payroll ID {$payroll->id} ({$status}) for {$staffName} ({$period}) deleted by admin " . (auth()->user()->name ?? 'System'));
+
+            return redirect()->back()->with('success', "Data gaji ({$staffName} - {$period}) berhasil dihapus.");
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan saat menghapus data gaji: ' . $e->getMessage());
         }
