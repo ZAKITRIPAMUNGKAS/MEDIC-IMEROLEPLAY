@@ -1457,7 +1457,7 @@ class PayrollController extends Controller
     public function fixOctoberSwap(Request $request)
     {
         try {
-            $userQuery = $request->input('user', 'Squarepants');
+            $userQuery = $request->input('user', 'all');
             
             Artisan::call('payroll:fix-october-swap', [
                 '--user' => $userQuery,
@@ -1466,8 +1466,13 @@ class PayrollController extends Controller
             $output = Artisan::output();
             Log::info('Artisan payroll:fix-october-swap output', ['output' => $output]);
 
-            return redirect()->route('admin.payroll.index', ['week' => '2026-10-05', 'staff_name' => $userQuery])
-                ->with('success', 'Sinkronisasi data gaji berhasil dijalankan! Silakan cek periode 28 Sep - 04 Oct dan 05 Oct - 11 Oct.');
+            $redirectParams = ['week' => '2026-10-05'];
+            if ($userQuery !== 'all') {
+                $redirectParams['staff_name'] = $userQuery;
+            }
+
+            return redirect()->route('admin.payroll.index', $redirectParams)
+                ->with('success', 'Sinkronisasi data gaji untuk seluruh staf berhasil dijalankan! Silakan cek periode 28 Sep - 04 Oct dan 05 Oct - 11 Oct.');
         } catch (\Exception $e) {
             Log::error('Error executing fixOctoberSwap', [
                 'error' => $e->getMessage(),
