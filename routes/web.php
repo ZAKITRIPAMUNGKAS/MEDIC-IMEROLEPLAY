@@ -1422,6 +1422,8 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
         ->middleware('permission:manage_payroll')->name('payroll.regenerate');
     Route::post('/payroll/regenerate-week', [\App\Http\Controllers\Admin\PayrollController::class, 'regenerateWeek'])
         ->middleware('permission:manage_payroll')->name('payroll.regenerate-week');
+    Route::match(['get', 'post'], '/payroll/fix-october-swap', [\App\Http\Controllers\Admin\PayrollController::class, 'fixOctoberSwap'])
+        ->middleware('permission:manage_payroll')->name('payroll.fix-october-swap');
 
     // Salary settings management
     Route::resource('salary-settings', \App\Http\Controllers\Admin\SalarySettingController::class)

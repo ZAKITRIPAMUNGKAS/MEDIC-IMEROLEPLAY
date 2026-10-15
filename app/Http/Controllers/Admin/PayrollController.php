@@ -13,6 +13,7 @@ use App\Helpers\PayrollHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Artisan;
 use Carbon\Carbon;
 
 class PayrollController extends Controller
@@ -1447,6 +1448,33 @@ class PayrollController extends Controller
             if (isset($notification)) {
                 $notification->markAsFailed();
             }
+        }
+    }
+
+    /**
+     * Fix swapped payroll data for October period (28 Sep - 04 Oct vs 05 Oct - 11 Oct)
+     */
+    public function fixOctoberSwap(Request $request)
+    {
+        try {
+            $userQuery = $request->input('user', 'Squarepants');
+            
+            Artisan::call('payroll:fix-october-swap', [
+                '--user' => $userQuery,
+            ]);
+
+            $output = Artisan::output();
+            Log::info('Artisan payroll:fix-october-swap output', ['output' => $output]);
+
+            return redirect()->route('admin.payroll.index', ['week' => '2026-10-05', 'staff_name' => $userQuery])
+                ->with('success', 'Sinkronisasi data gaji berhasil dijalankan! Silakan cek periode 28 Sep - 04 Oct dan 05 Oct - 11 Oct.');
+        } catch (\Exception $e) {
+            Log::error('Error executing fixOctoberSwap', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->back()->with('error', 'Gagal memperbaiki data gaji: ' . $e->getMessage());
         }
     }
 }
