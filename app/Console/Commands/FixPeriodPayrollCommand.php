@@ -26,7 +26,7 @@ class FixPeriodPayrollCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Perbaiki data gaji seluruh staf yang tertukar atau hilang antara periode 28 Sep - 04 Oct dan 05 Oct - 11 Oct';
+    protected $description = 'Perbaiki dan pisahkan tuntas data gaji seluruh staf untuk periode 28 Sep - 04 Oct dan 05 Oct - 11 Oct';
 
     /**
      * Execute the console command.
@@ -37,7 +37,7 @@ class FixPeriodPayrollCommand extends Command
         $userOption = trim((string) $this->option('user'));
 
         if (empty($userOption) || strtolower($userOption) === 'all') {
-            $this->info("👥 Memproses SEMUA staf aktif yang memiliki role/absensi...");
+            $this->info("👥 Memproses SEMUA staf aktif...");
             $users = User::where('is_active', true)->whereHas('role')->orderBy('name')->get();
         } else {
             $this->info("🔍 Mencari staf dengan kata kunci: '{$userOption}'...");
@@ -58,75 +58,13 @@ class FixPeriodPayrollCommand extends Command
             $this->warn("⚠️  MODE DRY RUN AKTIF - Perubahan TIDAK akan disimpan ke database.");
         }
 
-        $swappedCount = 0;
-        $createdWeek1Count = 0;
-        $createdWeek2Count = 0;
+        $movedToWeek1Count = 0;
+        $createdWeek2PendingCount = 0;
+        $dedupCount = 0;
 
         DB::beginTransaction();
         try {
             foreach ($users as $user) {
-                // 1. Ambil absensi minggu 1 (28 Sep - 04 Oct)
-                $attWeek1 = Attendance::where('user_id', $user->id)
-                    ->whereBetween('work_date', ['2026-09-28', '2026-10-04'])
-                    ->whereIn('session_type', ['work', 'meeting'])
-                    ->whereNotNull('session_duration')
-                    ->where('session_duration', '>', 0)
-                    ->where('is_active', false)
-                    ->get();
-                $secWeek1 = $attWeek1->sum('session_duration');
-                $hoursWeek1 = PayrollHelper::convertSecondsToHours($secWeek1);
-
-                // 2. Ambil absensi minggu 2 (05 Oct - 11 Oct)
-                $attWeek2 = Attendance::where('user_id', $user->id)
-                    ->whereBetween('work_date', ['2026-10-05', '2026-10-11'])
-                    ->whereIn('session_type', ['work', 'meeting'])
-                    ->whereNotNull('session_duration')
-                    ->where('session_duration', '>', 0)
-                    ->where('is_active', false)
-                    ->get();
-                $secWeek2 = $attWeek2->sum('session_duration');
-                $hoursWeek2 = PayrollHelper::convertSecondsToHours($secWeek2);
-
-                // 3. Cek apakah ada record gaji yang saat ini tercatat di 28 Sep 2026
-                $payWeek1 = Payroll::where('user_id', $user->id)
-                    ->where('period_start', '2026-09-28')
-                    ->first();
-
-                // Deteksi apakah record di 28 Sep ini sebenarnya milik minggu 05-11 Okt (Tertukar)
-                $isSwapped = false;
-                if ($payWeek1 && $hoursWeek2 > 0) {
-                    // Kasus A: Jam kerja di slip 28 Sep sangat mirip dengan absensi 05-11 Okt (selisih < 0.2 jam)
-                    // dan berbeda dengan jam kerja asli minggu 28 Sep
-                    $diffWithWeek2 = abs((float)$payWeek1->total_hours - (float)$hoursWeek2);
-                    $diffWithWeek1 = abs((float)$payWeek1->total_hours - (float)$hoursWeek1);
-
-                    if ($diffWithWeek2 < 0.2 && ($diffWithWeek1 > 0.5 || $hoursWeek1 == 0)) {
-                        $isSwapped = true;
-                    }
-
-                    // Kasus B: Slip berstatus 'paid' pada tanggal 8 Okt ke atas, dan ada jam kerja di minggu 05-11 Okt
-                    if (!$isSwapped && $payWeek1->status === 'paid' && $payWeek1->paid_at) {
-                        $paidDate = Carbon::parse($payWeek1->paid_at);
-                        if ($paidDate->greaterThanOrEqualTo(Carbon::parse('2026-10-08'))) {
-                            $isSwapped = true;
-                        }
-                    }
-                }
-
-                if ($isSwapped) {
-                    $this->warn("🔄 [Tertukar] {$user->name}: Record gaji ID {$payWeek1->id} (Jam: {$payWeek1->total_hours}h, Status: {$payWeek1->status}) saat ini berada di 28 Sep, padahal miliknya minggu 05-11 Okt.");
-                    
-                    if (!$dryRun) {
-                        $payWeek1->update([
-                            'period_start' => '2026-10-05',
-                            'period_end' => '2026-10-11',
-                            'notes' => ($payWeek1->notes ? $payWeek1->notes . " | " : "") . "Period corrected to 05-11 Oct on " . now()->format('Y-m-d H:i:s'),
-                        ]);
-                    }
-                    $swappedCount++;
-                }
-
-                // Siapkan data role & base salary
                 $roleName = optional($user->role)->name;
                 if (!$roleName && $user->effective_medic_role) {
                     $roleName = $user->effective_medic_role->name;
@@ -137,69 +75,175 @@ class FixPeriodPayrollCommand extends Command
                 $customSalary = $user->custom_salary ?? 0;
                 $baseSalary = PayrollHelper::getBaseSalary($roleName, $customSalary);
 
-                // 4. Periksa apakah user memiliki slip gaji untuk Minggu 1 (28 Sep - 04 Oct)
-                $hasWeek1 = Payroll::where('user_id', $user->id)
-                    ->where('period_start', '2026-09-28')
-                    ->exists();
+                // Absensi asli Minggu 1 (28 Sep - 04 Oct)
+                $attWeek1 = Attendance::where('user_id', $user->id)
+                    ->whereBetween('work_date', ['2026-09-28', '2026-10-04'])
+                    ->whereIn('session_type', ['work', 'meeting'])
+                    ->whereNotNull('session_duration')
+                    ->where('session_duration', '>', 0)
+                    ->where('is_active', false)
+                    ->get();
+                $secWeek1 = $attWeek1->sum('session_duration');
+                $hoursWeek1 = PayrollHelper::convertSecondsToHours($secWeek1);
+                $calcSal1 = PayrollHelper::computeWeeklySalary($roleName, $secWeek1, $customSalary);
 
-                if (!$hasWeek1 && $hoursWeek1 > 0) {
-                    $calcSal1 = PayrollHelper::computeWeeklySalary($roleName, $secWeek1, $customSalary);
-                    if ($calcSal1 > 0) {
-                        $this->line(" ➕ [Gaji Baru 28 Sep - 04 Oct] {$user->name} | Jam: {$hoursWeek1}h | Nominal: Rp " . number_format($calcSal1, 0, ',', '.'));
-                        
-                        if (!$dryRun) {
-                            Payroll::create([
-                                'user_id' => $user->id,
-                                'period_start' => '2026-09-28',
-                                'period_end' => '2026-10-04',
-                                'total_hours' => $hoursWeek1,
-                                'base_salary' => $baseSalary,
-                                'calculated_salary' => $calcSal1,
-                                'status' => 'pending',
-                                'notes' => "Generated for missing period 28 Sep - 04 Oct on " . now()->format('Y-m-d H:i:s'),
-                            ]);
+                // Absensi asli Minggu 2 (05 Oct - 11 Oct)
+                $attWeek2 = Attendance::where('user_id', $user->id)
+                    ->whereBetween('work_date', ['2026-10-05', '2026-10-11'])
+                    ->whereIn('session_type', ['work', 'meeting'])
+                    ->whereNotNull('session_duration')
+                    ->where('session_duration', '>', 0)
+                    ->where('is_active', false)
+                    ->get();
+                $secWeek2 = $attWeek2->sum('session_duration');
+                $hoursWeek2 = PayrollHelper::convertSecondsToHours($secWeek2);
+                $calcSal2 = PayrollHelper::computeWeeklySalary($roleName, $secWeek2, $customSalary);
+
+                // Ambil semua payroll user di periode 28 Sep s/d 11 Oct
+                $payrollsWeek1 = Payroll::where('user_id', $user->id)
+                    ->where('period_start', '2026-09-28')
+                    ->get();
+
+                $payrollsWeek2 = Payroll::where('user_id', $user->id)
+                    ->where('period_start', '2026-10-05')
+                    ->get();
+
+                // -------------------------------------------------------------
+                // KASUS 1: Record di Minggu 2 (05-11 Oct) yang DIBAYAR PADA 07/08 Okt (oleh Ishihara / Tamao)
+                // Uang ini dibayar sebelum minggu 05-11 Oct selesai -> SEBENARNYA ADALAH GAJI MINGGU 1 (28 Sep - 04 Oct)!
+                // -------------------------------------------------------------
+                foreach ($payrollsWeek2 as $p2) {
+                    if ($p2->status === 'paid' && $p2->paid_at) {
+                        $paidDate = Carbon::parse($p2->paid_at);
+                        // Jika dibayar sebelum 09 Oct (misal 07 atau 08 Oct), itu adalah pembayaran minggu 28 Sep
+                        if ($paidDate->lessThan(Carbon::parse('2026-10-09 00:00:00'))) {
+                            $paidByName = $p2->paidBy->name ?? 'Admin';
+                            $this->warn("🔄 [Koreksi Periode] {$user->name}: Slip gaji ID {$p2->id} dibayar pada {$paidDate->format('d M Y H:i')} oleh {$paidByName}.");
+                            $this->line("   -> Slip ini sebenarnya adalah pembayaran Minggu 1 (28 Sep - 04 Oct).");
+
+                            // Cek apakah user sudah punya slip di minggu 1
+                            $existingW1 = Payroll::where('user_id', $user->id)
+                                ->where('period_start', '2026-09-28')
+                                ->where('id', '!=', $p2->id)
+                                ->first();
+
+                            if ($existingW1) {
+                                if ($existingW1->status === 'pending') {
+                                    // Hapus pending yang duplikat di minggu 1, pindahkan record paid ini
+                                    if (!$dryRun) {
+                                        $existingW1->notifications()->delete();
+                                        $existingW1->delete();
+                                    }
+                                } elseif ($existingW1->status === 'paid') {
+                                    // Sudah ada paid di minggu 1, hapus yang duplikat
+                                    if (!$dryRun) {
+                                        $p2->notifications()->delete();
+                                        $p2->delete();
+                                    }
+                                    $dedupCount++;
+                                    continue;
+                                }
+                            }
+
+                            // Pindahkan record p2 ke minggu 1 (28 Sep - 04 Oct) dengan nominal dan jam minggu 1
+                            if (!$dryRun) {
+                                $p2->update([
+                                    'period_start' => '2026-09-28',
+                                    'period_end' => '2026-10-04',
+                                    'total_hours' => $hoursWeek1 > 0 ? $hoursWeek1 : $p2->total_hours,
+                                    'calculated_salary' => $calcSal1 > 0 ? $calcSal1 : $p2->calculated_salary,
+                                    'notes' => ($p2->notes ? $p2->notes . " | " : "") . "Moved back to rightful period 28 Sep - 04 Oct on " . now()->format('Y-m-d H:i:s'),
+                                ]);
+                            }
+                            $movedToWeek1Count++;
+
+                            // Sekarang minggu 2 (05-11 Oct) untuk user ini harus dibuatkan slip PENDING baru (jika ada jam kerja di minggu 2)
+                            $hasRemainingWeek2 = Payroll::where('user_id', $user->id)
+                                ->where('period_start', '2026-10-05')
+                                ->where('id', '!=', $p2->id)
+                                ->exists();
+
+                            if (!$hasRemainingWeek2 && $hoursWeek2 > 0 && $calcSal2 > 0) {
+                                $this->info(" ➕ [Buat Slip Pending 05-11 Oct] {$user->name} | Jam: {$hoursWeek2}h | Gaji: Rp " . number_format($calcSal2, 0, ',', '.') . " (Status: Pending)");
+                                if (!$dryRun) {
+                                    Payroll::create([
+                                        'user_id' => $user->id,
+                                        'period_start' => '2026-10-05',
+                                        'period_end' => '2026-10-11',
+                                        'total_hours' => $hoursWeek2,
+                                        'base_salary' => $baseSalary,
+                                        'calculated_salary' => $calcSal2,
+                                        'status' => 'pending',
+                                        'notes' => "Generated pending salary for 05-11 Oct on " . now()->format('Y-m-d H:i:s'),
+                                    ]);
+                                }
+                                $createdWeek2PendingCount++;
+                            }
                         }
-                        $createdWeek1Count++;
                     }
                 }
 
-                // 5. Periksa apakah user memiliki slip gaji untuk Minggu 2 (05 Oct - 11 Oct)
-                $hasWeek2 = Payroll::where('user_id', $user->id)
+                // -------------------------------------------------------------
+                // KASUS 2: PEMBERSIHAN DUPLIKAT DI MINGGU YANG SAMA (05-11 Oct atau 28 Sep-04 Oct)
+                // Misal Dilan Smith yang punya 2 record di 05-11 Oct (satu paid 07 Oct, satu paid 13 Oct)
+                // -------------------------------------------------------------
+                $checkWeek2Payrolls = Payroll::where('user_id', $user->id)
                     ->where('period_start', '2026-10-05')
+                    ->get();
+
+                if ($checkWeek2Payrolls->count() > 1) {
+                    $this->warn("⚠️  [Duplikat Terdeteksi] {$user->name} memiliki {$checkWeek2Payrolls->count()} slip di minggu 05-11 Oct.");
+                    // Urutkan: dahulukan yang dibayar pada tanggal 12/13 Oct (Billy), hapus yang lebih lama/duplikat
+                    $sorted = $checkWeek2Payrolls->sort(function ($a, $b) {
+                        $aDate = $a->paid_at ? Carbon::parse($a->paid_at)->timestamp : 0;
+                        $bDate = $b->paid_at ? Carbon::parse($b->paid_at)->timestamp : 0;
+                        return $bDate <=> $aDate;
+                    })->values();
+
+                    $keep = $sorted->first();
+                    $dupes = $sorted->slice(1);
+
+                    foreach ($dupes as $dupe) {
+                        $this->line("   ❌ Hapus slip duplikat ID #{$dupe->id} (Status: {$dupe->status}, Nilai: \${$dupe->calculated_salary})");
+                        if (!$dryRun) {
+                            $dupe->notifications()->delete();
+                            $dupe->delete();
+                        }
+                        $dedupCount++;
+                    }
+                }
+
+                // Pastikan user punya slip di minggu 1 (28 Sep - 04 Oct) jika punya absensi tapi belum ada slip
+                $hasW1 = Payroll::where('user_id', $user->id)
+                    ->where('period_start', '2026-09-28')
                     ->exists();
 
-                if (!$hasWeek2 && $hoursWeek2 > 0) {
-                    $calcSal2 = PayrollHelper::computeWeeklySalary($roleName, $secWeek2, $customSalary);
-                    if ($calcSal2 > 0) {
-                        $this->line(" ➕ [Gaji Baru 05 Oct - 11 Oct] {$user->name} | Jam: {$hoursWeek2}h | Nominal: Rp " . number_format($calcSal2, 0, ',', '.'));
-                        
-                        if (!$dryRun) {
-                            Payroll::create([
-                                'user_id' => $user->id,
-                                'period_start' => '2026-10-05',
-                                'period_end' => '2026-10-11',
-                                'total_hours' => $hoursWeek2,
-                                'base_salary' => $baseSalary,
-                                'calculated_salary' => $calcSal2,
-                                'status' => 'pending',
-                                'notes' => "Generated for missing period 05-11 Oct on " . now()->format('Y-m-d H:i:s'),
-                            ]);
-                        }
-                        $createdWeek2Count++;
+                if (!$hasW1 && $hoursWeek1 > 0 && $calcSal1 > 0) {
+                    if (!$dryRun) {
+                        Payroll::create([
+                            'user_id' => $user->id,
+                            'period_start' => '2026-09-28',
+                            'period_end' => '2026-10-04',
+                            'total_hours' => $hoursWeek1,
+                            'base_salary' => $baseSalary,
+                            'calculated_salary' => $calcSal1,
+                            'status' => 'pending',
+                            'notes' => "Auto-created missing payroll for 28 Sep - 04 Oct on " . now()->format('Y-m-d H:i:s'),
+                        ]);
                     }
                 }
             }
 
             if (!$dryRun) {
                 DB::commit();
-                $this->info("\n================ HASIL SINKRONISASI ================");
-                $this->info("✅ Gaji tertukar yang dikembalikan ke 05-11 Oct : {$swappedCount} staf");
-                $this->info("✅ Gaji baru dibuatkan untuk 28 Sep - 04 Oct   : {$createdWeek1Count} staf");
-                $this->info("✅ Gaji baru dibuatkan untuk 05 Oct - 11 Oct   : {$createdWeek2Count} staf");
-                $this->info("====================================================\n");
+                $this->info("\n================ HASIL PERBAIKAN MASAL ================");
+                $this->info("✅ Slip dibayar 07/08 Okt yang dikembalikan ke 28 Sep : {$movedToWeek1Count} staf");
+                $this->info("✅ Slip periode 05-11 Okt yang di-reset jadi PENDING : {$createdWeek2PendingCount} staf");
+                $this->info("✅ Data duplikat yang dibersihkan                    : {$dedupCount} record");
+                $this->info("========================================================\n");
             } else {
                 DB::rollBack();
-                $this->info("\n[DRY RUN SELESAI] Terdeteksi {$swappedCount} data tertukar, {$createdWeek1Count} data minggu 1 yang hilang, {$createdWeek2Count} data minggu 2 yang hilang.");
+                $this->info("\n[DRY RUN SELESAI] Akan dipindahkan {$movedToWeek1Count} slip ke 28 Sep, {$createdWeek2PendingCount} slip baru pending di 05-11 Okt, dan dihapus {$dedupCount} duplikat.");
             }
 
             return 0;
