@@ -2,8 +2,64 @@
 
 @section('title', 'Rekam Operasi - Portal Medis')
 
+@push('styles')
+<style>
+    /* Filter dark input fields */
+    .filter-input-dark {
+        background: rgba(255, 255, 255, 0.08) !important;
+        border: 1px solid rgba(255, 255, 255, 0.18) !important;
+        color: #ffffff !important;
+        border-radius: 0.75rem !important;
+        padding: 10px 14px !important;
+        width: 100% !important;
+        font-size: 0.875rem !important;
+        color-scheme: dark !important;
+        transition: all 0.2s ease !important;
+    }
+    .filter-input-dark:focus {
+        outline: none !important;
+        border-color: rgba(56, 189, 248, 0.8) !important;
+        background: rgba(255, 255, 255, 0.12) !important;
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2) !important;
+    }
+    .filter-input-dark::placeholder {
+        color: rgba(186, 230, 253, 0.5) !important;
+    }
+    .filter-input-dark option {
+        background: #075985 !important;
+        color: #ffffff !important;
+    }
+
+    /* Tim Operasi badge */
+    .team-badge {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 0.35rem !important;
+        white-space: nowrap !important;
+        background: rgba(255, 255, 255, 0.08) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
+        color: #e0f2fe !important;
+        font-size: 0.75rem !important;
+        font-weight: 500 !important;
+        padding: 4px 10px !important;
+        border-radius: 0.5rem !important;
+        transition: all 0.15s ease !important;
+    }
+    .team-badge:hover {
+        background: rgba(255, 255, 255, 0.15) !important;
+        color: #ffffff !important;
+    }
+    .team-badge-dpjp {
+        background: rgba(16, 185, 129, 0.18) !important;
+        border-color: rgba(16, 185, 129, 0.4) !important;
+        color: #6ee7b7 !important;
+        font-weight: 700 !important;
+    }
+</style>
+@endpush
+
 @section('content')
-<div class="min-h-screen pt-20 pb-16 px-4 sm:px-6 lg:px-8" style="background: linear-gradient(180deg, #0c4a6e 0%, #075985 50%, #0369a1 100%);">
+<div class="min-h-screen pt-28 pb-16 px-4 sm:px-6 lg:px-8" style="background: linear-gradient(180deg, #0c4a6e 0%, #075985 50%, #0369a1 100%);">
     <div class="max-w-7xl mx-auto text-white">
 
         {{-- Header --}}
@@ -22,11 +78,11 @@
             @endphp
             @if(!$isTrainee)
             <a href="{{ route('staff.operations.create') }}"
-               class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white font-bold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg shadow-sky-900/30">
+               class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white font-bold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg shadow-sky-900/30 whitespace-nowrap">
                 <i class="fas fa-plus mr-2"></i> Tambah Rekam Operasi
             </a>
             @else
-            <div class="inline-flex items-center px-6 py-3 bg-white/10 text-sky-300 font-semibold rounded-xl border border-white/20 text-sm cursor-not-allowed opacity-60">
+            <div class="inline-flex items-center px-6 py-3 bg-white/10 text-sky-300 font-semibold rounded-xl border border-white/20 text-sm cursor-not-allowed opacity-60 whitespace-nowrap">
                 <i class="fas fa-lock mr-2"></i> Trainee Tidak Bisa Mengisi
             </div>
             @endif
@@ -64,38 +120,34 @@
                     <label class="block text-sky-200 text-xs font-semibold uppercase tracking-wider mb-2">
                         <i class="fas fa-user mr-1 text-sky-400"></i> Nama Pasien
                     </label>
-                    <input type="text" name="nama_pasien"
-                           class="w-full bg-white/[0.06] border border-white/15 text-white placeholder-sky-200/40 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all"
+                    <input type="text" name="nama_pasien" class="filter-input-dark"
                            value="{{ request('nama_pasien') }}" placeholder="Cari nama pasien...">
                 </div>
                 <div>
                     <label class="block text-sky-200 text-xs font-semibold uppercase tracking-wider mb-2">
                         <i class="fas fa-id-card mr-1 text-sky-400"></i> Citizen ID Pasien
                     </label>
-                    <input type="text" name="citizen_id"
-                           class="w-full bg-white/[0.06] border border-white/15 text-white placeholder-sky-200/40 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all"
+                    <input type="text" name="citizen_id" class="filter-input-dark"
                            value="{{ request('citizen_id') }}" placeholder="Contoh: 100234">
                 </div>
                 <div>
                     <label class="block text-sky-200 text-xs font-semibold uppercase tracking-wider mb-2">
                         <i class="fas fa-user-md mr-1 text-sky-400"></i> Tim Operasi / Staf
                     </label>
-                    <input type="text" name="tim_operasi"
-                           class="w-full bg-white/[0.06] border border-white/15 text-white placeholder-sky-200/40 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all"
+                    <input type="text" name="tim_operasi" class="filter-input-dark"
                            value="{{ request('tim_operasi') }}" placeholder="Cari nama staf bertugas...">
                 </div>
                 <div>
                     <label class="block text-sky-200 text-xs font-semibold uppercase tracking-wider mb-2">
                         <i class="fas fa-stethoscope mr-1 text-sky-400"></i> Jenis Operasi
                     </label>
-                    <select name="jenis_operasi"
-                            class="w-full bg-white/[0.06] border border-white/15 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all cursor-pointer">
-                        <option value="" class="bg-[#075985] text-white">Semua Jenis Operasi</option>
-                        <option value="Operasi Minor" class="bg-[#075985] text-white" {{ request('jenis_operasi') == 'Operasi Minor' ? 'selected' : '' }}>Operasi Minor</option>
-                        <option value="Operasi Mayor" class="bg-[#075985] text-white" {{ request('jenis_operasi') == 'Operasi Mayor' ? 'selected' : '' }}>Operasi Mayor</option>
-                        <option value="Emergency" class="bg-[#075985] text-white" {{ request('jenis_operasi') == 'Emergency' ? 'selected' : '' }}>Emergency</option>
-                        <option value="Konsultasi Spesialisasi" class="bg-[#075985] text-white" {{ request('jenis_operasi') == 'Konsultasi Spesialisasi' ? 'selected' : '' }}>Konsultasi Spesialisasi</option>
-                        <option value="Lainnya" class="bg-[#075985] text-white" {{ request('jenis_operasi') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
+                    <select name="jenis_operasi" class="filter-input-dark cursor-pointer">
+                        <option value="">Semua Jenis Operasi</option>
+                        <option value="Operasi Minor" {{ request('jenis_operasi') == 'Operasi Minor' ? 'selected' : '' }}>Operasi Minor</option>
+                        <option value="Operasi Mayor" {{ request('jenis_operasi') == 'Operasi Mayor' ? 'selected' : '' }}>Operasi Mayor</option>
+                        <option value="Emergency" {{ request('jenis_operasi') == 'Emergency' ? 'selected' : '' }}>Emergency</option>
+                        <option value="Konsultasi Spesialisasi" {{ request('jenis_operasi') == 'Konsultasi Spesialisasi' ? 'selected' : '' }}>Konsultasi Spesialisasi</option>
+                        <option value="Lainnya" {{ request('jenis_operasi') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
                     </select>
                 </div>
                 <div class="lg:col-span-4 flex gap-2 justify-end pt-2">
@@ -125,27 +177,27 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="min-w-full">
+                <table class="min-w-full divide-y divide-white/10">
                     <thead>
                         <tr class="border-b border-white/10" style="background-color: rgba(14, 165, 233, 0.2);">
-                            <th class="px-6 py-4 text-left text-xs font-bold text-sky-200 uppercase tracking-wider">Tanggal & Waktu</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-sky-200 uppercase tracking-wider">Nama Pasien</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-sky-200 uppercase tracking-wider">Jenis Operasi</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-sky-200 uppercase tracking-wider">Lokasi</th>
-                            <th class="px-6 py-4 text-left text-xs font-bold text-sky-200 uppercase tracking-wider">Tim Operasi</th>
-                            <th class="px-6 py-4 text-right text-xs font-bold text-sky-200 uppercase tracking-wider">Aksi</th>
+                            <th class="px-5 py-4 text-left text-xs font-bold text-sky-200 uppercase tracking-wider whitespace-nowrap">Tanggal & Waktu</th>
+                            <th class="px-5 py-4 text-left text-xs font-bold text-sky-200 uppercase tracking-wider whitespace-nowrap">Nama Pasien</th>
+                            <th class="px-5 py-4 text-left text-xs font-bold text-sky-200 uppercase tracking-wider whitespace-nowrap">Jenis Operasi</th>
+                            <th class="px-5 py-4 text-left text-xs font-bold text-sky-200 uppercase tracking-wider whitespace-nowrap">Lokasi</th>
+                            <th class="px-5 py-4 text-left text-xs font-bold text-sky-200 uppercase tracking-wider min-w-[220px]">Tim Operasi</th>
+                            <th class="px-5 py-4 text-right text-xs font-bold text-sky-200 uppercase tracking-wider whitespace-nowrap">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-white/10">
                         @forelse($operations as $op)
                         <tr class="hover:bg-white/[0.06] transition-all duration-200">
-                            <td class="px-6 py-5 whitespace-nowrap">
+                            <td class="px-5 py-5 whitespace-nowrap">
                                 <div class="text-white font-semibold text-sm">{{ $op->tanggal_waktu->format('d M Y') }}</div>
                                 <div class="text-sky-300 text-xs mt-1">{{ $op->tanggal_waktu->format('H:i') }} WIB</div>
                             </td>
-                            <td class="px-6 py-5 whitespace-nowrap">
+                            <td class="px-5 py-5 whitespace-nowrap">
                                 <div class="flex items-center">
-                                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-sky-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm mr-3 shadow-md">
+                                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-sky-500 to-cyan-500 flex items-center justify-center text-white font-bold text-sm mr-3 shadow-md shrink-0">
                                         {{ substr($op->nama_pasien, 0, 1) }}
                                     </div>
                                     <div>
@@ -160,7 +212,7 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-6 py-5 whitespace-nowrap">
+                            <td class="px-5 py-5 whitespace-nowrap">
                                 @php
                                     $badgeColors = [
                                         'Operasi Mayor'          => 'from-red-500 to-pink-500',
@@ -174,25 +226,42 @@
                                     {{ $op->jenis_operasi }}
                                 </span>
                             </td>
-                            <td class="px-6 py-5 whitespace-nowrap text-sky-200 text-sm">
+                            <td class="px-5 py-5 whitespace-nowrap text-sky-200 text-sm">
                                 <i class="fas fa-map-marker-alt mr-1.5 text-sky-400"></i>
                                 {{ $op->lokasi }}
                             </td>
-                            <td class="px-6 py-5">
-                                <div class="flex flex-wrap gap-1.5">
-                                    @foreach($op->members->take(3) as $member)
-                                        <span class="inline-block px-2.5 py-1 bg-white/10 text-sky-200 text-xs rounded-full border border-white/15">
-                                            {{ $member->name }}
+                            <td class="px-5 py-5 min-w-[220px]">
+                                <div class="flex flex-col gap-1.5 items-start">
+                                    @if($op->dpjp)
+                                        <span class="team-badge team-badge-dpjp" title="DPJP: {{ $op->dpjp->name }}">
+                                            <i class="fas fa-star text-[10px] text-amber-300 shrink-0"></i>
+                                            <span class="max-w-[170px] truncate inline-block"><strong class="font-bold">DPJP:</strong> {{ $op->dpjp->name }}</span>
                                         </span>
-                                    @endforeach
-                                    @if($op->members->count() > 3)
-                                        <span class="inline-block px-2.5 py-1 bg-sky-500/20 text-sky-300 text-xs rounded-full border border-sky-400/30">
-                                            +{{ $op->members->count() - 3 }} lainnya
-                                        </span>
+                                    @endif
+                                    @php
+                                        $otherMembers = $op->members->filter(fn($m) => !$op->dpjp_id || $m->id !== $op->dpjp_id);
+                                    @endphp
+                                    @if($otherMembers->isNotEmpty())
+                                    <div class="flex flex-wrap gap-1 items-center">
+                                        @foreach($otherMembers->take(3) as $member)
+                                            <span class="team-badge" title="{{ $member->name }}">
+                                                <i class="fas fa-user-md text-[10px] text-sky-400 shrink-0"></i>
+                                                <span class="max-w-[150px] truncate inline-block">{{ $member->name }}</span>
+                                            </span>
+                                        @endforeach
+                                        @if($otherMembers->count() > 3)
+                                            <span class="inline-flex items-center px-2 py-0.5 bg-sky-500/20 text-sky-300 text-[10px] rounded-md border border-sky-400/30 font-semibold whitespace-nowrap">
+                                                +{{ $otherMembers->count() - 3 }} lainnya
+                                            </span>
+                                        @endif
+                                    </div>
+                                    @endif
+                                    @if(!$op->dpjp && $otherMembers->isEmpty())
+                                        <span class="text-xs text-sky-300/60 italic">- Belum ada tim -</span>
                                     @endif
                                 </div>
                             </td>
-                            <td class="px-6 py-5 whitespace-nowrap text-right">
+                            <td class="px-5 py-5 whitespace-nowrap text-right">
                                 <div class="flex items-center justify-end gap-2">
                                     @php
                                         $userRole = strtolower(trim(auth()->user()->role->name ?? ''));
