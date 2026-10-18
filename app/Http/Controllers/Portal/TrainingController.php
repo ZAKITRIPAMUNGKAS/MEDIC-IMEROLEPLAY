@@ -93,7 +93,8 @@ class TrainingController extends Controller
             'BATCH I', 'BATCH II', 'BATCH III', 'BATCH IV',
             'BATCH V', 'BATCH VI', 'BATCH VII', 'BATCH VIII',
             'BATCH IX', 'BATCH X', 'BATCH XI', 'BATCH XII',
-            'BATCH XIII', 'BATCH XIV'
+            'BATCH XIII', 'BATCH XIV', 'BATCH XV', 'BATCH XVI',
+            'BATCH XVII', 'BATCH XVIII', 'BATCH XIX', 'BATCH XX',
         ];
 
         // Default phone & role from user if available

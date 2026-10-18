@@ -84,9 +84,17 @@ class StaseController extends Controller
     public function konsulenApprove(Request $request, StaseApplication $stase)
     {
         $user = Auth::user();
-        if ($stase->konsulen_id !== $user->id && !$user->isAdmin() && !$user->isExecutiveOrAbove()) {
-            abort(403, 'Anda bukan konsulen yang ditunjuk untuk stase ini.');
+
+        // Izinkan: konsulen yang ditunjuk, manager ke atas, executive, atau admin
+        $isAuthorized = $stase->konsulen_id === $user->id
+            || $user->isAdmin()
+            || $user->isExecutiveOrAbove()
+            || $user->isManagerOrAbove();
+
+        if (!$isAuthorized) {
+            return back()->with('error', 'Anda tidak memiliki wewenang untuk menyetujui pengajuan stase ini.');
         }
+
         $request->validate(['konsulen_notes' => 'nullable|string|max:500']);
 
         $stase->update([
@@ -102,9 +110,17 @@ class StaseController extends Controller
     public function konsulenReject(Request $request, StaseApplication $stase)
     {
         $user = Auth::user();
-        if ($stase->konsulen_id !== $user->id && !$user->isAdmin() && !$user->isExecutiveOrAbove()) {
-            abort(403);
+
+        // Izinkan: konsulen yang ditunjuk, manager ke atas, executive, atau admin
+        $isAuthorized = $stase->konsulen_id === $user->id
+            || $user->isAdmin()
+            || $user->isExecutiveOrAbove()
+            || $user->isManagerOrAbove();
+
+        if (!$isAuthorized) {
+            return back()->with('error', 'Anda tidak memiliki wewenang untuk menolak pengajuan stase ini.');
         }
+
         $request->validate(['konsulen_notes' => 'required|string|max:500']);
 
         $stase->update([

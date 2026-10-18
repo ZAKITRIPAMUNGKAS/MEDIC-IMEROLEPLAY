@@ -11,6 +11,9 @@
     @if(session('success'))
     <div class="mb-4 p-4 bg-emerald-500/20 border border-emerald-500/40 rounded-xl text-emerald-300 text-sm flex items-center gap-2"><i class="fas fa-check-circle"></i> {{ session('success') }}</div>
     @endif
+    @if(session('error'))
+    <div class="mb-4 p-4 bg-red-500/20 border border-red-500/40 rounded-xl text-red-300 text-sm flex items-center gap-2"><i class="fas fa-exclamation-circle"></i> {{ session('error') }}</div>
+    @endif
     <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
         @if($applications->isEmpty())
         <div class="flex flex-col items-center justify-center py-16 text-white/40"><i class="fas fa-inbox text-4xl mb-3"></i><p class="text-sm">Tidak ada pengajuan stase untuk Anda.</p></div>
