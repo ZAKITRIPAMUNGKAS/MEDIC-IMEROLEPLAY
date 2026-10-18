@@ -463,80 +463,86 @@ class OperationRecordController extends Controller
      */
     public function searchPatient(Request $request)
     {
-        $this->checkPermission();
+        try {
+            $this->checkPermission();
 
-        $query = trim($request->get('query', ''));
-        if (strlen($query) < 2) {
-            return response()->json(['found' => false, 'message' => 'Minimal ketik 2 karakter']);
-        }
-
-        // Cari riwayat dari OperationRecord terakhir yang datanya paling lengkap
-        $records = OperationRecord::query()
-            ->where(function ($q) use ($query) {
-                $q->where('nama_pasien', 'like', "%{$query}%")
-                  ->orWhere('medical_details->pasien->citizen_id', 'like', "%{$query}%")
-                  ->orWhere('medical_details->pasien->no_hp', 'like', "%{$query}%");
-            })
-            ->latest('tanggal_waktu')
-            ->take(10)
-            ->get();
-
-        if ($records->isEmpty()) {
-            // Cek juga di tabel MedicalForm
-            $medForm = \App\Models\MedicalForm::where(function($q) use ($query) {
-                $q->where('character_name', 'like', "%{$query}%")
-                  ->orWhere('citizen_id', 'like', "%{$query}%");
-            })->latest()->first();
-
-            if ($medForm) {
-                $fd = $medForm->form_data ?? [];
-                return response()->json([
-                    'found' => true,
-                    'patient' => [
-                        'nama_pasien'   => $medForm->character_name,
-                        'citizen_id'    => $medForm->citizen_id,
-                        'dob'           => $fd['dob'] ?? $fd['birth_date'] ?? null,
-                        'jenis_kelamin' => $fd['gender'] ?? $fd['jenis_kelamin'] ?? null,
-                        'gol_darah'     => $fd['blood_type'] ?? $fd['gol_darah'] ?? null,
-                        'no_hp'         => $fd['phone'] ?? $fd['phone_number'] ?? $fd['no_hp'] ?? null,
-                        'pekerjaan'     => $fd['job'] ?? $fd['pekerjaan'] ?? null,
-                        'riwayat_penyakit_dahulu' => $fd['medical_history'] ?? $fd['riwayat_penyakit'] ?? null,
-                        'riwayat_alergi' => $fd['allergies'] ?? $fd['riwayat_alergi'] ?? null,
-                        'riwayat_pengobatan' => $fd['medications'] ?? null,
-                        'source'        => 'MedicalForm #' . $medForm->id . ' (' . ($medForm->created_at ? $medForm->created_at->format('d/m/Y') : '-') . ')'
-                    ]
-                ]);
+            $query = trim($request->get('query', ''));
+            if (strlen($query) < 2) {
+                return response()->json(['found' => false, 'message' => 'Minimal ketik 2 karakter']);
             }
 
-            return response()->json(['found' => false, 'message' => 'Data riwayat pasien tidak ditemukan']);
+            // Cari riwayat dari OperationRecord terakhir yang datanya paling lengkap
+            $records = OperationRecord::query()
+                ->select(['id', 'nama_pasien', 'diagnosa', 'tindakan_operasi', 'tanggal_waktu', 'medical_details'])
+                ->where(function ($q) use ($query) {
+                    $q->where('nama_pasien', 'like', "%{$query}%")
+                      ->orWhere('medical_details->pasien->citizen_id', 'like', "%{$query}%")
+                      ->orWhere('medical_details->pasien->no_hp', 'like', "%{$query}%");
+                })
+                ->latest('tanggal_waktu')
+                ->take(5)
+                ->get();
+
+            if ($records->isEmpty()) {
+                // Cek juga di tabel MedicalForm
+                $medForm = \App\Models\MedicalForm::where(function($q) use ($query) {
+                    $q->where('character_name', 'like', "%{$query}%")
+                      ->orWhere('citizen_id', 'like', "%{$query}%");
+                })->latest()->first();
+
+                if ($medForm) {
+                    $fd = $medForm->form_data ?? [];
+                    return response()->json([
+                        'found' => true,
+                        'patient' => [
+                            'nama_pasien'   => $medForm->character_name,
+                            'citizen_id'    => $medForm->citizen_id,
+                            'dob'           => $fd['dob'] ?? $fd['birth_date'] ?? null,
+                            'jenis_kelamin' => $fd['gender'] ?? $fd['jenis_kelamin'] ?? null,
+                            'gol_darah'     => $fd['blood_type'] ?? $fd['gol_darah'] ?? null,
+                            'no_hp'         => $fd['phone'] ?? $fd['phone_number'] ?? $fd['no_hp'] ?? null,
+                            'pekerjaan'     => $fd['job'] ?? $fd['pekerjaan'] ?? null,
+                            'riwayat_penyakit_dahulu' => $fd['medical_history'] ?? $fd['riwayat_penyakit'] ?? null,
+                            'riwayat_alergi' => $fd['allergies'] ?? $fd['riwayat_alergi'] ?? null,
+                            'riwayat_pengobatan' => $fd['medications'] ?? null,
+                            'source'        => 'MedicalForm #' . $medForm->id . ' (' . ($medForm->created_at ? $medForm->created_at->format('d/m/Y') : '-') . ')'
+                        ]
+                    ]);
+                }
+
+                return response()->json(['found' => false, 'message' => 'Data riwayat pasien tidak ditemukan']);
+            }
+
+            // Ambil record yang paling baru
+            $latest = $records->first();
+            $md = $latest->medical_details ?? [];
+            $pasien = $md['pasien'] ?? [];
+            $anamnesis = $md['anamnesis'] ?? [];
+
+            return response()->json([
+                'found' => true,
+                'patient' => [
+                    'nama_pasien'             => $latest->nama_pasien,
+                    'citizen_id'              => $pasien['citizen_id'] ?? null,
+                    'dob'                     => $pasien['dob'] ?? null,
+                    'jenis_kelamin'           => $pasien['jenis_kelamin'] ?? null,
+                    'gol_darah'               => $pasien['gol_darah'] ?? null,
+                    'no_hp'                   => $pasien['no_hp'] ?? null,
+                    'pekerjaan'               => $pasien['pekerjaan'] ?? null,
+                    'riwayat_penyakit_dahulu' => $anamnesis['riwayat_penyakit_dahulu'] ?? null,
+                    'riwayat_penyakit_keluarga' => $anamnesis['riwayat_penyakit_keluarga'] ?? null,
+                    'riwayat_alergi'          => $anamnesis['riwayat_alergi'] ?? null,
+                    'riwayat_pengobatan'      => $anamnesis['riwayat_pengobatan'] ?? null,
+                    'last_diagnosa'           => $latest->diagnosa ?? null,
+                    'last_tindakan'           => $latest->tindakan_operasi ?? null,
+                    'last_date'               => $latest->tanggal_waktu ? Carbon::parse($latest->tanggal_waktu)->format('d M Y H:i') : null,
+                    'source'                  => 'Operasi Medis ID #' . $latest->id . ' (' . ($latest->tanggal_waktu ? Carbon::parse($latest->tanggal_waktu)->format('d/m/Y') : '-') . ')'
+                ]
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Patient lookup error: ' . $e->getMessage());
+            return response()->json(['found' => false, 'message' => 'Gagal memproses pencarian pasien. Silakan isi manual.']);
         }
-
-        // Ambil record yang paling baru
-        $latest = $records->first();
-        $md = $latest->medical_details ?? [];
-        $pasien = $md['pasien'] ?? [];
-        $anamnesis = $md['anamnesis'] ?? [];
-
-        return response()->json([
-            'found' => true,
-            'patient' => [
-                'nama_pasien'             => $latest->nama_pasien,
-                'citizen_id'              => $pasien['citizen_id'] ?? null,
-                'dob'                     => $pasien['dob'] ?? null,
-                'jenis_kelamin'           => $pasien['jenis_kelamin'] ?? null,
-                'gol_darah'               => $pasien['gol_darah'] ?? null,
-                'no_hp'                   => $pasien['no_hp'] ?? null,
-                'pekerjaan'               => $pasien['pekerjaan'] ?? null,
-                'riwayat_penyakit_dahulu' => $anamnesis['riwayat_penyakit_dahulu'] ?? null,
-                'riwayat_penyakit_keluarga' => $anamnesis['riwayat_penyakit_keluarga'] ?? null,
-                'riwayat_alergi'          => $anamnesis['riwayat_alergi'] ?? null,
-                'riwayat_pengobatan'      => $anamnesis['riwayat_pengobatan'] ?? null,
-                'last_diagnosa'           => $latest->diagnosa ?? null,
-                'last_tindakan'           => $latest->tindakan_operasi ?? null,
-                'last_date'               => $latest->tanggal_waktu ? Carbon::parse($latest->tanggal_waktu)->format('d M Y H:i') : null,
-                'source'                  => 'Operasi Medis ID #' . $latest->id . ' (' . ($latest->tanggal_waktu ? Carbon::parse($latest->tanggal_waktu)->format('d/m/Y') : '-') . ')'
-            ]
-        ]);
     }
 }
 

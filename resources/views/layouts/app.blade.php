@@ -1426,6 +1426,49 @@
                     @endguest
                     
                     @auth
+                        @php
+                            $currentUser = auth()->user();
+                            $currentRole = $currentUser->role;
+                            $currentRoleName = strtolower(trim($currentRole?->name ?? ''));
+                            $currentRoleLevel = $currentRole?->level ?? 0;
+
+                            // Fast privilege check for Konsulen
+                            $isKonsulenUser = ($currentRoleLevel >= 4)
+                                || $currentUser->isAdmin()
+                                || $currentUser->isExecutiveOrAbove()
+                                || $currentUser->isManagerOrAbove()
+                                || in_array($currentRoleName, ['dokter_spesialis', 'supervisor', 'staff_manager', 'manajer', 'executive', 'admin']);
+
+                            // Only check database if not already determined by role and user is medical staff
+                            if (!$isKonsulenUser && $currentUser->isStaff()) {
+                                try {
+                                    $isKonsulenUser = \App\Models\StaseApplication::where('konsulen_id', $currentUser->id)->exists();
+                                } catch (\Throwable $e) {
+                                    $isKonsulenUser = false;
+                                }
+                            }
+
+                            $pendingKonsulenCount = 0;
+                            if ($isKonsulenUser) {
+                                try {
+                                    $pendingKonsulenCount = \App\Models\StaseApplication::where('konsulen_id', $currentUser->id)
+                                        ->where('status', 'pending_konsulen')
+                                        ->count();
+                                } catch (\Throwable $e) {
+                                    $pendingKonsulenCount = 0;
+                                }
+                            }
+
+                            // Unread messages count (queried once, reused everywhere in nav)
+                            try {
+                                $unreadMessagesCount = \App\Models\MemberMessage::where('receiver_id', $currentUser->id)
+                                    ->where('is_read', false)
+                                    ->count();
+                            } catch (\Throwable $e) {
+                                $unreadMessagesCount = 0;
+                            }
+                        @endphp
+
                         {{-- User Badge / Direct Link to Member Profile --}}
                         <a href="{{ route('staff.members.show', auth()->id()) }}" 
                            class="hidden xl:inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/15 hover:border-white/30 px-3 h-9 rounded-lg mr-1 transition-all duration-200 group" 
@@ -1456,10 +1499,6 @@
                         @endif
 
                         {{-- Menu Staf Dropdown --}}
-                        @php
-                            try { $unreadMessagesCount = \App\Models\MemberMessage::where('receiver_id', auth()->id())->where('is_read', false)->count(); }
-                            catch (\Throwable $e) { $unreadMessagesCount = 0; }
-                        @endphp
                         <div class="relative group">
                             <button class="inline-flex items-center gap-1.5 h-9 px-3 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-lg border border-white/20 transition-all duration-200 whitespace-nowrap">
                                 <i class="fas fa-th-large text-sm text-sky-300"></i>
@@ -1697,32 +1736,13 @@
                                 @endif
 
                                 {{-- Konsulen --}}
-                                @php
-                                    $isKonsulenUser = (auth()->user()->role?->level >= 4)
-                                        || auth()->user()->isAdmin()
-                                        || auth()->user()->isExecutiveOrAbove()
-                                        || auth()->user()->isManagerOrAbove()
-                                        || in_array(strtolower(trim(auth()->user()->role?->name ?? '')), ['dokter_spesialis', 'supervisor', 'staff_manager', 'manajer', 'executive', 'admin'])
-                                        || \App\Models\StaseApplication::where('konsulen_id', auth()->id())->exists();
-                                    
-                                    $pendingKonsulenCount = 0;
-                                    if ($isKonsulenUser) {
-                                        try {
-                                            $pendingKonsulenCount = \App\Models\StaseApplication::where('konsulen_id', auth()->id())
-                                                ->where('status', 'pending_konsulen')
-                                                ->count();
-                                        } catch (\Throwable $e) {
-                                            $pendingKonsulenCount = 0;
-                                        }
-                                    }
-                                @endphp
-                                @if($isKonsulenUser)
+                                @if(!empty($isKonsulenUser))
                                 <div class="py-1 border-t border-gray-100">
                                     <a href="{{ route('portal.stase.konsulen.index') }}" class="flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
                                         <div class="flex items-center gap-2.5">
                                             <i class="fas fa-user-check w-4 text-blue-400 text-sm"></i> Konsulen: Setujui Stase
                                         </div>
-                                        @if($pendingKonsulenCount > 0)
+                                        @if(!empty($pendingKonsulenCount) && $pendingKonsulenCount > 0)
                                             <span class="bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ $pendingKonsulenCount }}</span>
                                         @endif
                                     </a>
@@ -1861,19 +1881,6 @@
                             </a>
                         @endif
 
-                        @if($isKonsulenUser)
-                            <a href="{{ route('portal.stase.konsulen.index') }}"
-                                class="flex items-center justify-between text-blue-200 hover:text-white hover:bg-blue-500/20 px-3 py-2 rounded-xl text-sm font-semibold transition-colors">
-                                <div class="flex items-center gap-3">
-                                    <i class="fas fa-user-check w-5 text-blue-400 text-sm"></i>
-                                    <span>Konsulen: Setujui Stase</span>
-                                </div>
-                                @if($pendingKonsulenCount > 0)
-                                    <span class="bg-amber-500 text-slate-900 text-[10px] font-black px-2 py-0.5 rounded-full animate-pulse">{{ $pendingKonsulenCount }} Baru</span>
-                                @endif
-                            </a>
-                        @endif
-
                         <a href="{{ route('staff.members.index') }}"
                             class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
                             <i class="fas fa-users w-5 text-cyan-400 text-sm"></i>
@@ -1886,17 +1893,13 @@
                             <span>Sertifikat &amp; Lisensi Medic</span>
                         </a>
 
-                        @php
-                            try { $unreadMessagesCount = \App\Models\MemberMessage::where('receiver_id', auth()->id())->where('is_read', false)->count(); }
-                            catch (\Throwable $e) { $unreadMessagesCount = 0; }
-                        @endphp
                         <a href="{{ route('staff.messages.index') }}"
                             class="flex items-center justify-between text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
                             <div class="flex items-center gap-3">
                                 <i class="fas fa-envelope w-5 text-indigo-400 text-sm"></i>
                                 <span>Pesan Internal</span>
                             </div>
-                            @if($unreadMessagesCount > 0)
+                            @if(!empty($unreadMessagesCount) && $unreadMessagesCount > 0)
                                 <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full animate-pulse">{{ $unreadMessagesCount }}</span>
                             @endif
                         </a>
@@ -2035,14 +2038,14 @@
                                 <i class="fas fa-graduation-cap w-5 text-blue-400 text-sm"></i>
                                 <span>Pengajuan Stase</span>
                             </a>
-                            @if($isKonsulenUser)
+                            @if(!empty($isKonsulenUser))
                             <a href="{{ route('portal.stase.konsulen.index') }}"
                                 class="flex items-center justify-between text-blue-200 hover:text-white hover:bg-blue-500/20 px-3 py-2 rounded-xl text-sm font-semibold transition-colors">
                                 <div class="flex items-center gap-3">
                                     <i class="fas fa-user-check w-5 text-blue-400 text-sm"></i>
                                     <span>Konsulen: Setujui Stase</span>
                                 </div>
-                                @if($pendingKonsulenCount > 0)
+                                @if(!empty($pendingKonsulenCount) && $pendingKonsulenCount > 0)
                                     <span class="bg-amber-500 text-slate-900 text-[10px] font-black px-2 py-0.5 rounded-full animate-pulse">{{ $pendingKonsulenCount }} Baru</span>
                                 @endif
                             </a>
@@ -2114,7 +2117,7 @@
                             @endif
                             @endif
 
-                            @if($isKonsulenUser)
+                            @if(!empty($isKonsulenUser))
                             <div class="px-2 pt-2 text-[10px] font-black tracking-widest uppercase text-blue-300/80 border-t border-white/5">Konsulen Pembimbing</div>
                             <a href="{{ route('portal.stase.konsulen.index') }}"
                                 class="flex items-center justify-between text-blue-200 hover:text-white hover:bg-blue-500/20 px-3 py-2 rounded-xl text-sm font-semibold transition-colors">
@@ -2122,7 +2125,7 @@
                                     <i class="fas fa-user-check w-5 text-blue-400 text-sm"></i>
                                     <span>Konsulen: Setujui Stase</span>
                                 </div>
-                                @if($pendingKonsulenCount > 0)
+                                @if(!empty($pendingKonsulenCount) && $pendingKonsulenCount > 0)
                                     <span class="bg-amber-500 text-slate-900 text-[10px] font-black px-2 py-0.5 rounded-full animate-pulse">{{ $pendingKonsulenCount }} Baru</span>
                                 @endif
                             </a>
