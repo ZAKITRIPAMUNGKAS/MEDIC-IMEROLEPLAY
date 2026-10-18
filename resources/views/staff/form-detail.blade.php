@@ -342,14 +342,18 @@
                                                                 // Format value khusus untuk beberapa tipe data
                                                                 $displayValue = $value;
                                                                 if (is_array($value)) {
-                                                                    $displayValue = implode(', ', $value);
+                                                                    $displayValue = implode(', ', array_map(fn($v) => is_scalar($v) ? (string)$v : json_encode($v), $value));
+                                                                } elseif (is_bool($value)) {
+                                                                    $displayValue = $value ? 'Ya' : 'Tidak';
                                                                 } elseif ($key === 'birth_date' && $value) {
                                                                     try {
                                                                         $date = \Carbon\Carbon::parse($value);
                                                                         $displayValue = $date->format('d F Y');
                                                                     } catch (\Exception $e) {
-                                                                        $displayValue = $value;
+                                                                        $displayValue = (string) $value;
                                                                     }
+                                                                } else {
+                                                                    $displayValue = (string) $value;
                                                                 }
                                                             @endphp
                                                             <tr class="hover:bg-white/10 transition-all duration-200 group">
@@ -365,7 +369,7 @@
                                                                 <td class="px-6 py-4">
                                                                     <div class="flex items-center justify-between group/val">
                                                                         <span class="text-white font-semibold">{{ $displayValue ?: '-' }}</span>
-                                                                        @if($displayValue)
+                                                                        @if(!empty($displayValue) && is_string($displayValue))
                                                                         <button
                                                                             onclick="copyToClipboard('{{ addslashes($displayValue) }}', this)"
                                                                             class="ml-3 p-2 bg-sky-500/20 hover:bg-sky-500/40 text-sky-300 hover:text-sky-200 rounded-lg transition-all duration-200 opacity-70 hover:opacity-100"
@@ -376,6 +380,7 @@
                                                                     </div>
                                                                 </td>
                                                             </tr>
+
                                                         @endif
                                                     @endforeach
                                                 </tbody>
