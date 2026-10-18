@@ -79,6 +79,7 @@
         border-radius: 0.75rem !important;
         padding: 10px 14px !important;
         width: 100%;
+        color-scheme: dark;
         transition: all 0.2s;
     }
     .form-input-dark:focus {
@@ -88,11 +89,34 @@
         background: rgba(255, 255, 255, 0.1) !important;
     }
     .form-input-dark::placeholder {
-        color: rgba(186, 230, 253, 0.45);
+        color: rgba(186, 230, 253, 0.5);
     }
     .form-input-dark option {
         background: #075985;
         color: white;
+    }
+
+    /* Patient Lookup Input (Search by CID / Nama / No HP) */
+    .patient-lookup-input {
+        background: rgba(255, 255, 255, 0.08) !important;
+        border: 1px solid rgba(56, 189, 248, 0.35) !important;
+        color: #ffffff !important;
+        border-radius: 0.75rem !important;
+        padding: 9px 80px 9px 38px !important;
+        font-size: 0.8125rem !important;
+        width: 100% !important;
+        line-height: 1.4 !important;
+        color-scheme: dark;
+        transition: all 0.2s ease !important;
+    }
+    .patient-lookup-input:focus {
+        outline: none !important;
+        border-color: #38bdf8 !important;
+        background: rgba(255, 255, 255, 0.14) !important;
+        box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2) !important;
+    }
+    .patient-lookup-input::placeholder {
+        color: rgba(186, 230, 253, 0.6) !important;
     }
 
     /* Drag & Drop Zone */
@@ -237,23 +261,22 @@
 
             {{-- SECTION 2: IDENTITAS PASIEN & AUTO-FILL REKAM MEDIS --}}
             <div class="section-card relative">
-                <div class="flex flex-col md:flex-row md:items-center justify-between pb-3 border-b border-white/10 gap-3 mb-5">
-                    <div class="section-title mb-0">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 mb-5 border-b border-white/10">
+                    <div class="flex items-center gap-2">
                         <span class="section-badge">2</span>
-                        Identitas Pasien &amp; Riwayat Medis
+                        <h3 class="text-base sm:text-lg font-bold text-white">Identitas Pasien &amp; Riwayat Medis</h3>
                     </div>
                     {{-- Quick Search by CID / Nama / No HP --}}
-                    <div class="flex items-center gap-2">
-                        <div class="relative w-full md:w-80">
-                            <input type="text" id="patient_lookup_input" class="w-full text-xs py-2 pl-9 pr-14 rounded-xl bg-white/[0.06] border border-white/20 text-white placeholder-sky-200/50 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all"
-                                placeholder="Cari CID / No HP / Nama Pasien...">
-                            <span class="absolute left-3 top-2.5 text-sky-400 text-xs">
-                                <i class="fas fa-search"></i>
-                            </span>
-                            <button type="button" id="btn_patient_lookup" class="absolute right-1.5 top-1 px-3 py-1 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white text-[11px] font-bold rounded-lg shadow-sm transition-all">
-                                Cari
-                            </button>
-                        </div>
+                    <div class="relative w-full sm:w-80">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sky-400 text-xs pointer-events-none">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" id="patient_lookup_input" class="patient-lookup-input"
+                            placeholder="Cari CID / No HP / Nama...">
+                        <button type="button" id="btn_patient_lookup" 
+                            class="absolute right-1.5 top-1/2 -translate-y-1/2 px-3 py-1 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white text-[11px] font-bold rounded-lg shadow-sm transition-all flex items-center justify-center cursor-pointer">
+                            Cari
+                        </button>
                     </div>
                 </div>
 
