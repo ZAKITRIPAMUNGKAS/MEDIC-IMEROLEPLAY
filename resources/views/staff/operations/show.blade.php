@@ -184,8 +184,8 @@
 @endpush
 
 @section('content')
-<div class="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-7xl mx-auto">
+<div class="min-h-screen pt-20 pb-16 px-4 sm:px-6 lg:px-8" style="background: linear-gradient(180deg, #0c4a6e 0%, #075985 50%, #0369a1 100%);">
+    <div class="max-w-7xl mx-auto text-white">
 
         {{-- Back & Print Bar --}}
         <div class="mb-6 flex justify-between items-center print:hidden">

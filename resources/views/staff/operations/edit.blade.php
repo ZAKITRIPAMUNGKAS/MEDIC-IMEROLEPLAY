@@ -52,8 +52,8 @@
     }
 
     .form-input-dark {
-        background: rgba(255,255,255,0.08) !important;
-        border: 1px solid rgba(255,255,255,0.2) !important;
+        background: rgba(255, 255, 255, 0.06) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
         color: white !important;
         border-radius: 0.75rem !important;
         padding: 10px 14px !important;
@@ -64,54 +64,65 @@
         outline: none;
         border-color: rgba(56, 189, 248, 0.7) !important;
         box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15) !important;
-        background: rgba(255,255,255,0.12) !important;
+        background: rgba(255, 255, 255, 0.1) !important;
     }
-    .form-input-dark option { background: #0c4a6e; color: white; }
+    .form-input-dark::placeholder {
+        color: rgba(186, 230, 253, 0.45);
+    }
+    .form-input-dark option { background: #075985; color: white; }
 
     .section-card {
-        background: rgba(15, 23, 42, 0.7);
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 1rem;
         padding: 1.5rem;
         margin-bottom: 1.5rem;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
     }
     .section-title {
-        font-size: 1.1rem;
+        font-size: 1.125rem;
         font-weight: 700;
-        color: #38bdf8;
+        color: #ffffff;
+        padding-bottom: 0.75rem;
+        margin-bottom: 1.25rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        margin-bottom: 1.25rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
     .section-badge {
-        background: #0284c7;
-        color: white;
-        border-radius: 9999px;
-        width: 26px;
-        height: 26px;
-        display: inline-flex;
+        width: 1.75rem;
+        height: 1.75rem;
+        background: linear-gradient(135deg, #0ea5e9, #06b6d4);
+        border-radius: 0.5rem;
+        display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 12px;
+        margin-right: 0.75rem;
+        font-size: 0.875rem;
         font-weight: 800;
+        color: white;
     }
     .sub-section-title {
-        font-size: 0.9rem;
+        font-size: 0.875rem;
         font-weight: 700;
-        color: #7dd3fc;
+        color: #38bdf8;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
         margin-top: 1rem;
         margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
     }
 </style>
 @endpush
 
 @section('content')
-<div class="min-h-screen bg-slate-950 text-slate-100 py-10 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-5xl mx-auto">
+<div class="min-h-screen pt-20 pb-16 px-4 sm:px-6 lg:px-8" style="background: linear-gradient(180deg, #0c4a6e 0%, #075985 50%, #0369a1 100%);">
+    <div class="max-w-5xl mx-auto text-white">
 
         {{-- Header Navigation --}}
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">

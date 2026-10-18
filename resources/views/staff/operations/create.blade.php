@@ -73,8 +73,8 @@
 
     /* Custom form inputs */
     .form-input-dark {
-        background: rgba(255,255,255,0.08) !important;
-        border: 1px solid rgba(255,255,255,0.2) !important;
+        background: rgba(255, 255, 255, 0.06) !important;
+        border: 1px solid rgba(255, 255, 255, 0.15) !important;
         color: white !important;
         border-radius: 0.75rem !important;
         padding: 10px 14px !important;
@@ -85,13 +85,13 @@
         outline: none;
         border-color: rgba(56, 189, 248, 0.7) !important;
         box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15) !important;
-        background: rgba(255,255,255,0.12) !important;
+        background: rgba(255, 255, 255, 0.1) !important;
     }
     .form-input-dark::placeholder {
-        color: rgba(186, 230, 253, 0.5);
+        color: rgba(186, 230, 253, 0.45);
     }
     .form-input-dark option {
-        background: #0c4a6e;
+        background: #075985;
         color: white;
     }
 
@@ -101,14 +101,16 @@
         background-color: rgba(56, 189, 248, 0.15) !important;
     }
 
-    /* Form Section Header styling */
+    /* Form Section Header styling - Konsisten dengan Tema Alta Default */
     .section-card {
-        background: rgba(15, 23, 42, 0.6);
+        background: rgba(255, 255, 255, 0.05);
         backdrop-filter: blur(16px);
-        border: 1px solid rgba(255, 255, 255, 0.12);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 1rem;
         padding: 1.5rem;
         margin-bottom: 1.5rem;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
     }
     .section-title {
         font-size: 1.125rem;
@@ -149,8 +151,9 @@
 @endpush
 
 @section('content')
-<div class="min-h-screen py-10 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-5xl mx-auto">
+<div class="min-h-screen pt-20 pb-16 px-4 sm:px-6 lg:px-8" style="background: linear-gradient(180deg, #0c4a6e 0%, #075985 50%, #0369a1 100%);">
+    <div class="max-w-5xl mx-auto text-white">
+
 
         {{-- Header --}}
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
@@ -242,12 +245,12 @@
                     {{-- Quick Search by CID / Nama / No HP --}}
                     <div class="flex items-center gap-2">
                         <div class="relative w-full md:w-80">
-                            <input type="text" id="patient_lookup_input" class="w-full text-xs py-2 pl-8 pr-8 rounded-lg bg-white/10 border border-sky-400/40 text-white placeholder-sky-200/60 focus:outline-none focus:ring-2 focus:ring-sky-400"
-                                placeholder="🔍 Cari CID / No HP / Nama Pasien...">
-                            <span class="absolute left-2.5 top-2.5 text-sky-400 text-xs">
+                            <input type="text" id="patient_lookup_input" class="w-full text-xs py-2 pl-9 pr-14 rounded-xl bg-white/[0.06] border border-white/20 text-white placeholder-sky-200/50 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all"
+                                placeholder="Cari CID / No HP / Nama Pasien...">
+                            <span class="absolute left-3 top-2.5 text-sky-400 text-xs">
                                 <i class="fas fa-search"></i>
                             </span>
-                            <button type="button" id="btn_patient_lookup" class="absolute right-1.5 top-1.5 px-2 py-0.5 bg-sky-500 hover:bg-sky-400 text-white text-[11px] font-bold rounded">
+                            <button type="button" id="btn_patient_lookup" class="absolute right-1.5 top-1 px-3 py-1 bg-gradient-to-r from-sky-500 to-cyan-500 hover:from-sky-600 hover:to-cyan-600 text-white text-[11px] font-bold rounded-lg shadow-sm transition-all">
                                 Cari
                             </button>
                         </div>
