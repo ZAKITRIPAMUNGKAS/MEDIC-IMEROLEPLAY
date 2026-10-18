@@ -232,13 +232,36 @@
                 </div>
             </div>
 
-            {{-- SECTION 2: IDENTITAS PASIEN --}}
-            <div class="section-card">
-                <div class="section-title">
-                    <span class="section-badge">2</span>
-                    Identitas Pasien
+            {{-- SECTION 2: IDENTITAS PASIEN & AUTO-FILL REKAM MEDIS --}}
+            <div class="section-card relative">
+                <div class="flex flex-col md:flex-row md:items-center justify-between pb-3 border-b border-white/10 gap-3 mb-5">
+                    <div class="section-title mb-0">
+                        <span class="section-badge">2</span>
+                        Identitas Pasien &amp; Riwayat Medis
+                    </div>
+                    {{-- Quick Search by CID / Nama / No HP --}}
+                    <div class="flex items-center gap-2">
+                        <div class="relative w-full md:w-80">
+                            <input type="text" id="patient_lookup_input" class="w-full text-xs py-2 pl-8 pr-8 rounded-lg bg-white/10 border border-sky-400/40 text-white placeholder-sky-200/60 focus:outline-none focus:ring-2 focus:ring-sky-400"
+                                placeholder="🔍 Cari CID / No HP / Nama Pasien...">
+                            <span class="absolute left-2.5 top-2.5 text-sky-400 text-xs">
+                                <i class="fas fa-search"></i>
+                            </span>
+                            <button type="button" id="btn_patient_lookup" class="absolute right-1.5 top-1.5 px-2 py-0.5 bg-sky-500 hover:bg-sky-400 text-white text-[11px] font-bold rounded">
+                                Cari
+                            </button>
+                        </div>
+                    </div>
                 </div>
+
+                {{-- Status Alert Box Auto-Fill --}}
+                <div id="patient_lookup_alert" class="hidden mb-4 p-3 rounded-xl border text-xs flex items-center justify-between transition-all">
+                    <div class="flex items-center gap-2" id="patient_lookup_msg"></div>
+                    <button type="button" onclick="$('#patient_lookup_alert').addClass('hidden')" class="text-white/60 hover:text-white ml-2 text-sm">&times;</button>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+
                     <div>
                         <label class="block text-sky-200 text-sm font-semibold mb-2">
                             <i class="fas fa-user mr-1.5 text-sky-400"></i>Nama Pasien <span class="text-red-400">*</span>
@@ -972,6 +995,102 @@
             $btn.html('<i class="fas fa-spinner fa-spin mr-2"></i> Menyimpan Rekam Medis...');
             return true;
         });
+
+        // ── Auto-Fill Riwayat Medis Pasien Berdasarkan CID / Nama / No HP ──
+        function doPatientLookup() {
+            const query = $('#patient_lookup_input').val().trim();
+            if (query.length < 2) {
+                showPatientAlert('warning', '<i class="fas fa-exclamation-circle text-amber-400"></i> Masukkan minimal 2 karakter (contoh: CID, Nama, atau No HP).');
+                return;
+            }
+
+            const $btn = $('#btn_patient_lookup');
+            $btn.prop('disabled', true).text('Mencari...');
+
+            $.ajax({
+                url: "{{ route('api.patient.search') }}",
+                type: 'GET',
+                data: { query: query },
+                dataType: 'json',
+                success: function(res) {
+                    $btn.prop('disabled', false).text('Cari');
+
+                    if (res.found && res.patient) {
+                        const p = res.patient;
+
+                        // Auto-fill Identitas Pasien jika belum diisi atau perbarui
+                        if (p.nama_pasien) $('input[name="nama_pasien"]').val(p.nama_pasien);
+                        if (p.dob) $('input[name="medical_details[pasien][dob]"]').val(p.dob);
+                        if (p.jenis_kelamin) $('select[name="medical_details[pasien][jenis_kelamin]"]').val(p.jenis_kelamin);
+                        if (p.gol_darah) $('select[name="medical_details[pasien][gol_darah]"]').val(p.gol_darah);
+                        if (p.no_hp) $('input[name="medical_details[pasien][no_hp]"]').val(p.no_hp);
+                        if (p.citizen_id) $('input[name="medical_details[pasien][citizen_id]"]').val(p.citizen_id);
+                        if (p.pekerjaan) $('input[name="medical_details[pasien][pekerjaan]"]').val(p.pekerjaan);
+
+                        // Auto-fill Riwayat Anamnesis / Alergi / Pengobatan
+                        if (p.riwayat_penyakit_dahulu && !$('textarea[name="medical_details[anamnesis][riwayat_penyakit_dahulu]"]').val()) {
+                            $('textarea[name="medical_details[anamnesis][riwayat_penyakit_dahulu]"]').val(p.riwayat_penyakit_dahulu);
+                        }
+                        if (p.riwayat_penyakit_keluarga && !$('textarea[name="medical_details[anamnesis][riwayat_penyakit_keluarga]"]').val()) {
+                            $('textarea[name="medical_details[anamnesis][riwayat_penyakit_keluarga]"]').val(p.riwayat_penyakit_keluarga);
+                        }
+                        if (p.riwayat_alergi && !$('textarea[name="medical_details[anamnesis][riwayat_alergi]"]').val()) {
+                            $('textarea[name="medical_details[anamnesis][riwayat_alergi]"]').val(p.riwayat_alergi);
+                        }
+                        if (p.riwayat_pengobatan && !$('textarea[name="medical_details[anamnesis][riwayat_pengobatan]"]').val()) {
+                            $('textarea[name="medical_details[anamnesis][riwayat_pengobatan]"]').val(p.riwayat_pengobatan);
+                        }
+
+                        let infoMsg = `<strong>Data Pasien Ditemukan!</strong> Auto-fill berhasil dimuat dari ${p.source}.`;
+                        if (p.riwayat_alergi) {
+                            infoMsg += ` <span class="bg-red-500/30 text-red-200 px-2 py-0.5 rounded font-bold">⚠️ Pasien punya riwayat alergi: ${p.riwayat_alergi}</span>`;
+                        }
+                        showPatientAlert('success', '<i class="fas fa-check-circle text-emerald-400"></i> ' + infoMsg);
+                    } else {
+                        showPatientAlert('info', '<i class="fas fa-info-circle text-sky-400"></i> ' + (res.message || 'Riwayat pasien tidak ditemukan. Silakan isi data secara manual.'));
+                    }
+                },
+                error: function() {
+                    $btn.prop('disabled', false).text('Cari');
+                    showPatientAlert('error', '<i class="fas fa-times-circle text-red-400"></i> Terjadi kesalahan saat memeriksa rekam medis pasien.');
+                }
+            });
+        }
+
+        function showPatientAlert(type, htmlMsg) {
+            const $box = $('#patient_lookup_alert');
+            $box.removeClass('hidden bg-emerald-500/20 border-emerald-500/40 text-emerald-100 bg-amber-500/20 border-amber-500/40 text-amber-100 bg-sky-500/20 border-sky-500/40 text-sky-100 bg-red-500/20 border-red-500/40 text-red-100');
+
+            if (type === 'success') {
+                $box.addClass('bg-emerald-500/20 border-emerald-500/40 text-emerald-100');
+            } else if (type === 'warning') {
+                $box.addClass('bg-amber-500/20 border-amber-500/40 text-amber-100');
+            } else if (type === 'error') {
+                $box.addClass('bg-red-500/20 border-red-500/40 text-red-100');
+            } else {
+                $box.addClass('bg-sky-500/20 border-sky-500/40 text-sky-100');
+            }
+
+            $('#patient_lookup_msg').html(htmlMsg);
+        }
+
+        $('#btn_patient_lookup').on('click', doPatientLookup);
+        $('#patient_lookup_input').on('keypress', function(e) {
+            if (e.which === 13) {
+                e.preventDefault();
+                doPatientLookup();
+            }
+        });
+
+        // Trigger auto search juga ketika dokter mengisi Citizen ID di input form langsung
+        $('input[name="medical_details[pasien][citizen_id]"]').on('blur', function() {
+            const val = $(this).val().trim();
+            if (val && !$('#patient_lookup_input').val()) {
+                $('#patient_lookup_input').val(val);
+                doPatientLookup();
+            }
+        });
     });
+
 </script>
 @endpush

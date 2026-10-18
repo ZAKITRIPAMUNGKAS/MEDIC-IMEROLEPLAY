@@ -139,8 +139,16 @@
                                         <label
                                             class="block text-gray-400 text-xs font-medium uppercase tracking-wider mb-2">Nama
                                             Karakter</label>
-                                        <p class="text-white text-lg font-bold pr-10">{{ $form->character_name }}</p>
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            <p class="text-white text-lg font-bold pr-2">{{ $form->character_name }}</p>
+                                            @if(($form->form_data['is_ems_benefit'] ?? false) || ($form->form_data['fasilitas_ems'] ?? false))
+                                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md">
+                                                    <i class="fas fa-id-badge mr-1.5"></i> BENEFIT EMS (GRATIS)
+                                                </span>
+                                            @endif
+                                        </div>
                                     </div>
+
 
                                     <!-- Citizen ID -->
                                     <div

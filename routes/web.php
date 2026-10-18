@@ -1323,13 +1323,20 @@ Route::middleware(['auth', 'staff'])->group(function () {
     Route::put('/staff/operations/{id}', [\App\Http\Controllers\Staff\OperationRecordController::class, 'update'])->name('staff.operations.update');
     Route::get('/staff/operations/{id}', [\App\Http\Controllers\Staff\OperationRecordController::class, 'show'])->name('staff.operations.show');
     
-    // API endpoint for searching members
+    // API endpoint for searching members & patient history
     Route::get('/api/members/search', [\App\Http\Controllers\Staff\OperationRecordController::class, 'searchMembers'])->name('api.members.search');
+    Route::get('/api/patient/search', [\App\Http\Controllers\Staff\OperationRecordController::class, 'searchPatient'])->name('api.patient.search');
+
 
     // Members Directory & Profiles
     Route::get('/staff/members', [\App\Http\Controllers\Staff\MemberController::class, 'index'])->name('staff.members.index');
     Route::get('/staff/certificates', [\App\Http\Controllers\Staff\MemberController::class, 'certificates'])->name('staff.certificates.index');
     Route::get('/staff/members/{user}', [\App\Http\Controllers\Staff\MemberController::class, 'show'])->name('staff.members.show');
+
+    // Benefit Anggota EMS (Oplas Gratis 1x Sebulan)
+    Route::get('/staff/benefits/oplas', [\App\Http\Controllers\Staff\MemberBenefitController::class, 'index'])->name('staff.benefits.oplas');
+    Route::post('/staff/benefits/oplas/claim', [\App\Http\Controllers\Staff\MemberBenefitController::class, 'claimOplas'])->name('staff.benefits.oplas.claim');
+
 
     // Private Messages (Direct Messaging)
     Route::get('/staff/messages', function () {

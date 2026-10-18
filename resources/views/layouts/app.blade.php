@@ -1497,6 +1497,9 @@
                                     <a href="{{ route('staff.payroll.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
                                         <i class="fas fa-money-bill-wave w-4 text-emerald-500 text-sm"></i> Gaji Saya
                                     </a>
+                                    <a href="{{ route('staff.benefits.oplas') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-purple-700 hover:bg-purple-50 hover:text-purple-900 font-semibold transition-colors">
+                                        <i class="fas fa-magic w-4 text-purple-500 text-sm"></i> Oplas Gratis EMS
+                                    </a>
                                     @if(auth()->user()->isAdmin() || strtolower(trim(auth()->user()->role?->name ?? '')) !== 'trainee')
                                         <a href="{{ route('staff.operations.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors">
                                             <i class="fas fa-file-medical w-4 text-emerald-500 text-sm"></i> Rekam Medis
@@ -1818,6 +1821,12 @@
                             class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
                             <i class="fas fa-user-cog w-5 text-slate-400 text-sm"></i>
                             <span>Pengaturan Akun & Profil</span>
+                        </a>
+
+                        <a href="{{ route('staff.benefits.oplas') }}"
+                            class="flex items-center gap-3 text-purple-200 hover:text-white hover:bg-purple-500/20 px-3 py-2 rounded-xl text-sm font-semibold transition-colors">
+                            <i class="fas fa-magic w-5 text-purple-400 text-sm"></i>
+                            <span>Oplas Gratis EMS (1x / Bln)</span>
                         </a>
 
                         @if(auth()->user()->isAdmin() || strtolower(trim(auth()->user()->role?->name ?? '')) !== 'trainee')
