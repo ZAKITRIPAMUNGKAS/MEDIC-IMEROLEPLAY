@@ -1697,10 +1697,34 @@
                                 @endif
 
                                 {{-- Konsulen --}}
-                                @if(auth()->user()->role?->level >= 4)
+                                @php
+                                    $isKonsulenUser = (auth()->user()->role?->level >= 4)
+                                        || auth()->user()->isAdmin()
+                                        || auth()->user()->isExecutiveOrAbove()
+                                        || auth()->user()->isManagerOrAbove()
+                                        || in_array(strtolower(trim(auth()->user()->role?->name ?? '')), ['dokter_spesialis', 'supervisor', 'staff_manager', 'manajer', 'executive', 'admin'])
+                                        || \App\Models\StaseApplication::where('konsulen_id', auth()->id())->exists();
+                                    
+                                    $pendingKonsulenCount = 0;
+                                    if ($isKonsulenUser) {
+                                        try {
+                                            $pendingKonsulenCount = \App\Models\StaseApplication::where('konsulen_id', auth()->id())
+                                                ->where('status', 'pending_konsulen')
+                                                ->count();
+                                        } catch (\Throwable $e) {
+                                            $pendingKonsulenCount = 0;
+                                        }
+                                    }
+                                @endphp
+                                @if($isKonsulenUser)
                                 <div class="py-1 border-t border-gray-100">
-                                    <a href="{{ route('portal.stase.konsulen.index') }}" class="flex items-center gap-2.5 px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
-                                        <i class="fas fa-user-check w-4 text-blue-400 text-sm"></i> Konsulen: Setujui Stase
+                                    <a href="{{ route('portal.stase.konsulen.index') }}" class="flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors">
+                                        <div class="flex items-center gap-2.5">
+                                            <i class="fas fa-user-check w-4 text-blue-400 text-sm"></i> Konsulen: Setujui Stase
+                                        </div>
+                                        @if($pendingKonsulenCount > 0)
+                                            <span class="bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ $pendingKonsulenCount }}</span>
+                                        @endif
                                     </a>
                                 </div>
                                 @endif
@@ -1834,6 +1858,19 @@
                                 class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
                                 <i class="fas fa-file-medical w-5 text-emerald-400 text-sm"></i>
                                 <span>Rekam Medis Pasien</span>
+                            </a>
+                        @endif
+
+                        @if($isKonsulenUser)
+                            <a href="{{ route('portal.stase.konsulen.index') }}"
+                                class="flex items-center justify-between text-blue-200 hover:text-white hover:bg-blue-500/20 px-3 py-2 rounded-xl text-sm font-semibold transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-user-check w-5 text-blue-400 text-sm"></i>
+                                    <span>Konsulen: Setujui Stase</span>
+                                </div>
+                                @if($pendingKonsulenCount > 0)
+                                    <span class="bg-amber-500 text-slate-900 text-[10px] font-black px-2 py-0.5 rounded-full animate-pulse">{{ $pendingKonsulenCount }} Baru</span>
+                                @endif
                             </a>
                         @endif
 
@@ -1998,6 +2035,18 @@
                                 <i class="fas fa-graduation-cap w-5 text-blue-400 text-sm"></i>
                                 <span>Pengajuan Stase</span>
                             </a>
+                            @if($isKonsulenUser)
+                            <a href="{{ route('portal.stase.konsulen.index') }}"
+                                class="flex items-center justify-between text-blue-200 hover:text-white hover:bg-blue-500/20 px-3 py-2 rounded-xl text-sm font-semibold transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-user-check w-5 text-blue-400 text-sm"></i>
+                                    <span>Konsulen: Setujui Stase</span>
+                                </div>
+                                @if($pendingKonsulenCount > 0)
+                                    <span class="bg-amber-500 text-slate-900 text-[10px] font-black px-2 py-0.5 rounded-full animate-pulse">{{ $pendingKonsulenCount }} Baru</span>
+                                @endif
+                            </a>
+                            @endif
                             <a href="{{ route('portal.vehicle-cert.index') }}"
                                 class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
                                 <i class="fas fa-car w-5 text-amber-400 text-sm"></i>
@@ -2063,6 +2112,20 @@
                                 <span>PND: Kelola Pelatihan</span>
                             </a>
                             @endif
+                            @endif
+
+                            @if($isKonsulenUser)
+                            <div class="px-2 pt-2 text-[10px] font-black tracking-widest uppercase text-blue-300/80 border-t border-white/5">Konsulen Pembimbing</div>
+                            <a href="{{ route('portal.stase.konsulen.index') }}"
+                                class="flex items-center justify-between text-blue-200 hover:text-white hover:bg-blue-500/20 px-3 py-2 rounded-xl text-sm font-semibold transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-user-check w-5 text-blue-400 text-sm"></i>
+                                    <span>Konsulen: Setujui Stase</span>
+                                </div>
+                                @if($pendingKonsulenCount > 0)
+                                    <span class="bg-amber-500 text-slate-900 text-[10px] font-black px-2 py-0.5 rounded-full animate-pulse">{{ $pendingKonsulenCount }} Baru</span>
+                                @endif
+                            </a>
                             @endif
 
                             @if(auth()->user()->isInterviewer())
