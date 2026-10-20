@@ -59,7 +59,6 @@
     <meta name="apple-mobile-web-app-title" content="iMe Medis">
 
     <!-- Inline Image Error Handler - Must load early to prevent 404 errors -->
-    @stack('styles')
     @livewireStyles
     <script>
         (function () {
@@ -1376,7 +1375,15 @@
         #mobile-menu {
             background-color: #0c4a6e !important;
             background: linear-gradient(135deg, #0c4a6e 0%, #075985 100%) !important;
-            opacity: 1 !important;
+        }
+
+        #mobile-menu.hidden {
+            display: none !important;
+        }
+        @media (min-width: 640px) {
+            #mobile-menu {
+                display: none !important;
+            }
         }
     </style>
     @stack('styles')
@@ -1808,7 +1815,7 @@
         </div>
 
         <!-- Mobile Menu Drawer (Fixed Full-Height Under Navbar, 100% Solid & Non-Transparent) -->
-        <div id="mobile-menu" class="sm:hidden hidden fixed top-16 left-0 right-0 bottom-0 w-full px-4 pt-4 pb-28 overflow-y-auto overscroll-contain shadow-2xl z-[99999] border-t border-sky-500/40" style="background-color: #0b1329 !important; background: #0b1329 !important; -webkit-overflow-scrolling: touch; touch-action: pan-y; height: calc(100dvh - 4rem); max-height: calc(100dvh - 4rem); opacity: 1 !important;">
+        <div id="mobile-menu" class="sm:hidden hidden fixed top-16 left-0 right-0 bottom-0 w-full px-4 pt-4 pb-28 overflow-y-auto overscroll-contain shadow-2xl z-[99999] border-t border-sky-500/40" style="display: none !important; background-color: #0b1329 !important; background: #0b1329 !important; -webkit-overflow-scrolling: touch; touch-action: pan-y; height: calc(100dvh - 4rem); max-height: calc(100dvh - 4rem);">
             <div class="space-y-3.5 pb-20">
                 
                 <!-- Quick Action PWA & Recruitment / Login -->
@@ -2429,12 +2436,14 @@
             if (mobileMenuButton && mobileMenu) {
                 mobileMenuButton.addEventListener('click', function (e) {
                     e.stopPropagation();
-                    const isHidden = mobileMenu.classList.contains('hidden');
+                    const isHidden = mobileMenu.classList.contains('hidden') || mobileMenu.style.display === 'none';
                     if (isHidden) {
                         mobileMenu.classList.remove('hidden');
+                        mobileMenu.style.setProperty('display', 'block', 'important');
                         document.body.style.overflow = 'hidden';
                     } else {
                         mobileMenu.classList.add('hidden');
+                        mobileMenu.style.setProperty('display', 'none', 'important');
                         document.body.style.overflow = '';
                     }
 
@@ -2454,6 +2463,7 @@
                 mobileMenu.querySelectorAll('a, button:not(.pwa-install-trigger)').forEach(el => {
                     el.addEventListener('click', function () {
                         mobileMenu.classList.add('hidden');
+                        mobileMenu.style.setProperty('display', 'none', 'important');
                         document.body.style.overflow = '';
                         const icon = mobileMenuButton.querySelector('i');
                         if (icon) {
