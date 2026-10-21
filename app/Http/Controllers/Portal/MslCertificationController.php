@@ -141,16 +141,47 @@ class MslCertificationController extends Controller
     {
         $this->checkIsMsl();
 
-        $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
-        ], [
-            'user_id.required' => 'Pilih dokter atau anggota staf yang akan didaftarkan sebagai konsulen stase.',
-        ]);
+        $userId = $request->input('user_id');
+        $search = trim((string) ($request->input('doctor_search') ?? $request->input('user_search') ?? ''));
 
-        $target = User::findOrFail($validated['user_id']);
+        $target = null;
+        if (!empty($userId) && is_numeric($userId)) {
+            $target = User::find($userId);
+        }
+
+        if (!$target && !empty($search)) {
+            // Cek jika teks berisi staff_id di dalam kurung, cth: "Dr. Budi (MD-001)"
+            if (preg_match('/\(([^)]+)\)/', $search, $matches)) {
+                $candidateStaffId = trim($matches[1]);
+                $target = User::where('staff_id', $candidateStaffId)->first();
+            }
+
+            if (!$target) {
+                $target = User::where('staff_id', $search)->first();
+            }
+
+            if (!$target) {
+                $target = User::where('name', $search)->first();
+            }
+
+            if (!$target) {
+                $target = User::where('name', 'like', "%{$search}%")
+                    ->orWhere('staff_id', 'like', "%{$search}%")
+                    ->first();
+            }
+        }
+
+        if (!$target) {
+            return back()->with('error', 'Dokter tidak ditemukan. Silakan ketik nama dokter atau pilih dari saran pencarian yang tersedia.');
+        }
+
+        if (!$target->isDokterSpesialis()) {
+            return back()->with('error', "Staf {$target->name} ({$target->staff_id}) bukan Dokter Spesialis. Hanya Dokter Spesialis yang dapat didaftarkan sebagai Konsulen Stase.");
+        }
+
         $target->update(['is_konsulen' => true]);
 
-        return back()->with('success', "Staf {$target->name} ({$target->staff_id}) berhasil didaftarkan sebagai Konsulen Stase resmi.");
+        return back()->with('success', "Dokter {$target->name} ({$target->staff_id}) berhasil didaftarkan sebagai Konsulen Stase resmi.");
     }
 
     /**
@@ -173,7 +204,7 @@ class MslCertificationController extends Controller
         $this->checkIsMsl();
         $user = Auth::user();
 
-        $query = StaseApplication::with(['user:id,name,staff_id', 'konsulen:id,name', 'certification'])
+        $query = StaseApplication::with(['user.role', 'user.medicRole', 'konsulen.role', 'konsulen.medicRole', 'certification'])
             ->whereHas('user', fn($q) => $q->where('hospital', $user->hospital ?? 'alta'))
             ->latest();
 
@@ -183,21 +214,23 @@ class MslCertificationController extends Controller
 
         $applications = $query->paginate(25)->withQueryString();
 
-        // Ambil daftar Konsulen Stase aktif
-        $activeKonsulen = User::with('role:id,name,display_name')
+        // Ambil daftar Konsulen Stase aktif (hanya Dokter Spesialis)
+        $activeKonsulen = User::with(['role:id,name,display_name', 'medicRole:id,name,display_name'])
             ->where('is_active', true)
             ->where('hospital', $user->hospital ?? 'alta')
             ->where('is_konsulen', true)
+            ->dokterSpesialis()
             ->orderBy('name')
             ->get();
 
-        // Ambil staf medis yang belum jadi konsulen untuk form penugasan
-        $staffCandidates = User::with('role:id,name,display_name')
+        // Ambil dokter spesialis yang belum jadi konsulen untuk form pendaftaran
+        $staffCandidates = User::with(['role:id,name,display_name', 'medicRole:id,name,display_name'])
             ->where('is_active', true)
             ->where('hospital', $user->hospital ?? 'alta')
             ->where('is_konsulen', false)
-            ->orderByRoleLevel()
-            ->get(['id', 'name', 'staff_id', 'role_id']);
+            ->dokterSpesialis()
+            ->orderBy('name')
+            ->get();
 
         return view('portal.msl.stase', compact('applications', 'activeKonsulen', 'staffCandidates'));
     }

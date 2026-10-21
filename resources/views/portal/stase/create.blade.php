@@ -43,20 +43,25 @@
                 <p class="text-[11px] text-white/40 mt-1">Pilih modul/program stase kedokteran yang ingin Anda tempuh di Alta Hospital.</p>
             </div>
 
-            {{-- Pilih Konsulen Pembimbing --}}
+            {{-- Pilih Konsulen Pembimbing (Hanya Dokter Spesialis yang Muncul & Menampilkan Jabatan Dokter) --}}
             <div>
                 <label class="block text-sm text-white/80 font-medium mb-1.5">
                     Pilih Dokter Konsulen Pembimbing *
                 </label>
-                <select name="konsulen_id" required class="w-full px-3.5 py-2.5 bg-white/10 border border-white/20 rounded-xl text-white text-sm focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400">
-                    <option value="" class="bg-slate-900 text-white/50">— Pilih Konsulen Pembimbing Resmi —</option>
-                    @foreach($konsulenList as $k)
+                <select name="konsulen_id" required class="w-full px-3.5 py-2.5 bg-slate-900/60 border border-white/20 rounded-xl text-white text-sm focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400">
+                    <option value="" class="bg-slate-900 text-white/50">— Pilih Dokter Spesialis Pembimbing Resmi —</option>
+                    @forelse($konsulenList as $k)
                     <option value="{{ $k->id }}" class="bg-slate-900 text-white" {{ old('konsulen_id') == $k->id ? 'selected' : '' }}>
-                        {{ $k->name }} ({{ $k->staff_id }}) — {{ $k->role?->display_name }} {{ $k->is_konsulen ? '★ [Konsulen Resmi]' : '' }}
+                        {{ $k->name }} ({{ $k->staff_id }}) — {{ $k->doctor_title }} {{ $k->is_konsulen ? '★ [Konsulen Resmi]' : '' }}
                     </option>
-                    @endforeach
+                    @empty
+                    <option value="" disabled class="bg-slate-900 text-white/40">Tidak ada Dokter Spesialis yang tersedia saat ini.</option>
+                    @endforelse
                 </select>
-                <p class="text-[11px] text-white/40 mt-1">Dokter Konsulen yang terdaftar akan mengevaluasi dan menginput laporan hasil bimbingan stase Anda.</p>
+                <p class="text-[11px] text-white/40 mt-1 flex items-center gap-1.5">
+                    <i class="fas fa-user-md text-blue-400 text-xs"></i>
+                    <span>Hanya Dokter Spesialis yang berwenang membimbing dan mengevaluasi laporan kelulusan stase Anda.</span>
+                </p>
             </div>
 
             {{-- Catatan / Motivasi Stase --}}

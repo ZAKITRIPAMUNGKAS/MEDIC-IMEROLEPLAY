@@ -62,8 +62,17 @@
                             @endif
                         </td>
                         <td class="px-5 py-3.5 text-white/80">
-                            <div class="font-medium">{{ $app->konsulen?->name ?? '—' }}</div>
-                            <div class="text-white/40 text-xs">{{ $app->konsulen?->staff_id }}</div>
+                            <div class="font-medium flex items-center gap-1.5">
+                                <i class="fas fa-user-md text-blue-400 text-xs"></i>
+                                <span>{{ $app->konsulen?->name ?? '—' }}</span>
+                            </div>
+                            <div class="text-white/40 text-xs">
+                                <span>{{ $app->konsulen?->staff_id ?? '-' }}</span>
+                                @if($app->konsulen?->doctor_title)
+                                    <span class="text-white/20">&bull;</span>
+                                    <span class="text-blue-300/80">{{ $app->konsulen->doctor_title }}</span>
+                                @endif
+                            </div>
                         </td>
                         <td class="px-5 py-3.5 text-white/60 text-xs">
                             {{ $app->created_at->format('d M Y') }}

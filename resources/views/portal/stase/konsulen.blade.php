@@ -65,7 +65,13 @@
                     <tr class="hover:bg-white/5 transition-colors">
                         <td class="px-5 py-3.5">
                             <div class="text-white font-medium">{{ $app->user?->name }}</div>
-                            <div class="text-white/40 text-xs">{{ $app->user?->staff_id }} &bull; {{ $app->user?->role?->display_name }}</div>
+                            <div class="text-white/40 text-xs">
+                                <span>{{ $app->user?->staff_id ?? '-' }}</span>
+                                @if(!empty($app->user?->role?->display_name))
+                                    <span class="text-white/20">&bull;</span>
+                                    <span>{{ $app->user->role->display_name }}</span>
+                                @endif
+                            </div>
                         </td>
                         <td class="px-5 py-3.5">
                             <span class="text-blue-300 font-semibold">{{ $app->stase_name }}</span>

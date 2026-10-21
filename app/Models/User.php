@@ -136,6 +136,74 @@ class User extends Authenticatable
     }
 
     /**
+     * Mendapatkan jabatan dokter / profesi klinis
+     * Mengutamakan peran medis klinis daripada peran manajerial (seperti Staff Manager / Manajer)
+     */
+    public function getDoctorTitleAttribute(): string
+    {
+        // 1. Jika medicRole klinis ada (cth: Staff Manager yang berprofesi Dokter Spesialis)
+        if ($this->relationLoaded('medicRole') && $this->medicRole) {
+            return $this->medicRole->display_name;
+        }
+        if ($this->medic_role_id) {
+            $m = $this->medicRole()->first();
+            if ($m) return $m->display_name;
+        }
+
+        // 2. Jika role utama adalah dokter spesialis / supervisor (setara dokter spesialis)
+        if ($this->role) {
+            $rName = strtolower($this->role->name);
+            if ($rName === 'dokter_spesialis' || $rName === 'supervisor') {
+                return 'Dokter Spesialis';
+            }
+            if (in_array($rName, ['dokter_umum', 'co_ass', 'perawat', 'trainee'])) {
+                return $this->role->display_name;
+            }
+        }
+
+        // 3. Fallback ke effective_medic_role
+        $eff = $this->effective_medic_role;
+        if ($eff) {
+            return $eff->display_name;
+        }
+
+        return 'Dokter Spesialis';
+    }
+
+    /**
+     * Cek apakah user memiliki kualifikasi klinis sebagai Dokter Spesialis
+     */
+    public function isDokterSpesialis(): bool
+    {
+        // Cek medic_role klinis
+        $medic = $this->relationLoaded('medicRole') ? $this->medicRole : ($this->medic_role_id ? $this->medicRole()->first() : null);
+        if ($medic && in_array(strtolower($medic->name), ['dokter_spesialis', 'supervisor'])) {
+            return true;
+        }
+
+        // Cek role utama
+        if ($this->role && in_array(strtolower($this->role->name), ['dokter_spesialis', 'supervisor'])) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Scope untuk query user yang merupakan Dokter Spesialis
+     */
+    public function scopeDokterSpesialis($query)
+    {
+        return $query->where(function ($q) {
+            $q->whereHas('medicRole', fn($m) => $m->whereIn('name', ['dokter_spesialis', 'supervisor']))
+              ->orWhere(function ($sq) {
+                  $sq->whereNull('medic_role_id')
+                     ->whereHas('role', fn($r) => $r->whereIn('name', ['dokter_spesialis', 'supervisor']));
+              });
+        });
+    }
+
+    /**
      * Label tampilan peran lengkap (Manajemen + Divisi + Medis)
      */
     public function getFullRoleTitleAttribute(): string

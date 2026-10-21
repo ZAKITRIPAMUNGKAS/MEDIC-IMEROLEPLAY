@@ -27,24 +27,26 @@ class StaseController extends Controller
     {
         $user = Auth::user();
 
-        // 1. Ambil daftar Konsulen Stase yang terdaftar resmi di sistem Alta
-        $registeredKonsulen = User::with('role:id,name,display_name')
+        // 1. Ambil daftar Konsulen Stase resmi yang berkualifikasi Dokter Spesialis
+        $registeredKonsulen = User::with(['role:id,name,display_name', 'medicRole:id,name,display_name'])
             ->where('is_active', true)
             ->where('hospital', $user->hospital ?? 'alta')
             ->where('is_konsulen', true)
+            ->dokterSpesialis()
             ->orderBy('name')
-            ->get(['id', 'name', 'staff_id', 'role_id']);
+            ->get(['id', 'name', 'staff_id', 'role_id', 'medic_role_id', 'is_konsulen']);
 
-        // Jika ada konsulen resmi yang terdaftar, gunakan itu. Jika belum ada yang didaftarkan, fallback ke Dokter Spesialis/Pimpinan
+        // Jika ada konsulen resmi yang terdaftar, gunakan itu.
+        // Jika belum ada yang didaftarkan manual, hanya dokter spesialis aktif di Alta yang muncul!
         if ($registeredKonsulen->isNotEmpty()) {
             $konsulenList = $registeredKonsulen;
         } else {
-            $konsulenList = User::with('role:id,name,display_name')
+            $konsulenList = User::with(['role:id,name,display_name', 'medicRole:id,name,display_name'])
                 ->where('is_active', true)
                 ->where('hospital', $user->hospital ?? 'alta')
-                ->whereHas('role', fn($q) => $q->whereIn('name', ['dokter_spesialis', 'supervisor', 'staff_manager', 'manajer', 'executive', 'admin']))
-                ->orderByRoleLevel()
-                ->get(['id', 'name', 'staff_id', 'role_id']);
+                ->dokterSpesialis()
+                ->orderBy('name')
+                ->get(['id', 'name', 'staff_id', 'role_id', 'medic_role_id', 'is_konsulen']);
         }
 
         // 2. Daftar stase yang tersedia
@@ -65,6 +67,11 @@ class StaseController extends Controller
             'konsulen_id.required' => 'Pilih dokter konsulen pembimbing stase.',
             'stase_name.required'  => 'Pilih bidang stase yang tersedia.',
         ]);
+
+        $konsulen = User::with(['role', 'medicRole'])->findOrFail($validated['konsulen_id']);
+        if (!$konsulen->isDokterSpesialis()) {
+            return back()->with('error', 'Dokter pembimbing yang dipilih harus memiliki kualifikasi Dokter Spesialis.');
+        }
 
         StaseApplication::create([
             'user_id'     => $user->id,
