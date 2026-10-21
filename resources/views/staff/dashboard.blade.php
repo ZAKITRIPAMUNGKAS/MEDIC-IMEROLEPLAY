@@ -1238,243 +1238,238 @@
                 </section>
                 @endif
 
-                <!-- ==================== 4. LEADERBOARD ABSENSI (FULL WIDTH) ==================== -->
-                <section id="leaderboardSection" class="soft-card rounded-3xl p-5 lg:p-6 space-y-4">
-                    <!-- Header -->
-                    <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-sky-800/60">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-400/30 text-amber-400 flex items-center justify-center text-lg shadow-xs">
-                                <i class="fa-solid fa-trophy"></i>
-                            </div>
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <h3 class="text-base lg:text-lg font-black text-white">Leaderboard Absensi</h3>
-                                    <span class="text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 border border-amber-400/30 text-amber-200 px-2.5 py-0.5 rounded-full">Top Performa</span>
+                <!-- ==================== 4. LEADERBOARD DUAL SECTION (KANAN - KIRI) ==================== -->
+                @php
+                    $canSeeSuratLb = auth()->user()->isAdmin() || (optional(auth()->user()->role)->level ?? 0) >= 2;
+                @endphp
+                <div class="grid grid-cols-1 {{ $canSeeSuratLb ? 'lg:grid-cols-2' : '' }} gap-6 items-stretch">
+
+                    <!-- KIRI: LEADERBOARD ABSENSI (DUTY) -->
+                    <section id="leaderboardSection" class="soft-card rounded-3xl p-5 lg:p-6 space-y-4 flex flex-col h-full">
+                        <!-- Header -->
+                        <div class="flex items-start sm:items-center justify-between gap-2 pb-3 border-b border-sky-800/60">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <div class="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-400/30 text-amber-400 flex items-center justify-center text-lg shadow-xs shrink-0">
+                                    <i class="fa-solid fa-trophy"></i>
                                 </div>
-                                <p class="text-xs text-sky-200 mt-0.5">Peringkat staf medis berdasarkan akumulasi total jam kerja</p>
-                            </div>
-                        </div>
-                        <div class="flex flex-wrap items-center gap-2">
-                            <span class="text-xs font-semibold bg-sky-900/60 border border-sky-400/30 text-sky-200 px-3 py-1 rounded-full">
-                                <i class="fa-regular fa-clock mr-1.5 text-cyan-300"></i>Periode: {{ $lbFilter['label'] }}
-                            </span>
-                            <span class="text-xs font-bold bg-sky-500/25 border border-sky-400/30 text-cyan-200 px-3 py-1 rounded-full">
-                                <i class="fa-solid fa-users mr-1"></i>{{ $leaderboard->count() }} Staf
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Filter Controls -->
-                    <form method="GET" action="{{ url()->current() }}" id="lb-filter-form" class="bg-sky-950/60 p-3.5 rounded-2xl border border-sky-500/30 flex flex-col md:flex-row md:items-center justify-between gap-3">
-                        @if(request('year'))
-                            <input type="hidden" name="year" value="{{ request('year') }}">
-                        @endif
-
-                        <div class="inline-flex rounded-xl bg-sky-900/60 p-1 border border-sky-500/20 shrink-0">
-                            <button type="button" id="btnPerBulan" onclick="switchPeriodMode('bulan')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-sky-500 text-white shadow-xs transition">
-                                <i class="fa-regular fa-calendar mr-1.5"></i>Per Bulan
-                            </button>
-                            <button type="button" id="btnRentang" onclick="switchPeriodMode('rentang')" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-sky-200 hover:text-white transition">
-                                <i class="fa-solid fa-calendar-week mr-1.5"></i>Rentang Tanggal
-                            </button>
-                        </div>
-
-                        <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 flex-1 max-w-xl">
-                            <div id="lb-month-wrapper" class="w-full flex-1">
-                                <input type="month" name="lb_month" id="filterMonthInput" value="{{ $lbFilter['month'] }}" max="{{ now()->format('Y-m') }}" 
-                                       class="w-full px-3.5 py-2 rounded-xl bg-sky-950/80 border border-sky-500/30 text-xs font-semibold text-white focus:outline-none focus:border-cyan-400">
-                            </div>
-                            <div id="lb-range-wrapper" class="hidden w-full flex-1 flex-col sm:flex-row items-center gap-2">
-                                <input type="date" name="lb_start" id="filterStartInput" value="{{ $lbFilter['start'] }}" max="{{ now()->format('Y-m-d') }}" 
-                                       class="w-full px-3.5 py-2 rounded-xl bg-sky-950/80 border border-sky-500/30 text-xs font-semibold text-white focus:outline-none focus:border-cyan-400">
-                                <span class="text-xs text-sky-300">s/d</span>
-                                <input type="date" name="lb_end" id="filterEndInput" value="{{ $lbFilter['end'] }}" max="{{ now()->format('Y-m-d') }}" 
-                                       class="w-full px-3.5 py-2 rounded-xl bg-sky-950/80 border border-sky-500/30 text-xs font-semibold text-white focus:outline-none focus:border-cyan-400">
-                            </div>
-                            <button type="submit" class="px-4 py-2 rounded-xl bg-sky-500 hover:bg-sky-400 text-white text-xs font-bold flex items-center gap-1.5 shrink-0 transition shadow-xs">
-                                <i class="fa-solid fa-magnifying-glass"></i> Tampilkan
-                            </button>
-                            <a href="{{ url()->current() }}" class="px-3 py-2 rounded-xl bg-sky-900/60 hover:bg-sky-800 text-sky-200 text-xs font-semibold shrink-0 transition flex items-center gap-1 border border-sky-500/20">
-                                <i class="fa-solid fa-rotate-left"></i> Reset
-                            </a>
-                        </div>
-                    </form>
-
-                    <!-- Daftar Peringkat Absensi -->
-                    <div class="space-y-2.5">
-                        @forelse($leaderboard as $index => $staff)
-                            <div class="bg-sky-950/50 rounded-2xl p-4 border {{ $index === 0 ? 'border-amber-400/60 bg-amber-500/10 shadow-xs' : ($index === 1 ? 'border-slate-300/40 bg-slate-400/10' : ($index === 2 ? 'border-amber-600/40 bg-amber-600/10' : 'border-sky-800/50')) }} flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-white/5 transition">
-                                <div class="flex items-center gap-4 min-w-0 flex-1">
-                                    <div class="relative w-11 h-11 rounded-xl {{ $index === 0 ? 'bg-amber-500 text-slate-950 font-black shadow-xs' : ($index === 1 ? 'bg-slate-300 text-slate-900 font-bold' : ($index === 2 ? 'bg-amber-600 text-white font-bold' : 'bg-sky-600 text-white font-bold')) }} flex items-center justify-center text-sm shrink-0">
-                                        {{ $index + 1 }}
-                                        @if($index === 0)
-                                            <i class="fa-solid fa-crown text-[10px] text-amber-300 absolute -top-2 -right-1.5 bg-slate-950 rounded-full p-1 border border-amber-400/50"></i>
-                                        @endif
+                                <div class="min-w-0">
+                                    <div class="flex flex-wrap items-center gap-1.5">
+                                        <h3 class="text-base font-black text-white">Leaderboard Absensi</h3>
+                                        <span class="text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 border border-amber-400/30 text-amber-200 px-2 py-0.5 rounded-full">Top Performa</span>
                                     </div>
-                                    <div class="min-w-0 flex-1">
-                                        <div class="flex flex-wrap items-center gap-2">
-                                            <span class="font-bold text-sm sm:text-base text-white truncate">{{ $staff->name }}</span>
-                                            @if(isset($staff->total_juara_1_count) && $staff->total_juara_1_count > 0)
-                                                <span class="px-2.5 py-0.5 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 font-bold text-xs">
-                                                    <i class="fa-solid fa-star text-[10px] mr-1"></i>x{{ $staff->total_juara_1_count }}
-                                                </span>
-                                            @endif
-                                            @if($index < 3)
-                                                <span class="px-2.5 py-0.5 rounded-full {{ $index === 0 ? 'bg-amber-400/20 text-amber-300 border border-amber-400/40' : ($index === 1 ? 'bg-slate-300/20 text-slate-200 border border-slate-300/40' : 'bg-amber-600/20 text-amber-300 border border-amber-600/40') }} font-extrabold text-xs">
-                                                    Juara {{ $index + 1 }}
-                                                </span>
+                                    <p class="text-xs text-sky-200 mt-0.5 truncate">Peringkat jam kerja • {{ $lbFilter['label'] }}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 shrink-0">
+                                <span class="text-xs font-bold bg-sky-500/25 border border-sky-400/30 text-cyan-200 px-2.5 py-1 rounded-full">
+                                    <i class="fa-solid fa-users mr-1"></i>{{ $leaderboard->count() }} Staf
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Filter Controls (Compact) -->
+                        <form method="GET" action="{{ url()->current() }}" id="lb-filter-form" class="bg-sky-950/60 p-3 rounded-2xl border border-sky-500/30 flex flex-col gap-2.5">
+                            @if(request('year'))
+                                <input type="hidden" name="year" value="{{ request('year') }}">
+                            @endif
+
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <div class="inline-flex rounded-xl bg-sky-900/60 p-1 border border-sky-500/20 shrink-0">
+                                    <button type="button" id="btnPerBulan" onclick="switchPeriodMode('bulan')" class="px-3 py-1 rounded-lg text-xs font-bold bg-sky-500 text-white shadow-xs transition">
+                                        <i class="fa-regular fa-calendar mr-1"></i>Per Bulan
+                                    </button>
+                                    <button type="button" id="btnRentang" onclick="switchPeriodMode('rentang')" class="px-3 py-1 rounded-lg text-xs font-semibold text-sky-200 hover:text-white transition">
+                                        <i class="fa-solid fa-calendar-week mr-1"></i>Rentang Tanggal
+                                    </button>
+                                </div>
+
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    <button type="submit" class="px-3.5 py-1.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-white text-xs font-bold flex items-center gap-1.5 transition shadow-xs">
+                                        <i class="fa-solid fa-magnifying-glass"></i> Tampilkan
+                                    </button>
+                                    <a href="{{ url()->current() }}" class="px-2.5 py-1.5 rounded-xl bg-sky-900/60 hover:bg-sky-800 text-sky-200 text-xs font-semibold transition flex items-center gap-1 border border-sky-500/20" title="Reset Filter">
+                                        <i class="fa-solid fa-rotate-left"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="w-full">
+                                <div id="lb-month-wrapper" class="w-full">
+                                    <input type="month" name="lb_month" id="filterMonthInput" value="{{ $lbFilter['month'] }}" max="{{ now()->format('Y-m') }}" 
+                                           class="w-full px-3.5 py-2 rounded-xl bg-sky-950/80 border border-sky-500/30 text-xs font-semibold text-white focus:outline-none focus:border-cyan-400">
+                                </div>
+                                <div id="lb-range-wrapper" class="hidden w-full flex items-center gap-2">
+                                    <input type="date" name="lb_start" id="filterStartInput" value="{{ $lbFilter['start'] }}" max="{{ now()->format('Y-m-d') }}" 
+                                           class="w-full px-3 py-2 rounded-xl bg-sky-950/80 border border-sky-500/30 text-xs font-semibold text-white focus:outline-none focus:border-cyan-400">
+                                    <span class="text-xs text-sky-300">s/d</span>
+                                    <input type="date" name="lb_end" id="filterEndInput" value="{{ $lbFilter['end'] }}" max="{{ now()->format('Y-m-d') }}" 
+                                           class="w-full px-3 py-2 rounded-xl bg-sky-950/80 border border-sky-500/30 text-xs font-semibold text-white focus:outline-none focus:border-cyan-400">
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- Daftar Peringkat Absensi -->
+                        <div class="space-y-2.5 flex-1 min-h-0 max-h-[500px] overflow-y-auto pr-1 custom-scrollbar">
+                            @forelse($leaderboard as $index => $staff)
+                                <div class="bg-sky-950/50 rounded-2xl p-3 sm:p-3.5 border {{ $index === 0 ? 'border-amber-400/60 bg-amber-500/10 shadow-xs' : ($index === 1 ? 'border-slate-300/40 bg-slate-400/10' : ($index === 2 ? 'border-amber-600/40 bg-amber-600/10' : 'border-sky-800/50')) }} flex items-center justify-between gap-3 hover:bg-white/5 transition">
+                                    <div class="flex items-center gap-3 min-w-0 flex-1">
+                                        <div class="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl {{ $index === 0 ? 'bg-amber-500 text-slate-950 font-black shadow-xs' : ($index === 1 ? 'bg-slate-300 text-slate-900 font-bold' : ($index === 2 ? 'bg-amber-600 text-white font-bold' : 'bg-sky-600 text-white font-bold')) }} flex items-center justify-center text-xs sm:text-sm shrink-0">
+                                            {{ $index + 1 }}
+                                            @if($index === 0)
+                                                <i class="fa-solid fa-crown text-[9px] text-amber-300 absolute -top-1.5 -right-1 bg-slate-950 rounded-full p-0.5 border border-amber-400/50"></i>
                                             @endif
                                         </div>
-                                        <p class="text-xs text-sky-300 mt-0.5">{{ $staff->role->display_name ?? 'Staf' }}</p>
-                                    </div>
-                                </div>
-                                <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-t-0 border-sky-800/40 pt-2 sm:pt-0 shrink-0">
-                                    <div class="font-black text-lg sm:text-xl text-cyan-300 font-mono">
-                                        {{ \App\Helpers\TimeHelper::formatDuration($staff->attendances_sum_session_duration ?: 0) }}
-                                    </div>
-                                    <div class="text-xs text-sky-200/80">{{ $staff->unique_work_days ?? $staff->attendances_count }} hari kerja</div>
-                                </div>
-                            </div>
-                        @empty
-                            <div class="text-center py-8 text-sky-300/60 text-xs font-semibold">
-                                Belum ada data absensi untuk periode ini.
-                            </div>
-                        @endforelse
-                    </div>
-                </section>
-
-                <!-- ==================== 5. LEADERBOARD PENANGANAN SURAT BULANAN (FULL TABLE) ==================== -->
-                @if(auth()->user()->isAdmin() || (optional(auth()->user()->role)->level ?? 0) >= 2)
-                <section id="leaderboardSuratSection" class="soft-card rounded-3xl p-5 lg:p-6 space-y-4">
-                    <!-- Header -->
-                    <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-sky-800/60">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-2xl bg-cyan-500/20 border border-cyan-400/30 text-cyan-300 flex items-center justify-center text-lg shadow-xs">
-                                <i class="fa-solid fa-file-signature"></i>
-                            </div>
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <h3 class="text-base lg:text-lg font-black text-white">Leaderboard Penanganan Surat Bulanan</h3>
-                                    <span class="text-[10px] font-bold uppercase tracking-wider bg-cyan-500/20 border border-cyan-400/30 text-cyan-200 px-2.5 py-0.5 rounded-full">Bulan Ini</span>
-                                </div>
-                                <p class="text-xs text-sky-200 mt-0.5">Peringkat staf medis berdasarkan total dan persentase surat yang diproses</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs font-bold bg-sky-500/25 border border-sky-400/30 text-cyan-200 px-3 py-1 rounded-full">
-                                <i class="fa-solid fa-users mr-1"></i>{{ $formLeaderboard->count() }} Staf Medis
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Full Width Table -->
-                    <div class="overflow-x-auto bg-sky-950/60 rounded-2xl border border-sky-500/25">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="bg-sky-900/60 text-sky-200 text-[11px] font-black uppercase tracking-wider border-b border-sky-800/60">
-                                    <th class="py-3.5 px-4 text-center w-20 whitespace-nowrap">Peringkat</th>
-                                    <th class="py-3.5 px-4 whitespace-nowrap">Staf Medis</th>
-                                    <th class="py-3.5 px-4 whitespace-nowrap">Jabatan / Role</th>
-                                    <th class="py-3.5 px-4 text-center whitespace-nowrap">Total Ditangani</th>
-                                    <th class="py-3.5 px-4 text-center whitespace-nowrap">Disetujui</th>
-                                    <th class="py-3.5 px-4 text-center whitespace-nowrap">Ditolak</th>
-                                    <th class="py-3.5 px-4 text-center whitespace-nowrap">Tingkat Persetujuan</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-sky-800/40 text-xs sm:text-sm">
-                                @forelse($formLeaderboard as $index => $staff)
-                                    @php
-                                        $rejectedCount = max(0, $staff->forms_count - $staff->approved_count);
-                                        $approvalRate = $staff->forms_count > 0 ? round(($staff->approved_count / $staff->forms_count) * 100, 1) : 0;
-                                    @endphp
-                                    <tr class="hover:bg-white/5 transition {{ $index === 0 ? 'bg-amber-500/10' : ($index === 1 ? 'bg-slate-400/5' : ($index === 2 ? 'bg-amber-600/5' : '')) }}">
-                                        <!-- Peringkat -->
-                                        <td class="py-3.5 px-4 text-center whitespace-nowrap">
-                                            <div class="inline-flex items-center justify-center relative">
-                                                <div class="w-8 h-8 rounded-xl {{ $index === 0 ? 'bg-amber-500 text-slate-950 font-black shadow-xs' : ($index === 1 ? 'bg-slate-300 text-slate-900 font-bold' : ($index === 2 ? 'bg-amber-600 text-white font-bold' : 'bg-sky-700/60 text-sky-200 font-semibold border border-sky-500/30')) }} flex items-center justify-center text-xs">
-                                                    {{ $index + 1 }}
-                                                </div>
-                                                @if($index === 0)
-                                                    <i class="fa-solid fa-crown text-[9px] text-amber-300 absolute -top-1.5 -right-1 bg-slate-950 rounded-full p-0.5 border border-amber-400/50"></i>
+                                        <div class="min-w-0 flex-1">
+                                            <div class="flex items-center gap-1.5">
+                                                <span class="font-bold text-xs sm:text-sm text-white truncate">{{ $staff->name }}</span>
+                                                @if(isset($staff->total_juara_1_count) && $staff->total_juara_1_count > 0)
+                                                    <span class="px-1.5 py-0.5 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 font-bold text-[9px]">
+                                                        <i class="fa-solid fa-star text-[8px] mr-0.5"></i>x{{ $staff->total_juara_1_count }}
+                                                    </span>
+                                                @endif
+                                                @if($index < 3)
+                                                    <span class="px-1.5 py-0.5 rounded-full {{ $index === 0 ? 'bg-amber-400/20 text-amber-300 border border-amber-400/40' : ($index === 1 ? 'bg-slate-300/20 text-slate-200 border border-slate-300/40' : 'bg-amber-600/20 text-amber-300 border border-amber-600/40') }} font-extrabold text-[9px]">
+                                                        Juara {{ $index + 1 }}
+                                                    </span>
                                                 @endif
                                             </div>
-                                        </td>
+                                            <p class="text-[11px] text-sky-300 mt-0.5 truncate">{{ $staff->role->display_name ?? 'Staf' }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right shrink-0">
+                                        <div class="font-black text-sm sm:text-base text-cyan-300 font-mono">
+                                            {{ \App\Helpers\TimeHelper::formatDuration($staff->attendances_sum_session_duration ?: 0) }}
+                                        </div>
+                                        <div class="text-[10px] text-sky-200/70">{{ $staff->unique_work_days ?? $staff->attendances_count }} hari kerja</div>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="text-center py-8 text-sky-300/60 text-xs font-semibold">
+                                    Belum ada data absensi untuk periode ini.
+                                </div>
+                            @endforelse
+                        </div>
+                    </section>
 
-                                        <!-- Staf Medis -->
-                                        <td class="py-3.5 px-4 whitespace-nowrap">
-                                            <div class="flex items-center gap-3">
-                                                <div class="w-8 h-8 rounded-full bg-sky-900/80 border border-sky-400/30 flex items-center justify-center text-sky-200 text-xs font-bold shrink-0">
-                                                    {{ strtoupper(substr($staff->name, 0, 2)) }}
-                                                </div>
-                                                <div>
-                                                    <div class="flex items-center gap-2">
-                                                        <span class="font-bold text-white text-sm">{{ $staff->name }}</span>
-                                                        @if($index < 3)
-                                                            <span class="px-2 py-0.5 rounded-full {{ $index === 0 ? 'bg-amber-400/20 text-amber-300 border border-amber-400/40' : ($index === 1 ? 'bg-slate-300/20 text-slate-200 border border-slate-300/40' : 'bg-amber-600/20 text-amber-300 border border-amber-600/40') }} font-extrabold text-[10px]">
-                                                                Juara {{ $index + 1 }}
-                                                            </span>
-                                                        @endif
+                    <!-- KANAN: LEADERBOARD PENANGANAN SURAT BULANAN -->
+                    @if($canSeeSuratLb)
+                    <section id="leaderboardSuratSection" class="soft-card rounded-3xl p-5 lg:p-6 space-y-4 flex flex-col h-full">
+                        <!-- Header -->
+                        <div class="flex items-start sm:items-center justify-between gap-2 pb-3 border-b border-sky-800/60">
+                            <div class="flex items-center gap-2.5 min-w-0">
+                                <div class="w-10 h-10 rounded-2xl bg-cyan-500/20 border border-cyan-400/30 text-cyan-300 flex items-center justify-center text-lg shadow-xs shrink-0">
+                                    <i class="fa-solid fa-file-signature"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="flex flex-wrap items-center gap-1.5">
+                                        <h3 class="text-base font-black text-white truncate">Leaderboard Surat</h3>
+                                        <span class="text-[10px] font-bold uppercase tracking-wider bg-cyan-500/20 border border-cyan-400/30 text-cyan-200 px-2 py-0.5 rounded-full">Bulan Ini</span>
+                                    </div>
+                                    <p class="text-xs text-sky-200 mt-0.5 truncate">Peringkat penanganan surat medis</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 shrink-0">
+                                <span class="text-xs font-bold bg-sky-500/25 border border-sky-400/30 text-cyan-200 px-2.5 py-1 rounded-full">
+                                    <i class="fa-solid fa-users mr-1"></i>{{ $formLeaderboard->count() }} Staf
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Table Container (Scrollable) -->
+                        <div class="overflow-x-auto flex-1 min-h-0 bg-sky-950/60 rounded-2xl border border-sky-500/25 max-h-[500px] overflow-y-auto custom-scrollbar">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="sticky top-0 bg-sky-900/95 backdrop-blur-md z-10 shadow-xs">
+                                    <tr class="text-sky-200 text-[11px] font-black uppercase tracking-wider border-b border-sky-800/80">
+                                        <th class="py-3 px-3 text-center w-12 whitespace-nowrap">#</th>
+                                        <th class="py-3 px-3 whitespace-nowrap">Staf Medis</th>
+                                        <th class="py-3 px-3 text-center whitespace-nowrap">Total</th>
+                                        <th class="py-3 px-3 text-center whitespace-nowrap">Disetujui</th>
+                                        <th class="py-3 px-3 text-center whitespace-nowrap">Rate</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-sky-800/40 text-xs">
+                                    @forelse($formLeaderboard as $index => $staff)
+                                        @php
+                                            $rejectedCount = max(0, $staff->forms_count - $staff->approved_count);
+                                            $approvalRate = $staff->forms_count > 0 ? round(($staff->approved_count / $staff->forms_count) * 100, 1) : 0;
+                                        @endphp
+                                        <tr class="hover:bg-white/5 transition {{ $index === 0 ? 'bg-amber-500/10' : ($index === 1 ? 'bg-slate-400/5' : ($index === 2 ? 'bg-amber-600/5' : '')) }}">
+                                            <!-- Peringkat -->
+                                            <td class="py-3 px-3 text-center whitespace-nowrap">
+                                                <div class="inline-flex items-center justify-center relative">
+                                                    <div class="w-7 h-7 rounded-lg {{ $index === 0 ? 'bg-amber-500 text-slate-950 font-black shadow-xs' : ($index === 1 ? 'bg-slate-300 text-slate-900 font-bold' : ($index === 2 ? 'bg-amber-600 text-white font-bold' : 'bg-sky-700/60 text-sky-200 font-semibold border border-sky-500/30')) }} flex items-center justify-center text-xs">
+                                                        {{ $index + 1 }}
                                                     </div>
-                                                    <span class="text-[11px] text-sky-300/80 font-mono">ID: #{{ $staff->id }}</span>
+                                                    @if($index === 0)
+                                                        <i class="fa-solid fa-crown text-[8px] text-amber-300 absolute -top-1.5 -right-1 bg-slate-950 rounded-full p-0.5 border border-amber-400/50"></i>
+                                                    @endif
                                                 </div>
-                                            </div>
-                                        </td>
+                                            </td>
 
-                                        <!-- Jabatan / Role -->
-                                        <td class="py-3.5 px-4 whitespace-nowrap">
-                                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-500/15 border border-sky-400/30 text-sky-200">
-                                                {{ $staff->role->display_name ?? 'Staf' }}
-                                            </span>
-                                        </td>
-
-                                        <!-- Total Surat Ditangani -->
-                                        <td class="py-3.5 px-4 text-center whitespace-nowrap">
-                                            <span class="font-black text-base text-cyan-300 font-mono">{{ $staff->forms_count }}</span>
-                                            <span class="text-xs text-sky-300/70 ml-1">surat</span>
-                                        </td>
-
-                                        <!-- Disetujui -->
-                                        <td class="py-3.5 px-4 text-center whitespace-nowrap">
-                                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-bold">
-                                                <i class="fa-solid fa-circle-check"></i>
-                                                {{ $staff->approved_count }}
-                                            </span>
-                                        </td>
-
-                                        <!-- Ditolak -->
-                                        <td class="py-3.5 px-4 text-center whitespace-nowrap">
-                                            @if($rejectedCount > 0)
-                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-rose-500/20 border border-rose-400/30 text-rose-300 text-xs font-bold">
-                                                    <i class="fa-solid fa-circle-xmark"></i>
-                                                    {{ $rejectedCount }}
-                                                </span>
-                                            @else
-                                                <span class="text-sky-400/60 text-xs font-medium">0</span>
-                                            @endif
-                                        </td>
-
-                                        <!-- Tingkat Persetujuan -->
-                                        <td class="py-3.5 px-4 text-center whitespace-nowrap">
-                                            <div class="inline-flex flex-col items-center gap-1 w-28">
-                                                <span class="text-xs font-bold text-white font-mono">{{ $approvalRate }}%</span>
-                                                <div class="w-full h-1.5 bg-sky-900 rounded-full overflow-hidden border border-sky-700/40">
-                                                    <div class="h-full bg-gradient-to-r from-emerald-500 to-cyan-400 rounded-full" style="width: {{ $approvalRate }}%"></div>
+                                            <!-- Staf Medis & Role -->
+                                            <td class="py-3 px-3 whitespace-nowrap">
+                                                <div class="flex items-center gap-2">
+                                                    <div class="w-7 h-7 rounded-full bg-sky-900 border border-sky-400/30 flex items-center justify-center text-sky-200 text-[10px] font-bold shrink-0">
+                                                        {{ strtoupper(substr($staff->name, 0, 2)) }}
+                                                    </div>
+                                                    <div class="min-w-0">
+                                                        <div class="flex items-center gap-1.5">
+                                                            <span class="font-bold text-white text-xs truncate max-w-[110px] sm:max-w-[150px]">{{ $staff->name }}</span>
+                                                            @if($index < 3)
+                                                                <span class="px-1.5 py-0.2 rounded-full {{ $index === 0 ? 'bg-amber-400/20 text-amber-300 border border-amber-400/40' : ($index === 1 ? 'bg-slate-300/20 text-slate-200 border border-slate-300/40' : 'bg-amber-600/20 text-amber-300 border border-amber-600/40') }} font-extrabold text-[9px]">
+                                                                    #{{ $index + 1 }}
+                                                                </span>
+                                                            @endif
+                                                        </div>
+                                                        <span class="text-[10px] text-sky-300/80 truncate block">{{ $staff->role->display_name ?? 'Staf' }}</span>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="7" class="py-8 text-center text-sky-300/60 text-xs font-semibold">
-                                            Belum ada data penanganan surat bulan ini.
-                                        </td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
-                @endif
+                                            </td>
+
+                                            <!-- Total Ditangani -->
+                                            <td class="py-3 px-3 text-center whitespace-nowrap">
+                                                <span class="font-black text-sm text-cyan-300 font-mono">{{ $staff->forms_count }}</span>
+                                                <span class="text-[10px] text-sky-300/60 block">surat</span>
+                                            </td>
+
+                                            <!-- Disetujui / Ditolak -->
+                                            <td class="py-3 px-3 text-center whitespace-nowrap">
+                                                <div class="inline-flex flex-col items-center gap-0.5">
+                                                    <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-300">
+                                                        <i class="fa-solid fa-circle-check text-[10px]"></i> {{ $staff->approved_count }}
+                                                    </span>
+                                                    @if($rejectedCount > 0)
+                                                        <span class="text-[10px] text-rose-300 font-medium">
+                                                            <i class="fa-solid fa-circle-xmark text-[9px]"></i> {{ $rejectedCount }} ditolak
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                            </td>
+
+                                            <!-- Tingkat Persetujuan -->
+                                            <td class="py-3 px-3 text-center whitespace-nowrap">
+                                                <div class="inline-flex flex-col items-center gap-1 w-16">
+                                                    <span class="text-xs font-bold text-white font-mono">{{ $approvalRate }}%</span>
+                                                    <div class="w-full h-1 bg-sky-900 rounded-full overflow-hidden border border-sky-700/40">
+                                                        <div class="h-full bg-gradient-to-r from-emerald-500 to-cyan-400 rounded-full" style="width: {{ $approvalRate }}%"></div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="py-8 text-center text-sky-300/60 text-xs font-semibold">
+                                                Belum ada data penanganan surat bulan ini.
+                                            </td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                    @endif
+
+                </div>
 
                 <!-- ==================== 5. TABEL 1: SURAT DARI FORM ==================== -->
                 @if(auth()->user()->isAdmin() || (optional(auth()->user()->role)->level ?? 0) >= 2)
