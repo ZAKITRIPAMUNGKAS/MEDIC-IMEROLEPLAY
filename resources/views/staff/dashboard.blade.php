@@ -1320,8 +1320,8 @@
                                             @endif
                                         </div>
                                         <div class="min-w-0 flex-1">
-                                            <div class="flex items-center gap-1.5">
-                                                <span class="font-bold text-xs sm:text-sm text-white truncate">{{ $staff->name }}</span>
+                                            <div class="flex items-center gap-1.5 flex-wrap">
+                                                <span class="font-bold text-xs sm:text-sm text-white">{{ $staff->name }}</span>
                                                 @if(isset($staff->total_juara_1_count) && $staff->total_juara_1_count > 0)
                                                     <span class="px-1.5 py-0.5 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 font-bold text-[9px]">
                                                         <i class="fa-solid fa-star text-[8px] mr-0.5"></i>x{{ $staff->total_juara_1_count }}
@@ -1333,7 +1333,7 @@
                                                     </span>
                                                 @endif
                                             </div>
-                                            <p class="text-[11px] text-sky-300 mt-0.5 truncate">{{ $staff->role->display_name ?? 'Staf' }}</p>
+                                            <p class="text-[11px] text-sky-300 mt-0.5">{{ $staff->role->display_name ?? 'Staf' }}</p>
                                         </div>
                                     </div>
                                     <div class="text-right shrink-0">
@@ -1412,16 +1412,16 @@
                                                     <div class="w-7 h-7 rounded-full bg-sky-900 border border-sky-400/30 flex items-center justify-center text-sky-200 text-[10px] font-bold shrink-0">
                                                         {{ strtoupper(substr($staff->name, 0, 2)) }}
                                                     </div>
-                                                    <div class="min-w-0">
+                                                    <div>
                                                         <div class="flex items-center gap-1.5">
-                                                            <span class="font-bold text-white text-xs truncate max-w-[110px] sm:max-w-[150px]">{{ $staff->name }}</span>
+                                                            <span class="font-bold text-white text-xs whitespace-nowrap">{{ $staff->name }}</span>
                                                             @if($index < 3)
-                                                                <span class="px-1.5 py-0.2 rounded-full {{ $index === 0 ? 'bg-amber-400/20 text-amber-300 border border-amber-400/40' : ($index === 1 ? 'bg-slate-300/20 text-slate-200 border border-slate-300/40' : 'bg-amber-600/20 text-amber-300 border border-amber-600/40') }} font-extrabold text-[9px]">
+                                                                <span class="px-1.5 py-0.5 rounded-full {{ $index === 0 ? 'bg-amber-400/20 text-amber-300 border border-amber-400/40' : ($index === 1 ? 'bg-slate-300/20 text-slate-200 border border-slate-300/40' : 'bg-amber-600/20 text-amber-300 border border-amber-600/40') }} font-extrabold text-[9px]">
                                                                     #{{ $index + 1 }}
                                                                 </span>
                                                             @endif
                                                         </div>
-                                                        <span class="text-[10px] text-sky-300/80 truncate block">{{ $staff->role->display_name ?? 'Staf' }}</span>
+                                                        <span class="text-[10px] text-sky-300/80 block whitespace-nowrap">{{ $staff->role->display_name ?? 'Staf' }}</span>
                                                     </div>
                                                 </div>
                                             </td>
