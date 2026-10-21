@@ -74,7 +74,7 @@ class AttendanceIntegrationServiceTest extends TestCase
         );
 
         $this->assertFalse($result['success']);
-        $this->assertStringContains('User tidak ditemukan', $result['message']);
+        $this->assertStringContainsString('User tidak ditemukan', $result['message']);
     }
 
     /**
@@ -85,7 +85,7 @@ class AttendanceIntegrationServiceTest extends TestCase
         // Create active manual session
         Attendance::create([
             'user_id' => $this->user->id,
-            'clock_in' => now()->subHour(),
+            'clock_in' => now()->subHours(2),
             'work_date' => today(),
             'session_number' => 1,
             'session_type' => 'work',
@@ -101,8 +101,8 @@ class AttendanceIntegrationServiceTest extends TestCase
         );
 
         $this->assertTrue($result['success']);
-        $this->assertEquals('Data absensi manual diupdate dengan data otomatis', $result['message']);
-        $this->assertEquals('manual', $result['priority']);
+        $this->assertEquals('Sesi manual ditutup otomatis. Absensi FiveM dimulai baru.', $result['message']);
+        $this->assertEquals('automatic', $result['priority']);
 
         // Check that manual session was updated
         $attendance = Attendance::where('user_id', $this->user->id)->first();
@@ -141,7 +141,7 @@ class AttendanceIntegrationServiceTest extends TestCase
 
         // Check that absensi record was created with conflict note
         $absensi = Absensi::where('player_id', '12345')->first();
-        $this->assertStringContains('Konflik dengan sesi manual', $absensi->notes);
+        $this->assertStringContainsString('Konflik dengan sesi manual', $absensi->notes);
     }
 
     /**
@@ -276,7 +276,7 @@ class AttendanceIntegrationServiceTest extends TestCase
         $this->assertEquals($this->user->id, $attendance->user_id);
         $this->assertEquals('work', $attendance->session_type);
         $this->assertFalse($attendance->is_active);
-        $this->assertStringContains('Generated from automatic attendance', $attendance->notes);
+        $this->assertStringContainsString('Generated from automatic attendance', $attendance->notes);
     }
 
     /**
@@ -474,7 +474,7 @@ class AttendanceIntegrationServiceTest extends TestCase
         );
 
         $this->assertFalse($result['success']);
-        $this->assertStringContains('Terjadi kesalahan', $result['message']);
+        $this->assertStringContainsString('Terjadi kesalahan', $result['message']);
     }
 
     /**

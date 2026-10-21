@@ -41,6 +41,8 @@ return [
 
     'debug' => (bool) env('APP_DEBUG', false),
 
+    'scheduler_token' => env('SCHEDULER_TOKEN'),
+
     /*
     |--------------------------------------------------------------------------
     | Application URL

@@ -11,21 +11,20 @@ use App\Models\Attendance;
 
 class AbsensiIntegrationTest extends TestCase
 {
-    // WARNING: We are testing on a real database, so we won't use RefreshDatabase to avoid wiping data
-    // We will clean up our test data manualy
+    use RefreshDatabase;
 
     public function test_api_absensi_can_receive_data_and_integrate()
     {
+        $apiKey = 'test-api-key-123';
+        config(['app.api_key' => $apiKey]);
+
         // 1. Create a Test User
-        $user = User::where('email', 'test.integration@example.com')->first();
-        if (!$user) {
-            $user = User::factory()->create([
-                'name' => 'Test Integration Agent',
-                'email' => 'test.integration@example.com',
-                'staff_id' => 'steam:test12345',
-                'password' => bcrypt('password'),
-            ]);
-        }
+        $user = User::factory()->create([
+            'name' => 'Test Integration Agent',
+            'email' => 'test.integration@example.com',
+            'staff_id' => 'steam:test12345',
+            'password' => bcrypt('password'),
+        ]);
 
         // 2. Prepare Data
         $data = [
@@ -37,7 +36,9 @@ class AbsensiIntegrationTest extends TestCase
         ];
 
         // 3. Send Request
-        $response = $this->postJson('/api/absensi', $data);
+        $response = $this->postJson('/api/absensi', $data, [
+            'X-API-Key' => $apiKey
+        ]);
 
         // 4. Assertions
         $response->assertStatus(201);

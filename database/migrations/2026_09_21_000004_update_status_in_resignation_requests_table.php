@@ -14,7 +14,9 @@ return new class extends Migration {
     public function up(): void
     {
         if (Schema::hasTable('resignation_requests')) {
+            if (\Illuminate\Support\Facades\DB::getDriverName() === 'mysql') {
             DB::statement("ALTER TABLE resignation_requests MODIFY COLUMN status VARCHAR(50) NOT NULL DEFAULT 'pending_pnd'");
+        }
         }
     }
 
@@ -24,7 +26,9 @@ return new class extends Migration {
     public function down(): void
     {
         if (Schema::hasTable('resignation_requests')) {
+            if (\Illuminate\Support\Facades\DB::getDriverName() === 'mysql') {
             DB::statement("ALTER TABLE resignation_requests MODIFY COLUMN status ENUM('pending_pnd', 'approved_pnd', 'pending_ie', 'completed', 'rejected') NOT NULL DEFAULT 'pending_pnd'");
+        }
         }
     }
 };

@@ -21,7 +21,9 @@ return new class extends Migration
 
             // Make user_id nullable so non-registered candidates can be evaluated
             try {
-                DB::statement('ALTER TABLE candidate_interviews MODIFY user_id BIGINT UNSIGNED NULL');
+                if (\Illuminate\Support\Facades\DB::getDriverName() === 'mysql') {
+            DB::statement('ALTER TABLE candidate_interviews MODIFY user_id BIGINT UNSIGNED NULL');
+        }
             } catch (\Throwable $e) {
                 // Ignore if already nullable or unsupported
             }

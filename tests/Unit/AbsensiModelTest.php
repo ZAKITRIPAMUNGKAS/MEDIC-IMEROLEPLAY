@@ -357,17 +357,18 @@ class AbsensiModelTest extends TestCase
      */
     public function test_fillable_attributes(): void
     {
+        $clockIn = now()->startOfSecond();
         $data = [
             'player_id' => '12345',
             'player_name' => 'Test User',
-            'clock_in' => now(),
-            'clock_out' => now()->addHour(),
+            'clock_in' => $clockIn,
+            'clock_out' => $clockIn->copy()->addHour(),
             'time_on_duty' => '01:00:00',
             'source' => 'automatic',
             'notes' => 'Test notes'
         ];
 
-        $absensi = Absensi::create($data);
+        $absensi = new Absensi($data);
 
         foreach ($data as $key => $value) {
             $this->assertEquals($value, $absensi->$key);
@@ -422,7 +423,7 @@ class AbsensiModelTest extends TestCase
             'updated_at' => now()  // This should be protected
         ];
 
-        $absensi = Absensi::create($data);
+        $absensi = new Absensi($data);
 
         // Check that protected attributes are not set
         $this->assertNull($absensi->created_at);

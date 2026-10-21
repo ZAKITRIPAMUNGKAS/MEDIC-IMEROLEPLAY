@@ -22,7 +22,7 @@ class Absensi extends Model
     protected $casts = [
         'clock_in' => 'datetime',
         'clock_out' => 'datetime',
-        'time_on_duty' => 'datetime:H:i:s'
+        'time_on_duty' => 'string'
     ];
     
     /**
@@ -129,6 +129,9 @@ class Absensi extends Model
     public function getFormattedDuration()
     {
         $seconds = $this->getDurationInSeconds();
+        if ($seconds === null) {
+            return '00:00:00';
+        }
         return \App\Helpers\TimeHelper::formatDuration($seconds);
     }
     
@@ -138,6 +141,9 @@ class Absensi extends Model
     public function getDurationInHours()
     {
         $seconds = $this->getDurationInSeconds();
+        if ($seconds === null) {
+            return 0;
+        }
         return \App\Helpers\TimeHelper::secondsToHours($seconds);
     }
     

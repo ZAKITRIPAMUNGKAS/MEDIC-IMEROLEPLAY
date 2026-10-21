@@ -45,6 +45,24 @@ class TimeHelper
     }
 
     /**
+     * Convert HH:MM:SS or MM:SS time string to seconds
+     *
+     * @param string $time
+     * @return int
+     */
+    public static function timeToSeconds(string $time): int
+    {
+        $parts = explode(':', trim($time));
+        if (count($parts) === 3) {
+            return (int)$parts[0] * 3600 + (int)$parts[1] * 60 + (int)$parts[2];
+        }
+        if (count($parts) === 2) {
+            return (int)$parts[0] * 60 + (int)$parts[1];
+        }
+        return (int)$time;
+    }
+
+    /**
      * Convert hours to seconds
      *
      * @param float $hours

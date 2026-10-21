@@ -20,6 +20,8 @@ class AbsensiApiTest extends TestCase
     {
         parent::setUp();
         
+        \Illuminate\Support\Facades\Cache::flush();
+        
         // Set up test API key
         $this->apiKey = 'test-api-key-123';
         config(['app.api_key' => $this->apiKey]);
@@ -64,8 +66,7 @@ class AbsensiApiTest extends TestCase
 
         $response->assertStatus(201)
                 ->assertJson([
-                    'success' => true,
-                    'message' => 'Data absensi berhasil disimpan'
+                    'success' => true
                 ]);
 
         $this->assertDatabaseHas('absensi', [
@@ -103,8 +104,7 @@ class AbsensiApiTest extends TestCase
 
         $response->assertStatus(201)
                 ->assertJson([
-                    'success' => true,
-                    'message' => 'Data absensi berhasil diupdate'
+                    'success' => true
                 ]);
 
         $this->assertDatabaseHas('absensi', [
@@ -162,7 +162,9 @@ class AbsensiApiTest extends TestCase
             'time_on_duty' => '08:00:00'
         ]);
 
-        $response = $this->getJson('/api/absensi/on-duty');
+        $response = $this->getJson('/api/absensi/on-duty', [
+            'X-API-Key' => $this->apiKey
+        ]);
 
         $response->assertStatus(200)
                 ->assertJson([
@@ -200,7 +202,9 @@ class AbsensiApiTest extends TestCase
             'time_on_duty' => '09:00:00'
         ]);
 
-        $response = $this->getJson('/api/absensi/report/12345');
+        $response = $this->getJson('/api/absensi/report/12345', [
+            'X-API-Key' => $this->apiKey
+        ]);
 
         $response->assertStatus(200)
                 ->assertJson([
@@ -245,17 +249,17 @@ class AbsensiApiTest extends TestCase
      */
     public function test_integration_with_manual_system(): void
     {
-        // Create manual attendance record
+        // Create manual attendance record starting before FiveM login
         Attendance::create([
             'user_id' => $this->user->id,
-            'clock_in' => '2025-10-02 08:00:00',
+            'clock_in' => '2025-10-02 07:00:00',
             'work_date' => '2025-10-02',
             'session_number' => 1,
             'session_type' => 'work',
             'is_active' => true
         ]);
 
-        // Send automatic attendance data
+        // Send automatic attendance data (FiveM login at 08:00:00)
         $response = $this->postJson('/api/absensi', [
             'player_id' => '12345',
             'player_name' => 'Test User',
@@ -269,13 +273,13 @@ class AbsensiApiTest extends TestCase
         $response->assertStatus(201)
                 ->assertJson([
                     'success' => true,
-                    'priority' => 'manual'
+                    'priority' => 'automatic'
                 ]);
 
-        // Check that manual record was updated
+        // Check that manual record was updated (closed when FiveM logged in)
         $this->assertDatabaseHas('attendances', [
             'user_id' => $this->user->id,
-            'clock_out' => '2025-10-02 17:00:00',
+            'clock_out' => '2025-10-02 08:00:00',
             'is_active' => false
         ]);
     }

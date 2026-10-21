@@ -213,8 +213,8 @@ class AttendanceModelTest extends TestCase
         // Create active session from yesterday
         $attendance = Attendance::create([
             'user_id' => $this->user->id,
-            'clock_in' => yesterday(),
-            'work_date' => yesterday(),
+            'clock_in' => today()->subDay(),
+            'work_date' => today()->subDay(),
             'session_number' => 1,
             'session_type' => 'work',
             'is_active' => true
@@ -295,9 +295,9 @@ class AttendanceModelTest extends TestCase
         // Create sessions with different durations
         Attendance::create([
             'user_id' => $this->user->id,
-            'clock_in' => $date->setTime(9, 0),
-            'clock_out' => $date->setTime(12, 0),
-            'work_date' => $date,
+            'clock_in' => $date->copy()->setTime(9, 0),
+            'clock_out' => $date->copy()->setTime(12, 0),
+            'work_date' => $date->copy(),
             'session_number' => 1,
             'session_type' => 'work',
             'is_active' => false,
@@ -306,9 +306,9 @@ class AttendanceModelTest extends TestCase
 
         Attendance::create([
             'user_id' => $this->user->id,
-            'clock_in' => $date->setTime(13, 0),
-            'clock_out' => $date->setTime(17, 0),
-            'work_date' => $date,
+            'clock_in' => $date->copy()->setTime(13, 0),
+            'clock_out' => $date->copy()->setTime(17, 0),
+            'work_date' => $date->copy(),
             'session_number' => 2,
             'session_type' => 'work',
             'is_active' => false,
@@ -442,9 +442,9 @@ class AttendanceModelTest extends TestCase
         // Create cross-day session
         $attendance = Attendance::create([
             'user_id' => $this->user->id,
-            'clock_in' => yesterday()->setTime(23, 30),
+            'clock_in' => today()->subDay()->setTime(23, 30),
             'clock_out' => today()->setTime(1, 30),
-            'work_date' => yesterday(),
+            'work_date' => today()->subDay(),
             'session_number' => 1,
             'session_type' => 'work',
             'is_active' => false,
@@ -474,12 +474,13 @@ class AttendanceModelTest extends TestCase
     public function test_is_cross_week(): void
     {
         // Create cross-week session
-        $lastWeek = now()->subWeek();
+        $clockIn = now()->subWeek()->endOfWeek()->subHour();
+        $clockOut = $clockIn->copy()->addHours(2);
         $attendance = Attendance::create([
             'user_id' => $this->user->id,
-            'clock_in' => $lastWeek->endOfWeek()->subHour(),
-            'clock_out' => $lastWeek->addWeek()->startOfWeek()->addHour(),
-            'work_date' => $lastWeek->toDateString(),
+            'clock_in' => $clockIn,
+            'clock_out' => $clockOut,
+            'work_date' => $clockIn->toDateString(),
             'session_number' => 1,
             'session_type' => 'work',
             'is_active' => false,
@@ -519,7 +520,7 @@ class AttendanceModelTest extends TestCase
      */
     public function test_split_cross_day_session(): void
     {
-        $yesterday = yesterday();
+        $yesterday = today()->subDay();
         $attendance = Attendance::create([
             'user_id' => $this->user->id,
             'clock_in' => $yesterday->setTime(23, 30),
@@ -550,7 +551,7 @@ class AttendanceModelTest extends TestCase
     public function test_fix_cross_day_sessions(): void
     {
         // Create cross-day session
-        $yesterday = yesterday();
+        $yesterday = today()->subDay();
         Attendance::create([
             'user_id' => $this->user->id,
             'clock_in' => $yesterday->setTime(23, 30),
@@ -590,8 +591,8 @@ class AttendanceModelTest extends TestCase
         // Create session for yesterday
         Attendance::create([
             'user_id' => $this->user->id,
-            'clock_in' => yesterday()->setTime(9, 0),
-            'work_date' => yesterday(),
+            'clock_in' => today()->subDay()->setTime(9, 0),
+            'work_date' => today()->subDay(),
             'session_number' => 1,
             'session_type' => 'work',
             'is_active' => true

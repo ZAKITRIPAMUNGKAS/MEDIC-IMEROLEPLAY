@@ -14,7 +14,9 @@ return new class extends Migration {
     {
         // 1. Pastikan kolom status diubah menjadi VARCHAR(50) agar tidak dibatasi ENUM lama
         try {
+            if (\Illuminate\Support\Facades\DB::getDriverName() === 'mysql') {
             DB::statement("ALTER TABLE resignation_requests MODIFY COLUMN status VARCHAR(50) NOT NULL DEFAULT 'pending_pnd'");
+        }
         } catch (\Throwable $e) {}
 
         // 2. Tambah kolom bukti dan penonaktifan jika belum ada

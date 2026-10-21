@@ -128,21 +128,25 @@ class AttendanceIntegrationService
             }
         }
 
+        $isSqlite = \Illuminate\Support\Facades\DB::getDriverName() === 'sqlite';
+        $concatCit = $isSqlite ? "('%' || LOWER(TRIM(citizen_id)) || '%')" : "CONCAT('%', LOWER(TRIM(citizen_id)), '%')";
+        $concatStaff = $isSqlite ? "('%' || LOWER(TRIM(staff_id)) || '%')" : "CONCAT('%', LOWER(TRIM(staff_id)), '%')";
+
         // 3. Coba cari jika salah satu mengandung yang lain (Substring match untuk ID >= 4 karakter)
         if (strlen($strippedPlayerId) >= 4) {
-            $user = User::where(function ($q) use ($strippedPlayerId) {
-                $q->where(function($sq) use ($strippedPlayerId) {
+            $user = User::where(function ($q) use ($strippedPlayerId, $concatCit, $concatStaff) {
+                $q->where(function($sq) use ($strippedPlayerId, $concatCit) {
                     $sq->whereNotNull('citizen_id')
-                       ->where(function($ssq) use ($strippedPlayerId) {
+                       ->where(function($ssq) use ($strippedPlayerId, $concatCit) {
                            $ssq->whereRaw('LOWER(citizen_id) LIKE ?', ['%' . $strippedPlayerId . '%'])
-                               ->orWhereRaw('? LIKE CONCAT("%", LOWER(TRIM(citizen_id)), "%")', [$strippedPlayerId]);
+                               ->orWhereRaw("? LIKE {$concatCit}", [$strippedPlayerId]);
                        });
                 })
-                ->orWhere(function($sq) use ($strippedPlayerId) {
+                ->orWhere(function($sq) use ($strippedPlayerId, $concatStaff) {
                     $sq->whereNotNull('staff_id')
-                       ->where(function($ssq) use ($strippedPlayerId) {
+                       ->where(function($ssq) use ($strippedPlayerId, $concatStaff) {
                            $ssq->whereRaw('LOWER(staff_id) LIKE ?', ['%' . $strippedPlayerId . '%'])
-                               ->orWhereRaw('? LIKE CONCAT("%", LOWER(TRIM(staff_id)), "%")', [$strippedPlayerId]);
+                               ->orWhereRaw("? LIKE {$concatStaff}", [$strippedPlayerId]);
                        });
                 });
             })->first();
@@ -158,8 +162,9 @@ class AttendanceIntegrationService
             $cleanPlayerName = trim(str_replace('_', ' ', $cleanPlayerName));
 
             if (strlen($cleanPlayerName) >= 3) {
+                $concatName = $isSqlite ? "('%' || name || '%')" : "CONCAT('%', name, '%')";
                 $user = User::where('name', 'LIKE', '%' . $cleanPlayerName . '%')
-                    ->orWhereRaw('? LIKE CONCAT("%", name, "%")', [$cleanPlayerName])
+                    ->orWhereRaw("? LIKE {$concatName}", [$cleanPlayerName])
                     ->first();
 
                 if ($user) {
@@ -548,13 +553,20 @@ class AttendanceIntegrationService
 
         // Add manual attendance
         foreach ($manual as $record) {
+            $duration = method_exists($record, 'calculateTotalHours')
+                ? $record->calculateTotalHours()
+                : ($record->session_duration ?? 0);
+            $durationFormatted = method_exists($record, 'getFormattedDuration')
+                ? $record->getFormattedDuration()
+                : gmdate('H:i:s', (int)($record->session_duration ?? 0));
+
             $combined->push([
                 'type' => 'manual',
                 'id' => $record->id,
                 'clock_in' => $record->clock_in,
                 'clock_out' => $record->clock_out,
-                'duration' => $record->calculateTotalHours(), // Use consistent method
-                'duration_formatted' => $record->getFormattedDuration(),
+                'duration' => $duration,
+                'duration_formatted' => $durationFormatted,
                 'source' => 'Manual System',
                 'notes' => $record->notes
             ]);
@@ -562,7 +574,9 @@ class AttendanceIntegrationService
 
         // Add automatic attendance
         foreach ($automatic as $record) {
-            $durationSeconds = $record->getDurationInSeconds();
+            $durationSeconds = method_exists($record, 'getDurationInSeconds')
+                ? $record->getDurationInSeconds()
+                : (isset($record->time_on_duty) ? \App\Helpers\TimeHelper::timeToSeconds($record->time_on_duty) : 0);
             $combined->push([
                 'type' => 'automatic',
                 'id' => $record->id,
@@ -652,9 +666,9 @@ class AttendanceIntegrationService
     private function formatTime($minutes)
     {
         $hours = floor($minutes / 60);
-        $minutes = $minutes % 60;
-        $seconds = ($minutes - floor($minutes)) * 60;
+        $remainingMinutes = fmod($minutes, 60);
+        $seconds = round(($remainingMinutes - floor($remainingMinutes)) * 60);
 
-        return sprintf('%02d:%02d:%02d', $hours, floor($minutes), floor($seconds));
+        return sprintf('%02d:%02d:%02d', $hours, floor($remainingMinutes), (int)$seconds);
     }
 }

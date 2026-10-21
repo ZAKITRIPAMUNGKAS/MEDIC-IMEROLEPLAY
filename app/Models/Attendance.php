@@ -190,7 +190,7 @@ class Attendance extends Model
      */
     public function scopeForDate($query, $date)
     {
-        return $query->where('work_date', $date);
+        return $query->whereDate('work_date', $date);
     }
 
     /**
@@ -992,7 +992,7 @@ class Attendance extends Model
     {
         $today = today();
         return self::where('user_id', $userId)
-            ->where('work_date', $today)
+            ->whereDate('work_date', $today)
             ->whereDate('clock_in', $today) // Additional check: ensure clock_in is also today
             ->orderBy('session_number')
             ->get();
@@ -1005,7 +1005,7 @@ class Attendance extends Model
     {
         $today = today();
         return self::where('user_id', $userId)
-            ->where('work_date', $today)
+            ->whereDate('work_date', $today)
             ->where('is_active', true)
             ->first();
     }
