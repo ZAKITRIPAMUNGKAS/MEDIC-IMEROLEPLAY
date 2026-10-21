@@ -44,6 +44,24 @@ class StaseApplication extends Model
     const STATUS_REJECTED          = 'rejected';
     const STATUS_COMPLETED         = 'completed';
 
+    const AVAILABLE_STASES = [
+        'Stase Ilmu Bedah',
+        'Stase Ilmu Penyakit Dalam',
+        'Stase Kesehatan Anak (Pediatri)',
+        'Stase Kebidanan & Kandungan (Obgyn)',
+        'Stase Neurologi (Saraf)',
+        'Stase THT-KL (Telinga Hidung Tenggorok)',
+        'Stase Mata (Oftalmologi)',
+        'Stase Dermatologi & Venereologi (Kulit Kelamin)',
+        'Stase Kedokteran Jiwa (Psikiatri)',
+        'Stase Anestesiologi & Terapi Intensif',
+        'Stase Radiologi',
+        'Stase Kedokteran Forensik & Medikolegal',
+        'Stase Kardiologi & Kedokteran Vaskular (Jantung)',
+        'Stase Pulmonologi & Kedokteran Respirasi (Paru)',
+        'Stase Kegawatdaruratan (IGD & Trauma)',
+    ];
+
     // ─── Relations ────────────────────────────────────────────────────────────
 
     public function user()

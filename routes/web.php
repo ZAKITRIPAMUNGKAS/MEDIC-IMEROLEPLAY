@@ -1678,6 +1678,12 @@ Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->gro
     Route::prefix('msl')->name('msl.')->group(function () {
         Route::get('/',                           [\App\Http\Controllers\Portal\MslCertificationController::class, 'index'])->name('index');
         Route::post('/visum',                     [\App\Http\Controllers\Portal\MslCertificationController::class, 'storeVisum'])->name('visum.store');
+        Route::post('/{certification}/revoke',    [\App\Http\Controllers\Portal\MslCertificationController::class, 'revoke'])->name('revoke');
+        Route::delete('/{certification}',         [\App\Http\Controllers\Portal\MslCertificationController::class, 'destroy'])->name('destroy');
+        // Manajemen Konsulen Stase (Daftar & Cabut Konsulen)
+        Route::post('/konsulen/assign',           [\App\Http\Controllers\Portal\MslCertificationController::class, 'assignKonsulen'])->name('konsulen.assign');
+        Route::post('/konsulen/{user}/revoke',    [\App\Http\Controllers\Portal\MslCertificationController::class, 'revokeKonsulen'])->name('konsulen.revoke');
+        // Kelola Stase & Penerbitan Sertifikat Stase
         Route::get('/stase',                      [\App\Http\Controllers\Portal\MslCertificationController::class, 'staseIndex'])->name('stase.index');
         Route::post('/stase/{stase}/approve',     [\App\Http\Controllers\Portal\MslCertificationController::class, 'staseApprove'])->name('stase.approve');
         Route::post('/stase/{stase}/reject',      [\App\Http\Controllers\Portal\MslCertificationController::class, 'staseReject'])->name('stase.reject');

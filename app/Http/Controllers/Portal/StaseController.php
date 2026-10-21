@@ -27,15 +27,30 @@ class StaseController extends Controller
     {
         $user = Auth::user();
 
-        // Daftar konsulen / dokter spesialis / manajemen medis aktif di hospital yang sama
-        $konsulenList = User::with('role:id,name,display_name')
+        // 1. Ambil daftar Konsulen Stase yang terdaftar resmi di sistem Alta
+        $registeredKonsulen = User::with('role:id,name,display_name')
             ->where('is_active', true)
             ->where('hospital', $user->hospital ?? 'alta')
-            ->whereHas('role', fn($q) => $q->whereIn('name', ['dokter_spesialis', 'supervisor', 'staff_manager', 'manajer', 'executive', 'admin']))
-            ->orderByRoleLevel()
+            ->where('is_konsulen', true)
+            ->orderBy('name')
             ->get(['id', 'name', 'staff_id', 'role_id']);
 
-        return view('portal.stase.create', compact('user', 'konsulenList'));
+        // Jika ada konsulen resmi yang terdaftar, gunakan itu. Jika belum ada yang didaftarkan, fallback ke Dokter Spesialis/Pimpinan
+        if ($registeredKonsulen->isNotEmpty()) {
+            $konsulenList = $registeredKonsulen;
+        } else {
+            $konsulenList = User::with('role:id,name,display_name')
+                ->where('is_active', true)
+                ->where('hospital', $user->hospital ?? 'alta')
+                ->whereHas('role', fn($q) => $q->whereIn('name', ['dokter_spesialis', 'supervisor', 'staff_manager', 'manajer', 'executive', 'admin']))
+                ->orderByRoleLevel()
+                ->get(['id', 'name', 'staff_id', 'role_id']);
+        }
+
+        // 2. Daftar stase yang tersedia
+        $availableStases = StaseApplication::AVAILABLE_STASES;
+
+        return view('portal.stase.create', compact('user', 'konsulenList', 'availableStases'));
     }
 
     public function store(Request $request)
@@ -45,38 +60,42 @@ class StaseController extends Controller
         $validated = $request->validate([
             'konsulen_id' => 'required|exists:users,id',
             'stase_name'  => 'required|string|max:255',
-            'department'  => 'nullable|string|max:255',
-            'start_date'  => 'nullable|date',
-            'end_date'    => 'nullable|date|after_or_equal:start_date',
             'notes'       => 'nullable|string|max:500',
+        ], [
+            'konsulen_id.required' => 'Pilih dokter konsulen pembimbing stase.',
+            'stase_name.required'  => 'Pilih bidang stase yang tersedia.',
         ]);
 
         StaseApplication::create([
             'user_id'     => $user->id,
             'konsulen_id' => $validated['konsulen_id'],
             'stase_name'  => $validated['stase_name'],
-            'department'  => $validated['department'] ?? null,
-            'start_date'  => $validated['start_date'] ?? null,
-            'end_date'    => $validated['end_date'] ?? null,
+            'department'  => null,
+            'start_date'  => null,
+            'end_date'    => null,
             'notes'       => $validated['notes'] ?? null,
             'status'      => StaseApplication::STATUS_PENDING_KONSULEN,
         ]);
 
         return redirect()->route('portal.stase.index')
-            ->with('success', 'Pengajuan stase berhasil dikirim ke Konsulen untuk disetujui.');
+            ->with('success', 'Pengajuan stase berhasil dikirim ke Dokter Konsulen untuk evaluasi dan bimbingan.');
     }
 
-    // ─── Konsulen: Setujui / Tolak Pengajuan Stase ────────────────────────────
+    // ─── Konsulen: Setujui / Input Laporan Pengajuan Stase ────────────────────
 
     public function myApprovals(Request $request)
     {
         $user = Auth::user();
 
-        // Konsulen hanya melihat pengajuan yang ditujukan ke dirinya
-        $applications = StaseApplication::with(['user:id,name,staff_id'])
-            ->where('konsulen_id', $user->id)
-            ->latest()
-            ->paginate(20);
+        // Konsulen melihat pengajuan yang ditujukan ke dirinya (atau admin/executive dapat melihat semua)
+        $query = StaseApplication::with(['user:id,name,staff_id', 'certification'])
+            ->latest();
+
+        if (!$user->isAdmin() && !$user->isExecutiveOrAbove()) {
+            $query->where('konsulen_id', $user->id);
+        }
+
+        $applications = $query->paginate(20);
 
         return view('portal.stase.konsulen', compact('applications', 'user'));
     }
@@ -85,26 +104,33 @@ class StaseController extends Controller
     {
         $user = Auth::user();
 
-        // Izinkan: konsulen yang ditunjuk, manager ke atas, executive, atau admin
+        // Izinkan: konsulen yang ditunjuk, konsulen terdaftar, manager ke atas, executive, atau admin
         $isAuthorized = $stase->konsulen_id === $user->id
             || $user->isAdmin()
             || $user->isExecutiveOrAbove()
-            || $user->isManagerOrAbove();
+            || $user->isManagerOrAbove()
+            || $user->isInDivision('msl');
 
         if (!$isAuthorized) {
-            return back()->with('error', 'Anda tidak memiliki wewenang untuk menyetujui pengajuan stase ini.');
+            return back()->with('error', 'Anda tidak memiliki wewenang untuk mengevaluasi pengajuan stase ini.');
         }
 
-        $request->validate(['konsulen_notes' => 'nullable|string|max:500']);
+        $request->validate([
+            'konsulen_notes' => 'required|string|max:1000',
+            'grade'          => 'nullable|string|max:20',
+        ], [
+            'konsulen_notes.required' => 'Hasil evaluasi / laporan stase wajib diisi oleh dokter konsulen pembimbing.',
+        ]);
 
         $stase->update([
-            'status'               => StaseApplication::STATUS_PENDING_MSL,
+            'status'               => StaseApplication::STATUS_APPROVED_KONSULEN,
             'konsulen_approved_by' => $user->id,
             'konsulen_approved_at' => now(),
             'konsulen_notes'       => $request->konsulen_notes,
+            'grade'                => $request->grade ?: 'Lulus',
         ]);
 
-        return back()->with('success', 'Pengajuan stase ' . $stase->stase_name . ' disetujui. Diteruskan ke MSL.');
+        return back()->with('success', 'Laporan hasil stase ' . $stase->stase_name . ' berhasil disimpan dan disetujui. Berkas diteruskan ke Divisi MSL untuk verifikasi dan penerbitan sertifikat resmi.');
     }
 
     public function konsulenReject(Request $request, StaseApplication $stase)
@@ -115,13 +141,18 @@ class StaseController extends Controller
         $isAuthorized = $stase->konsulen_id === $user->id
             || $user->isAdmin()
             || $user->isExecutiveOrAbove()
-            || $user->isManagerOrAbove();
+            || $user->isManagerOrAbove()
+            || $user->isInDivision('msl');
 
         if (!$isAuthorized) {
             return back()->with('error', 'Anda tidak memiliki wewenang untuk menolak pengajuan stase ini.');
         }
 
-        $request->validate(['konsulen_notes' => 'required|string|max:500']);
+        $request->validate([
+            'konsulen_notes' => 'required|string|max:500',
+        ], [
+            'konsulen_notes.required' => 'Alasan penolakan stase wajib diisi.',
+        ]);
 
         $stase->update([
             'status'               => StaseApplication::STATUS_REJECTED,
@@ -130,6 +161,6 @@ class StaseController extends Controller
             'konsulen_notes'       => $request->konsulen_notes,
         ]);
 
-        return back()->with('success', 'Pengajuan stase ditolak.');
+        return back()->with('success', 'Pengajuan stase berhasil ditolak.');
     }
 }

@@ -29,6 +29,7 @@ class User extends Authenticatable
         'hospital',
         'is_active',
         'is_interviewer',
+        'is_konsulen',
         'profile_image',
         'custom_permissions',
         'custom_salary',
@@ -59,6 +60,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_active' => 'boolean',
             'is_interviewer' => 'boolean',
+            'is_konsulen' => 'boolean',
             'custom_permissions' => 'array',
             'last_seen_at' => 'datetime',
         ];
@@ -199,6 +201,29 @@ class User extends Authenticatable
         if ($this->isAdmin()) return true;
         if ($this->isInDivision('ie', 'pnd')) return true;
         return false;
+    }
+
+    /**
+     * Cek apakah user memiliki hak akses sebagai Konsulen Stase
+     * Staf yang ditugaskan sebagai konsulen (is_konsulen), dokter spesialis,
+     * manajemen medis/executive/admin, atau anggota divisi MSL.
+     */
+    public function isKonsulen(): bool
+    {
+        if ($this->is_konsulen) return true;
+        if ($this->isAdmin()) return true;
+        if ($this->isExecutiveOrAbove()) return true;
+        if ($this->isInDivision('msl')) return true;
+        if ($this->role && in_array(strtolower($this->role->name), ['dokter_spesialis', 'supervisor', 'staff_manager', 'manajer', 'executive', 'admin'])) return true;
+        return false;
+    }
+
+    public function scopeKonsulen($query)
+    {
+        return $query->where(function ($q) {
+            $q->where('is_konsulen', true)
+              ->orWhereHas('role', fn($r) => $r->whereIn('name', ['dokter_spesialis', 'supervisor', 'staff_manager', 'manajer', 'executive', 'admin']));
+        });
     }
 
     public function candidateInterviews()

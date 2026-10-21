@@ -416,9 +416,12 @@
                     @foreach($certifications as $cert)
                         @php
                             $div = strtolower($cert->division ?? 'pnd');
+                            $certType = strtolower($cert->type ?? '');
                             $divColors = [
                                 'ga'  => ['bg' => 'bg-amber-500/20', 'border' => 'border-amber-500/30', 'text' => 'text-amber-300', 'icon' => 'fa-car', 'label' => 'GA Kendaraan'],
-                                'msl' => ['bg' => 'bg-teal-500/20', 'border' => 'border-teal-500/30', 'text' => 'text-teal-300', 'icon' => 'fa-stethoscope', 'label' => 'MSL Visum'],
+                                'msl' => ($certType === 'stase')
+                                    ? ['bg' => 'bg-blue-500/20', 'border' => 'border-blue-500/30', 'text' => 'text-blue-300', 'icon' => 'fa-graduation-cap', 'label' => 'MSL Stase']
+                                    : ['bg' => 'bg-teal-500/20', 'border' => 'border-teal-500/30', 'text' => 'text-teal-300', 'icon' => 'fa-stethoscope', 'label' => 'MSL Visum'],
                                 'pnd' => ['bg' => 'bg-emerald-500/20', 'border' => 'border-emerald-500/30', 'text' => 'text-emerald-300', 'icon' => 'fa-award', 'label' => 'PND Operasi'],
                                 'ie'  => ['bg' => 'bg-sky-500/20', 'border' => 'border-sky-500/30', 'text' => 'text-sky-300', 'icon' => 'fa-file-contract', 'label' => 'IE Kontrak'],
                             ];

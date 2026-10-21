@@ -1440,7 +1440,9 @@
                             $currentRoleLevel = $currentRole?->level ?? 0;
 
                             // Fast privilege check for Konsulen
-                            $isKonsulenUser = ($currentRoleLevel >= 4)
+                            $isKonsulenUser = (!empty($currentUser->is_konsulen))
+                                || (method_exists($currentUser, 'isKonsulen') && $currentUser->isKonsulen())
+                                || ($currentRoleLevel >= 4)
                                 || $currentUser->isAdmin()
                                 || $currentUser->isExecutiveOrAbove()
                                 || $currentUser->isManagerOrAbove()
