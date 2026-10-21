@@ -1242,10 +1242,10 @@
                 @php
                     $canSeeSuratLb = auth()->user()->isAdmin() || (optional(auth()->user()->role)->level ?? 0) >= 2;
                 @endphp
-                <div class="grid grid-cols-1 {{ $canSeeSuratLb ? 'lg:grid-cols-2' : '' }} gap-6 items-stretch">
+                <div class="grid grid-cols-1 {{ $canSeeSuratLb ? 'lg:grid-cols-2' : '' }} gap-6 items-start">
 
                     <!-- KIRI: LEADERBOARD ABSENSI (DUTY) -->
-                    <section id="leaderboardSection" class="soft-card rounded-3xl p-5 lg:p-6 space-y-4 flex flex-col h-full">
+                    <section id="leaderboardSection" class="soft-card rounded-3xl p-5 lg:p-6 space-y-4">
                         <!-- Header -->
                         <div class="flex items-start sm:items-center justify-between gap-2 pb-3 border-b border-sky-800/60">
                             <div class="flex items-center gap-2.5 min-w-0">
@@ -1309,7 +1309,7 @@
                         </form>
 
                         <!-- Daftar Peringkat Absensi -->
-                        <div class="space-y-2.5 flex-1 min-h-0 max-h-[500px] overflow-y-auto pr-1 custom-scrollbar">
+                        <div class="space-y-2.5">
                             @forelse($leaderboard as $index => $staff)
                                 <div class="bg-sky-950/50 rounded-2xl p-3 sm:p-3.5 border {{ $index === 0 ? 'border-amber-400/60 bg-amber-500/10 shadow-xs' : ($index === 1 ? 'border-slate-300/40 bg-slate-400/10' : ($index === 2 ? 'border-amber-600/40 bg-amber-600/10' : 'border-sky-800/50')) }} flex items-center justify-between gap-3 hover:bg-white/5 transition">
                                     <div class="flex items-center gap-3 min-w-0 flex-1">
@@ -1353,7 +1353,7 @@
 
                     <!-- KANAN: LEADERBOARD PENANGANAN SURAT BULANAN -->
                     @if($canSeeSuratLb)
-                    <section id="leaderboardSuratSection" class="soft-card rounded-3xl p-5 lg:p-6 space-y-4 flex flex-col h-full">
+                    <section id="leaderboardSuratSection" class="soft-card rounded-3xl p-5 lg:p-6 space-y-4">
                         <!-- Header -->
                         <div class="flex items-start sm:items-center justify-between gap-2 pb-3 border-b border-sky-800/60">
                             <div class="flex items-center gap-2.5 min-w-0">
@@ -1375,16 +1375,16 @@
                             </div>
                         </div>
 
-                        <!-- Table Container (Scrollable) -->
-                        <div class="overflow-x-auto flex-1 min-h-0 bg-sky-950/60 rounded-2xl border border-sky-500/25 max-h-[500px] overflow-y-auto custom-scrollbar">
+                        <!-- Table Container -->
+                        <div class="overflow-x-auto bg-sky-950/60 rounded-2xl border border-sky-500/25">
                             <table class="w-full text-left border-collapse">
                                 <thead class="sticky top-0 bg-sky-900/95 backdrop-blur-md z-10 shadow-xs">
-                                    <tr class="text-sky-200 text-[11px] font-black uppercase tracking-wider border-b border-sky-800/80">
-                                        <th class="py-3 px-3 text-center w-12 whitespace-nowrap">#</th>
-                                        <th class="py-3 px-3 whitespace-nowrap">Staf Medis</th>
-                                        <th class="py-3 px-3 text-center whitespace-nowrap">Total</th>
-                                        <th class="py-3 px-3 text-center whitespace-nowrap">Disetujui</th>
-                                        <th class="py-3 px-3 text-center whitespace-nowrap">Rate</th>
+                                    <tr class="text-sky-200 text-[10px] sm:text-[11px] font-black uppercase tracking-wider border-b border-sky-800/80">
+                                        <th class="py-2.5 px-2 text-center w-8 whitespace-nowrap">#</th>
+                                        <th class="py-2.5 px-2 whitespace-nowrap">Staf Medis</th>
+                                        <th class="py-2.5 px-2 text-center whitespace-nowrap">Total</th>
+                                        <th class="py-2.5 px-2 text-center whitespace-nowrap">Disetujui</th>
+                                        <th class="py-2.5 px-2 text-center whitespace-nowrap w-16">Rate</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-sky-800/40 text-xs">
@@ -1395,7 +1395,7 @@
                                         @endphp
                                         <tr class="hover:bg-white/5 transition {{ $index === 0 ? 'bg-amber-500/10' : ($index === 1 ? 'bg-slate-400/5' : ($index === 2 ? 'bg-amber-600/5' : '')) }}">
                                             <!-- Peringkat -->
-                                            <td class="py-3 px-3 text-center whitespace-nowrap">
+                                            <td class="py-2.5 px-2 text-center whitespace-nowrap">
                                                 <div class="inline-flex items-center justify-center relative">
                                                     <div class="w-7 h-7 rounded-lg {{ $index === 0 ? 'bg-amber-500 text-slate-950 font-black shadow-xs' : ($index === 1 ? 'bg-slate-300 text-slate-900 font-bold' : ($index === 2 ? 'bg-amber-600 text-white font-bold' : 'bg-sky-700/60 text-sky-200 font-semibold border border-sky-500/30')) }} flex items-center justify-center text-xs">
                                                         {{ $index + 1 }}
@@ -1407,7 +1407,7 @@
                                             </td>
 
                                             <!-- Staf Medis & Role -->
-                                            <td class="py-3 px-3 whitespace-nowrap">
+                                            <td class="py-2.5 px-2 whitespace-nowrap">
                                                 <div class="flex items-center gap-2">
                                                     <div class="w-7 h-7 rounded-full bg-sky-900 border border-sky-400/30 flex items-center justify-center text-sky-200 text-[10px] font-bold shrink-0">
                                                         {{ strtoupper(substr($staff->name, 0, 2)) }}
@@ -1427,13 +1427,13 @@
                                             </td>
 
                                             <!-- Total Ditangani -->
-                                            <td class="py-3 px-3 text-center whitespace-nowrap">
+                                            <td class="py-2.5 px-2 text-center whitespace-nowrap">
                                                 <span class="font-black text-sm text-cyan-300 font-mono">{{ $staff->forms_count }}</span>
                                                 <span class="text-[10px] text-sky-300/60 block">surat</span>
                                             </td>
 
                                             <!-- Disetujui / Ditolak -->
-                                            <td class="py-3 px-3 text-center whitespace-nowrap">
+                                            <td class="py-2.5 px-2 text-center whitespace-nowrap">
                                                 <div class="inline-flex flex-col items-center gap-0.5">
                                                     <span class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-300">
                                                         <i class="fa-solid fa-circle-check text-[10px]"></i> {{ $staff->approved_count }}
@@ -1447,7 +1447,7 @@
                                             </td>
 
                                             <!-- Tingkat Persetujuan -->
-                                            <td class="py-3 px-3 text-center whitespace-nowrap">
+                                            <td class="py-2.5 px-2 text-center whitespace-nowrap">
                                                 <div class="inline-flex flex-col items-center gap-1 w-16">
                                                     <span class="text-xs font-bold text-white font-mono">{{ $approvalRate }}%</span>
                                                     <div class="w-full h-1 bg-sky-900 rounded-full overflow-hidden border border-sky-700/40">
