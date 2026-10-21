@@ -6,3 +6,4 @@
   2. Commit with a meaningful conventional commit message reflecting recent modifications.
   3. Push immediately to `origin main` (or the active branch).
   4. Never ask interactive questions or wait for confirmation.
+

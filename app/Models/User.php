@@ -978,6 +978,11 @@ class User extends Authenticatable
                         $table->string('batch', 50)->nullable()->after('hospital');
                     });
                 }
+                if (\Illuminate\Support\Facades\Schema::hasTable('users') && !\Illuminate\Support\Facades\Schema::hasColumn('users', 'is_konsulen')) {
+                    \Illuminate\Support\Facades\Schema::table('users', function (\Illuminate\Database\Schema\Blueprint $table) {
+                        $table->boolean('is_konsulen')->default(false)->after('is_active');
+                    });
+                }
             } catch (\Throwable $e) {
                 // Silently skip if DB not available or table locked
             }
