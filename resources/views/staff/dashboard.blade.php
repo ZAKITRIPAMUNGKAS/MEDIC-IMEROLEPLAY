@@ -64,12 +64,117 @@
             display: none !important;
         }
 
-        /* Reposition Wrapped floating button so it never overlaps the left sidebar menu or Live Chat */
-        a[href*="wrapped"] {
-            left: auto !important;
-            right: 175px !important;
+        /* ========================================================
+           FLOATING WIDGETS DOCK (Live Chat, Tanya AI, Wrapped)
+           Clean, unified vertical stack on bottom-right — No overlaps
+           ======================================================== */
+        /* 1. Live Chat widget button (bottom level) */
+        .fixed.bottom-6.right-6 {
             bottom: 24px !important;
-            z-index: 99990 !important;
+            right: 24px !important;
+            z-index: 99991 !important;
+        }
+        .fixed.bottom-6.right-6 a {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 0.625rem !important;
+            padding: 0.65rem 1.15rem !important;
+            border-radius: 1rem !important;
+            box-shadow: 0 10px 25px -3px rgba(14, 165, 233, 0.45), 0 4px 10px -2px rgba(0, 0, 0, 0.3) !important;
+            border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+            backdrop-filter: blur(8px) !important;
+        }
+
+        /* 2. Tanya AI trigger button (middle level) */
+        #ai-chat-btn {
+            position: fixed !important;
+            bottom: 84px !important;
+            right: 24px !important;
+            z-index: 99992 !important;
+            width: 46px !important;
+            height: 46px !important;
+            border-radius: 50% !important;
+            box-shadow: 0 10px 25px -3px rgba(14, 165, 233, 0.5), 0 4px 10px -2px rgba(0, 0, 0, 0.3) !important;
+            border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+
+        /* 3. Wrapped button (top level, stacked neatly above AI) */
+        a[href*="wrapped"] {
+            position: fixed !important;
+            left: auto !important;
+            right: 24px !important;
+            bottom: 142px !important;
+            z-index: 99993 !important;
+        }
+        a[href*="wrapped"] > div > div.w-14 {
+            width: 46px !important;
+            height: 46px !important;
+            border-radius: 1rem !important;
+            box-shadow: 0 10px 25px -3px rgba(236, 72, 153, 0.45), 0 4px 10px -2px rgba(0, 0, 0, 0.3) !important;
+            border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+        }
+        a[href*="wrapped"] .bottom-full {
+            left: auto !important;
+            right: 0 !important;
+        }
+        a[href*="wrapped"] .bottom-full .rotate-45 {
+            left: auto !important;
+            right: 18px !important;
+        }
+
+        /* Mobile Adjustments for Floating Widgets (Clean 42px icons) */
+        @media (max-width: 640px) {
+            .fixed.bottom-6.right-6 {
+                bottom: 16px !important;
+                right: 16px !important;
+            }
+            .fixed.bottom-6.right-6 a {
+                padding: 0.55rem !important;
+                width: 42px !important;
+                height: 42px !important;
+                justify-content: center !important;
+                border-radius: 0.875rem !important;
+            }
+            #ai-chat-btn {
+                bottom: 68px !important;
+                right: 16px !important;
+                width: 42px !important;
+                height: 42px !important;
+            }
+            a[href*="wrapped"] {
+                bottom: 118px !important;
+                right: 16px !important;
+            }
+            a[href*="wrapped"] > div > div.w-14 {
+                width: 42px !important;
+                height: 42px !important;
+                border-radius: 0.875rem !important;
+            }
+        }
+
+        /* Smooth Responsive Scrollbars for Tables */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(14, 165, 233, 0.35) rgba(8, 47, 73, 0.4);
+        }
+        .table-responsive::-webkit-scrollbar {
+            height: 6px;
+        }
+        .table-responsive::-webkit-scrollbar-track {
+            background: rgba(8, 47, 73, 0.4);
+            border-radius: 6px;
+        }
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: rgba(14, 165, 233, 0.35);
+            border-radius: 6px;
+        }
+        .table-responsive::-webkit-scrollbar-thumb:hover {
+            background: rgba(14, 165, 233, 0.65);
         }
 
         @media (min-width: 1024px) {
@@ -965,7 +1070,7 @@
             </header>
 
             <!-- MAIN SCROLLABLE BODY -->
-            <main class="p-5 lg:p-8 space-y-7">
+            <main class="p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-7 pb-44 sm:pb-48">
 
                 <!-- Alert for Missing Citizen ID -->
                 @if(!auth()->user()->citizen_id)
@@ -1468,6 +1573,9 @@
                                 </div>
                             </div>
                             <div class="flex items-center gap-2 shrink-0">
+                                <span class="lg:hidden text-[10px] text-sky-300/70 font-semibold flex items-center gap-1 bg-sky-900/40 px-2 py-0.5 rounded-md border border-sky-600/30">
+                                    <i class="fa-solid fa-arrows-left-right text-[8px] text-cyan-400"></i> Geser
+                                </span>
                                 <span class="text-xs font-bold bg-sky-500/25 border border-sky-400/30 text-cyan-200 px-2.5 py-1 rounded-full">
                                     <i class="fa-solid fa-users mr-1"></i>{{ $formLeaderboard->count() }} Staf
                                 </span>
@@ -1475,8 +1583,8 @@
                         </div>
 
                         <!-- Table Container -->
-                        <div class="overflow-x-auto bg-sky-950/60 rounded-2xl border border-sky-500/25">
-                            <table class="w-full text-left border-collapse">
+                        <div class="table-responsive overflow-x-auto bg-sky-950/60 rounded-2xl border border-sky-500/25">
+                            <table class="w-full min-w-[420px] text-left border-collapse">
                                 <thead class="sticky top-0 bg-sky-900/95 backdrop-blur-md z-10 shadow-xs">
                                     <tr class="text-sky-200 text-[10px] sm:text-[11px] font-black uppercase tracking-wider border-b border-sky-800/80">
                                         <th class="py-2.5 px-2 text-center w-8 whitespace-nowrap">#</th>
@@ -1511,16 +1619,16 @@
                                                     <div class="w-7 h-7 rounded-full bg-sky-900 border border-sky-400/30 flex items-center justify-center text-sky-200 text-[10px] font-bold shrink-0">
                                                         {{ strtoupper(substr($staff->name, 0, 2)) }}
                                                     </div>
-                                                    <div>
+                                                    <div class="min-w-0">
                                                         <div class="flex items-center gap-1.5">
-                                                            <span class="font-bold text-white text-xs whitespace-nowrap">{{ $staff->name }}</span>
+                                                            <span class="font-bold text-white text-xs truncate max-w-[130px] sm:max-w-[180px]">{{ $staff->name }}</span>
                                                             @if($index < 3)
-                                                                <span class="px-1.5 py-0.5 rounded-full {{ $index === 0 ? 'bg-amber-400/20 text-amber-300 border border-amber-400/40' : ($index === 1 ? 'bg-slate-300/20 text-slate-200 border border-slate-300/40' : 'bg-amber-600/20 text-amber-300 border border-amber-600/40') }} font-extrabold text-[9px]">
+                                                                <span class="px-1.5 py-0.5 rounded-full {{ $index === 0 ? 'bg-amber-400/20 text-amber-300 border border-amber-400/40' : ($index === 1 ? 'bg-slate-300/20 text-slate-200 border border-slate-300/40' : 'bg-amber-600/20 text-amber-300 border border-amber-600/40') }} font-extrabold text-[9px] shrink-0">
                                                                     #{{ $index + 1 }}
                                                                 </span>
                                                             @endif
                                                         </div>
-                                                        <span class="text-[10px] text-sky-300/80 block whitespace-nowrap">{{ $staff->role->display_name ?? 'Staf' }}</span>
+                                                        <span class="text-[10px] text-sky-300/80 block truncate max-w-[130px] sm:max-w-[180px]">{{ $staff->role->display_name ?? 'Staf' }}</span>
                                                     </div>
                                                 </div>
                                             </td>
@@ -1583,13 +1691,18 @@
                                 <p class="text-xs text-sky-200">Daftar pengajuan surat tindakan medis & psikolog warga</p>
                             </div>
                         </div>
-                        <a href="{{ route('staff.forms') }}" class="text-xs sm:text-sm font-bold text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition">
-                            Lihat Semua <i class="fa-solid fa-arrow-right text-xs"></i>
-                        </a>
+                        <div class="flex items-center gap-2.5">
+                            <span class="md:hidden text-[10px] text-sky-300/70 font-semibold flex items-center gap-1 bg-sky-900/40 px-2 py-0.5 rounded-md border border-sky-600/30">
+                                <i class="fa-solid fa-arrows-left-right text-[8px] text-cyan-400"></i> Geser
+                            </span>
+                            <a href="{{ route('staff.forms') }}" class="text-xs sm:text-sm font-bold text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition">
+                                Lihat Semua <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </a>
+                        </div>
                     </div>
 
-                    <div class="overflow-x-auto bg-sky-950/60 rounded-2xl border border-sky-500/25">
-                        <table class="w-full text-left border-collapse">
+                    <div class="table-responsive overflow-x-auto bg-sky-950/60 rounded-2xl border border-sky-500/25">
+                        <table class="w-full min-w-[760px] text-left border-collapse">
                             <thead>
                                 <tr class="bg-sky-900/60 text-sky-200 text-[11px] font-black uppercase tracking-wider border-b border-sky-800/60">
                                     <th class="py-3.5 px-4 whitespace-nowrap">ID</th>
@@ -1608,7 +1721,7 @@
                                     @endphp
                                     <tr class="hover:bg-white/5 transition">
                                         <td class="py-3.5 px-4 font-mono font-bold text-sky-300 whitespace-nowrap">
-                                            #{{ str_pad($form->id, 6, '0', STR_PAD_LEFT) }}
+                                             #{{ str_pad($form->id, 6, '0', STR_PAD_LEFT) }}
                                         </td>
                                         <td class="py-3.5 px-4 font-bold text-white whitespace-nowrap">
                                             {{ $form->character_name }}
@@ -1639,7 +1752,7 @@
                                             {{ $form->created_at->format('d/m/Y H:i') }}
                                         </td>
                                         <td class="py-3.5 px-4 whitespace-nowrap">
-                                            <div class="flex flex-wrap items-center gap-1.5">
+                                            <div class="flex items-center gap-1.5 whitespace-nowrap">
                                                 <a href="{{ route('staff.forms.show', $form->id) }}" class="px-3 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs flex items-center gap-1.5 transition shadow-xs">
                                                     <i class="fa-solid fa-eye"></i> Lihat
                                                 </a>
@@ -1684,13 +1797,18 @@
                                 <p class="text-xs text-sky-200">Daftar antrean konsultasi poliklinik & spesialis warga</p>
                             </div>
                         </div>
-                        <a href="{{ route('staff.forms') }}?type=appointment" class="text-xs sm:text-sm font-bold text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition">
-                            Lihat Semua <i class="fa-solid fa-arrow-right text-xs"></i>
-                        </a>
+                        <div class="flex items-center gap-2.5">
+                            <span class="md:hidden text-[10px] text-sky-300/70 font-semibold flex items-center gap-1 bg-sky-900/40 px-2 py-0.5 rounded-md border border-sky-600/30">
+                                <i class="fa-solid fa-arrows-left-right text-[8px] text-emerald-400"></i> Geser
+                            </span>
+                            <a href="{{ route('staff.forms') }}?type=appointment" class="text-xs sm:text-sm font-bold text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition">
+                                Lihat Semua <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </a>
+                        </div>
                     </div>
 
-                    <div class="overflow-x-auto bg-sky-950/60 rounded-2xl border border-sky-500/25">
-                        <table class="w-full text-left border-collapse">
+                    <div class="table-responsive overflow-x-auto bg-sky-950/60 rounded-2xl border border-sky-500/25">
+                        <table class="w-full min-w-[780px] text-left border-collapse">
                             <thead>
                                 <tr class="bg-sky-900/60 text-sky-200 text-[11px] font-black uppercase tracking-wider border-b border-sky-800/60">
                                     <th class="py-3.5 px-4 whitespace-nowrap">ID</th>
@@ -1747,7 +1865,7 @@
                                             @endif
                                         </td>
                                         <td class="py-3.5 px-4 whitespace-nowrap" id="aksi-{{ $appointment->id }}">
-                                            <div class="flex flex-wrap items-center gap-1.5">
+                                            <div class="flex items-center gap-1.5 whitespace-nowrap">
                                                 <a href="{{ route('staff.forms.show', $appointment->id) }}" class="px-3 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs flex items-center gap-1 transition shadow-xs">
                                                     <i class="fa-solid fa-eye"></i> Lihat
                                                 </a>
