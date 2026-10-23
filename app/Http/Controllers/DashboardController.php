@@ -226,6 +226,9 @@ class DashboardController extends Controller
             }
         }
 
+        // Get user operation requirement progress & notes matching staff profile
+        $userOpProfile = $this->getUserOperationProfile($user);
+
         return view('staff.dashboard', compact(
             'leaderboard',
             'formLeaderboard',
@@ -241,7 +244,8 @@ class DashboardController extends Controller
             'heatmapStats',
             'weeklyStats',
             'totalEmsHours',
-            'opStats'
+            'opStats',
+            'userOpProfile'
         ));
     }
 
@@ -940,5 +944,180 @@ class DashboardController extends Controller
                 AVG(session_duration) as avg_hours_per_day
             ')
             ->first();
+    }
+
+    /**
+     * Build user operation requirement progress and notes matching staff member profile.
+     */
+    private function getUserOperationProfile(User $user): array
+    {
+        try {
+            $user->loadMissing(['role', 'subRole', 'medicRole']);
+
+            $userTotalOperations = 0;
+            if (\Illuminate\Support\Facades\Schema::hasTable('operation_records')) {
+                $userTotalOperations = \App\Models\OperationRecord::where(function ($query) use ($user) {
+                    $query->where('created_by', $user->id)
+                          ->orWhere('dpjp_id', $user->id)
+                          ->orWhereHas('members', fn($q) => $q->where('users.id', $user->id));
+                })->count();
+            }
+
+            $dpjpMinor = method_exists($user, 'getDpjpMinorOperationCount') ? $user->getDpjpMinorOperationCount() : 0;
+            $assistantMinor = method_exists($user, 'getAssistantMinorOperationCount') ? $user->getAssistantMinorOperationCount() : 0;
+            $assistantMayor = method_exists($user, 'getAssistantMayorOperationCount') ? $user->getAssistantMayorOperationCount() : 0;
+            $dpjpMayor = method_exists($user, 'getDpjpMayorOperationCount') ? $user->getDpjpMayorOperationCount() : 0;
+            $hasOpCert = method_exists($user, 'hasCertification') ? $user->hasCertification('operation_cert') : false;
+
+            $currentMedicRole = $user->effective_medic_role;
+            if (!$currentMedicRole || !in_array(strtolower($currentMedicRole->name), ['trainee', 'perawat', 'co_ass', 'dokter_umum', 'dokter_spesialis'])) {
+                if ($user->role && in_array(strtolower($user->role->name), ['trainee', 'perawat', 'co_ass', 'dokter_umum', 'dokter_spesialis'])) {
+                    $currentMedicRole = $user->role;
+                } else {
+                    $currentMedicRole = \App\Models\StaffRole::where('name', 'trainee')->first();
+                }
+            }
+
+            $currentMedicLevel = $currentMedicRole?->level ?? 0;
+            $currentMedicName = strtolower($currentMedicRole?->name ?? 'trainee');
+            $isHighestLevel = ($currentMedicLevel >= 4 || $currentMedicName === 'dokter_spesialis');
+
+            $promotionTargetRole = null;
+            $promotionChecklist = [];
+            $promotionProgressPercent = 0;
+            $promotionAllMet = false;
+
+            if (!$isHighestLevel) {
+                $promotionTargetRole = \App\Models\StaffRole::whereIn('name', ['perawat', 'co_ass', 'dokter_umum', 'dokter_spesialis'])
+                    ->where('level', '>', $currentMedicLevel)
+                    ->orderBy('level', 'asc')
+                    ->first();
+
+                if ($promotionTargetRole && method_exists($user, 'buildPromotionChecklist')) {
+                    try {
+                        $promotionChecklist = $user->buildPromotionChecklist($promotionTargetRole);
+                        if (!empty($promotionChecklist)) {
+                            $metCount = collect($promotionChecklist)->where('met', true)->count();
+                            $totalCount = count($promotionChecklist);
+                            $promotionProgressPercent = round(($metCount / $totalCount) * 100);
+                            $promotionAllMet = ($metCount === $totalCount);
+                        }
+                    } catch (\Throwable $e) {
+                        $promotionChecklist = [];
+                    }
+                }
+            }
+
+            $opRequirements = [];
+            $opTargetTotal = 0;
+            $opTargetDone = 0;
+            $opMet = false;
+            $opSummaryLabel = 'Belum Memenuhi';
+
+            if ($isHighestLevel) {
+                $opMet = true;
+                $opTargetTotal = max(1, $userTotalOperations);
+                $opTargetDone = $userTotalOperations;
+                $opPercent = 100;
+                $opSummaryLabel = 'Standar Spesialis Terpenuhi';
+                $opRequirements = [
+                    ['label' => 'Total Rekam Operasi', 'current' => $userTotalOperations, 'target' => max(1, $userTotalOperations), 'met' => true],
+                ];
+            } elseif ($currentMedicName === 'co_ass' || ($promotionTargetRole && in_array($promotionTargetRole->name, ['dokter_umum', 'dokter']))) {
+                // Co-Ass ke Dokter Umum: 5 DPJP Minor & 5 Asisten Mayor
+                $opTargetTotal = 10;
+                $opTargetDone = min(5, $dpjpMinor) + min(5, $assistantMayor);
+                $opPercent = round(($opTargetDone / $opTargetTotal) * 100);
+                $opMet = ($dpjpMinor >= 5 && $assistantMayor >= 5);
+                $opSummaryLabel = $opMet ? 'Memenuhi Syarat Operasi' : 'Belum Memenuhi Kuota';
+                $opRequirements = [
+                    ['label' => 'DPJP Minor', 'current' => $dpjpMinor, 'target' => 5, 'met' => $dpjpMinor >= 5],
+                    ['label' => 'Asisten Mayor', 'current' => $assistantMayor, 'target' => 5, 'met' => $assistantMayor >= 5],
+                    ['label' => 'Sertifikat PND', 'current' => $hasOpCert ? 'Ada' : 'Belum', 'target' => 'Ada', 'met' => $hasOpCert],
+                ];
+            } elseif ($currentMedicName === 'perawat' || ($promotionTargetRole && in_array($promotionTargetRole->name, ['co_ass', 'coass']))) {
+                // Perawat ke Co-Ass: 5 Asisten Minor & 1 Asisten Mayor
+                $opTargetTotal = 6;
+                $opTargetDone = min(5, $assistantMinor) + min(1, $assistantMayor);
+                $opPercent = round(($opTargetDone / $opTargetTotal) * 100);
+                $opMet = ($assistantMinor >= 5 && $assistantMayor >= 1);
+                $opSummaryLabel = $opMet ? 'Memenuhi Syarat Operasi' : 'Belum Memenuhi Kuota';
+                $opRequirements = [
+                    ['label' => 'Asisten Minor', 'current' => $assistantMinor, 'target' => 5, 'met' => $assistantMinor >= 5],
+                    ['label' => 'Asisten Mayor', 'current' => $assistantMayor, 'target' => 1, 'met' => $assistantMayor >= 1],
+                    ['label' => 'Sertifikat PND', 'current' => $hasOpCert ? 'Ada' : 'Belum', 'target' => 'Ada', 'met' => $hasOpCert],
+                ];
+            } elseif ($currentMedicName === 'dokter_umum') {
+                $opTargetTotal = 5;
+                $opTargetDone = min(5, $userTotalOperations);
+                $opPercent = round(($opTargetDone / $opTargetTotal) * 100);
+                $opMet = ($userTotalOperations >= 5);
+                $opSummaryLabel = $opMet ? 'Aktif Menangani Operasi' : 'Belum Memenuhi Target';
+                $opRequirements = [
+                    ['label' => 'Total Tindakan Operasi', 'current' => $userTotalOperations, 'target' => 5, 'met' => $userTotalOperations >= 5],
+                ];
+            } else {
+                // Trainee or Management
+                $opTargetTotal = 5;
+                $opTargetDone = min(5, $userTotalOperations);
+                $opPercent = round(($opTargetDone / $opTargetTotal) * 100);
+                $opMet = ($userTotalOperations >= 5);
+                $opSummaryLabel = $opMet ? 'Memenuhi Kuota Operasi' : 'Belum Memenuhi Operasi';
+                $opRequirements = [
+                    ['label' => 'Total Operasi Ditangani', 'current' => $userTotalOperations, 'target' => 5, 'met' => $userTotalOperations >= 5],
+                    ['label' => 'Sertifikat PND', 'current' => $hasOpCert ? 'Ada' : 'Belum', 'target' => 'Ada', 'met' => $hasOpCert],
+                ];
+            }
+
+            $userEvaluations = collect([]);
+            if (\Illuminate\Support\Facades\Schema::hasTable('manager_evaluations')) {
+                $userEvaluations = \App\Models\ManagerEvaluation::where('manager_id', $user->id)->latest()->get();
+            }
+            $userEvalAvg = round($userEvaluations->avg('rating') ?? 0, 1);
+            $userEvalCount = $userEvaluations->count();
+            $latestEvaluation = $userEvaluations->first();
+
+            $latestPromotion = null;
+            if (\Illuminate\Support\Facades\Schema::hasTable('promotion_applications')) {
+                $latestPromotion = \App\Models\PromotionApplication::where('user_id', $user->id)->latest()->first();
+            }
+
+            return [
+                'user_name' => $user->name,
+                'current_role' => $currentMedicRole?->display_name ?? ($user->role?->display_name ?? 'Staf Medis'),
+                'target_role' => $promotionTargetRole?->display_name ?? ($isHighestLevel ? 'Dokter Spesialis' : 'Perawat'),
+                'total_ops' => $userTotalOperations,
+                'op_target_done' => $opTargetDone,
+                'op_target_total' => $opTargetTotal,
+                'op_percent' => $opPercent,
+                'op_met' => $opMet,
+                'op_summary_label' => $opSummaryLabel,
+                'op_requirements' => $opRequirements,
+                'eval_avg' => $userEvalAvg,
+                'eval_count' => $userEvalCount,
+                'latest_eval_comment' => $latestEvaluation?->komentar,
+                'latest_pnd_notes' => $latestPromotion?->pnd_notes,
+                'is_highest_level' => $isHighestLevel,
+            ];
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('getUserOperationProfile error: ' . $e->getMessage());
+            return [
+                'user_name' => $user->name,
+                'current_role' => $user->role?->display_name ?? 'Staf Medis',
+                'target_role' => '-',
+                'total_ops' => 0,
+                'op_target_done' => 0,
+                'op_target_total' => 5,
+                'op_percent' => 0,
+                'op_met' => false,
+                'op_summary_label' => 'Belum Memenuhi Operasi',
+                'op_requirements' => [],
+                'eval_avg' => 0,
+                'eval_count' => 0,
+                'latest_eval_comment' => null,
+                'latest_pnd_notes' => null,
+                'is_highest_level' => false,
+            ];
+        }
     }
 }

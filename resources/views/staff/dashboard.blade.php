@@ -3,6 +3,25 @@
 @section('title', 'Dashboard Staf Medis - IME Portal Medis')
 
 @section('content')
+@php
+    $userOpProfile = $userOpProfile ?? [
+        'user_name' => auth()->user()?->name ?? 'Staf',
+        'current_role' => auth()->user()?->role?->display_name ?? 'Staf Medis',
+        'target_role' => 'Perawat',
+        'total_ops' => 0,
+        'op_target_done' => 0,
+        'op_target_total' => 5,
+        'op_percent' => 0,
+        'op_met' => false,
+        'op_summary_label' => 'Belum Memenuhi Operasi',
+        'op_requirements' => [],
+        'eval_avg' => 0,
+        'eval_count' => 0,
+        'latest_eval_comment' => null,
+        'latest_pnd_notes' => null,
+        'is_highest_level' => false,
+    ];
+@endphp
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Plus Jakarta Sans -->
@@ -340,6 +359,86 @@
                     <div class="mt-2 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full {{ isset($activeSession) && $activeSession ? 'bg-amber-500/20 border border-amber-400/40 text-amber-300' : 'bg-emerald-500/20 border border-emerald-400/40 text-emerald-300' }} text-[10px] font-semibold">
                         <span class="w-1.5 h-1.5 rounded-full {{ isset($activeSession) && $activeSession ? 'bg-amber-400' : 'bg-emerald-400' }} animate-pulse"></span> 
                         {{ isset($activeSession) && $activeSession ? 'Sedang Bertugas (Sesi ' . $activeSession->session_number . ')' : 'Siap Bertugas' }}
+                    </div>
+
+                    <!-- Status & Progres Operasi Medis -->
+                    <div class="mt-3 pt-3 border-t border-sky-800/40 text-left space-y-2">
+                        <div class="flex items-center justify-between gap-1 text-[11px]">
+                            <span class="font-bold text-sky-200 flex items-center gap-1.5">
+                                <i class="fa-solid fa-procedures text-cyan-400"></i> Progres Operasi
+                            </span>
+                            @if($userOpProfile['op_met'] ?? false)
+                                <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1 shadow-xs">
+                                    <i class="fa-solid fa-check text-[8px]"></i> Memenuhi
+                                </span>
+                            @else
+                                <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-rose-500/20 text-rose-300 border border-rose-500/30 flex items-center gap-1 shadow-xs">
+                                    <i class="fa-solid fa-xmark text-[8px]"></i> Belum Memenuhi
+                                </span>
+                            @endif
+                        </div>
+
+                        <!-- Progress Bar & Count -->
+                        <div class="space-y-1">
+                            <div class="flex justify-between items-center text-[10px]">
+                                <span class="text-sky-300/80">{{ $userOpProfile['op_target_done'] ?? 0 }} / {{ $userOpProfile['op_target_total'] ?? 0 }} Tindakan</span>
+                                <span class="font-bold {{ ($userOpProfile['op_met'] ?? false) ? 'text-emerald-400' : 'text-sky-200' }}">{{ $userOpProfile['op_percent'] ?? 0 }}%</span>
+                            </div>
+                            <div class="w-full bg-sky-950/80 rounded-full h-1.5 overflow-hidden border border-sky-800/50 p-0.5">
+                                <div class="h-full rounded-full transition-all duration-500 {{ ($userOpProfile['op_met'] ?? false) ? 'bg-gradient-to-r from-emerald-500 to-teal-400' : 'bg-gradient-to-r from-sky-500 to-cyan-400' }}"
+                                     style="width: {{ min(100, max(0, $userOpProfile['op_percent'] ?? 0)) }}%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Detail Syarat Operasi Pills -->
+                        @if(!empty($userOpProfile['op_requirements']))
+                            <div class="grid grid-cols-2 gap-1.5 pt-0.5">
+                                @foreach($userOpProfile['op_requirements'] as $req)
+                                    <div class="p-1.5 rounded-lg border text-[10px] flex items-center justify-between {{ $req['met'] ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200' : 'bg-sky-950/60 border-sky-800/40 text-sky-300/80' }}" title="{{ $req['label'] }}: {{ $req['current'] }}/{{ $req['target'] }}">
+                                        <span class="truncate pr-1 text-[9px] font-medium">{{ $req['label'] }}</span>
+                                        <span class="font-bold shrink-0 text-[9px] {{ $req['met'] ? 'text-emerald-400' : 'text-slate-400' }}">
+                                            {{ $req['current'] }}/{{ $req['target'] }}
+                                        </span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        <!-- Catatan Staf & Medis (Persis Seperti Profil Anggota) -->
+                        <div class="mt-2 p-2 rounded-xl bg-sky-950/70 border border-sky-800/50 space-y-1.5 shadow-inner">
+                            <div class="flex items-center justify-between text-[10px] font-bold text-sky-300">
+                                <span class="flex items-center gap-1 text-[10px]">
+                                    <i class="fa-solid fa-clipboard-list text-amber-400"></i> Catatan Staf
+                                </span>
+                                @if(($userOpProfile['eval_count'] ?? 0) > 0)
+                                    <span class="text-amber-300 font-bold text-[9px] flex items-center gap-0.5">
+                                        <i class="fa-solid fa-star text-[8px]"></i> {{ number_format($userOpProfile['eval_avg'], 1) }} ({{ $userOpProfile['eval_count'] }})
+                                    </span>
+                                @endif
+                            </div>
+
+                            @if(!empty($userOpProfile['latest_eval_comment']))
+                                <p class="text-[9.5px] text-slate-300 italic line-clamp-2 leading-snug">
+                                    "{!! Str::limit(e($userOpProfile['latest_eval_comment']), 75) !!}"
+                                </p>
+                            @elseif(!empty($userOpProfile['latest_pnd_notes']))
+                                <p class="text-[9.5px] text-sky-200/90 leading-snug">
+                                    <strong class="text-cyan-300">PND:</strong> "{{ Str::limit(e($userOpProfile['latest_pnd_notes']), 75) }}"
+                                </p>
+                            @else
+                                <p class="text-[9.5px] text-sky-200/70 leading-snug flex items-start gap-1">
+                                    <i class="fa-solid fa-info-circle text-sky-400 mt-0.5 text-[8.5px] shrink-0"></i>
+                                    <span>Data syarat &amp; kuota operasi otomatis tersinkronisasi dari rekam medis &amp; database.</span>
+                                </p>
+                            @endif
+
+                            <div class="pt-1 border-t border-sky-800/40 flex items-center justify-between text-[9px]">
+                                <span class="text-sky-400/80 truncate pr-1">Target: <strong class="text-white">{{ $userOpProfile['target_role'] ?? 'Perawat' }}</strong></span>
+                                <a href="{{ route('staff.members.show', auth()->id()) }}" class="text-cyan-300 hover:text-white font-semibold flex items-center gap-1 transition-colors shrink-0" title="Buka Profil Lengkap">
+                                    Detail <i class="fa-solid fa-arrow-right text-[8px]"></i>
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
