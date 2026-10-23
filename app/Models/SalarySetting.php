@@ -129,38 +129,81 @@ class SalarySetting extends Model
             return $setting;
         }
 
-        // Mapping dictionary between Indonesian and English / aliases
+        // Mapping dictionary between Indonesian and English / aliases (comprehensive & bidirectional)
         $roleAliases = [
-            'dokter_spesialis' => ['specialist_doctor', 'dokter spesialis', 'spesialis'],
-            'specialist_doctor' => ['dokter_spesialis', 'dokter spesialis', 'spesialis'],
-            'dokter_umum' => ['general_doctor', 'dokter umum'],
-            'general_doctor' => ['dokter_umum', 'dokter umum'],
+            'dokter_spesialis' => ['specialist_doctor', 'dokter spesialis', 'spesialis', 'specialist doctor', 'specialist', 'supervisor'],
+            'specialist_doctor' => ['dokter_spesialis', 'dokter spesialis', 'spesialis', 'specialist doctor', 'specialist', 'supervisor'],
+            'dokter spesialis' => ['specialist_doctor', 'dokter_spesialis', 'spesialis', 'specialist doctor', 'specialist', 'supervisor'],
+            'spesialis' => ['specialist_doctor', 'dokter_spesialis', 'dokter spesialis', 'specialist doctor', 'specialist', 'supervisor'],
+            'supervisor' => ['specialist_doctor', 'dokter_spesialis', 'dokter spesialis', 'spesialis'],
+
+            'dokter_umum' => ['general_doctor', 'dokter umum', 'general doctor', 'dokter'],
+            'general_doctor' => ['dokter_umum', 'dokter umum', 'general doctor', 'dokter'],
+            'dokter umum' => ['general_doctor', 'dokter_umum', 'general doctor', 'dokter'],
+            'dokter' => ['general_doctor', 'dokter_umum', 'dokter umum'],
+
             'dokter_muda' => ['co_ass', 'co-ass', 'coass', 'dokter muda'],
+            'dokter muda' => ['co_ass', 'co-ass', 'coass', 'dokter_muda'],
             'co_ass' => ['dokter_muda', 'co-ass', 'coass', 'dokter muda'],
+            'co-ass' => ['co_ass', 'dokter_muda', 'coass', 'dokter muda'],
+            'coass' => ['co_ass', 'co-ass', 'dokter_muda', 'dokter muda'],
+
             'perawat' => ['nurse', 'paramedic'],
             'nurse' => ['perawat', 'paramedic'],
             'paramedic' => ['nurse', 'perawat'],
-            'trainee' => ['magang'],
-            'manajer' => ['manager', 'staff_manager'],
-            'manager' => ['manajer', 'staff_manager'],
-            'staff_manager' => ['manajer', 'manager', 'staff manager'],
-            'executive' => ['eksekutif', 'admin'],
+
+            'trainee' => ['magang', 'siswa', 'student'],
+            'magang' => ['trainee'],
+
+            'manajer' => ['manager', 'staff_manager', 'staff manager'],
+            'manager' => ['manajer', 'staff_manager', 'staff manager'],
+            'staff_manager' => ['manager', 'manajer', 'staff manager'],
+            'staff manager' => ['staff_manager', 'manager', 'manajer'],
+
+            'executive' => ['eksekutif', 'admin', 'administrator'],
+            'eksekutif' => ['executive', 'admin', 'administrator'],
+            'admin' => ['executive', 'eksekutif', 'administrator'],
+            'administrator' => ['executive', 'eksekutif', 'admin'],
+
+            'ceo' => ['direktur', 'direktur utama', 'wadir'],
+            'it_support' => ['it support', 'developer', 'it'],
+            'it support' => ['it_support', 'developer', 'it'],
         ];
 
         $lowerRole = strtolower(trim($roleName));
-        if (isset($roleAliases[$lowerRole])) {
-            foreach ($roleAliases[$lowerRole] as $alias) {
-                $setting = static::where(function ($query) use ($alias) {
-                    $query->where('role_name', $alias)
-                        ->orWhereRaw('LOWER(role_name) = ?', [strtolower($alias)]);
-                })
-                    ->where('is_active', true)
-                    ->first();
+        $normalizedRole = str_replace(['-', '_'], ' ', $lowerRole);
+        $underscoredRole = str_replace([' ', '-'], '_', $lowerRole);
 
-                if ($setting) {
-                    return $setting;
+        $lookupKeys = array_unique(array_filter([$lowerRole, $normalizedRole, $underscoredRole]));
+
+        foreach ($lookupKeys as $key) {
+            if (isset($roleAliases[$key])) {
+                foreach ($roleAliases[$key] as $alias) {
+                    $setting = static::where(function ($query) use ($alias) {
+                        $query->where('role_name', $alias)
+                            ->orWhereRaw('LOWER(role_name) = ?', [strtolower($alias)]);
+                    })
+                        ->where('is_active', true)
+                        ->first();
+
+                    if ($setting) {
+                        return $setting;
+                    }
                 }
             }
+        }
+
+        // Additional attempt: search LIKE
+        $setting = static::where('is_active', true)
+            ->where(function ($query) use ($lowerRole, $normalizedRole, $underscoredRole) {
+                $query->whereRaw('LOWER(role_name) LIKE ?', ["%{$lowerRole}%"])
+                    ->orWhereRaw('LOWER(role_name) LIKE ?', ["%{$underscoredRole}%"])
+                    ->orWhereRaw('LOWER(role_name) LIKE ?', ["%{$normalizedRole}%"]);
+            })
+            ->first();
+
+        if ($setting) {
+            return $setting;
         }
 
         return null;

@@ -78,13 +78,67 @@ class GeneratePayrollCommand extends Command
             return 1;
         }
 
+        // Auto-heal attendances where clock_out is not null but is_active is true
+        Attendance::whereNotNull('clock_out')
+            ->where('is_active', true)
+            ->where(function ($q) use ($periodStart, $periodEnd) {
+                $q->whereBetween('work_date', [$periodStart->toDateString(), $periodEnd->toDateString()])
+                  ->orWhere(function ($sub) use ($periodStart, $periodEnd) {
+                      $sub->whereDate('clock_in', '>=', $periodStart->toDateString())
+                          ->whereDate('clock_in', '<=', $periodEnd->toDateString());
+                  });
+            })
+            ->update(['is_active' => false]);
+
         // Get users to process
-        $users = User::where('is_active', true)
-            ->whereHas('role')
+        $users = User::where(function($query) {
+                $query->where('is_active', true)
+                      ->orWhereNotNull('role_id')
+                      ->orWhereNotNull('medic_role_id');
+            })
+            ->where(function($query) {
+                $query->whereHas('role')
+                      ->orWhereHas('medicRole')
+                      ->orWhereNotNull('medic_role_id')
+                      ->orWhereNotNull('role_id');
+            })
             ->when($userId, function($query) use ($userId) {
                 return $query->where('id', $userId);
             })
             ->get();
+
+        // Also fetch any users who worked in this period even if inactive or role is unusual
+        $attendanceUserIds = Attendance::where(function ($sub) use ($periodStart, $periodEnd) {
+                $sub->whereBetween('work_date', [$periodStart->toDateString(), $periodEnd->toDateString()])
+                    ->orWhere(function ($cin) use ($periodStart, $periodEnd) {
+                        $cin->whereDate('clock_in', '>=', $periodStart->toDateString())
+                            ->whereDate('clock_in', '<=', $periodEnd->toDateString());
+                    });
+            })
+            ->where(function ($st) {
+                $st->whereIn('session_type', ['work', 'meeting', 'overtime', 'duty', 'study'])
+                   ->orWhereNull('session_type');
+            })
+            ->where(function ($act) {
+                $act->where('is_active', false)
+                    ->orWhereNotNull('clock_out');
+            })
+            ->whereNotNull('session_duration')
+            ->where('session_duration', '>', 0)
+            ->when($userId, function($query) use ($userId) {
+                return $query->where('user_id', $userId);
+            })
+            ->distinct()
+            ->pluck('user_id');
+
+        if ($attendanceUserIds->isNotEmpty()) {
+            $extraUsers = User::whereIn('id', $attendanceUserIds)
+                ->when($userId, function($query) use ($userId) {
+                    return $query->where('id', $userId);
+                })
+                ->get();
+            $users = $users->merge($extraUsers)->unique('id')->sortBy('name');
+        }
 
         if ($users->isEmpty()) {
             $this->warn('⚠️  No active users found with roles.');
@@ -101,8 +155,18 @@ class GeneratePayrollCommand extends Command
             try {
                 // Check if payroll already exists
                 $existingPayroll = Payroll::where('user_id', $user->id)
-                    ->where('period_start', $periodStart->format('Y-m-d'))
-                    ->where('period_end', $periodEnd->format('Y-m-d'))
+                    ->where(function ($q) use ($periodStart, $periodEnd) {
+                        $q->where(function ($exact) use ($periodStart, $periodEnd) {
+                            $exact->where('period_start', $periodStart->toDateString())
+                                  ->where('period_end', $periodEnd->toDateString());
+                        })
+                        ->orWhere('period_start', $periodStart->toDateString())
+                        ->orWhereBetween('period_start', [
+                            $periodStart->copy()->startOfWeek()->toDateString(),
+                            $periodStart->copy()->endOfWeek()->toDateString()
+                        ]);
+                    })
+                    ->orderByRaw("CASE WHEN status = 'paid' THEN 0 ELSE 1 END")
                     ->first();
 
                 if ($existingPayroll && !$force) {
@@ -113,7 +177,23 @@ class GeneratePayrollCommand extends Command
 
                 // Get attendance data
                 $attendances = Attendance::where('user_id', $user->id)
-                    ->whereBetween('work_date', [$periodStart, $periodEnd])
+                    ->where(function ($sub) use ($periodStart, $periodEnd) {
+                        $sub->whereBetween('work_date', [$periodStart->toDateString(), $periodEnd->toDateString()])
+                            ->orWhere(function ($cin) use ($periodStart, $periodEnd) {
+                                $cin->whereDate('clock_in', '>=', $periodStart->toDateString())
+                                    ->whereDate('clock_in', '<=', $periodEnd->toDateString());
+                            });
+                    })
+                    ->where(function ($st) {
+                        $st->whereIn('session_type', ['work', 'meeting', 'overtime', 'duty', 'study'])
+                           ->orWhereNull('session_type');
+                    })
+                    ->where(function ($act) {
+                        $act->where('is_active', false)
+                            ->orWhereNotNull('clock_out');
+                    })
+                    ->whereNotNull('session_duration')
+                    ->where('session_duration', '>', 0)
                     ->get();
 
                 if ($attendances->isEmpty()) {
@@ -126,10 +206,37 @@ class GeneratePayrollCommand extends Command
                 $totalSeconds = $attendances->sum('session_duration');
                 $totalHours = PayrollHelper::convertSecondsToHours($totalSeconds);
                 $roleName = optional($user->role)->name;
-                $baseSalary = PayrollHelper::getBaseSalary($roleName);
-                $calculatedSalary = PayrollHelper::computeWeeklySalary($roleName, $totalSeconds);
+                if (!$roleName && $user->effective_medic_role) {
+                    $roleName = $user->effective_medic_role->name;
+                }
+                if (!$roleName && $user->medicRole) {
+                    $roleName = $user->medicRole->name;
+                }
 
-                // Skip if calculated salary is 0 or less
+                $customSalary = $user->custom_salary ?? 0;
+                $baseSalary = PayrollHelper::getBaseSalary($roleName, $customSalary);
+
+                if ($baseSalary <= 0 && $user->effective_medic_role && $user->effective_medic_role->name !== $roleName) {
+                    $altRole = $user->effective_medic_role->name;
+                    $altBase = PayrollHelper::getBaseSalary($altRole, $customSalary);
+                    if ($altBase > 0) {
+                        $roleName = $altRole;
+                        $baseSalary = $altBase;
+                    }
+                }
+
+                $calculatedSalary = PayrollHelper::computeWeeklySalary($roleName, $totalSeconds, $customSalary);
+
+                // Fallback if calculated salary is 0 or less but hours exist
+                if ($calculatedSalary <= 0 && $totalHours > 0) {
+                    $fallbackBase = PayrollHelper::getBaseSalary(null, $customSalary);
+                    $calculatedSalary = PayrollHelper::computeWeeklySalary(null, $totalSeconds, $customSalary);
+                    if ($baseSalary <= 0) {
+                        $baseSalary = $fallbackBase;
+                    }
+                }
+
+                // Skip if calculated salary is still 0 or less
                 if ($calculatedSalary <= 0) {
                     $this->warn("⏭️  Skipping {$user->name} - salary is 0");
                     $skippedCount++;

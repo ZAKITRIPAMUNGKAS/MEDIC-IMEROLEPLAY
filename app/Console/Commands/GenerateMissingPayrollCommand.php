@@ -42,15 +42,36 @@ class GenerateMissingPayrollCommand extends Command
         $periodStart = Carbon::parse($startDate);
         $periodEnd = Carbon::parse($endDate);
 
+        // Auto-heal attendances where clock_out is not null but is_active is true
+        Attendance::whereNotNull('clock_out')
+            ->where('is_active', true)
+            ->where(function ($q) use ($periodStart, $periodEnd) {
+                $q->whereBetween('work_date', [$periodStart->toDateString(), $periodEnd->toDateString()])
+                  ->orWhere(function ($sub) use ($periodStart, $periodEnd) {
+                      $sub->whereDate('clock_in', '>=', $periodStart->toDateString())
+                          ->whereDate('clock_in', '<=', $periodEnd->toDateString());
+                  });
+            })
+            ->update(['is_active' => false]);
+
         // Ambil semua user yang memiliki data absensi di periode ini
-        $userIdsWithAttendance = Attendance::whereBetween('work_date', [
-                $periodStart->toDateString(),
-                $periodEnd->toDateString()
-            ])
-            ->whereIn('session_type', ['work', 'meeting'])
+        $userIdsWithAttendance = Attendance::where(function ($sub) use ($periodStart, $periodEnd) {
+                $sub->whereBetween('work_date', [$periodStart->toDateString(), $periodEnd->toDateString()])
+                    ->orWhere(function ($cin) use ($periodStart, $periodEnd) {
+                        $cin->whereDate('clock_in', '>=', $periodStart->toDateString())
+                            ->whereDate('clock_in', '<=', $periodEnd->toDateString());
+                    });
+            })
+            ->where(function ($st) {
+                $st->whereIn('session_type', ['work', 'meeting', 'overtime', 'duty', 'study'])
+                   ->orWhereNull('session_type');
+            })
+            ->where(function ($act) {
+                $act->where('is_active', false)
+                    ->orWhereNotNull('clock_out');
+            })
             ->whereNotNull('session_duration')
             ->where('session_duration', '>', 0)
-            ->where('is_active', false)
             ->distinct()
             ->pluck('user_id');
 
@@ -92,14 +113,23 @@ class GenerateMissingPayrollCommand extends Command
             if (!$user) continue;
 
             $attendances = Attendance::where('user_id', $user->id)
-                ->whereBetween('work_date', [
-                    $periodStart->toDateString(),
-                    $periodEnd->toDateString()
-                ])
-                ->whereIn('session_type', ['work', 'meeting'])
+                ->where(function ($sub) use ($periodStart, $periodEnd) {
+                    $sub->whereBetween('work_date', [$periodStart->toDateString(), $periodEnd->toDateString()])
+                        ->orWhere(function ($cin) use ($periodStart, $periodEnd) {
+                            $cin->whereDate('clock_in', '>=', $periodStart->toDateString())
+                                ->whereDate('clock_in', '<=', $periodEnd->toDateString());
+                        });
+                })
+                ->where(function ($st) {
+                    $st->whereIn('session_type', ['work', 'meeting', 'overtime', 'duty', 'study'])
+                       ->orWhereNull('session_type');
+                })
+                ->where(function ($act) {
+                    $act->where('is_active', false)
+                        ->orWhereNotNull('clock_out');
+                })
                 ->whereNotNull('session_duration')
                 ->where('session_duration', '>', 0)
-                ->where('is_active', false)
                 ->get();
 
             $totalSeconds = $attendances->sum('session_duration');
@@ -126,6 +156,14 @@ class GenerateMissingPayrollCommand extends Command
             }
 
             $calculatedSalary = PayrollHelper::computeWeeklySalary($roleName, $totalSeconds, $customSalary);
+
+            if ($calculatedSalary <= 0 && $totalHours > 0) {
+                $fallbackBase = PayrollHelper::getBaseSalary(null, $customSalary);
+                $calculatedSalary = PayrollHelper::computeWeeklySalary(null, $totalSeconds, $customSalary);
+                if ($baseSalary <= 0) {
+                    $baseSalary = $fallbackBase;
+                }
+            }
 
             $this->line(" + [User ID {$user->id}] {$user->name} | Total Jam: {$totalHours}h | Gaji: Rp " . number_format($calculatedSalary, 0, ',', '.'));
 

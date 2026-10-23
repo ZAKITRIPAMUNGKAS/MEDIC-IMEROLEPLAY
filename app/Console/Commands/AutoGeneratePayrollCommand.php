@@ -51,11 +51,58 @@ class AutoGeneratePayrollCommand extends Command
             return 1;
         }
 
+        // Auto-heal attendances where clock_out is not null but is_active is true
+        Attendance::whereNotNull('clock_out')
+            ->where('is_active', true)
+            ->where(function ($q) use ($lastWeekStart, $lastWeekEnd) {
+                $q->whereBetween('work_date', [$lastWeekStart->toDateString(), $lastWeekEnd->toDateString()])
+                  ->orWhere(function ($sub) use ($lastWeekStart, $lastWeekEnd) {
+                      $sub->whereDate('clock_in', '>=', $lastWeekStart->toDateString())
+                          ->whereDate('clock_in', '<=', $lastWeekEnd->toDateString());
+                  });
+            })
+            ->update(['is_active' => false]);
+
         // Get users to process - ordered by name
-        $users = User::where('is_active', true)
-            ->whereHas('role')
+        $users = User::where(function($query) {
+                $query->where('is_active', true)
+                      ->orWhereNotNull('role_id')
+                      ->orWhereNotNull('medic_role_id');
+            })
+            ->where(function($query) {
+                $query->whereHas('role')
+                      ->orWhereHas('medicRole')
+                      ->orWhereNotNull('medic_role_id')
+                      ->orWhereNotNull('role_id');
+            })
             ->orderBy('name')
             ->get();
+
+        // Also fetch any users who worked in this period even if inactive or role is unusual
+        $attendanceUserIds = Attendance::where(function ($sub) use ($lastWeekStart, $lastWeekEnd) {
+                $sub->whereBetween('work_date', [$lastWeekStart->toDateString(), $lastWeekEnd->toDateString()])
+                    ->orWhere(function ($cin) use ($lastWeekStart, $lastWeekEnd) {
+                        $cin->whereDate('clock_in', '>=', $lastWeekStart->toDateString())
+                            ->whereDate('clock_in', '<=', $lastWeekEnd->toDateString());
+                    });
+            })
+            ->where(function ($st) {
+                $st->whereIn('session_type', ['work', 'meeting', 'overtime', 'duty', 'study'])
+                   ->orWhereNull('session_type');
+            })
+            ->where(function ($act) {
+                $act->where('is_active', false)
+                    ->orWhereNotNull('clock_out');
+            })
+            ->whereNotNull('session_duration')
+            ->where('session_duration', '>', 0)
+            ->distinct()
+            ->pluck('user_id');
+
+        if ($attendanceUserIds->isNotEmpty()) {
+            $extraUsers = User::whereIn('id', $attendanceUserIds)->get();
+            $users = $users->merge($extraUsers)->unique('id')->sortBy('name');
+        }
 
         if ($users->isEmpty()) {
             $this->warn('⚠️  No active users found with roles.');
@@ -91,14 +138,23 @@ class AutoGeneratePayrollCommand extends Command
 
                     // Get attendance data for the period
                     $attendances = Attendance::where('user_id', $user->id)
-                        ->whereBetween('work_date', [
-                            $lastWeekStart->toDateString(), 
-                            $lastWeekEnd->toDateString()
-                        ])
-                        ->whereIn('session_type', ['work', 'meeting'])
+                        ->where(function ($sub) use ($lastWeekStart, $lastWeekEnd) {
+                            $sub->whereBetween('work_date', [$lastWeekStart->toDateString(), $lastWeekEnd->toDateString()])
+                                ->orWhere(function ($cin) use ($lastWeekStart, $lastWeekEnd) {
+                                    $cin->whereDate('clock_in', '>=', $lastWeekStart->toDateString())
+                                        ->whereDate('clock_in', '<=', $lastWeekEnd->toDateString());
+                                });
+                        })
+                        ->where(function ($st) {
+                            $st->whereIn('session_type', ['work', 'meeting', 'overtime', 'duty', 'study'])
+                               ->orWhereNull('session_type');
+                        })
+                        ->where(function ($act) {
+                            $act->where('is_active', false)
+                                ->orWhereNotNull('clock_out');
+                        })
                         ->whereNotNull('session_duration')
                         ->where('session_duration', '>', 0)
-                        ->where('is_active', false) // Only completed sessions
                         ->get();
 
                     if ($attendances->isEmpty()) {
@@ -132,7 +188,16 @@ class AutoGeneratePayrollCommand extends Command
 
                     $calculatedSalary = PayrollHelper::computeWeeklySalary($roleName, $totalSeconds, $customSalary);
 
-                    // Skip if calculated salary is 0 or less
+                    // Fallback if calculated salary is 0 or less but hours exist
+                    if ($calculatedSalary <= 0 && $totalHours > 0) {
+                        $fallbackBase = PayrollHelper::getBaseSalary(null, $customSalary);
+                        $calculatedSalary = PayrollHelper::computeWeeklySalary(null, $totalSeconds, $customSalary);
+                        if ($baseSalary <= 0) {
+                            $baseSalary = $fallbackBase;
+                        }
+                    }
+
+                    // Skip if calculated salary is still 0 or less
                     if ($calculatedSalary <= 0) {
                         $this->warn("⏭️  Skipping {$user->name} - salary is 0");
                         $skippedCount++;

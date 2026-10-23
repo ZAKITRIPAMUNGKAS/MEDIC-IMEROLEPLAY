@@ -17,11 +17,11 @@ class PayrollHelper
      */
     public static function computeWeeklySalary(?string $roleName, int $totalSeconds, ?float $customWeeklySalary = null): int
     {
-        if ((!$roleName && !$customWeeklySalary) || $totalSeconds <= 0) {
+        if ($totalSeconds <= 0) {
             return 0;
         }
 
-        $salarySetting = SalarySetting::findByRole($roleName);
+        $salarySetting = $roleName ? SalarySetting::findByRole($roleName) : null;
 
         // If custom salary is provided, use it. If not, check validation.
         if ($customWeeklySalary > 0) {
@@ -36,6 +36,12 @@ class PayrollHelper
                 $salarySetting = SalarySetting::whereRaw('LOWER(role_name) = ?', [strtolower($roleName)])
                     ->where('is_active', true)
                     ->first();
+            }
+
+            // Fallback: try default trainee or first active setting
+            if (!$salarySetting || !$salarySetting->isValidForCalculation()) {
+                $salarySetting = SalarySetting::where('role_name', 'trainee')->where('is_active', true)->first()
+                    ?? SalarySetting::where('is_active', true)->orderBy('weekly_salary', 'asc')->first();
             }
 
             if (!$salarySetting || !$salarySetting->isValidForCalculation()) {
@@ -71,17 +77,13 @@ class PayrollHelper
             return (int) $customWeeklySalary;
         }
 
-        if (!$roleName) {
-            return 0;
-        }
-
-        $salarySetting = SalarySetting::findByRole($roleName);
+        $salarySetting = $roleName ? SalarySetting::findByRole($roleName) : null;
         if (!$salarySetting || !$salarySetting->isValidForCalculation()) {
-            return 0;
+            $salarySetting = SalarySetting::where('role_name', 'trainee')->where('is_active', true)->first()
+                ?? SalarySetting::where('is_active', true)->orderBy('weekly_salary', 'asc')->first();
         }
 
-        // weekly_salary is the base weekly salary for 40 hours
-        return (int) $salarySetting->weekly_salary;
+        return $salarySetting ? (int) $salarySetting->weekly_salary : 0;
     }
 
     /**
@@ -146,23 +148,34 @@ class PayrollHelper
     public static function getPayrollSummary(User $user, string $periodStart, string $periodEnd): array
     {
         $roleName = $user->role?->name;
-        $salarySetting = SalarySetting::findByRole($roleName);
-
-        if (!$salarySetting || !$salarySetting->isValidForCalculation()) {
-            \Illuminate\Support\Facades\Log::warning('PayrollHelper: Salary setting not found or invalid for user ' . $user->name . ' (Role: ' . ($roleName ?? 'None') . ')');
-            return [
-                'hourly_rate' => 0,
-                'base_salary' => 0,
-                'calculated_salary' => 0,
-                'is_eligible' => false,
-                'error' => 'Salary setting not found or invalid'
-            ];
+        if (!$roleName && $user->effective_medic_role) {
+            $roleName = $user->effective_medic_role->name;
+        }
+        if (!$roleName && $user->medicRole) {
+            $roleName = $user->medicRole->name;
         }
 
-        // Get total hours worked in the period
+        $salarySetting = $roleName ? SalarySetting::findByRole($roleName) : null;
+        if (!$salarySetting || !$salarySetting->isValidForCalculation()) {
+            $salarySetting = SalarySetting::where('role_name', 'trainee')->where('is_active', true)->first()
+                ?? SalarySetting::where('is_active', true)->orderBy('weekly_salary', 'asc')->first();
+        }
+
+        // Get total hours worked in the period (comprehensive session types and cross-date checks)
         $totalSeconds = $user->attendances()
-            ->whereBetween('work_date', [$periodStart, $periodEnd])
-            ->where('session_type', 'work')
+            ->where(function ($dq) use ($periodStart, $periodEnd) {
+                $dq->whereBetween('work_date', [$periodStart, $periodEnd])
+                   ->orWhereBetween(\Illuminate\Support\Facades\DB::raw('DATE(clock_in)'), [$periodStart, $periodEnd]);
+            })
+            ->where(function ($sq) {
+                $sq->whereIn('session_type', ['work', 'meeting', 'overtime', 'duty', 'study'])
+                   ->orWhereNull('session_type')
+                   ->orWhereNotIn('session_type', ['break', 'custom']);
+            })
+            ->where(function ($cq) {
+                $cq->where('is_active', false)
+                   ->orWhereNotNull('clock_out');
+            })
             ->whereNotNull('session_duration')
             ->where('session_duration', '>', 0)
             ->sum('session_duration');

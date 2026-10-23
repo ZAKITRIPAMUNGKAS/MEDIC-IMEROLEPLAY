@@ -470,8 +470,30 @@ class PayrollController extends Controller
         }
 
         // Get users to process - ordered by name
-        $users = User::where('is_active', true)
-            ->whereHas('role')
+        // Include:
+        // 1. Active users with role or medicRole
+        // 2. Any users who worked (have attendance) in this period even if their account status is temporarily inactive or only has medic_role_id
+        $users = User::where(function ($query) use ($periodStart, $periodEnd) {
+                $query->where('is_active', true)
+                      ->orWhereHas('attendances', function ($aq) use ($periodStart, $periodEnd) {
+                          $aq->where(function ($dq) use ($periodStart, $periodEnd) {
+                              $dq->whereBetween('work_date', [$periodStart->toDateString(), $periodEnd->toDateString()])
+                                 ->orWhereBetween(DB::raw('DATE(clock_in)'), [$periodStart->toDateString(), $periodEnd->toDateString()]);
+                          })
+                          ->where(function ($cq) {
+                              $cq->where('is_active', false)
+                                 ->orWhereNotNull('clock_out');
+                          })
+                          ->whereNotNull('session_duration')
+                          ->where('session_duration', '>', 0);
+                      });
+            })
+            ->where(function ($query) {
+                $query->whereHas('role')
+                      ->orWhereHas('medicRole')
+                      ->orWhereNotNull('role_id')
+                      ->orWhereNotNull('medic_role_id');
+            })
             ->when($userIds, function ($query) use ($userIds) {
                 return $query->whereIn('id', $userIds);
             })
@@ -506,22 +528,37 @@ class PayrollController extends Controller
                     ->first();
 
                 // Get attendance data for the period
-                // Only count valid work sessions (completed, with duration > 0)
-                // Use toDateString() to ensure consistent date format
+                // Count valid work sessions (completed: is_active = false or clock_out is not null, with duration > 0)
+                // Support sessions with work_date OR clock_in matching the period
+                // Support session types: work, meeting, overtime, duty, study, or null (exclude only break & custom)
                 $attendances = Attendance::where('user_id', $user->id)
-                    ->whereBetween('work_date', [
-                        $periodStart->toDateString(),
-                        $periodEnd->toDateString()
-                    ])
-                    ->whereIn('session_type', ['work', 'meeting'])
+                    ->where(function ($dq) use ($periodStart, $periodEnd) {
+                        $dq->whereBetween('work_date', [$periodStart->toDateString(), $periodEnd->toDateString()])
+                           ->orWhereBetween(DB::raw('DATE(clock_in)'), [$periodStart->toDateString(), $periodEnd->toDateString()]);
+                    })
+                    ->where(function ($sq) {
+                        $sq->whereIn('session_type', ['work', 'meeting', 'overtime', 'duty', 'study'])
+                           ->orWhereNull('session_type')
+                           ->orWhereNotIn('session_type', ['break', 'custom']);
+                    })
+                    ->where(function ($cq) {
+                        $cq->where('is_active', false)
+                           ->orWhereNotNull('clock_out');
+                    })
                     ->whereNotNull('session_duration')
                     ->where('session_duration', '>', 0)
-                    ->where('is_active', false) // Only completed sessions
                     ->get();
 
                 if ($attendances->isEmpty()) {
                     $errors[] = "Tidak ada data absensi untuk {$user->name} pada periode ini.";
                     continue;
+                }
+
+                // Auto-heal any attendances in this batch where clock_out exists but is_active remained true
+                foreach ($attendances as $att) {
+                    if ($att->is_active && $att->clock_out) {
+                        $att->update(['is_active' => false]);
+                    }
                 }
 
                 // Calculate total hours and salary
@@ -533,6 +570,12 @@ class PayrollController extends Controller
                 }
                 if (!$roleName && $user->medicRole) {
                     $roleName = $user->medicRole->name;
+                }
+                if (!$roleName && $user->role) {
+                    $roleName = $user->role->display_name;
+                }
+                if (!$roleName && $user->medicRole) {
+                    $roleName = $user->medicRole->display_name;
                 }
 
                 $customSalary = $user->custom_salary ?? 0;
@@ -547,8 +590,26 @@ class PayrollController extends Controller
                         $baseSalary = $altBase;
                     }
                 }
+                if ($baseSalary <= 0 && $user->medicRole && $user->medicRole->name !== $roleName) {
+                    $altRole = $user->medicRole->name;
+                    $altBase = PayrollHelper::getBaseSalary($altRole, $customSalary);
+                    if ($altBase > 0) {
+                        $roleName = $altRole;
+                        $baseSalary = $altBase;
+                    }
+                }
 
                 $calculatedSalary = PayrollHelper::computeWeeklySalary($roleName, $totalSeconds, $customSalary);
+
+                // Fallback for staff who worked hours (> 0) but whose role had no explicit salary setting
+                if ($calculatedSalary <= 0 && $totalSeconds > 0) {
+                    $fallbackSetting = SalarySetting::where('role_name', 'trainee')->where('is_active', true)->first()
+                        ?? SalarySetting::where('is_active', true)->orderBy('weekly_salary', 'asc')->first();
+                    if ($fallbackSetting) {
+                        $calculatedSalary = $fallbackSetting->calculateSalary($totalHours);
+                        $baseSalary = $baseSalary > 0 ? $baseSalary : (int) $fallbackSetting->weekly_salary;
+                    }
+                }
 
                 // Log for debugging
                 Log::info('Payroll generation calculation', [
@@ -563,9 +624,9 @@ class PayrollController extends Controller
                     'existing_payroll_id' => $existingPayroll ? $existingPayroll->id : null,
                 ]);
 
-                // Skip if calculated salary is 0 or less
-                if ($calculatedSalary <= 0) {
-                    $errors[] = "Gaji untuk {$user->name} adalah Rp 0, dilewati.";
+                // Skip ONLY if user has 0 total seconds or if calculated salary is strictly <= 0 with 0 hours
+                if ($totalSeconds <= 0 || $calculatedSalary <= 0) {
+                    $errors[] = "Gaji untuk {$user->name} adalah Rp 0 (0 jam kerja), dilewati.";
                     continue;
                 }
 
@@ -813,16 +874,35 @@ class PayrollController extends Controller
 
         DB::beginTransaction();
         try {
-            // Recalculate based on current attendance
-            $totalSeconds = $payroll->user->attendances()
-                ->whereBetween('work_date', [$payroll->period_start, $payroll->period_end])
-                ->whereIn('session_type', ['work', 'meeting'])
+            // Recalculate based on current attendance with full session_type, is_active, and date tolerance
+            $attendances = $payroll->user->attendances()
+                ->where(function ($dq) use ($payroll) {
+                    $dq->whereBetween('work_date', [$payroll->period_start, $payroll->period_end])
+                       ->orWhereBetween(DB::raw('DATE(clock_in)'), [$payroll->period_start, $payroll->period_end]);
+                })
+                ->where(function ($sq) {
+                    $sq->whereIn('session_type', ['work', 'meeting', 'overtime', 'duty', 'study'])
+                       ->orWhereNull('session_type')
+                       ->orWhereNotIn('session_type', ['break', 'custom']);
+                })
+                ->where(function ($cq) {
+                    $cq->where('is_active', false)
+                       ->orWhereNotNull('clock_out');
+                })
                 ->whereNotNull('session_duration')
                 ->where('session_duration', '>', 0)
-                ->where('is_active', false) // Only completed sessions
-                ->sum('session_duration');
+                ->get();
 
+            // Auto-heal any attendances in this batch where clock_out exists but is_active remained true
+            foreach ($attendances as $att) {
+                if ($att->is_active && $att->clock_out) {
+                    $att->update(['is_active' => false]);
+                }
+            }
+
+            $totalSeconds = $attendances->sum('session_duration');
             $totalHours = PayrollHelper::convertSecondsToHours($totalSeconds);
+
             $roleName = optional($payroll->user->role)->name;
             if (!$roleName && $payroll->user->effective_medic_role) {
                 $roleName = $payroll->user->effective_medic_role->name;
@@ -830,6 +910,13 @@ class PayrollController extends Controller
             if (!$roleName && $payroll->user->medicRole) {
                 $roleName = $payroll->user->medicRole->name;
             }
+            if (!$roleName && $payroll->user->role) {
+                $roleName = $payroll->user->role->display_name;
+            }
+            if (!$roleName && $payroll->user->medicRole) {
+                $roleName = $payroll->user->medicRole->display_name;
+            }
+
             $customSalary = $payroll->user->custom_salary ?? 0;
             $baseSalary = PayrollHelper::getBaseSalary($roleName, $customSalary);
             if ($baseSalary <= 0 && $payroll->user->effective_medic_role && $payroll->user->effective_medic_role->name !== $roleName) {
@@ -840,7 +927,26 @@ class PayrollController extends Controller
                     $baseSalary = $altBase;
                 }
             }
+            if ($baseSalary <= 0 && $payroll->user->medicRole && $payroll->user->medicRole->name !== $roleName) {
+                $altRole = $payroll->user->medicRole->name;
+                $altBase = PayrollHelper::getBaseSalary($altRole, $customSalary);
+                if ($altBase > 0) {
+                    $roleName = $altRole;
+                    $baseSalary = $altBase;
+                }
+            }
+
             $calculatedSalary = PayrollHelper::computeWeeklySalary($roleName, $totalSeconds, $customSalary);
+
+            // Fallback for staff who worked hours (> 0) but whose role had no explicit salary setting
+            if ($calculatedSalary <= 0 && $totalSeconds > 0) {
+                $fallbackSetting = SalarySetting::where('role_name', 'trainee')->where('is_active', true)->first()
+                    ?? SalarySetting::where('is_active', true)->orderBy('weekly_salary', 'asc')->first();
+                if ($fallbackSetting) {
+                    $calculatedSalary = $fallbackSetting->calculateSalary($totalHours);
+                    $baseSalary = $baseSalary > 0 ? $baseSalary : (int) $fallbackSetting->weekly_salary;
+                }
+            }
 
             $oldSalary = $payroll->calculated_salary;
 
@@ -874,7 +980,7 @@ class PayrollController extends Controller
     }
 
     /**
-     * Regenerate all pending payrolls for a specific week
+     * Regenerate all pending payrolls for a specific week, plus auto-generate any missing staff
      */
     public function regenerateWeek(Request $request)
     {
@@ -901,32 +1007,54 @@ class PayrollController extends Controller
 
         DB::beginTransaction();
         try {
-
-            // Get all pending payrolls for this week
+            // Get all pending payrolls for this week (support exact match or week-bounded match)
             $payrolls = Payroll::where('status', 'pending')
-                ->where('period_start', $weekStart->format('Y-m-d'))
-                ->where('period_end', $weekEnd->format('Y-m-d'))
+                ->where(function ($q) use ($weekStart, $weekEnd) {
+                    $q->where(function ($exact) use ($weekStart, $weekEnd) {
+                        $exact->where('period_start', $weekStart->format('Y-m-d'))
+                              ->where('period_end', $weekEnd->format('Y-m-d'));
+                    })
+                    ->orWhereBetween('period_start', [$weekStart->toDateString(), $weekEnd->toDateString()]);
+                })
                 ->get();
 
-            if ($payrolls->isEmpty()) {
-                return redirect()->back()->with('info', 'Tidak ada gaji pending untuk minggu ini.');
-            }
-
             $regeneratedCount = 0;
+            $createdCount = 0;
             $totalOldSalary = 0;
             $totalNewSalary = 0;
 
             foreach ($payrolls as $payroll) {
-                // Recalculate based on current attendance
-                $totalSeconds = $payroll->user->attendances()
-                    ->whereBetween('work_date', [$payroll->period_start, $payroll->period_end])
-                    ->whereIn('session_type', ['work', 'meeting'])
+                // Recalculate based on current attendance with full session_type, is_active, and date tolerance
+                $attendances = $payroll->user->attendances()
+                    ->where(function ($dq) use ($payroll, $weekStart, $weekEnd) {
+                        $dq->whereBetween('work_date', [$payroll->period_start, $payroll->period_end])
+                           ->orWhereBetween(DB::raw('DATE(clock_in)'), [$payroll->period_start, $payroll->period_end])
+                           ->orWhereBetween('work_date', [$weekStart->toDateString(), $weekEnd->toDateString()])
+                           ->orWhereBetween(DB::raw('DATE(clock_in)'), [$weekStart->toDateString(), $weekEnd->toDateString()]);
+                    })
+                    ->where(function ($sq) {
+                        $sq->whereIn('session_type', ['work', 'meeting', 'overtime', 'duty', 'study'])
+                           ->orWhereNull('session_type')
+                           ->orWhereNotIn('session_type', ['break', 'custom']);
+                    })
+                    ->where(function ($cq) {
+                        $cq->where('is_active', false)
+                           ->orWhereNotNull('clock_out');
+                    })
                     ->whereNotNull('session_duration')
                     ->where('session_duration', '>', 0)
-                    ->where('is_active', false)
-                    ->sum('session_duration');
+                    ->get();
 
+                // Auto-heal
+                foreach ($attendances as $att) {
+                    if ($att->is_active && $att->clock_out) {
+                        $att->update(['is_active' => false]);
+                    }
+                }
+
+                $totalSeconds = $attendances->sum('session_duration');
                 $totalHours = PayrollHelper::convertSecondsToHours($totalSeconds);
+
                 $roleName = optional($payroll->user->role)->name;
                 if (!$roleName && $payroll->user->effective_medic_role) {
                     $roleName = $payroll->user->effective_medic_role->name;
@@ -934,6 +1062,13 @@ class PayrollController extends Controller
                 if (!$roleName && $payroll->user->medicRole) {
                     $roleName = $payroll->user->medicRole->name;
                 }
+                if (!$roleName && $payroll->user->role) {
+                    $roleName = $payroll->user->role->display_name;
+                }
+                if (!$roleName && $payroll->user->medicRole) {
+                    $roleName = $payroll->user->medicRole->display_name;
+                }
+
                 $customSalary = $payroll->user->custom_salary ?? 0;
                 $baseSalary = PayrollHelper::getBaseSalary($roleName, $customSalary);
                 if ($baseSalary <= 0 && $payroll->user->effective_medic_role && $payroll->user->effective_medic_role->name !== $roleName) {
@@ -944,7 +1079,25 @@ class PayrollController extends Controller
                         $baseSalary = $altBase;
                     }
                 }
+                if ($baseSalary <= 0 && $payroll->user->medicRole && $payroll->user->medicRole->name !== $roleName) {
+                    $altRole = $payroll->user->medicRole->name;
+                    $altBase = PayrollHelper::getBaseSalary($altRole, $customSalary);
+                    if ($altBase > 0) {
+                        $roleName = $altRole;
+                        $baseSalary = $altBase;
+                    }
+                }
+
                 $calculatedSalary = PayrollHelper::computeWeeklySalary($roleName, $totalSeconds, $customSalary);
+
+                if ($calculatedSalary <= 0 && $totalSeconds > 0) {
+                    $fallbackSetting = SalarySetting::where('role_name', 'trainee')->where('is_active', true)->first()
+                        ?? SalarySetting::where('is_active', true)->orderBy('weekly_salary', 'asc')->first();
+                    if ($fallbackSetting) {
+                        $calculatedSalary = $fallbackSetting->calculateSalary($totalHours);
+                        $baseSalary = $baseSalary > 0 ? $baseSalary : (int) $fallbackSetting->weekly_salary;
+                    }
+                }
 
                 $oldSalary = $payroll->calculated_salary;
                 $totalOldSalary += $oldSalary;
@@ -952,6 +1105,8 @@ class PayrollController extends Controller
 
                 // Update payroll
                 $payroll->update([
+                    'period_start' => $weekStart->format('Y-m-d'),
+                    'period_end' => $weekEnd->format('Y-m-d'),
                     'total_hours' => $totalHours,
                     'base_salary' => $baseSalary,
                     'calculated_salary' => $calculatedSalary,
@@ -964,13 +1119,133 @@ class PayrollController extends Controller
                 $regeneratedCount++;
             }
 
+            // CRITICAL FEATURE: Also check for staff who worked this week but have NO payroll record yet (e.g. Jasmine)
+            $existingPayrollUserIds = Payroll::where(function ($q) use ($weekStart, $weekEnd) {
+                $q->whereBetween('period_start', [$weekStart->toDateString(), $weekEnd->toDateString()]);
+            })->pluck('user_id')->toArray();
+
+            $missingUsers = User::whereNotIn('id', $existingPayrollUserIds)
+                ->whereHas('attendances', function ($aq) use ($weekStart, $weekEnd) {
+                    $aq->where(function ($dq) use ($weekStart, $weekEnd) {
+                        $dq->whereBetween('work_date', [$weekStart->toDateString(), $weekEnd->toDateString()])
+                           ->orWhereBetween(DB::raw('DATE(clock_in)'), [$weekStart->toDateString(), $weekEnd->toDateString()]);
+                    })
+                    ->where(function ($sq) {
+                        $sq->whereIn('session_type', ['work', 'meeting', 'overtime', 'duty', 'study'])
+                           ->orWhereNull('session_type')
+                           ->orWhereNotIn('session_type', ['break', 'custom']);
+                    })
+                    ->where(function ($cq) {
+                        $cq->where('is_active', false)
+                           ->orWhereNotNull('clock_out');
+                    })
+                    ->whereNotNull('session_duration')
+                    ->where('session_duration', '>', 0);
+                })
+                ->get();
+
+            foreach ($missingUsers as $missingUser) {
+                $userAttendances = Attendance::where('user_id', $missingUser->id)
+                    ->where(function ($dq) use ($weekStart, $weekEnd) {
+                        $dq->whereBetween('work_date', [$weekStart->toDateString(), $weekEnd->toDateString()])
+                           ->orWhereBetween(DB::raw('DATE(clock_in)'), [$weekStart->toDateString(), $weekEnd->toDateString()]);
+                    })
+                    ->where(function ($sq) {
+                        $sq->whereIn('session_type', ['work', 'meeting', 'overtime', 'duty', 'study'])
+                           ->orWhereNull('session_type')
+                           ->orWhereNotIn('session_type', ['break', 'custom']);
+                    })
+                    ->where(function ($cq) {
+                        $cq->where('is_active', false)
+                           ->orWhereNotNull('clock_out');
+                    })
+                    ->whereNotNull('session_duration')
+                    ->where('session_duration', '>', 0)
+                    ->get();
+
+                if ($userAttendances->isEmpty()) {
+                    continue;
+                }
+
+                foreach ($userAttendances as $att) {
+                    if ($att->is_active && $att->clock_out) {
+                        $att->update(['is_active' => false]);
+                    }
+                }
+
+                $userTotalSeconds = $userAttendances->sum('session_duration');
+                $userTotalHours = PayrollHelper::convertSecondsToHours($userTotalSeconds);
+
+                $userRoleName = optional($missingUser->role)->name;
+                if (!$userRoleName && $missingUser->effective_medic_role) {
+                    $userRoleName = $missingUser->effective_medic_role->name;
+                }
+                if (!$userRoleName && $missingUser->medicRole) {
+                    $userRoleName = $missingUser->medicRole->name;
+                }
+                if (!$userRoleName && $missingUser->role) {
+                    $userRoleName = $missingUser->role->display_name;
+                }
+                if (!$userRoleName && $missingUser->medicRole) {
+                    $userRoleName = $missingUser->medicRole->display_name;
+                }
+
+                $userCustomSalary = $missingUser->custom_salary ?? 0;
+                $userBaseSalary = PayrollHelper::getBaseSalary($userRoleName, $userCustomSalary);
+                if ($userBaseSalary <= 0 && $missingUser->effective_medic_role && $missingUser->effective_medic_role->name !== $userRoleName) {
+                    $altRole = $missingUser->effective_medic_role->name;
+                    $altBase = PayrollHelper::getBaseSalary($altRole, $userCustomSalary);
+                    if ($altBase > 0) {
+                        $userRoleName = $altRole;
+                        $userBaseSalary = $altBase;
+                    }
+                }
+
+                $userCalculatedSalary = PayrollHelper::computeWeeklySalary($userRoleName, $userTotalSeconds, $userCustomSalary);
+
+                if ($userCalculatedSalary <= 0 && $userTotalSeconds > 0) {
+                    $fallbackSetting = SalarySetting::where('role_name', 'trainee')->where('is_active', true)->first()
+                        ?? SalarySetting::where('is_active', true)->orderBy('weekly_salary', 'asc')->first();
+                    if ($fallbackSetting) {
+                        $userCalculatedSalary = $fallbackSetting->calculateSalary($userTotalHours);
+                        $userBaseSalary = $userBaseSalary > 0 ? $userBaseSalary : (int) $fallbackSetting->weekly_salary;
+                    }
+                }
+
+                if ($userTotalSeconds > 0 && $userCalculatedSalary > 0) {
+                    $newPayroll = Payroll::create([
+                        'user_id' => $missingUser->id,
+                        'period_start' => $weekStart->format('Y-m-d'),
+                        'period_end' => $weekEnd->format('Y-m-d'),
+                        'total_hours' => $userTotalHours,
+                        'base_salary' => $userBaseSalary,
+                        'calculated_salary' => $userCalculatedSalary,
+                        'status' => 'pending',
+                        'notes' => "Auto-synced via regenerate week on " . now()->format('Y-m-d H:i:s') . " for {$missingUser->name}",
+                    ]);
+
+                    $this->sendSalaryPendingNotification($newPayroll, false);
+                    $createdCount++;
+                    $totalNewSalary += $userCalculatedSalary;
+                }
+            }
+
             DB::commit();
 
-            return redirect()->back()->with(
-                'success',
-                "$regeneratedCount gaji berhasil di-regenerate. Total Old: $" . number_format($totalOldSalary, 0, '.', ',') .
-                " → Total New: $" . number_format($totalNewSalary, 0, '.', ',')
-            );
+            if ($regeneratedCount === 0 && $createdCount === 0) {
+                return redirect()->back()->with('info', 'Tidak ada gaji pending atau staf baru yang perlu diproses untuk minggu ini.');
+            }
+
+            $msg = "Berhasil memproses minggu {$weekStart->format('d M Y')} - {$weekEnd->format('d M Y')}: ";
+            if ($regeneratedCount > 0) {
+                $msg .= "{$regeneratedCount} gaji diperbarui. ";
+            }
+            if ($createdCount > 0) {
+                $msg .= "{$createdCount} gaji staf baru (sebelumnya belum tersinkron) berhasil digenerate! ";
+            }
+            $msg .= "Total Gaji Sekarang: $" . number_format($totalNewSalary, 0, '.', ',');
+
+            return redirect()->back()->with('success', $msg);
 
         } catch (\Exception $e) {
             DB::rollBack();
