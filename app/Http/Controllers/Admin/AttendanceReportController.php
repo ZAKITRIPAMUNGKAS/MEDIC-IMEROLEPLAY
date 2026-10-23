@@ -29,12 +29,21 @@ class AttendanceReportController extends Controller
             'hospital' => $request->get('hospital'),
         ];
 
+        $dateFrom = Carbon::parse($filters['date_from'])->startOfDay();
+        $dateTo = Carbon::parse($filters['date_to'])->endOfDay();
+
         // Build query + search by name only (email removed for privacy)
         $query = Attendance::with('user')
-            ->whereBetween('work_date', [
-                Carbon::parse($filters['date_from'])->startOfDay(),
-                Carbon::parse($filters['date_to'])->endOfDay()
-            ]);
+            ->where(function ($q) use ($dateFrom, $dateTo) {
+                $q->whereBetween('work_date', [$dateFrom->toDateString(), $dateTo->toDateString()])
+                  ->orWhere(function ($sub) use ($dateFrom, $dateTo) {
+                      $sub->where('clock_in', '<=', $dateTo)
+                          ->where(function ($s) use ($dateFrom) {
+                              $s->where('clock_out', '>=', $dateFrom)
+                                ->orWhereNull('clock_out');
+                          });
+                  });
+            });
         if ($request->filled('q')) {
             $q = trim($request->get('q'));
             $query->where(function ($query) use ($q) {

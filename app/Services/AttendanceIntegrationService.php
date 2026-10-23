@@ -205,21 +205,21 @@ class AttendanceIntegrationService
         $clockInDate = Carbon::parse($clockIn);
         $clockOutDate = $clockOut ? Carbon::parse($clockOut) : null;
 
-        // Cek apakah ada sesi aktif manual pada hari yang sama
-        $activeSession = Attendance::getActiveSession($userId, $clockInDate->toDateString());
+        // Cek apakah ada sesi aktif untuk user ini (lintas hari / kapanpun)
+        $activeSession = Attendance::getAnyActiveSession($userId);
 
         if ($activeSession) {
             return [
                 'has_conflict' => true,
                 'type' => 'active_session',
                 'conflicting_record' => $activeSession,
-                'message' => 'Ada sesi manual aktif pada hari yang sama'
+                'message' => 'Ada sesi aktif untuk user ini'
             ];
         }
 
-        // Cek apakah ada overlap dengan sesi manual yang sudah ada
+        // Cek apakah ada overlap dengan sesi manual yang sudah ada (abaikan sesi fivem sebelumnya)
         $overlappingSessions = Attendance::forUser($userId)
-            ->forDate($clockInDate->toDateString())
+            ->where('source', '!=', 'fivem')
             ->where(function ($query) use ($clockInDate, $clockOutDate) {
                 $query->whereBetween('clock_in', [$clockInDate, $clockOutDate ?? now()])
                     ->orWhereBetween('clock_out', [$clockInDate, $clockOutDate ?? now()])
@@ -249,11 +249,6 @@ class AttendanceIntegrationService
     {
         switch ($conflict['type']) {
             case 'active_session':
-                // REVISI: Jika FiveM login ('clockIn') saat ada sesi manual aktif:
-                // TUTUP sesi manual pada saat FiveM clockIn.
-                // Biarkan sesi FiveM berjalan sebagai sesi baru (Automatic).
-                // Ini memisahkan jam manual dan jam FiveM agar tidak tumpang tindih berlebihan.
-
                 $activeSession = $conflict['conflicting_record'];
 
                 // Validasi: Pastikan activeSession valid
@@ -269,74 +264,93 @@ class AttendanceIntegrationService
 
                     return [
                         'success' => true,
-                        'message' => 'Sesi manual tidak valid, absensi FiveM dimulai baru.',
+                        'message' => 'Sesi sebelumnya tidak valid, absensi FiveM dimulai baru.',
                         'priority' => 'automatic',
                         'data' => $absensi
                     ];
                 }
 
-                // Set jam keluar manual = jam masuk FiveM
-                $manualClockOutTime = Carbon::parse($clockIn);
-                $manualClockInTime = Carbon::parse($activeSession->clock_in);
+                // KASUS 1: Request ini adalah Clock Out (off-duty FiveM)
+                if ($clockOut) {
+                    $clockOutTime = Carbon::parse($clockOut);
+                    $clockInTime = Carbon::parse($activeSession->clock_in);
 
-                // Pastikan tidak error logika (clock out < clock in)
-                // Jika FiveM login SEBELUM manual clock in, ini edge case aneh - skip close
-                if ($manualClockOutTime->lte($manualClockInTime)) {
-                    // PERBAIKAN: Cek apakah ini adalah clock_out untuk sesi FiveM yang SAMA
-                    // (clock_in identik → ini bukan konflik, ini update sesi yang sudah ada)
-                    if ($clockOut && $activeSession->source === 'fivem' &&
-                        Carbon::parse($activeSession->clock_in)->eq(Carbon::parse($clockIn))) {
-                        // Update sesi FiveM yang sudah aktif dengan clock_out
-                        $durationSeconds = Carbon::parse($clockIn)->diffInSeconds(Carbon::parse($clockOut));
-                        $activeSession->update([
-                            'clock_out'        => $clockOut,
-                            'is_active'        => false,
-                            'session_duration' => $durationSeconds,
-                            'total_hours'      => max(1, floor($durationSeconds / 60)),
-                        ]);
-                        // Update absensi record juga
-                        $this->saveAutomaticAttendance($playerId, $playerName, $clockIn, $clockOut, $timeOnDuty);
-                        return [
-                            'success'       => true,
-                            'message'       => 'Sesi FiveM aktif ditutup dengan clock_out.',
-                            'priority'      => 'automatic',
-                        ];
-                    }
-
-                    Log::warning('FiveM clock_in is before or equal to manual clock_in, skipping close', [
-                        'player_id'       => $playerId,
-                        'manual_clock_in' => $manualClockInTime->toDateTimeString(),
-                        'fivem_clock_in'  => $manualClockOutTime->toDateTimeString()
+                    // Durasi dari clock_in sesi aktif hingga clock_out ini
+                    $durationSeconds = max(0, $clockInTime->diffInSeconds($clockOutTime));
+                    $activeSession->update([
+                        'clock_out'        => $clockOutTime,
+                        'is_active'        => false,
+                        'session_duration' => $durationSeconds,
+                        'total_hours'      => max(1, floor($durationSeconds / 60)),
                     ]);
 
-                    // Simpan FiveM sebagai sesi terpisah tanpa menutup manual
-                    $absensi = $this->saveAutomaticAttendance($playerId, $playerName, $clockIn, $clockOut, $timeOnDuty);
-                    $this->createManualAttendanceRecord($user, $absensi);
+                    // AUTO-SPLIT jika melewati tengah malam (cross-day)
+                    if ($activeSession->isCrossDay()) {
+                        try {
+                            $activeSession->splitCrossDaySession();
+                        } catch (\Exception $e) {
+                            Log::error('Failed to split cross-day in handleAttendanceConflict clock_out', [
+                                'attendance_id' => $activeSession->id,
+                                'error' => $e->getMessage()
+                            ]);
+                        }
+                    }
+
+                    $absensi = $this->saveAutomaticAttendance($playerId, $playerName, $activeSession->clock_in, $clockOut, $timeOnDuty);
+                    try {
+                        $user->update(['status' => 'offline']);
+                    } catch (\Exception $e) {}
 
                     return [
-                        'success'       => true,
-                        'message'       => 'Absensi FiveM dimulai (sesi manual tetap aktif karena timing conflict).',
-                        'priority'      => 'automatic',
-                        'conflict_note' => 'Manual session remains active due to timing anomaly'
+                        'success'  => true,
+                        'message'  => 'Sesi aktif berhasil ditutup dengan FiveM clock_out.',
+                        'priority' => 'automatic',
+                        'data'     => $absensi
                     ];
                 }
 
-                // Tutup sesi manual
-                $activeSession->clock_out = $manualClockOutTime;
-                // BUG FIX: session_duration harus DETIK, bukan menit
-                $activeSession->session_duration = $this->calculateDurationSeconds($activeSession->clock_in, $activeSession->clock_out);
-                $activeSession->total_hours      = max(1, floor($activeSession->session_duration / 60));
-                $activeSession->is_active        = false;
+                // KASUS 2: Request ini adalah Clock In baru (duty FiveM baru)
+                // Jika activeSession adalah sesi FiveM yang sama dan baru saja clock-in (dalam 5 menit)
+                if ($activeSession->source === 'fivem' && Carbon::parse($activeSession->clock_in)->diffInMinutes(Carbon::parse($clockIn)) < 5) {
+                    $absensi = $this->saveAutomaticAttendance($playerId, $playerName, $activeSession->clock_in, null, null);
+                    return [
+                        'success'  => true,
+                        'message'  => 'Player sudah terdata clock in.',
+                        'priority' => 'automatic',
+                        'data'     => $absensi
+                    ];
+                }
 
-                // Handle null notes safely
-                $existingNotes = $activeSession->notes ?? '';
-                $activeSession->notes = trim($existingNotes . " (Auto-closed by FiveM Login)");
+                // Tutup sesi aktif sebelumnya (baik manual maupun sesi FiveM lama)
+                $manualClockOutTime = Carbon::parse($clockIn);
+                $manualClockInTime = Carbon::parse($activeSession->clock_in);
 
-                $activeSession->save();
+                if ($manualClockOutTime->gt($manualClockInTime)) {
+                    $activeSession->clock_out = $manualClockOutTime;
+                    $activeSession->session_duration = $this->calculateDurationSeconds($activeSession->clock_in, $activeSession->clock_out);
+                    $activeSession->total_hours      = max(1, floor($activeSession->session_duration / 60));
+                    $activeSession->is_active        = false;
+                    $existingNotes = $activeSession->notes ?? '';
+                    $activeSession->notes = trim($existingNotes . " (Auto-closed by new FiveM Duty)");
+                    $activeSession->save();
 
-                // Update user status agar tidak stuck
+                    if ($activeSession->isCrossDay()) {
+                        try {
+                            $activeSession->splitCrossDaySession();
+                        } catch (\Exception $e) {
+                            Log::error('Failed to split cross-day in handleAttendanceConflict new login', [
+                                'attendance_id' => $activeSession->id,
+                                'error' => $e->getMessage()
+                            ]);
+                        }
+                    }
+                } else {
+                    $activeSession->update(['is_active' => false]);
+                }
+
+                // Update user status
                 try {
-                    $user->update(['status' => 'offline']); // Reset ke offline, nanti FiveM akan set 'working' via createManualAttendanceRecord
+                    $user->update(['status' => 'offline']);
                 } catch (\Exception $e) {
                     Log::warning('Failed to update user status', [
                         'user_id' => $user->id,
@@ -344,41 +358,30 @@ class AttendanceIntegrationService
                     ]);
                 }
 
-                // Setelah sesi manual ditutup, Simpan data FiveM sebagai sesi BARU (Automatic)
+                // Simpan data FiveM sebagai sesi BARU
                 $absensi = $this->saveAutomaticAttendance($playerId, $playerName, $clockIn, $clockOut, $timeOnDuty);
-
-                // Kita juga membuat record MANAUAL baru yang mirror ke FiveM?
-                // Logic createManualAttendanceRecord akan dipanggil di `integrateAttendanceData` setelah ini return?
-                // TIDAK. `integrateAttendanceData` return hasil dari fungsi ini jika konflik.
-                // Jadi kita harus handle pembuatan record FiveM-Mirror dngn createManualAttendanceRecord DISINI jika perlu.
-
-                // Tapi tunggu, `createManualAttendanceRecord` di `integrateAttendanceData` dipanggil SETELAH `saveAutomaticAttendance`
-                // DAN `handleAttendanceConflict` return array.
-                // Di `integrateAttendanceData`:
-                // if ($conflict['has_conflict']) { return $this->handleAttendanceConflict(...); }
-                // Jadi `integrateAttendanceData` BERHENTI setelah ini.
-
-                // Maka kita harus create manual mirror disini juga agar konsisten.
                 $this->createManualAttendanceRecord($user, $absensi);
 
                 return [
                     'success' => true,
-                    'message' => 'Sesi manual ditutup otomatis. Absensi FiveM dimulai baru.',
-                    'priority' => 'automatic', // Switch ke automatic
+                    'message' => 'Sesi sebelumnya ditutup. Absensi FiveM baru dimulai.',
+                    'priority' => 'automatic',
                     'updated_record' => $absensi
                 ];
 
             case 'overlapping_session':
-                // Prioritas: Manual > Otomatis
-                // Simpan data otomatis dengan catatan konflik
+                // Simpan data otomatis
                 $absensi = $this->saveAutomaticAttendance($playerId, $playerName, $clockIn, $clockOut, $timeOnDuty);
-                $absensi->update(['notes' => 'Konflik dengan sesi manual - prioritas manual']);
+                $absensi->update(['notes' => 'Tercatat otomatis via FiveM']);
+
+                // Pastikan record attendance juga dibuat/diupdate dan displit jika cross-day
+                $this->createManualAttendanceRecord($user, $absensi);
 
                 return [
                     'success' => true,
-                    'message' => 'Data absensi otomatis disimpan dengan catatan konflik',
-                    'priority' => 'manual',
-                    'conflict_note' => 'Ada overlap dengan sesi manual'
+                    'message' => 'Data absensi otomatis berhasil disimpan dan disinkronkan',
+                    'priority' => 'automatic',
+                    'data' => $absensi
                 ];
 
             default:
@@ -449,6 +452,25 @@ class AttendanceIntegrationService
                 // total_hours = MENIT (backward compatibility)
                 'total_hours'      => $absensi->clock_out ? $this->calculateDuration($absensi->clock_in, $absensi->clock_out) : null
             ]);
+
+            // Auto-split jika melewati tengah malam (cross-day)
+            if ($existingRecord->clock_out && $existingRecord->isCrossDay()) {
+                try {
+                    $existingRecord->splitCrossDaySession();
+                } catch (\Exception $e) {
+                    Log::error('Failed to split cross-day in createManualAttendanceRecord (existing)', [
+                        'attendance_id' => $existingRecord->id,
+                        'error' => $e->getMessage()
+                    ]);
+                }
+            }
+
+            if ($absensi->clock_out) {
+                $user->update(['status' => 'offline']);
+            } else {
+                $user->update(['status' => 'working']);
+            }
+
             return $existingRecord;
         }
 
@@ -470,6 +492,18 @@ class AttendanceIntegrationService
             'total_hours'      => $absensi->clock_out ? $this->calculateDuration($absensi->clock_in, $absensi->clock_out) : null,
             'source'           => 'fivem'
         ]);
+
+        // Auto-split jika melewati tengah malam (cross-day)
+        if ($attendance->clock_out && $attendance->isCrossDay()) {
+            try {
+                $attendance->splitCrossDaySession();
+            } catch (\Exception $e) {
+                Log::error('Failed to split cross-day in createManualAttendanceRecord (new)', [
+                    'attendance_id' => $attendance->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
 
         // Update user status to 'working' to match manual clock-in behavior
         // This ensures dashboard indicators (like status dots) update correctly

@@ -18,14 +18,34 @@ class AbsensiController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        // Auto-resolve clock_in if off-duty (clock_out) request doesn't provide it
+        if (($request->action === 'clock_out' || $request->filled('clock_out')) && !$request->filled('clock_in')) {
+            $activeAbsensi = Absensi::byPlayer($request->player_id)->active()->latest()->first();
+            if ($activeAbsensi && $activeAbsensi->clock_in) {
+                $request->merge(['clock_in' => $activeAbsensi->clock_in->toDateTimeString()]);
+            } else {
+                // If duration is provided, estimate clock_in from clock_out minus duration
+                if ($request->filled('time_on_duty') && preg_match('/^(\d{2}):(\d{2}):(\d{2})$/', $request->time_on_duty, $matches)) {
+                    $secs = ((int)$matches[1] * 3600) + ((int)$matches[2] * 60) + (int)$matches[3];
+                    $estClockIn = Carbon::parse($request->clock_out ?? now())->subSeconds($secs);
+                    $request->merge(['clock_in' => $estClockIn->toDateTimeString()]);
+                } else {
+                    $request->merge(['clock_in' => $request->clock_out ?? now()->toDateTimeString()]);
+                }
+            }
+        }
+
+        // Future tolerance for clock drift between FiveM and Web server (15 minutes)
+        $futureTolerance = now()->addMinutes(15)->toDateTimeString();
+
         // Validasi input dengan sanitasi
         $validator = Validator::make($request->all(), [
             'action'       => 'nullable|string|in:clock_in,clock_out',
             'job'          => 'nullable|string|max:100',
             'player_id'    => 'required|string|max:255|regex:/^[a-zA-Z0-9_:#.\s-]+$/',
             'player_name'  => 'required|string|max:255',
-            'clock_in'     => 'required|date|before_or_equal:now',
-            'clock_out'    => 'nullable|date|after:clock_in',
+            'clock_in'     => 'required|date|before_or_equal:' . $futureTolerance,
+            'clock_out'    => 'nullable|date|after_or_equal:clock_in|before_or_equal:' . $futureTolerance,
             'time_on_duty' => 'nullable|string|regex:/^\d{2}:\d{2}:\d{2}$/'
         ], [
             'player_id.required'       => 'Player ID wajib diisi',
@@ -35,7 +55,7 @@ class AbsensiController extends Controller
             'clock_in.date'            => 'Format Clock In tidak valid',
             'clock_in.before_or_equal' => 'Clock In tidak boleh di masa depan',
             'clock_out.date'           => 'Format Clock Out tidak valid',
-            'clock_out.after'          => 'Clock Out harus setelah Clock In',
+            'clock_out.after_or_equal' => 'Clock Out harus setelah atau sama dengan Clock In',
             'clock_out.before_or_equal'=> 'Clock Out tidak boleh di masa depan',
             'time_on_duty.regex'       => 'Format Time On Duty harus HH:MM:SS'
         ]);
@@ -69,16 +89,9 @@ class AbsensiController extends Controller
                 $clockOut = Carbon::parse($data['clock_out']);
                 $durationMinutes = $clockIn->diffInMinutes($clockOut);
 
-                // WARNING: Validation minimum 1 minute removed to allow testing (durasi detik)
-                /* 
-                if ($durationMinutes < 1) {
-                   // Logic removed
-                } 
-                */
-
-                // Validate: maximum duration 24 hours
-                if ($durationMinutes > 1440) {
-                    \Log::warning('Absensi duration exceeds 24 hours', [
+                // Validate: maximum duration 48 hours for long shifts
+                if ($durationMinutes > 2880) {
+                    \Log::warning('Absensi duration exceeds 48 hours', [
                         'player_id' => $data['player_id'],
                         'duration_minutes' => $durationMinutes,
                         'clock_in' => $data['clock_in'],
@@ -89,13 +102,16 @@ class AbsensiController extends Controller
 
             // Cek apakah player sudah clock in tapi belum clock out
             if (!$data['clock_out'] && Absensi::isPlayerActive($data['player_id'])) {
-                // INFO: Return 200 OK untuk idempotency (menghindari error log di client jika double request)
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Player sudah terdata clock in (Session Active).',
-                    'data' => Absensi::byPlayer($data['player_id'])->active()->first(),
-                    'is_duplicate' => true
-                ], 200);
+                $activeAbs = Absensi::byPlayer($data['player_id'])->active()->latest()->first();
+                // Jika request clock_in baru ini dalam rentang 5 menit dari clock_in aktif, return 200 OK untuk idempotency
+                if ($activeAbs && Carbon::parse($activeAbs->clock_in)->diffInMinutes(Carbon::parse($data['clock_in'])) < 5) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Player sudah terdata clock in (Session Active).',
+                        'data' => $activeAbs,
+                        'is_duplicate' => true
+                    ], 200);
+                }
             }
 
             // Use database transaction

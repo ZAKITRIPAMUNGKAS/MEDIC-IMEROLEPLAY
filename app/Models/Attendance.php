@@ -218,15 +218,29 @@ class Attendance extends Model
     }
 
     /**
-     * Get active session for user today
+     * Get active session for user today (including cross-day sessions started yesterday)
      */
     public static function getActiveSession($userId, $date = null)
     {
-        $date = $date ?? today();
-        return self::forUser($userId)
-            ->forDate($date)
+        $todayStr = today('Asia/Jakarta')->toDateString();
+        $targetDate = $date ? \Carbon\Carbon::parse($date)->toDateString() : $todayStr;
+
+        $session = self::forUser($userId)
+            ->forDate($targetDate)
             ->active()
+            ->latest('clock_in')
             ->first();
+
+        if ($session) {
+            return $session;
+        }
+
+        // If checking for today, also find any active session that started on a previous day (cross-day active)
+        if ($targetDate === $todayStr) {
+            return self::getAnyActiveSession($userId);
+        }
+
+        return null;
     }
 
     /**
@@ -236,6 +250,7 @@ class Attendance extends Model
     {
         return self::forUser($userId)
             ->active()
+            ->latest('clock_in')
             ->first();
     }
 
@@ -244,10 +259,14 @@ class Attendance extends Model
      */
     public static function getDailySessions($userId, $date = null)
     {
-        $date = $date ?? today();
+        $targetDate = $date ? \Carbon\Carbon::parse($date)->toDateString() : today('Asia/Jakarta')->toDateString();
         return self::forUser($userId)
-            ->forDate($date)
-            ->orderBy('session_number')
+            ->where(function ($q) use ($targetDate) {
+                $q->where('work_date', $targetDate)
+                  ->orWhereDate('clock_in', $targetDate)
+                  ->orWhereDate('clock_out', $targetDate);
+            })
+            ->orderBy('clock_in')
             ->get();
     }
 
@@ -266,15 +285,44 @@ class Attendance extends Model
     }
 
     /**
-     * Get daily total hours for user
+     * Get daily total hours for user (supports cross-day hours)
      */
     public static function getDailyTotalHours($userId, $date = null)
     {
-        $date = $date ?? today();
-        return self::forUser($userId)
-            ->forDate($date)
-            ->valid()
-            ->sum('session_duration');
+        $targetDate = $date ? \Carbon\Carbon::parse($date)->toDateString() : today('Asia/Jakarta')->toDateString();
+        $dayStart = \Carbon\Carbon::parse($targetDate, 'Asia/Jakarta')->startOfDay();
+        $dayEnd = \Carbon\Carbon::parse($targetDate, 'Asia/Jakarta')->endOfDay();
+
+        // Get all completed sessions that intersect this date
+        $sessions = self::forUser($userId)
+            ->whereNotNull('clock_out')
+            ->where(function ($q) use ($targetDate, $dayStart, $dayEnd) {
+                $q->whereDate('work_date', $targetDate)
+                  ->orWhere(function ($sub) use ($dayStart, $dayEnd) {
+                      $sub->where('clock_in', '<=', $dayEnd)
+                          ->where('clock_out', '>=', $dayStart);
+                  });
+            })
+            ->get();
+
+        $totalSeconds = 0;
+        foreach ($sessions as $session) {
+            $cin = \Carbon\Carbon::parse($session->clock_in)->setTimezone('Asia/Jakarta');
+            $cout = \Carbon\Carbon::parse($session->clock_out)->setTimezone('Asia/Jakarta');
+
+            if ($cin->toDateString() !== $cout->toDateString()) {
+                // Cross-day session that may not have been split yet
+                $effectiveStart = $cin->gt($dayStart) ? $cin : $dayStart;
+                $effectiveEnd = $cout->lt($dayEnd) ? $cout : $dayEnd;
+                if ($effectiveEnd->gt($effectiveStart)) {
+                    $totalSeconds += $effectiveStart->diffInSeconds($effectiveEnd);
+                }
+            } else {
+                $totalSeconds += $session->session_duration ?? $cin->diffInSeconds($cout);
+            }
+        }
+
+        return $totalSeconds;
     }
 
     /**
@@ -587,13 +635,6 @@ class Attendance extends Model
         $secondDay = $clockOut->toDateString();
 
         if ($secondDay <= $firstDay) {
-            \Log::warning('Invalid cross-day session: second_day <= first_day', [
-                'attendance_id' => $this->id,
-                'first_day' => $firstDay,
-                'second_day' => $secondDay,
-                'clock_in' => $clockIn->format('Y-m-d H:i:s'),
-                'clock_out' => $clockOut->format('Y-m-d H:i:s')
-            ]);
             return null;
         }
 
@@ -606,16 +647,6 @@ class Attendance extends Model
         // Hitung durasi dalam detik (lebih akurat)
         $firstDaySeconds = $clockIn->diffInSeconds($firstDayEnd);
         $secondDaySeconds = $secondDayStart->diffInSeconds($clockOut);
-
-        // Validasi: durasi harus positif
-        if ($firstDaySeconds <= 0 || $secondDaySeconds <= 0) {
-            \Log::warning('Invalid cross-day session: invalid duration calculation', [
-                'attendance_id' => $this->id,
-                'first_day_seconds' => $firstDaySeconds,
-                'second_day_seconds' => $secondDaySeconds
-            ]);
-            return null;
-        }
 
         return [
             'is_cross_day' => true,
@@ -710,23 +741,6 @@ class Attendance extends Model
             return false;
         }
 
-        $info = $this->getCrossDayInfo();
-        if (!$info) {
-            return false;
-        }
-
-        // Validasi tambahan: pastikan second_day > first_day
-        if ($info['second_day'] <= $info['first_day']) {
-            \Log::error('Cannot split cross-day session: second_day must be after first_day', [
-                'attendance_id' => $this->id,
-                'first_day' => $info['first_day'],
-                'second_day' => $info['second_day'],
-                'clock_in' => $this->clock_in->format('Y-m-d H:i:s'),
-                'clock_out' => $this->clock_out->format('Y-m-d H:i:s')
-            ]);
-            return false;
-        }
-
         try {
             \DB::beginTransaction();
 
@@ -734,85 +748,75 @@ class Attendance extends Model
             $clockIn = $this->clock_in->copy()->setTimezone('Asia/Jakarta');
             $clockOut = $this->clock_out->copy()->setTimezone('Asia/Jakarta');
 
-            // Update original record untuk hari pertama (sampai end of day)
-            // endOfDay() akan menghasilkan 23:59:59 pada tanggal yang sama dengan clock_in
-            $firstDayEnd = $clockIn->copy()->endOfDay();
+            $currentStart = $clockIn->copy();
+            $finalEnd = $clockOut->copy();
+            $isFirst = true;
+            $dayCount = 1;
 
-            // Validasi: firstDayEnd harus <= clockOut
-            if ($firstDayEnd->gt($clockOut)) {
-                \Log::error('Cannot split: first day end is after clock out', [
-                    'attendance_id' => $this->id,
-                    'clock_in' => $clockIn->format('Y-m-d H:i:s'),
-                    'clock_out' => $clockOut->format('Y-m-d H:i:s'),
-                    'first_day_end' => $firstDayEnd->format('Y-m-d H:i:s')
-                ]);
-                \DB::rollBack();
-                return false;
+            while ($currentStart->toDateString() < $finalEnd->toDateString()) {
+                $currentDayEnd = $currentStart->copy()->endOfDay();
+                $durationSec = $currentStart->diffInSeconds($currentDayEnd);
+
+                if ($isFirst) {
+                    $this->update([
+                        'work_date' => $currentStart->toDateString(),
+                        'clock_out' => $currentDayEnd,
+                        'is_active' => false,
+                        'session_duration' => $durationSec,
+                        'total_hours' => max(1, floor($durationSec / 60)),
+                        'notes' => trim(($this->notes ?? '') . "\n[Split: Day 1 of cross-day session]")
+                    ]);
+                    $isFirst = false;
+                } else {
+                    $nextSessionNumber = self::getNextSessionNumber($this->user_id, $currentStart->toDateString());
+                    self::create([
+                        'user_id' => $this->user_id,
+                        'clock_in' => $currentStart,
+                        'clock_out' => $currentDayEnd,
+                        'work_date' => $currentStart->toDateString(),
+                        'session_number' => $nextSessionNumber,
+                        'session_type' => $this->session_type ?? 'work',
+                        'is_active' => false,
+                        'session_duration' => $durationSec,
+                        'total_hours' => max(1, floor($durationSec / 60)),
+                        'notes' => trim(($this->notes ?? '') . "\n[Split: Day {$dayCount} of cross-day session]"),
+                        'source' => $this->source ?? 'fivem'
+                    ]);
+                }
+
+                $dayCount++;
+                // Move to start of next day (00:00:00)
+                $currentStart = $currentDayEnd->copy()->addSecond()->startOfDay();
             }
 
-            // Hitung durasi hari pertama (dari clock_in sampai end of day)
-            $firstDayDuration = $clockIn->diffInSeconds($firstDayEnd);
-
-            $this->update([
-                'clock_out' => $firstDayEnd,
-                'session_duration' => $firstDayDuration,
-                'total_hours' => max(1, floor($firstDayDuration / 60)), // Keep minutes for compatibility
-                'notes' => ($this->notes ?? '') . "\n[Split: Day 1 of cross-day session]"
-            ]);
-
-            // Buat record baru untuk hari kedua (dari start of day kedua sampai clock out asli)
-            // startOfDay() akan menghasilkan 00:00:00 pada tanggal clock_out
-            $secondDayStart = $clockOut->copy()->startOfDay();
-
-            // Validasi: secondDayStart harus < clockOut
-            if ($secondDayStart->gte($clockOut)) {
-                \Log::error('Cannot split: second day start is not before clock out', [
-                    'attendance_id' => $this->id,
-                    'clock_out' => $clockOut->format('Y-m-d H:i:s'),
-                    'second_day_start' => $secondDayStart->format('Y-m-d H:i:s')
-                ]);
-                \DB::rollBack();
-                return false;
+            // Final day (from 00:00:00 to clockOut)
+            if ($currentStart->lt($finalEnd)) {
+                $finalDuration = $currentStart->diffInSeconds($finalEnd);
+                if ($finalDuration > 0) {
+                    $nextSessionNumber = self::getNextSessionNumber($this->user_id, $currentStart->toDateString());
+                    self::create([
+                        'user_id' => $this->user_id,
+                        'clock_in' => $currentStart,
+                        'clock_out' => $finalEnd,
+                        'work_date' => $currentStart->toDateString(),
+                        'session_number' => $nextSessionNumber,
+                        'session_type' => $this->session_type ?? 'work',
+                        'is_active' => false,
+                        'session_duration' => $finalDuration,
+                        'total_hours' => max(1, floor($finalDuration / 60)),
+                        'notes' => trim(($this->notes ?? '') . "\n[Split: Final day of cross-day session]"),
+                        'source' => $this->source ?? 'fivem'
+                    ]);
+                }
             }
-
-            // Hitung durasi hari kedua (dari start of day sampai clock_out)
-            $secondDayDuration = $secondDayStart->diffInSeconds($clockOut);
-
-            // Validasi: durasi harus positif
-            if ($secondDayDuration <= 0) {
-                \Log::error('Cannot split: second day duration is invalid', [
-                    'attendance_id' => $this->id,
-                    'second_day_duration' => $secondDayDuration,
-                    'second_day_start' => $secondDayStart->format('Y-m-d H:i:s'),
-                    'clock_out' => $clockOut->format('Y-m-d H:i:s')
-                ]);
-                \DB::rollBack();
-                return false;
-            }
-
-            $nextSessionNumber = self::getNextSessionNumber($this->user_id, $info['second_day']);
-
-            self::create([
-                'user_id' => $this->user_id,
-                'clock_in' => $secondDayStart,
-                'clock_out' => $clockOut,
-                'work_date' => $info['second_day'],
-                'session_number' => $nextSessionNumber,
-                'session_type' => $this->session_type,
-                'is_active' => false,
-                'session_duration' => $secondDayDuration,
-                'total_hours' => max(1, floor($secondDayDuration / 60)), // Keep minutes for compatibility
-                'notes' => ($this->notes ?? '') . "\n[Split: Day 2 of cross-day session]"
-            ]);
 
             \DB::commit();
 
             \Log::info('Cross-day session split successfully', [
                 'attendance_id' => $this->id,
-                'first_day' => $info['first_day'],
-                'second_day' => $info['second_day'],
-                'first_day_duration' => $firstDayDuration,
-                'second_day_duration' => $secondDayDuration
+                'user_id' => $this->user_id,
+                'clock_in' => $clockIn->format('Y-m-d H:i:s'),
+                'clock_out' => $clockOut->format('Y-m-d H:i:s'),
             ]);
 
             return true;
@@ -901,7 +905,6 @@ class Attendance extends Model
         // Find sessions that cross days - using safe date comparison
         $records = self::whereNotNull('clock_out')
             ->whereRaw('DATE(clock_in) != DATE(clock_out)')
-            ->where('is_active', false)
             ->get();
 
         foreach ($records as $record) {
@@ -986,27 +989,38 @@ class Attendance extends Model
     }
 
     /**
-     * Get sessions for today (only sessions that actually started today)
+     * Get sessions for today (includes sessions started today, ended today, or active today)
      */
     public static function getTodaySessions($userId)
     {
-        $today = today();
+        $today = today('Asia/Jakarta')->toDateString();
         return self::where('user_id', $userId)
-            ->whereDate('work_date', $today)
-            ->whereDate('clock_in', $today) // Additional check: ensure clock_in is also today
-            ->orderBy('session_number')
+            ->where(function ($q) use ($today) {
+                $q->whereDate('work_date', $today)
+                  ->orWhereDate('clock_in', $today)
+                  ->orWhereDate('clock_out', $today)
+                  ->orWhere(function ($sub) use ($today) {
+                      $sub->where('is_active', true)
+                          ->whereDate('clock_in', '<=', $today);
+                  });
+            })
+            ->orderBy('clock_in')
             ->get();
     }
 
     /**
-     * Get active session for today
+     * Get active session for today (including sessions started before midnight)
      */
     public static function getTodayActiveSession($userId)
     {
-        $today = today();
+        $today = today('Asia/Jakarta')->toDateString();
         return self::where('user_id', $userId)
-            ->whereDate('work_date', $today)
             ->where('is_active', true)
+            ->where(function ($q) use ($today) {
+                $q->whereDate('work_date', $today)
+                  ->orWhereDate('clock_in', '<=', $today);
+            })
+            ->latest('clock_in')
             ->first();
     }
 
@@ -1093,6 +1107,18 @@ class Attendance extends Model
         $this->notes = $currentNotes ? $currentNotes . $autoNote : trim($autoNote);
 
         $this->save();
+
+        // Split if session crosses midnight
+        if ($this->isCrossDay()) {
+            try {
+                $this->splitCrossDaySession();
+            } catch (\Exception $e) {
+                \Log::error('Failed to split cross-day session in autoCloseSession', [
+                    'attendance_id' => $this->id,
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
 
         // Reset user status to 'offline' after auto checkout
         try {
