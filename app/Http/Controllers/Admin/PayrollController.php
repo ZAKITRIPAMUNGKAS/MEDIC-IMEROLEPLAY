@@ -9,6 +9,7 @@ use App\Models\PayrollExport;
 use App\Models\User;
 use App\Models\Attendance;
 use App\Models\MeetingRequest;
+use App\Models\SalarySetting;
 use App\Helpers\PayrollHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -557,7 +558,10 @@ class PayrollController extends Controller
                 // Auto-heal any attendances in this batch where clock_out exists but is_active remained true
                 foreach ($attendances as $att) {
                     if ($att->is_active && $att->clock_out) {
-                        $att->update(['is_active' => false]);
+                        $att->update([
+                            'is_active' => false,
+                            'session_type' => $att->session_type ?? 'work',
+                        ]);
                     }
                 }
 
@@ -698,8 +702,12 @@ class PayrollController extends Controller
 
             return redirect()->route('admin.payroll.index', ['week' => $periodStart->format('Y-m-d')])->with('success', $message);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
+            Log::error('Error generating payroll', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return redirect()->back()->with('error', 'Terjadi kesalahan saat generate gaji: ' . $e->getMessage());
         }
     }
@@ -857,10 +865,19 @@ class PayrollController extends Controller
             return redirect()->back()->with('error', 'Hanya gaji dengan status pending yang bisa di-regenerate.');
         }
 
+        if (!$payroll->user) {
+            return redirect()->back()->with('error', 'User untuk data gaji ini tidak ditemukan.');
+        }
+
+        $periodStartStr = Carbon::parse($payroll->period_start)->format('Y-m-d');
+        $periodEndStr = Carbon::parse($payroll->period_end)->format('Y-m-d');
+        $periodStartDt = Carbon::parse($payroll->period_start)->startOfDay();
+        $periodEndDt = Carbon::parse($payroll->period_end)->endOfDay();
+
         // Check if user has pending meeting requests in this period
         $pendingMeetings = MeetingRequest::getPendingInPeriod(
-            $payroll->period_start,
-            $payroll->period_end,
+            $periodStartStr,
+            $periodEndStr,
             $payroll->user_id
         );
 
@@ -876,9 +893,9 @@ class PayrollController extends Controller
         try {
             // Recalculate based on current attendance with full session_type, is_active, and date tolerance
             $attendances = $payroll->user->attendances()
-                ->where(function ($dq) use ($payroll) {
-                    $dq->whereBetween('work_date', [$payroll->period_start, $payroll->period_end])
-                       ->orWhereBetween(DB::raw('DATE(clock_in)'), [$payroll->period_start, $payroll->period_end]);
+                ->where(function ($dq) use ($periodStartStr, $periodEndStr, $periodStartDt, $periodEndDt) {
+                    $dq->whereBetween('work_date', [$periodStartStr, $periodEndStr])
+                       ->orWhereBetween('clock_in', [$periodStartDt, $periodEndDt]);
                 })
                 ->where(function ($sq) {
                     $sq->whereIn('session_type', ['work', 'meeting', 'overtime', 'duty', 'study'])
@@ -896,7 +913,10 @@ class PayrollController extends Controller
             // Auto-heal any attendances in this batch where clock_out exists but is_active remained true
             foreach ($attendances as $att) {
                 if ($att->is_active && $att->clock_out) {
-                    $att->update(['is_active' => false]);
+                    $att->update([
+                        'is_active' => false,
+                        'session_type' => $att->session_type ?? 'work',
+                    ]);
                 }
             }
 
@@ -1023,14 +1043,28 @@ class PayrollController extends Controller
             $totalOldSalary = 0;
             $totalNewSalary = 0;
 
+            $wStartStr = $weekStart->format('Y-m-d');
+            $wEndStr = $weekEnd->format('Y-m-d');
+            $wStartDt = $weekStart->copy()->startOfDay();
+            $wEndDt = $weekEnd->copy()->endOfDay();
+
             foreach ($payrolls as $payroll) {
+                if (!$payroll->user) {
+                    continue;
+                }
+
+                $pStartStr = Carbon::parse($payroll->period_start)->format('Y-m-d');
+                $pEndStr = Carbon::parse($payroll->period_end)->format('Y-m-d');
+                $pStartDt = Carbon::parse($payroll->period_start)->startOfDay();
+                $pEndDt = Carbon::parse($payroll->period_end)->endOfDay();
+
                 // Recalculate based on current attendance with full session_type, is_active, and date tolerance
                 $attendances = $payroll->user->attendances()
-                    ->where(function ($dq) use ($payroll, $weekStart, $weekEnd) {
-                        $dq->whereBetween('work_date', [$payroll->period_start, $payroll->period_end])
-                           ->orWhereBetween(DB::raw('DATE(clock_in)'), [$payroll->period_start, $payroll->period_end])
-                           ->orWhereBetween('work_date', [$weekStart->toDateString(), $weekEnd->toDateString()])
-                           ->orWhereBetween(DB::raw('DATE(clock_in)'), [$weekStart->toDateString(), $weekEnd->toDateString()]);
+                    ->where(function ($dq) use ($pStartStr, $pEndStr, $wStartStr, $wEndStr, $wStartDt, $wEndDt, $pStartDt, $pEndDt) {
+                        $dq->whereBetween('work_date', [$pStartStr, $pEndStr])
+                           ->orWhereBetween('work_date', [$wStartStr, $wEndStr])
+                           ->orWhereBetween('clock_in', [$wStartDt, $wEndDt])
+                           ->orWhereBetween('clock_in', [$pStartDt, $pEndDt]);
                     })
                     ->where(function ($sq) {
                         $sq->whereIn('session_type', ['work', 'meeting', 'overtime', 'duty', 'study'])
@@ -1048,7 +1082,10 @@ class PayrollController extends Controller
                 // Auto-heal
                 foreach ($attendances as $att) {
                     if ($att->is_active && $att->clock_out) {
-                        $att->update(['is_active' => false]);
+                        $att->update([
+                            'is_active' => false,
+                            'session_type' => $att->session_type ?? 'work',
+                        ]);
                     }
                 }
 
@@ -1125,10 +1162,10 @@ class PayrollController extends Controller
             })->pluck('user_id')->toArray();
 
             $missingUsers = User::whereNotIn('id', $existingPayrollUserIds)
-                ->whereHas('attendances', function ($aq) use ($weekStart, $weekEnd) {
-                    $aq->where(function ($dq) use ($weekStart, $weekEnd) {
-                        $dq->whereBetween('work_date', [$weekStart->toDateString(), $weekEnd->toDateString()])
-                           ->orWhereBetween(DB::raw('DATE(clock_in)'), [$weekStart->toDateString(), $weekEnd->toDateString()]);
+                ->whereHas('attendances', function ($aq) use ($wStartStr, $wEndStr, $wStartDt, $wEndDt) {
+                    $aq->where(function ($dq) use ($wStartStr, $wEndStr, $wStartDt, $wEndDt) {
+                        $dq->whereBetween('work_date', [$wStartStr, $wEndStr])
+                           ->orWhereBetween('clock_in', [$wStartDt, $wEndDt]);
                     })
                     ->where(function ($sq) {
                         $sq->whereIn('session_type', ['work', 'meeting', 'overtime', 'duty', 'study'])
@@ -1146,9 +1183,9 @@ class PayrollController extends Controller
 
             foreach ($missingUsers as $missingUser) {
                 $userAttendances = Attendance::where('user_id', $missingUser->id)
-                    ->where(function ($dq) use ($weekStart, $weekEnd) {
-                        $dq->whereBetween('work_date', [$weekStart->toDateString(), $weekEnd->toDateString()])
-                           ->orWhereBetween(DB::raw('DATE(clock_in)'), [$weekStart->toDateString(), $weekEnd->toDateString()]);
+                    ->where(function ($dq) use ($wStartStr, $wEndStr, $wStartDt, $wEndDt) {
+                        $dq->whereBetween('work_date', [$wStartStr, $wEndStr])
+                           ->orWhereBetween('clock_in', [$wStartDt, $wEndDt]);
                     })
                     ->where(function ($sq) {
                         $sq->whereIn('session_type', ['work', 'meeting', 'overtime', 'duty', 'study'])
@@ -1169,7 +1206,10 @@ class PayrollController extends Controller
 
                 foreach ($userAttendances as $att) {
                     if ($att->is_active && $att->clock_out) {
-                        $att->update(['is_active' => false]);
+                        $att->update([
+                            'is_active' => false,
+                            'session_type' => $att->session_type ?? 'work',
+                        ]);
                     }
                 }
 
@@ -1247,11 +1287,12 @@ class PayrollController extends Controller
 
             return redirect()->back()->with('success', $msg);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
             Log::error('Error regenerating week payrolls', [
                 'week_start' => $request->week_start,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
             return redirect()->back()->with('error', 'Terjadi kesalahan saat regenerate: ' . $e->getMessage());
         }

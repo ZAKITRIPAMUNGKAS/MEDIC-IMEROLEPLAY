@@ -870,7 +870,7 @@ class Attendance extends Model
                         'clock_out' => $week['actual_end'],
                         'work_date' => $week['actual_start']->toDateString(),
                         'session_number' => $sessionNumber,
-                        'session_type' => $this->session_type,
+                        'session_type' => $this->session_type ?? 'work',
                         'is_active' => false,
                         'session_duration' => $week['duration_seconds'],
                         'total_hours' => floor($week['duration_seconds'] / 60), // Convert to minutes for compatibility
