@@ -536,7 +536,11 @@
                         </p>
                     </div>
                 </div>
-                <div class="shrink-0 w-full sm:w-auto text-right">
+                <div class="shrink-0 w-full sm:w-auto text-right flex flex-wrap items-center gap-2 justify-end">
+                    <button type="button" onclick="openRecruitmentModal(true)" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-full bg-white/15 hover:bg-white/25 text-white text-xs font-bold border border-white/25 shadow-md transition-all hover:scale-105 w-full sm:w-auto">
+                        <i class="fa-solid fa-play text-amber-300 text-[10px]"></i>
+                        <span>Tonton Video Oprec</span>
+                    </button>
                     <a href="{{ route('public.recruitment') }}" class="inline-flex items-center justify-center gap-2 px-5 py-2 rounded-full bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black shadow-lg transition-all hover:scale-105 w-full sm:w-auto" style="color: #0f172a !important;">
                         <span style="color: #0f172a !important;">Daftar Sekarang</span>
                         <i class="fa-solid fa-arrow-right text-[10px]" style="color: #0f172a !important;"></i>

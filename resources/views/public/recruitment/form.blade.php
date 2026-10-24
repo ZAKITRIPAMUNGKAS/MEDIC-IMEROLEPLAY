@@ -26,6 +26,9 @@
                     </div>
                 </div>
                 <div class="flex flex-wrap items-center gap-2 self-start sm:self-center">
+                    <button type="button" onclick="openRecruitmentModal(true)" class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition shadow-sm">
+                        <i class="fa-solid fa-play text-[10px]"></i> Video Teaser
+                    </button>
                     <a href="{{ route('public.recruitment.status') }}" class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/40 hover:bg-sky-500/30 transition shadow-sm">
                         <i class="fas fa-search"></i> Cek Status Pendaftaran
                     </a>

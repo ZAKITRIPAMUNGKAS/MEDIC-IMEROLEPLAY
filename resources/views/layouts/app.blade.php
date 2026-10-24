@@ -2758,15 +2758,76 @@
         `;
         document.head.appendChild(style);
 
-        // Recruitment Modal Functions
-        function openRecruitmentModal() {
-            document.getElementById('recruitmentModal').classList.remove('hidden');
+        // Recruitment Modal Functions with Video Autoplay
+        function openRecruitmentModal(unmute = false) {
+            const modal = document.getElementById('recruitmentModal');
+            const video = document.getElementById('recruitmentVideo');
+            if (!modal) return;
+
+            modal.classList.remove('hidden');
             document.body.style.overflow = 'hidden';
+
+            if (video) {
+                video.currentTime = 0;
+                if (unmute) {
+                    video.muted = false;
+                    updateOprecSoundUI(false);
+                } else {
+                    video.muted = true;
+                    updateOprecSoundUI(true);
+                }
+
+                const playPromise = video.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(() => {
+                        // If browser blocks unmuted playback, fallback to muted autoplay
+                        video.muted = true;
+                        updateOprecSoundUI(true);
+                        video.play().catch(() => {});
+                    });
+                }
+            }
         }
 
         function closeRecruitmentModal() {
-            document.getElementById('recruitmentModal').classList.add('hidden');
+            const modal = document.getElementById('recruitmentModal');
+            const video = document.getElementById('recruitmentVideo');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
             document.body.style.overflow = 'auto';
+
+            if (video) {
+                video.pause();
+            }
+
+            const dontShowCheck = document.getElementById('oprecDontShowToday');
+            if (dontShowCheck && dontShowCheck.checked) {
+                const todayKey = 'oprec_modal_dismissed_' + (new Date().toISOString().slice(0, 10));
+                localStorage.setItem(todayKey, 'true');
+            }
+            sessionStorage.setItem('oprec_modal_seen', 'true');
+        }
+
+        function toggleOprecSound() {
+            const video = document.getElementById('recruitmentVideo');
+            if (!video) return;
+            video.muted = !video.muted;
+            updateOprecSoundUI(video.muted);
+        }
+
+        function updateOprecSoundUI(isMuted) {
+            const icon = document.getElementById('oprecSoundIcon');
+            const text = document.getElementById('oprecSoundText');
+            if (icon && text) {
+                if (isMuted) {
+                    icon.className = 'fa-solid fa-volume-xmark text-amber-400';
+                    text.textContent = 'Suara Nonaktif (Klik Bunyikan)';
+                } else {
+                    icon.className = 'fa-solid fa-volume-high text-emerald-400';
+                    text.textContent = 'Suara Aktif';
+                }
+            }
         }
 
         // Close modal when clicking outside
@@ -2779,69 +2840,91 @@
             });
         }
 
+        @php
+            $currentGlobalOprec = \App\Models\RecruitmentPeriod::currentOpen('alta');
+            $isFrontPage = !request()->is('staff*') && !request()->is('portal*');
+        @endphp
+
+        // Auto-play modal when Oprec is Open on public page
+        @if($currentGlobalOprec && $isFrontPage)
+        document.addEventListener('DOMContentLoaded', function () {
+            const todayKey = 'oprec_modal_dismissed_' + (new Date().toISOString().slice(0, 10));
+            const isDismissedToday = localStorage.getItem(todayKey);
+            const isSeenInSession = sessionStorage.getItem('oprec_modal_seen');
+
+            if (!isDismissedToday && !isSeenInSession) {
+                setTimeout(function () {
+                    openRecruitmentModal(false);
+                    sessionStorage.setItem('oprec_modal_seen', 'true');
+                }, 800);
+            }
+        });
+        @endif
     </script>
 
-    <!-- Recruitment Modal -->
+    <!-- Recruitment Video Popup Modal -->
     <div id="recruitmentModal"
-        class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 hidden">
-        <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full animate-fade-in-up">
-            <!-- Header -->
-            <div
-                class="bg-gradient-to-r from-blue-500 to-cyan-500 text-white p-6 rounded-t-3xl relative overflow-hidden">
-                <!-- Background Pattern -->
-                <div class="absolute inset-0 opacity-10">
-                    <div class="absolute top-0 right-0 w-20 h-20 bg-white rounded-full -translate-y-10 translate-x-10">
+        class="fixed inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center z-[100000] p-3 sm:p-5 hidden">
+        <div class="relative bg-gradient-to-b from-slate-900 via-sky-950 to-slate-900 border border-sky-500/40 rounded-3xl shadow-[0_25px_60px_rgba(8,145,178,0.35)] max-w-2xl w-full overflow-hidden text-white animate-fade-in-up">
+            
+            <!-- Modal Header -->
+            <div class="px-5 py-4 border-b border-sky-800/40 flex items-center justify-between bg-sky-900/40">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center shadow-lg font-black text-base shrink-0">
+                        <i class="fa-solid fa-bullhorn animate-bounce"></i>
                     </div>
-                    <div class="absolute bottom-0 left-0 w-16 h-16 bg-white rounded-full translate-y-8 -translate-x-8">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="inline-block bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black text-[10px] uppercase px-2 py-0.5 rounded tracking-wider shadow-sm">
+                                OPEN RECRUITMENT
+                            </span>
+                            <span class="text-xs text-sky-300 font-semibold hidden sm:inline">iMe Medical Center</span>
+                        </div>
+                        <h3 class="text-sm sm:text-base font-black text-white mt-0.5">
+                            {{ $currentGlobalOprec?->batch_name ?? 'Pendaftaran Paramedic Medis Alta' }}
+                        </h3>
                     </div>
                 </div>
-
-                <div class="relative z-10 flex items-center justify-between">
-                    <div class="flex items-center space-x-4">
-                        <div
-                            class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-lg">
-                            <i class="fas fa-user-plus text-2xl"></i>
-                        </div>
-                        <div>
-                            <h2 class="text-2xl font-bold">Recruitment</h2>
-                            <p class="text-blue-100 text-sm">MOTIONLIFE EMS</p>
-                        </div>
-                    </div>
-                    <button onclick="closeRecruitmentModal()"
-                        class="w-10 h-10 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg">
-                        <i class="fas fa-times text-xl"></i>
-                    </button>
-                </div>
+                <button type="button" onclick="closeRecruitmentModal()"
+                    class="w-9 h-9 rounded-xl bg-white/10 hover:bg-rose-500/20 hover:text-rose-300 text-slate-300 border border-white/10 flex items-center justify-center transition-all duration-200">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
             </div>
 
-            <!-- Content -->
-            <div class="p-6">
-                <div class="text-center">
-                    <div
-                        class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                        <i class="fab fa-discord text-white text-3xl"></i>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-800 mb-4">Informasi Pendaftaran</h3>
-                    <p class="text-gray-600 leading-relaxed mb-6">
-                        Semua informasi mengenai pendaftaran dan persyaratan dapat dilihat secara lengkap melalui
-                        saluran Discord kami.
-                    </p>
-                    <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-4 mb-6">
-                        <div class="flex flex-col items-center justify-center gap-2 text-indigo-700">
-                            <i class="fas fa-external-link-alt mb-1"></i>
-                            <span class="text-sm font-medium text-center">Kunjungi channel #recruitment di
-                                Discord:</span>
-                            <a href="https://discord.com/channels/1357345255728480356/1370432256342233098"
-                                target="_blank"
-                                class="text-indigo-600 font-bold hover:text-indigo-800 hover:underline text-sm break-all">
-                                Klik Disini Untuk Membuka Discord
-                            </a>
-                        </div>
-                    </div>
-                    <button onclick="closeRecruitmentModal()"
-                        class="w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white py-3 px-6 rounded-xl font-semibold hover:from-blue-600 hover:to-cyan-600 transition-all duration-200 transform hover:scale-105 shadow-lg">
-                        <i class="fas fa-check mr-2"></i>Mengerti
+            <!-- Video Player Section -->
+            <div class="p-4 sm:p-5">
+                <div class="relative aspect-video rounded-2xl overflow-hidden bg-black border border-sky-500/30 shadow-2xl group">
+                    <video id="recruitmentVideo" class="w-full h-full object-cover" playsinline loop controls preload="metadata">
+                        <source src="{{ asset('videos/oprec.mp4') }}" type="video/mp4">
+                        Browser Anda tidak mendukung tag video HTML5.
+                    </video>
+
+                    <!-- Floating Audio Toggle Button -->
+                    <button type="button" id="oprecSoundToggle" onclick="toggleOprecSound()"
+                        class="absolute bottom-4 right-4 z-20 px-3.5 py-1.5 rounded-full bg-slate-950/85 hover:bg-slate-900 text-white text-xs font-bold border border-white/20 flex items-center gap-2 shadow-xl backdrop-blur-md transition-all hover:scale-105">
+                        <i id="oprecSoundIcon" class="fa-solid fa-volume-xmark text-amber-400"></i>
+                        <span id="oprecSoundText">Suara Nonaktif (Klik Bunyikan)</span>
                     </button>
+                </div>
+
+                <!-- Footer / CTA -->
+                <div class="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+                    <label class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer select-none">
+                        <input type="checkbox" id="oprecDontShowToday" class="rounded bg-slate-800 border-sky-500/40 text-cyan-500 focus:ring-0">
+                        <span>Jangan tampilkan otomatis lagi hari ini</span>
+                    </label>
+
+                    <div class="flex items-center gap-2.5 w-full sm:w-auto">
+                        <button type="button" onclick="closeRecruitmentModal()"
+                            class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition">
+                            Tutup
+                        </button>
+                        <a href="{{ route('public.recruitment') }}"
+                            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 transition-all hover:scale-105" style="color: #0f172a !important;">
+                            <span style="color: #0f172a !important;">Daftar Sekarang</span>
+                            <i class="fa-solid fa-arrow-right text-[10px]" style="color: #0f172a !important;"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
