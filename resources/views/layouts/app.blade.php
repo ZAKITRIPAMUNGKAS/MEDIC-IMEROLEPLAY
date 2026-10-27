@@ -2894,8 +2894,8 @@
             <!-- Video Player Section -->
             <div class="p-4 sm:p-5">
                 <div class="relative aspect-video rounded-2xl overflow-hidden bg-black border border-sky-500/30 shadow-2xl group">
-                    <video id="recruitmentVideo" class="w-full h-full object-cover" playsinline loop controls preload="metadata">
-                        <source src="{{ asset('videos/oprec.mp4') }}" type="video/mp4">
+                    <video id="recruitmentVideo" class="w-full h-full object-cover" playsinline loop controls muted preload="metadata" poster="{{ asset('videos/oprec-poster.jpg') }}?v={{ @filemtime(public_path('videos/oprec-poster.jpg')) ?: 1 }}">
+                        <source src="{{ asset('videos/oprec.mp4') }}?v={{ @filemtime(public_path('videos/oprec.mp4')) ?: 1 }}" type="video/mp4">
                         Browser Anda tidak mendukung tag video HTML5.
                     </video>
 
