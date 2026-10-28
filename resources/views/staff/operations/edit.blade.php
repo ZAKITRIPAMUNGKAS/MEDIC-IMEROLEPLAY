@@ -506,6 +506,18 @@
                                value="{{ old('medical_details.ttv.saturasi', $med['ttv']['saturasi'] ?? '') }}" placeholder="98 %">
                     </div>
                 </div>
+
+                {{-- Pemeriksaan Fisik Head to Toe & Status Lokalis --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sky-200 text-xs font-semibold uppercase mb-1.5">Pemeriksaan Fisik Head to Toe</label>
+                        <textarea name="medical_details[ttv][pemeriksaan_head_to_toe]" rows="4" class="form-input-dark text-sm" placeholder="Kepala: Normocephali, tidak ada deformitas&#10;Mata: Konjungtiva anemis (-/-), Sklera ikterik (-/-)&#10;Leher: Tidak teraba pembesaran KGB&#10;Thorax: Simetris, retraksi (-)&#10;Abdomen: Datar, supel, nyeri tekan (-)&#10;Ekstremitas: Akral hangat, CRT < 2 detik">{{ old('medical_details.ttv.pemeriksaan_head_to_toe', $med['ttv']['pemeriksaan_head_to_toe'] ?? '') }}</textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sky-200 text-xs font-semibold uppercase mb-1.5">Status Lokalis</label>
+                        <textarea name="medical_details[ttv][status_lokalis]" rows="4" class="form-input-dark text-sm" placeholder="Regio: ...&#10;Inspeksi: ...&#10;Palpasi: ...&#10;Perkusi: ...&#10;Auskultasi: ...">{{ old('medical_details.ttv.status_lokalis', $med['ttv']['status_lokalis'] ?? '') }}</textarea>
+                    </div>
+                </div>
             </div>
 
             {{-- SECTION 6: TINDAKAN OPERASI & LANGKAH-LANGKAH --}}

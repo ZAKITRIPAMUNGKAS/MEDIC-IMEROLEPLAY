@@ -436,6 +436,20 @@
                             <span class="text-white font-bold text-sm">{{ $med['ttv']['saturasi'] ?? '-' }}</span>
                         </div>
                     </div>
+
+                    {{-- Pemeriksaan Fisik Head to Toe & Status Lokalis --}}
+                    @if(!empty($med['ttv']['pemeriksaan_head_to_toe']) || !empty($med['ttv']['status_lokalis']))
+                    <div class="px-5 pb-5 grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="bg-white/5 p-4 rounded-xl border border-white/10">
+                            <span class="text-xs text-sky-300 font-bold uppercase tracking-wider block mb-1.5">Pemeriksaan Fisik Head to Toe</span>
+                            <div class="text-white text-xs leading-relaxed whitespace-pre-line">{{ $med['ttv']['pemeriksaan_head_to_toe'] ?? '-' }}</div>
+                        </div>
+                        <div class="bg-white/5 p-4 rounded-xl border border-white/10">
+                            <span class="text-xs text-sky-300 font-bold uppercase tracking-wider block mb-1.5">Status Lokalis</span>
+                            <div class="text-white text-xs leading-relaxed whitespace-pre-line">{{ $med['ttv']['status_lokalis'] ?? '-' }}</div>
+                        </div>
+                    </div>
+                    @endif
                 </div>
 
                 {{-- Card 4: Tindakan Operasi & Prosedur --}}
@@ -852,6 +866,8 @@ $nadi = $ttv['nadi'] ?? '-';
 $rr = $ttv['respirasi'] ?? '-';
 $suhu = $ttv['suhu'] ?? '-';
 $saturasi = $ttv['saturasi'] ?? '-';
+$headToToe = $ttv['pemeriksaan_head_to_toe'] ?? '-';
+$statusLokalis = $ttv['status_lokalis'] ?? '-';
 
 $tindakan = $med['tindakan'] ?? [];
 $waktuMulai = $tindakan['waktu_mulai'] ?? '-';
@@ -920,6 +936,10 @@ V. TANDA-TANDA VITAL (TTV) & PEMERIKSAAN FISIK
 - Respirasi (RR)    : {{ $rr }}
 - Suhu Body         : {{ $suhu }}
 - Saturasi O2       : {{ $saturasi }}
+- Pemeriksaan Fisik Head to Toe:
+{{ $headToToe }}
+- Status Lokalis:
+{{ $statusLokalis }}
 
 VI. PROSEDUR & TINDAKAN OPERASI
 - Nama Tindakan     : {{ $operation->tindakan_operasi }}
