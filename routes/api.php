@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\Api\OperationRecordApiController;
 use App\Http\Controllers\Api\MedicalFormApiController;
+use App\Http\Controllers\Api\DutyMonitoringApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -102,3 +103,20 @@ Route::middleware(['api.auth', 'api.rate_limit:60,1'])->prefix('medical-forms')-
     // Hapus form medis
     Route::delete('/{id}',                 [MedicalFormApiController::class, 'destroy'])->where('id', '[0-9]+');
 });
+
+/*
+|--------------------------------------------------------------------------
+| API Monitoring Jam Duty (Untuk Sertifikat Heli & Web Farmasi)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['api.auth', 'api.rate_limit:60,1'])->prefix('duty-hours')->group(function () {
+    // Rekap semua medis & jam duty dengan berbagai filter (period, dates, hospital, min_hours, dll)
+    Route::get('/',             [DutyMonitoringApiController::class, 'index']);
+
+    // Ringkasan global & leaderboard top duty staf
+    Route::get('/summary',      [DutyMonitoringApiController::class, 'summary']);
+
+    // Detail jam duty & riwayat sesi 1 orang spesifik (citizen_id / staff_id / player_id / id)
+    Route::get('/{identifier}', [DutyMonitoringApiController::class, 'show']);
+});
+
