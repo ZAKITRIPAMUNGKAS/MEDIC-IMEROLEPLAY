@@ -8,7 +8,7 @@
             <h1 class="text-2xl font-bold text-white flex items-center gap-2"><i class="fas fa-level-up-alt text-violet-400"></i> Kenaikan Jabatan</h1>
             <p class="text-white/50 text-sm mt-0.5">Status pengajuan promosi Anda</p>
         </div>
-        @if($period && (!$latestApp || $latestApp->status !== 'pending'))
+        @if($period && (!$latestApp || !in_array($latestApp->status, ['pending', 'accepted'])))
         <a href="{{ route('portal.promotion.create') }}"
            class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-400 hover:to-purple-500 text-white text-sm font-semibold rounded-xl shadow-lg transition-all">
             <i class="fas fa-plus"></i> Ajukan Kenaikan
@@ -65,15 +65,128 @@
     @if($latestApp)
     <div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
         <h3 class="text-white/60 text-xs uppercase tracking-wider font-semibold mb-4">Pengajuan Terakhir</h3>
-        <div class="flex items-center justify-between mb-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5">
             <div>
-                <p class="text-white font-semibold">{{ $latestApp->currentRole?->display_name }} → {{ $latestApp->targetRole?->display_name }}</p>
+                <p class="text-white text-lg font-bold">{{ $latestApp->currentRole?->display_name }} <i class="fas fa-arrow-right text-violet-400 mx-1.5 text-xs"></i> {{ $latestApp->targetRole?->display_name }}</p>
                 <p class="text-white/50 text-sm">{{ $latestApp->period?->name }}</p>
             </div>
-            <span class="px-3 py-1 rounded-full text-sm font-semibold {{ $latestApp->status_color === 'green' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : ($latestApp->status_color === 'red' ? 'bg-red-500/20 text-red-300 border border-red-500/30' : 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30') }}">
-                {{ $latestApp->status_label }}
-            </span>
+            @if($latestApp->status === 'approved')
+                <span class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 inline-flex items-center gap-1.5 w-max">
+                    <i class="fas fa-check-double text-emerald-400"></i> Kenaikan Jabatan Disahkan
+                </span>
+            @elseif($latestApp->status === 'accepted')
+                <span class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/30 inline-flex items-center gap-1.5 w-max">
+                    <i class="fas fa-check text-sky-400"></i> ACC 1 Selesai: Pengajuan Diterima
+                </span>
+            @elseif($latestApp->status === 'rejected')
+                <span class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-red-500/20 text-red-300 border border-red-500/30 inline-flex items-center gap-1.5 w-max">
+                    <i class="fas fa-times text-red-400"></i> Pengajuan Ditolak
+                </span>
+            @else
+                <span class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/30 inline-flex items-center gap-1.5 w-max">
+                    <i class="fas fa-clock text-amber-400 animate-pulse"></i> Menunggu ACC 1 (Penerimaan)
+                </span>
+            @endif
         </div>
+
+        {{-- 2-Stage Approval Stepper --}}
+        <div class="mb-6 p-4 rounded-xl bg-white/5 border border-white/10">
+            <p class="text-xs font-semibold text-white/50 uppercase tracking-wider mb-3">Tahapan Persetujuan (2 Kali ACC)</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {{-- Step 1 --}}
+                <div class="flex items-center gap-2.5 p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30">
+                    <div class="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center font-bold text-xs shrink-0">
+                        <i class="fas fa-check"></i>
+                    </div>
+                    <div class="text-xs">
+                        <div class="font-bold text-emerald-300">1. Pengajuan Dikirim</div>
+                        <div class="text-white/40 text-[10px]">Berkas & data tersimpan</div>
+                    </div>
+                </div>
+
+                {{-- Step 2 --}}
+                @php
+                    $isStep2Done = in_array($latestApp->status, ['accepted', 'approved']);
+                    $isStep2Current = ($latestApp->status === 'pending');
+                    $isStep2Rejected = ($latestApp->status === 'rejected' && empty($latestApp->first_approved_at));
+                @endphp
+                <div class="flex items-center gap-2.5 p-2.5 rounded-lg border {{ $isStep2Done ? 'bg-emerald-500/10 border-emerald-500/30' : ($isStep2Rejected ? 'bg-red-500/10 border-red-500/30' : ($isStep2Current ? 'bg-amber-500/10 border-amber-500/30' : 'bg-white/5 border-white/10')) }}">
+                    <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0 {{ $isStep2Done ? 'bg-emerald-500/20 text-emerald-300' : ($isStep2Rejected ? 'bg-red-500/20 text-red-300' : ($isStep2Current ? 'bg-amber-500/20 text-amber-300 animate-pulse' : 'bg-white/10 text-white/40')) }}">
+                        @if($isStep2Done) <i class="fas fa-check"></i> @elseif($isStep2Rejected) <i class="fas fa-times"></i> @else 2 @endif
+                    </div>
+                    <div class="text-xs">
+                        <div class="font-bold {{ $isStep2Done ? 'text-emerald-300' : ($isStep2Rejected ? 'text-red-300' : ($isStep2Current ? 'text-amber-300' : 'text-white/50')) }}">
+                            2. ACC 1: Penerimaan
+                        </div>
+                        <div class="text-white/40 text-[10px]">
+                            @if($isStep2Done) Pengajuan diterima PND @elseif($isStep2Rejected) Berkas ditolak @else Sedang ditinjau PND @endif
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Step 3 --}}
+                @php
+                    $isStep3Done = ($latestApp->status === 'approved');
+                    $isStep3Current = ($latestApp->status === 'accepted');
+                    $isStep3Rejected = ($latestApp->status === 'rejected' && !empty($latestApp->first_approved_at));
+                @endphp
+                <div class="flex items-center gap-2.5 p-2.5 rounded-lg border {{ $isStep3Done ? 'bg-emerald-500/10 border-emerald-500/30' : ($isStep3Rejected ? 'bg-red-500/10 border-red-500/30' : ($isStep3Current ? 'bg-sky-500/10 border-sky-500/30' : 'bg-white/5 border-white/10')) }}">
+                    <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0 {{ $isStep3Done ? 'bg-emerald-500/20 text-emerald-300' : ($isStep3Rejected ? 'bg-red-500/20 text-red-300' : ($isStep3Current ? 'bg-sky-500/20 text-sky-300 animate-pulse' : 'bg-white/10 text-white/40')) }}">
+                        @if($isStep3Done) <i class="fas fa-check-double"></i> @elseif($isStep3Rejected) <i class="fas fa-times"></i> @else 3 @endif
+                    </div>
+                    <div class="text-xs">
+                        <div class="font-bold {{ $isStep3Done ? 'text-emerald-300' : ($isStep3Rejected ? 'text-red-300' : ($isStep3Current ? 'text-sky-300' : 'text-white/50')) }}">
+                            3. ACC 2: Kenaikan Jabatan
+                        </div>
+                        <div class="text-white/40 text-[10px]">
+                            @if($isStep3Done) Resmi dinaikkan @elseif($isStep3Rejected) Ditolak tahap akhir @elseif($isStep3Current) Menunggu ACC kenaikan @else Belum dimulai @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Status Notification Message Banner --}}
+        @if($latestApp->status === 'accepted')
+        <div class="mb-5 p-4 bg-sky-500/15 border border-sky-500/30 rounded-xl text-sky-200 text-xs flex items-start gap-3">
+            <i class="fas fa-info-circle text-sky-400 text-base mt-0.5 shrink-0"></i>
+            <div>
+                <p class="font-bold text-sky-100">Pengajuan Anda Telah Diterima (ACC Tahap 1 Selesai)</p>
+                <p class="mt-0.5 text-sky-200/90 leading-relaxed">PND telah menerima dan memverifikasi berkas pengajuan Anda. Saat ini pengajuan Anda berada dalam tahap evaluasi akhir untuk menunggu <strong>ACC Tahap 2 (Pengesahan Kenaikan Jabatan)</strong>.</p>
+                @if($latestApp->first_approval_notes || $latestApp->pnd_notes)
+                    <div class="mt-2 p-2.5 bg-black/20 rounded-lg border border-sky-500/20 text-[11px]">
+                        <span class="font-semibold text-sky-300">Catatan PND (ACC 1):</span> "{{ $latestApp->first_approval_notes ?: $latestApp->pnd_notes }}"
+                    </div>
+                @endif
+            </div>
+        </div>
+        @elseif($latestApp->status === 'approved')
+        <div class="mb-5 p-4 bg-emerald-500/15 border border-emerald-500/30 rounded-xl text-emerald-200 text-xs flex items-start gap-3">
+            <i class="fas fa-check-circle text-emerald-400 text-base mt-0.5 shrink-0"></i>
+            <div>
+                <p class="font-bold text-emerald-100">Selamat! Kenaikan Jabatan Telah Disahkan (ACC 2 Selesai)</p>
+                <p class="mt-0.5 text-emerald-200/90 leading-relaxed">Kenaikan jabatan Anda ke <strong>{{ $latestApp->targetRole?->display_name }}</strong> telah resmi disahkan oleh PND dan manajemen. Jabatan profil Anda telah diperbarui secara otomatis di seluruh sistem rumah sakit.</p>
+                @if($latestApp->final_approval_notes || $latestApp->pnd_notes)
+                    <div class="mt-2 p-2.5 bg-black/20 rounded-lg border border-emerald-500/20 text-[11px]">
+                        <span class="font-semibold text-emerald-300">Catatan Pengesahan:</span> "{{ $latestApp->final_approval_notes ?: $latestApp->pnd_notes }}"
+                    </div>
+                @endif
+            </div>
+        </div>
+        @elseif($latestApp->status === 'rejected')
+        <div class="mb-5 p-4 bg-red-500/15 border border-red-500/30 rounded-xl text-red-200 text-xs flex items-start gap-3">
+            <i class="fas fa-times-circle text-red-400 text-base mt-0.5 shrink-0"></i>
+            <div>
+                <p class="font-bold text-red-100">Pengajuan Belum Disetujui</p>
+                <p class="mt-0.5 text-red-200/90 leading-relaxed">Pengajuan kenaikan jabatan Anda belum dapat disetujui untuk periode ini.</p>
+                @if($latestApp->pnd_notes)
+                    <div class="mt-2 p-2.5 bg-black/20 rounded-lg border border-red-500/20 text-[11px]">
+                        <span class="font-semibold text-red-300">Alasan PND:</span> "{{ $latestApp->pnd_notes }}"
+                    </div>
+                @endif
+            </div>
+        </div>
+        @endif
 
         {{-- Checklist snapshot --}}
         @if($latestApp->requirements_checklist)
@@ -129,7 +242,7 @@
         </div>
         @endif
 
-        @if($latestApp->pnd_notes)
+        @if($latestApp->pnd_notes && !in_array($latestApp->status, ['accepted', 'approved', 'rejected']))
         <div class="mt-4 p-3 bg-violet-500/10 rounded-xl border border-violet-500/20 text-xs text-violet-200">
             <span class="font-semibold">Catatan PND:</span> {{ $latestApp->pnd_notes }}
         </div>

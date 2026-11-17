@@ -49,15 +49,18 @@ class PromotionController extends Controller
                 ->with('error', 'Periode kenaikan jabatan sedang ditutup. Silakan tunggu pengumuman dari PND.');
         }
 
-        // Cek apakah ada pengajuan pending di periode ini
+        // Cek apakah ada pengajuan pending atau accepted di periode ini
         $existingApp = PromotionApplication::where('user_id', $user->id)
             ->where('period_id', $period->id)
-            ->where('status', 'pending')
+            ->whereIn('status', ['pending', 'accepted'])
             ->first();
 
         if ($existingApp) {
+            $msg = $existingApp->status === 'accepted'
+                ? 'Pengajuan kenaikan jabatan Anda telah DITERIMA (ACC Tahap 1) dan sedang dalam proses pengesahan kenaikan jabatan (ACC Tahap 2).'
+                : 'Pengajuan kenaikan jabatan Anda sedang dalam proses tinjauan PND.';
             return redirect()->route('portal.promotion.index')
-                ->with('info', 'Pengajuan kenaikan jabatan Anda sedang dalam proses tinjauan PND.');
+                ->with('info', $msg);
         }
 
         // Ambil semua jabatan medis sebagai target promosi (lebih tinggi dari jabatan medis sekarang)
@@ -257,6 +260,9 @@ class PromotionController extends Controller
                 'currentRole:id,name,display_name',
                 'targetRole:id,name,display_name',
                 'period:id,name,batch',
+                'approvedByPnd:id,name',
+                'firstApprover:id,name',
+                'finalApprover:id,name',
             ])
             ->whereHas('user', fn($q) => $q->where('hospital', $user->hospital ?? 'alta'))
             ->latest();
@@ -274,25 +280,52 @@ class PromotionController extends Controller
     {
         $this->checkIsPnd();
         $request->validate([
-            'action'    => 'required|in:approve,reject',
+            'action'    => 'required|in:accept,approve,promote,reject',
             'pnd_notes' => 'nullable|string|max:500',
         ]);
 
-        $isApproved = $request->action === 'approve';
+        $action = $request->action;
+        $now = now();
+        $reviewerId = Auth::id();
 
-        $application->update([
-            'status'          => $isApproved ? 'approved' : 'rejected',
-            'approved_by_pnd' => Auth::id(),
-            'pnd_reviewed_at' => now(),
-            'pnd_notes'       => $request->pnd_notes,
-        ]);
+        if ($action === 'accept') {
+            // ── ACC Tahap 1: Penerimaan Pengajuan Kenaikan Jabatan ──
+            if ($application->status !== PromotionApplication::STATUS_PENDING) {
+                return back()->with('error', 'Pengajuan ini sudah pernah diproses sebelumnya.');
+            }
 
-        // Jika disetujui, naikkan jabatan medis user
-        if ($isApproved) {
+            $application->update([
+                'status'               => PromotionApplication::STATUS_ACCEPTED,
+                'first_approved_by'    => $reviewerId,
+                'first_approved_at'    => $now,
+                'first_approval_notes' => $request->pnd_notes,
+                'approved_by_pnd'      => $reviewerId,
+                'pnd_reviewed_at'      => $now,
+                'pnd_notes'            => $request->pnd_notes ?: $application->pnd_notes,
+            ]);
+
+            return back()->with('success', 'ACC Tahap 1 Berhasil: Pengajuan kenaikan jabatan ' . $application->user->name . ' telah DITERIMA. Lanjut ke tahap ACC 2 untuk pengesahan kenaikan jabatan.');
+        } elseif ($action === 'approve' || $action === 'promote') {
+            // ── ACC Tahap 2: Pengesahan Kenaikan Jabatan Resmi ──
+            if ($application->status === PromotionApplication::STATUS_APPROVED) {
+                return back()->with('info', 'Kenaikan jabatan ini sudah disahkan sebelumnya.');
+            }
+
+            $application->update([
+                'status'               => PromotionApplication::STATUS_APPROVED,
+                'final_approved_by'    => $reviewerId,
+                'final_approved_at'    => $now,
+                'final_approval_notes' => $request->pnd_notes,
+                'approved_by_pnd'      => $reviewerId,
+                'pnd_reviewed_at'      => $now,
+                'pnd_notes'            => $request->pnd_notes ?: ($application->first_approval_notes ?: $application->pnd_notes),
+            ]);
+
+            // Naikkan jabatan medis/role staf secara resmi
             $userRoleName = strtolower($application->user->role?->name ?? '');
             $isManagement = in_array($userRoleName, ['admin', 'executive', 'manajer', 'staff_manager', 'supervisor']);
             if ($isManagement) {
-                // Pertahankan jabatan manajemennya (misal Staff Manager / Manajer), perbarui jabatan medisnya
+                // Pertahankan jabatan manajemen, perbarui jabatan medisnya
                 $application->user->update(['medic_role_id' => $application->target_role_id]);
             } else {
                 $application->user->update([
@@ -300,12 +333,19 @@ class PromotionController extends Controller
                     'medic_role_id' => $application->target_role_id,
                 ]);
             }
+
+            return back()->with('success', 'ACC Tahap 2 Berhasil: Kenaikan jabatan ' . $application->user->name . ' ke ' . ($application->targetRole?->display_name ?? 'jabatan baru') . ' telah DISAHKAN. Jabatan staf resmi diperbarui!');
+        } elseif ($action === 'reject') {
+            $application->update([
+                'status'          => PromotionApplication::STATUS_REJECTED,
+                'approved_by_pnd' => $reviewerId,
+                'pnd_reviewed_at' => $now,
+                'pnd_notes'       => $request->pnd_notes,
+            ]);
+
+            return back()->with('success', 'Pengajuan kenaikan jabatan ' . $application->user->name . ' ditolak.');
         }
 
-        $msg = $isApproved
-            ? 'Kenaikan jabatan ' . $application->user->name . ' disetujui. Jabatan otomatis diperbarui.'
-            : 'Pengajuan kenaikan jabatan ' . $application->user->name . ' ditolak.';
-
-        return back()->with('success', $msg);
+        return back()->with('error', 'Aksi tidak valid.');
     }
 }

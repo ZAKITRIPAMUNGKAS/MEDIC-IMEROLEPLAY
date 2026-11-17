@@ -414,6 +414,27 @@
             || $currentUser->hasPermission('access_feedback') 
             || $currentUser->isExecutiveOrAbove() 
             || $currentUser->isManagerOrAbove();
+
+        // Active Votings fallback check for notification & sidebar
+        if (!isset($activeVotings)) {
+            try {
+                $votingsQuery = \App\Models\Voting::with(['candidates.user'])->where('status', 'active');
+                if (!$currentUser->isAdmin() && !empty($userHospital)) {
+                    $votingsQuery->where(function ($q) use ($userHospital) {
+                        $q->where('hospital', 'all')->orWhere('hospital', $userHospital);
+                    });
+                }
+                $activeVotings = $votingsQuery->orderBy('created_at', 'desc')->get()->map(function ($voting) use ($currentUser) {
+                    $voting->has_voted = $voting->hasUserVoted($currentUser->id);
+                    $voting->voted_candidate_id = $voting->getUserVoteCandidateId($currentUser->id);
+                    return $voting;
+                });
+            } catch (\Throwable $e) {
+                $activeVotings = collect();
+            }
+        }
+        $activeVotingsCount = isset($activeVotings) ? $activeVotings->count() : 0;
+        $unvotedVotingsCount = isset($activeVotings) ? $activeVotings->where('has_voted', false)->count() : 0;
     @endphp
 
     <!-- Main Outer Frame (Gaya Layout Gambar 6 dengan Warna Default Portal Medis) -->
@@ -617,9 +638,18 @@
                                     <span class="inline-flex items-center justify-center min-w-[18px] h-4 bg-red-500 text-white text-[9px] font-bold px-1 rounded-full animate-pulse">{{ $unreadMessagesCount }}</span>
                                 @endif
                             </a>
-                            <a href="{{ route('staff.voting.index') }}" class="sidebar-sublink">
-                                <i class="fa-solid fa-square-poll-vertical w-4 text-center text-indigo-400"></i>
-                                <span>Voting & Poll</span>
+                            <a href="{{ route('staff.voting.index') }}" class="sidebar-sublink justify-between">
+                                <span class="flex items-center gap-2.5">
+                                    <i class="fa-solid fa-square-poll-vertical w-4 text-center text-indigo-400"></i>
+                                    <span>Voting & Poll</span>
+                                </span>
+                                @if(!empty($activeVotingsCount) && $activeVotingsCount > 0)
+                                    @if(!empty($unvotedVotingsCount) && $unvotedVotingsCount > 0)
+                                        <span class="inline-flex items-center justify-center min-w-[18px] h-4 bg-amber-500 text-slate-950 text-[9px] font-black px-1.5 rounded-full animate-pulse">{{ $unvotedVotingsCount }} Baru</span>
+                                    @else
+                                        <span class="inline-flex items-center justify-center h-4 bg-indigo-500/30 text-indigo-200 border border-indigo-400/30 text-[9px] font-bold px-1.5 rounded-full">Aktif</span>
+                                    @endif
+                                @endif
                             </a>
                             <a href="{{ route('staff.manager-evaluations.index') }}" class="sidebar-sublink">
                                 <i class="fa-solid fa-star w-4 text-center text-amber-400"></i>
@@ -1050,6 +1080,20 @@
                             @endif
                         </a>
 
+                        <!-- Voting Notification Icon (Sesi Voting Aktif) -->
+                        @if(!empty($activeVotingsCount) && $activeVotingsCount > 0)
+                            <a href="{{ route('staff.voting.index') }}" 
+                               class="relative w-10 h-10 rounded-xl bg-indigo-900/60 hover:bg-indigo-800 text-indigo-200 hover:text-white flex items-center justify-center border border-indigo-400/35 transition shadow-xs group" 
+                               title="Sesi Voting Aktif ({{ $activeVotingsCount }})">
+                                <i class="fa-solid fa-square-poll-vertical text-base text-indigo-300 group-hover:scale-110 transition-transform"></i>
+                                @if(!empty($unvotedVotingsCount) && $unvotedVotingsCount > 0)
+                                    <span class="absolute -top-1 -right-1 bg-amber-400 text-slate-950 text-[10px] font-black px-1.5 rounded-full shadow-xs animate-bounce">{{ $unvotedVotingsCount }}</span>
+                                @else
+                                    <span class="absolute top-1.5 right-2 w-2 h-2 rounded-full bg-emerald-400 ring-2 ring-sky-900"></span>
+                                @endif
+                            </a>
+                        @endif
+
                         <!-- Notification Bell (Janji Temu) -->
                         <button onclick="document.getElementById('janjiTemuSection') ? document.getElementById('janjiTemuSection').scrollIntoView({behavior:'smooth'}) : null" 
                                 class="relative w-10 h-10 rounded-xl bg-sky-900/60 hover:bg-sky-800 text-sky-200 hover:text-white flex items-center justify-center border border-sky-400/30 transition shadow-xs" title="Janji Temu Pasien">
@@ -1111,6 +1155,117 @@
                             <span class="btn-loading hidden"><i class="fa-solid fa-spinner fa-spin mr-1.5"></i>Memproses...</span>
                         </button>
                     </form>
+                </div>
+                @endif
+
+                <!-- ==================== ACTIVE VOTING NOTIFICATION BANNER ==================== -->
+                @if(!empty($activeVotingsCount) && $activeVotingsCount > 0)
+                <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-950/90 via-slate-900/90 to-sky-950/90 border border-indigo-400/40 p-4 sm:p-5 shadow-xl shadow-indigo-950/40">
+                    <!-- Glow effect in background -->
+                    <div class="absolute -top-16 -right-16 w-48 h-48 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="absolute -bottom-16 -left-16 w-48 h-48 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                    <!-- Header -->
+                    <div class="relative flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-indigo-500/25">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-indigo-500/25 border border-indigo-400/40 text-indigo-300 flex items-center justify-center shrink-0 shadow-xs">
+                                <i class="fa-solid fa-check-to-slot text-lg text-indigo-300"></i>
+                            </div>
+                            <div>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <h4 class="font-bold text-sm sm:text-base text-white">Pemberitahuan Voting Aktif</h4>
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-500/25 border border-indigo-400/40 text-indigo-200">
+                                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                                        {{ $activeVotingsCount }} Sesi Terbuka
+                                    </span>
+                                    @if(!empty($unvotedVotingsCount) && $unvotedVotingsCount > 0)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500/20 border border-amber-400/40 text-amber-300">
+                                            {{ $unvotedVotingsCount }} Belum Anda Ikuti
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/20 border border-emerald-400/40 text-emerald-300">
+                                            Semua Sudah Anda Ikuti
+                                        </span>
+                                    @endif
+                                </div>
+                                <p class="text-xs text-indigo-200/90 mt-0.5">
+                                    Sesi pemilihan staf medis sedang berlangsung. Partisipasi dan suara Anda menentukan langkah organisasi.
+                                </p>
+                            </div>
+                        </div>
+                        <a href="{{ route('staff.voting.index') }}" class="inline-flex items-center justify-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-200 hover:text-white border border-indigo-400/30 transition shrink-0 self-start sm:self-center">
+                            <span>Buka Bilik Suara</span>
+                            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </a>
+                    </div>
+
+                    <!-- Voting Cards List -->
+                    <div class="relative mt-3.5 space-y-3">
+                        @foreach($activeVotings as $votingItem)
+                        <div class="rounded-xl bg-slate-900/60 border border-indigo-500/20 p-3.5 hover:border-indigo-400/40 transition flex flex-col md:flex-row md:items-center justify-between gap-3.5">
+                            <div class="flex-1 min-w-0">
+                                <div class="flex flex-wrap items-center gap-2 mb-1.5">
+                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider
+                                        @if($votingItem->hospital === 'alta') bg-emerald-500/20 text-emerald-300 border border-emerald-500/30
+                                        @elseif($votingItem->hospital === 'roxwood') bg-amber-500/20 text-amber-300 border border-amber-500/30
+                                        @else bg-sky-500/20 text-sky-300 border border-sky-500/30 @endif">
+                                        {{ $votingItem->hospital === 'alta' ? 'RS Alta' : ($votingItem->hospital === 'roxwood' ? 'RS Roxwood' : 'Semua RS') }}
+                                    </span>
+                                    <span class="text-xs font-semibold text-slate-300">
+                                        Posisi: <strong class="text-white">{{ $votingItem->target_position ?? 'Pemilihan Umum' }}</strong>
+                                    </span>
+                                    @if($votingItem->end_date)
+                                    <span class="text-[11px] text-slate-400 flex items-center gap-1">
+                                        <i class="fa-regular fa-clock text-[10px]"></i>
+                                        Berakhir {{ $votingItem->end_date->translatedFormat('d M Y, H:i') }}
+                                    </span>
+                                    @endif
+                                </div>
+                                <h5 class="text-sm font-bold text-white hover:text-indigo-200 transition truncate">
+                                    {{ $votingItem->title }}
+                                </h5>
+                                @if(!empty($votingItem->description))
+                                <p class="text-xs text-slate-300 line-clamp-1 mt-0.5">
+                                    {{ $votingItem->description }}
+                                </p>
+                                @endif
+                                <div class="flex items-center gap-4 text-[11px] text-slate-400 mt-2">
+                                    <span class="flex items-center gap-1">
+                                        <i class="fa-solid fa-users text-indigo-400"></i>
+                                        {{ $votingItem->candidates ? $votingItem->candidates->count() : 0 }} Kandidat
+                                    </span>
+                                    <span class="flex items-center gap-1">
+                                        <i class="fa-solid fa-square-check text-sky-400"></i>
+                                        {{ $votingItem->totalVotesCount() }} Suara Masuk
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Action button & Status -->
+                            <div class="flex items-center gap-2.5 shrink-0 self-end md:self-center">
+                                @if(!empty($votingItem->has_voted))
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                                        <span>Sudah Memilih</span>
+                                    </span>
+                                    <a href="{{ route('staff.voting.show', $votingItem->id) }}" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-sky-900/60 hover:bg-sky-800 text-sky-200 hover:text-white border border-sky-400/30 transition">
+                                        <span>Bilik Suara</span>
+                                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                                    </a>
+                                @else
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 animate-pulse">
+                                        <i class="fa-solid fa-triangle-exclamation text-amber-400"></i>
+                                        <span>Belum Memberikan Suara</span>
+                                    </span>
+                                    <a href="{{ route('staff.voting.show', $votingItem->id) }}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-indigo-500 to-sky-500 hover:from-indigo-400 hover:to-sky-400 text-white shadow-md shadow-indigo-500/25 hover:shadow-indigo-500/40 transition">
+                                        <span>Pilih Sekarang</span>
+                                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
                 </div>
                 @endif
 

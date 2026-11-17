@@ -23,11 +23,19 @@ class PromotionApplication extends Model
         'approved_by_pnd',
         'pnd_reviewed_at',
         'pnd_notes',
+        'first_approved_by',
+        'first_approved_at',
+        'first_approval_notes',
+        'final_approved_by',
+        'final_approved_at',
+        'final_approval_notes',
     ];
 
     protected $casts = [
         'requirements_checklist' => 'array',
         'pnd_reviewed_at'        => 'datetime',
+        'first_approved_at'      => 'datetime',
+        'final_approved_at'      => 'datetime',
         'credit_score_at_submission' => 'integer',
         'training_days'          => 'integer',
         'duty_hours'             => 'float',
@@ -58,10 +66,19 @@ class PromotionApplication extends Model
                     $table->string('recommendation_letter_1')->nullable();
                     $table->string('recommendation_letter_2')->nullable();
                     $table->string('supporting_document')->nullable();
-                    $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+                    $table->string('status', 30)->default('pending');
                     $table->foreignId('approved_by_pnd')->nullable()->constrained('users')->nullOnDelete();
                     $table->timestamp('pnd_reviewed_at')->nullable();
                     $table->text('pnd_notes')->nullable();
+
+                    $table->foreignId('first_approved_by')->nullable()->constrained('users')->nullOnDelete();
+                    $table->timestamp('first_approved_at')->nullable();
+                    $table->text('first_approval_notes')->nullable();
+
+                    $table->foreignId('final_approved_by')->nullable()->constrained('users')->nullOnDelete();
+                    $table->timestamp('final_approved_at')->nullable();
+                    $table->text('final_approval_notes')->nullable();
+
                     $table->timestamps();
                     $table->index(['user_id', 'period_id', 'status']);
                 });
@@ -71,6 +88,24 @@ class PromotionApplication extends Model
                         $table->string('supporting_document')->nullable()->after('recommendation_letter_2');
                     });
                 }
+
+                $driver = \Illuminate\Support\Facades\DB::getDriverName();
+                if ($driver === 'mysql') {
+                    try {
+                        \Illuminate\Support\Facades\DB::statement("ALTER TABLE `promotion_applications` MODIFY COLUMN `status` VARCHAR(30) NOT NULL DEFAULT 'pending'");
+                    } catch (\Throwable $te) {}
+                }
+
+                if (!\Illuminate\Support\Facades\Schema::hasColumn('promotion_applications', 'first_approved_by')) {
+                    \Illuminate\Support\Facades\Schema::table('promotion_applications', function (\Illuminate\Database\Schema\Blueprint $table) {
+                        $table->foreignId('first_approved_by')->nullable()->after('status')->constrained('users')->nullOnDelete();
+                        $table->timestamp('first_approved_at')->nullable()->after('first_approved_by');
+                        $table->text('first_approval_notes')->nullable()->after('first_approved_at');
+                        $table->foreignId('final_approved_by')->nullable()->after('first_approval_notes')->constrained('users')->nullOnDelete();
+                        $table->timestamp('final_approved_at')->nullable()->after('final_approved_by');
+                        $table->text('final_approval_notes')->nullable()->after('final_approved_at');
+                    });
+                }
             }
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::warning('PromotionApplication ensureTableAndColumns error: ' . $e->getMessage());
@@ -78,6 +113,7 @@ class PromotionApplication extends Model
     }
 
     const STATUS_PENDING  = 'pending';
+    const STATUS_ACCEPTED = 'accepted';
     const STATUS_APPROVED = 'approved';
     const STATUS_REJECTED = 'rejected';
 
@@ -108,20 +144,32 @@ class PromotionApplication extends Model
         return $this->belongsTo(User::class, 'approved_by_pnd');
     }
 
+    public function firstApprover()
+    {
+        return $this->belongsTo(User::class, 'first_approved_by');
+    }
+
+    public function finalApprover()
+    {
+        return $this->belongsTo(User::class, 'final_approved_by');
+    }
+
     // ─── Accessors ────────────────────────────────────────────────────────────
 
     public function getStatusLabelAttribute(): string
     {
         return match($this->status) {
-            'approved' => 'Disetujui PND',
+            'accepted' => 'Pengajuan Diterima (Menunggu ACC Jabatan)',
+            'approved' => 'Kenaikan Jabatan Disahkan',
             'rejected' => 'Ditolak PND',
-            default    => 'Menunggu Tinjauan PND',
+            default    => 'Menunggu Tinjauan Berkas',
         };
     }
 
     public function getStatusColorAttribute(): string
     {
         return match($this->status) {
+            'accepted' => 'blue',
             'approved' => 'green',
             'rejected' => 'red',
             default    => 'yellow',

@@ -229,6 +229,28 @@ class DashboardController extends Controller
         // Get user operation requirement progress & notes matching staff profile
         $userOpProfile = $this->getUserOperationProfile($user);
 
+        // Get active votings for staff dashboard notification
+        $activeVotings = collect();
+        try {
+            $votingsQuery = \App\Models\Voting::with(['candidates.user'])
+                ->where('status', 'active');
+
+            if (!$isAdmin && $userHospital) {
+                $votingsQuery->where(function ($q) use ($userHospital) {
+                    $q->where('hospital', 'all')
+                      ->orWhere('hospital', $userHospital);
+                });
+            }
+
+            $activeVotings = $votingsQuery->orderBy('created_at', 'desc')->get()->map(function ($voting) use ($user) {
+                $voting->has_voted = $voting->hasUserVoted($user->id);
+                $voting->voted_candidate_id = $voting->getUserVoteCandidateId($user->id);
+                return $voting;
+            });
+        } catch (\Throwable $e) {
+            $activeVotings = collect();
+        }
+
         return view('staff.dashboard', compact(
             'leaderboard',
             'formLeaderboard',
@@ -245,7 +267,8 @@ class DashboardController extends Controller
             'weeklyStats',
             'totalEmsHours',
             'opStats',
-            'userOpProfile'
+            'userOpProfile',
+            'activeVotings'
         ));
     }
 
