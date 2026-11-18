@@ -22,8 +22,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Trust reverse proxies (e.g., Cloudflare). Uncomment if needed and supported in your environment.
-        // $middleware->trustProxies(at: '*', headers: SymfonyRequest::HEADER_X_FORWARDED_ALL);
+        // Trust reverse proxies (e.g. Cloudflare, CDN, reverse proxies) to detect real visitor IP & mitigate DDoS
+        $middleware->trustProxies(at: '*', headers: SymfonyRequest::HEADER_X_FORWARDED_FOR | SymfonyRequest::HEADER_X_FORWARDED_HOST | SymfonyRequest::HEADER_X_FORWARDED_PORT | SymfonyRequest::HEADER_X_FORWARDED_PROTO);
 
         // Web group to enable cookies, sessions, errors and CSRF
         $middleware->web(append: [
@@ -51,6 +51,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'alta_only' => \App\Http\Middleware\EnsureAltaHospital::class,
             'api.auth' => \App\Http\Middleware\ApiKeyAuth::class,
             'api.rate_limit' => \App\Http\Middleware\ApiRateLimit::class,
+            'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -12,6 +12,7 @@ use App\Helpers\AttendanceHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -177,27 +178,40 @@ class DashboardController extends Controller
             $statsQuery->where('hospital', $userHospital);
         }
 
-        // Execute Queries
+        // Execute Queries for recent forms (real-time top 5)
         $recentForms = $recentFormsQuery->orderBy('created_at', 'desc')->limit(5)->get();
         $recentAppointments = $recentAppointmentsQuery->orderBy('created_at', 'desc')->limit(5)->get();
 
-        $stats = [
-            'pending_forms' => (clone $statsQuery)->pending()->count(),
-            'approved_forms' => (clone $statsQuery)->approved()->count(),
-            'rejected_forms' => (clone $statsQuery)->rejected()->count(),
-            'total_forms_today' => (clone $statsQuery)->whereDate('created_at', today())->count(),
-        ];
+        // Cached form stats (3 minutes) to avoid 4 heavy full-table count queries on every staff page load
+        $statsHospitalKey = $isAdmin ? 'all' : ($userHospital ?? 'all');
+        $statsRoleKey = $userRole ?: 'none';
+        $statsCacheKey = "dashboard_form_stats_{$statsHospitalKey}_{$statsRoleKey}_" . today()->toDateString();
 
-        // Get Operations stats (only if the table exists)
-        $opStats = ['total' => 0, 'monthly' => 0, 'daily' => 0];
-        if (\Illuminate\Support\Facades\Schema::hasTable('operation_records')) {
-            $opStats = [
-                'total' => \App\Models\OperationRecord::count(),
-                'monthly' => \App\Models\OperationRecord::whereMonth('tanggal_waktu', now()->month)
-                                                        ->whereYear('tanggal_waktu', now()->year)->count(),
-                'daily' => \App\Models\OperationRecord::whereDate('tanggal_waktu', today())->count(),
+        $stats = Cache::remember($statsCacheKey, 180, function () use ($statsQuery) {
+            return [
+                'pending_forms' => (clone $statsQuery)->pending()->count(),
+                'approved_forms' => (clone $statsQuery)->approved()->count(),
+                'rejected_forms' => (clone $statsQuery)->rejected()->count(),
+                'total_forms_today' => (clone $statsQuery)->whereDate('created_at', today())->count(),
             ];
-        }
+        });
+
+        // Cached operation stats (5 minutes)
+        $opStats = Cache::remember('dashboard_op_stats_' . today()->toDateString(), 300, function () {
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable('operation_records')) {
+                    return [
+                        'total' => \App\Models\OperationRecord::count(),
+                        'monthly' => \App\Models\OperationRecord::whereMonth('tanggal_waktu', now()->month)
+                                                                ->whereYear('tanggal_waktu', now()->year)->count(),
+                        'daily' => \App\Models\OperationRecord::whereDate('tanggal_waktu', today())->count(),
+                    ];
+                }
+            } catch (\Throwable $e) {
+                // Table might not exist or error
+            }
+            return ['total' => 0, 'monthly' => 0, 'daily' => 0];
+        });
 
         // Get user's attendance sessions for today
         // Only include sessions that actually started today (work_date = today)
@@ -212,10 +226,16 @@ class DashboardController extends Controller
         $heatmapData = AttendanceHeatmapHelper::generateHeatmapData($user->id, $year);
         $heatmapStats = AttendanceHeatmapHelper::getStatistics($heatmapData);
 
-        // Get weekly and accumulated hours for summary card
-        $weeklyStats = AttendanceHelper::getUserWeeklyStats($user->id);
-        $totalEmsHours = AttendanceHelper::getUserTotalHours($user->id);
+        // Get weekly and accumulated hours with caching (3 minutes per user)
+        $weeklyStatsKey = "user_weekly_stats_{$user->id}_" . now()->format('Y_W');
+        $weeklyStats = Cache::remember($weeklyStatsKey, 180, function () use ($user) {
+            return AttendanceHelper::getUserWeeklyStats($user->id);
+        });
 
+        $totalHoursKey = "user_total_ems_hours_{$user->id}";
+        $totalEmsHours = Cache::remember($totalHoursKey, 300, function () use ($user) {
+            return AttendanceHelper::getUserTotalHours($user->id);
+        });
 
         // If current user has no attendance data, show demo data or find a user with data
         if ($heatmapData['work_days'] == 0) {
@@ -226,30 +246,34 @@ class DashboardController extends Controller
             }
         }
 
-        // Get user operation requirement progress & notes matching staff profile
-        $userOpProfile = $this->getUserOperationProfile($user);
+        // Get user operation requirement progress & notes matching staff profile (cached 3 minutes)
+        $userOpProfile = Cache::remember("user_op_profile_{$user->id}", 180, function () use ($user) {
+            return $this->getUserOperationProfile($user);
+        });
 
-        // Get active votings for staff dashboard notification
-        $activeVotings = collect();
-        try {
-            $votingsQuery = \App\Models\Voting::with(['candidates.user'])
-                ->where('status', 'active');
+        // Get active votings for staff dashboard notification (cached 2 minutes)
+        $votingCacheKey = "dashboard_active_votings_" . ($isAdmin ? 'admin' : ($userHospital ?? 'all')) . "_{$user->id}";
+        $activeVotings = Cache::remember($votingCacheKey, 120, function () use ($isAdmin, $userHospital, $user) {
+            try {
+                $votingsQuery = \App\Models\Voting::with(['candidates.user'])
+                    ->where('status', 'active');
 
-            if (!$isAdmin && $userHospital) {
-                $votingsQuery->where(function ($q) use ($userHospital) {
-                    $q->where('hospital', 'all')
-                      ->orWhere('hospital', $userHospital);
+                if (!$isAdmin && $userHospital) {
+                    $votingsQuery->where(function ($q) use ($userHospital) {
+                        $q->where('hospital', 'all')
+                          ->orWhere('hospital', $userHospital);
+                    });
+                }
+
+                return $votingsQuery->orderBy('created_at', 'desc')->get()->map(function ($voting) use ($user) {
+                    $voting->has_voted = $voting->hasUserVoted($user->id);
+                    $voting->voted_candidate_id = $voting->getUserVoteCandidateId($user->id);
+                    return $voting;
                 });
+            } catch (\Throwable $e) {
+                return collect();
             }
-
-            $activeVotings = $votingsQuery->orderBy('created_at', 'desc')->get()->map(function ($voting) use ($user) {
-                $voting->has_voted = $voting->hasUserVoted($user->id);
-                $voting->voted_candidate_id = $voting->getUserVoteCandidateId($user->id);
-                return $voting;
-            });
-        } catch (\Throwable $e) {
-            $activeVotings = collect();
-        }
+        });
 
         return view('staff.dashboard', compact(
             'leaderboard',
@@ -669,6 +693,10 @@ class DashboardController extends Controller
                 'session_number' => $sessionNumber
             ]);
 
+            // Clear user attendance caches so dashboard reflects fresh stats immediately
+            Cache::forget("user_weekly_stats_{$user->id}_" . now()->format('Y_W'));
+            Cache::forget("user_total_ems_hours_{$user->id}");
+
             // Build success message with session info
             $message = sprintf(
                 'Clock in berhasil pada %s. Sesi #%d (%s) - Work Date: %s',
@@ -754,6 +782,10 @@ class DashboardController extends Controller
                 'duration_formatted' => $duration,
                 'is_cross_day' => $isCrossDay
             ]);
+
+            // Clear user attendance caches so dashboard reflects fresh stats immediately
+            Cache::forget("user_weekly_stats_{$user->id}_" . now()->format('Y_W'));
+            Cache::forget("user_total_ems_hours_{$user->id}");
 
             // Build success message
             $message = sprintf(

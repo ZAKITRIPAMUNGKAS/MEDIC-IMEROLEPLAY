@@ -117,21 +117,21 @@ Route::get('/', [PublicController::class, 'index'])->name('public.index');
 // Recruitment Paramedic Alta Hospital (Public Flow)
 Route::get('/recruitment', [\App\Http\Controllers\Public\RecruitmentController::class, 'index'])->name('public.recruitment');
 Route::get('/recruitment/status', [\App\Http\Controllers\Public\RecruitmentController::class, 'statusCheck'])->name('public.recruitment.status');
-Route::post('/recruitment/set-credentials', [\App\Http\Controllers\Public\RecruitmentController::class, 'setCredentials'])->name('public.recruitment.set-credentials');
-Route::post('/recruitment/submit', [\App\Http\Controllers\Public\RecruitmentController::class, 'store'])->name('public.recruitment.submit');
+Route::post('/recruitment/set-credentials', [\App\Http\Controllers\Public\RecruitmentController::class, 'setCredentials'])->middleware('throttle:15,1')->name('public.recruitment.set-credentials');
+Route::post('/recruitment/submit', [\App\Http\Controllers\Public\RecruitmentController::class, 'store'])->middleware('throttle:10,1')->name('public.recruitment.submit');
 Route::get('/recruitment/success/{id}', [\App\Http\Controllers\Public\RecruitmentController::class, 'success'])->name('public.recruitment.success');
 Route::get('/pendaftaran-medis', function () {
     return redirect()->route('public.recruitment');
 })->name('public.pendaftaran-medis');
 
 Route::get('/form/{type?}', [PublicController::class, 'showForm'])->name('public.form');
-Route::post('/form/submit', [PublicController::class, 'submitForm'])->name('public.form.submit');
-Route::post('/appointment/create', [PublicController::class, 'createAppointment'])->name('public.appointment.create');
+Route::post('/form/submit', [PublicController::class, 'submitForm'])->middleware('throttle:15,1')->name('public.form.submit');
+Route::post('/appointment/create', [PublicController::class, 'createAppointment'])->middleware('throttle:15,1')->name('public.appointment.create');
 Route::get('/appointment/success/{id}', [PublicController::class, 'appointmentSuccess'])->name('public.appointment.success');
 
 // Public Feedback / Keluhan & Pengaduan Warga Routes
 Route::get('/feedback', [PublicController::class, 'showFeedbackForm'])->name('feedback.form');
-Route::post('/feedback', [PublicController::class, 'submitFeedback'])->name('feedback.submit');
+Route::post('/feedback', [PublicController::class, 'submitFeedback'])->middleware('throttle:10,1')->name('feedback.submit');
 Route::get('/feedback/success', [PublicController::class, 'feedbackSuccess'])->name('feedback.success');
 Route::get('/keluhan', [PublicController::class, 'showFeedbackForm'])->name('public.keluhan');
 
@@ -199,9 +199,9 @@ Route::get('/ai-settings', function () {
 // Routes for guests (not logged in) - Displays login/register forms and processes them
 Route::middleware(['guest'])->group(function () {
     Route::get('/staff/login', [StaffController::class, 'showLoginForm'])->name('staff.login');
-    Route::post('/staff/login', [StaffController::class, 'login'])->name('staff.login.post');
+    Route::post('/staff/login', [StaffController::class, 'login'])->middleware('throttle:10,1')->name('staff.login.post');
     Route::get('/staff/register', [StaffController::class, 'showRegisterForm'])->name('staff.register');
-    Route::post('/staff/register', [StaffController::class, 'register'])->name('staff.register.post');
+    Route::post('/staff/register', [StaffController::class, 'register'])->middleware('throttle:5,1')->name('staff.register.post');
 });
 
 Route::middleware(['auth', 'staff'])->group(function () {
