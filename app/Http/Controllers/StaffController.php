@@ -348,10 +348,21 @@ class StaffController extends Controller
 
         $user->save();
 
+        // Retroactive Auto-Sync: Cari dan tautkan riwayat absensi FiveM terdahulu yang cocok dengan Citizen ID ini
+        try {
+            $integrationService = new \App\Services\AttendanceIntegrationService();
+            $syncedCount = $integrationService->syncUserPastAbsensi($user);
+            if ($syncedCount > 0) {
+                \Log::info("Auto-synced {$syncedCount} past absensi records for user {$user->id} ({$user->citizen_id})");
+            }
+        } catch (\Throwable $e) {
+            \Log::warning("Failed to auto-sync past absensi for user {$user->id}: " . $e->getMessage());
+        }
+
         // Update session name immediately without re-login
         $request->session()->put('auth_name', $user->name);
 
-        return back()->with('success', 'Profil berhasil diperbarui.');
+        return back()->with('success', 'Profil berhasil diperbarui dan data jam duty FiveM Anda telah disinkronkan.');
     }
 
     public function updateEmail(Request $request)

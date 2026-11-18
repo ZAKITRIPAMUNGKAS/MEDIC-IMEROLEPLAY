@@ -283,16 +283,23 @@ class AttendanceHelper
      */
     public static function getUserWeeklyStats(int $userId)
     {
+        $durationExpr = 'COALESCE(session_duration, TIMESTAMPDIFF(SECOND, clock_in, clock_out), total_hours * 60, 0)';
+
         $stats = Attendance::where('user_id', $userId)
             ->whereBetween('work_date', [now()->startOfWeek(), now()->endOfWeek()])
             ->whereIn('session_type', ['work', 'meeting'])
-            ->whereNotNull('session_duration')
-            ->where('session_duration', '>', 0)
-            ->selectRaw('
+            ->where(function ($q) {
+                $q->where('session_duration', '>', 0)
+                  ->orWhere(function ($sq) {
+                      $sq->whereNotNull('clock_in')->whereNotNull('clock_out');
+                  })
+                  ->orWhere('total_hours', '>', 0);
+            })
+            ->selectRaw("
                 COUNT(DISTINCT work_date) as total_days,
-                COALESCE(SUM(session_duration), 0) as total_seconds,
-                COALESCE(AVG(session_duration), 0) as avg_seconds_per_day
-            ')
+                COALESCE(SUM({$durationExpr}), 0) as total_seconds,
+                COALESCE(AVG({$durationExpr}), 0) as avg_seconds_per_day
+            ")
             ->first();
 
         if ($stats) {
@@ -313,6 +320,8 @@ class AttendanceHelper
      */
     public static function getUserTotalHours(int $userId, ?string $sessionType = 'work'): array
     {
+        $durationExpr = 'COALESCE(session_duration, TIMESTAMPDIFF(SECOND, clock_in, clock_out), total_hours * 60, 0)';
+
         $totalSeconds = Attendance::where('user_id', $userId)
             ->when($sessionType, function ($query) use ($sessionType) {
                 if ($sessionType === 'work') {
@@ -321,11 +330,24 @@ class AttendanceHelper
                     $query->where('session_type', $sessionType);
                 }
             })
-            ->whereNotNull('session_duration')
-            ->where('session_duration', '>', 0)
-            ->sum('session_duration');
+            ->where(function ($q) {
+                $q->where('session_duration', '>', 0)
+                  ->orWhere(function ($sq) {
+                      $sq->whereNotNull('clock_in')->whereNotNull('clock_out');
+                  })
+                  ->orWhere('total_hours', '>', 0);
+            })
+            ->sum(\Illuminate\Support\Facades\DB::raw($durationExpr));
 
         $totalSeconds = (int) $totalSeconds;
+
+        // Fallback jika belum ada di attendances tapi ada di tabel user/absensi
+        if ($totalSeconds === 0) {
+            $user = User::find($userId);
+            if ($user) {
+                $totalSeconds = $user->getTotalDutySeconds();
+            }
+        }
 
         return [
             'total_seconds' => $totalSeconds,

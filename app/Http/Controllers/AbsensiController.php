@@ -18,6 +18,29 @@ class AbsensiController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        // 1. Normalisasi time_on_duty jika dikirim dalam format angka detik, 1-digit jam, atau format menit
+        if ($request->filled('time_on_duty')) {
+            $rawTime = trim((string)$request->time_on_duty);
+            if (is_numeric($rawTime)) {
+                $secs = max(0, (int)$rawTime);
+                $request->merge(['time_on_duty' => sprintf('%02d:%02d:%02d', floor($secs / 3600), floor(($secs % 3600) / 60), $secs % 60)]);
+            } elseif (preg_match('/^(\d+):(\d{1,2}):(\d{1,2})$/', $rawTime, $m)) {
+                $request->merge(['time_on_duty' => sprintf('%02d:%02d:%02d', (int)$m[1], (int)$m[2], (int)$m[3])]);
+            } elseif (preg_match('/^(\d{1,2}):(\d{1,2})$/', $rawTime, $m)) {
+                $request->merge(['time_on_duty' => sprintf('%02d:%02d:00', (int)$m[1], (int)$m[2])]);
+            }
+        } elseif ($request->filled('clock_in') && $request->filled('clock_out')) {
+            // Auto-calculate time_on_duty jika kosong tapi ada clock_in & clock_out
+            try {
+                $cin = Carbon::parse($request->clock_in);
+                $cout = Carbon::parse($request->clock_out);
+                if ($cout->gte($cin)) {
+                    $secs = $cin->diffInSeconds($cout);
+                    $request->merge(['time_on_duty' => sprintf('%02d:%02d:%02d', floor($secs / 3600), floor(($secs % 3600) / 60), $secs % 60)]);
+                }
+            } catch (\Throwable $e) {}
+        }
+
         // Auto-resolve clock_in if off-duty (clock_out) request doesn't provide it
         if (($request->action === 'clock_out' || $request->filled('clock_out')) && !$request->filled('clock_in')) {
             $activeAbsensi = Absensi::byPlayer($request->player_id)->active()->latest()->first();
@@ -25,7 +48,7 @@ class AbsensiController extends Controller
                 $request->merge(['clock_in' => $activeAbsensi->clock_in->toDateTimeString()]);
             } else {
                 // If duration is provided, estimate clock_in from clock_out minus duration
-                if ($request->filled('time_on_duty') && preg_match('/^(\d{2}):(\d{2}):(\d{2})$/', $request->time_on_duty, $matches)) {
+                if ($request->filled('time_on_duty') && preg_match('/^(\d+):(\d{2}):(\d{2})$/', $request->time_on_duty, $matches)) {
                     $secs = ((int)$matches[1] * 3600) + ((int)$matches[2] * 60) + (int)$matches[3];
                     $estClockIn = Carbon::parse($request->clock_out ?? now())->subSeconds($secs);
                     $request->merge(['clock_in' => $estClockIn->toDateTimeString()]);
@@ -35,8 +58,30 @@ class AbsensiController extends Controller
             }
         }
 
-        // Future tolerance for clock drift between FiveM and Web server (15 minutes)
-        $futureTolerance = now()->addMinutes(15)->toDateTimeString();
+        // Toleransi clock drift: jika clock_in sedikit di masa depan (<= 2 jam) karena selisih jam VPS/NTP,
+        // clamp otomatis ke now() agar tidak menyebabkan error 422 dan kehilangan data
+        if ($request->filled('clock_in')) {
+            try {
+                $cin = Carbon::parse($request->clock_in);
+                if ($cin->gt(now()) && $cin->diffInHours(now()) <= 2) {
+                    $request->merge(['clock_in' => now()->toDateTimeString()]);
+                }
+            } catch (\Throwable $e) {}
+        }
+
+        // Jika clock_out lebih awal dari clock_in karena selisih beberapa detik pada script game, sesuaikan
+        if ($request->filled('clock_out') && $request->filled('clock_in')) {
+            try {
+                $cin = Carbon::parse($request->clock_in);
+                $cout = Carbon::parse($request->clock_out);
+                if ($cout->lt($cin) && $cin->diffInSeconds($cout) <= 15) {
+                    $request->merge(['clock_out' => $cin->toDateTimeString()]);
+                }
+            } catch (\Throwable $e) {}
+        }
+
+        // Future tolerance for clock drift between FiveM and Web server (2 jam)
+        $futureTolerance = now()->addHours(2)->toDateTimeString();
 
         // Validasi input dengan sanitasi
         $validator = Validator::make($request->all(), [
@@ -46,7 +91,7 @@ class AbsensiController extends Controller
             'player_name'  => 'required|string|max:255',
             'clock_in'     => 'required|date|before_or_equal:' . $futureTolerance,
             'clock_out'    => 'nullable|date|after_or_equal:clock_in|before_or_equal:' . $futureTolerance,
-            'time_on_duty' => 'nullable|string|regex:/^\d{2}:\d{2}:\d{2}$/'
+            'time_on_duty' => 'nullable|string|regex:/^\d+:\d{2}:\d{2}$/'
         ], [
             'player_id.required'       => 'Player ID wajib diisi',
             'player_id.regex'          => 'Format Player ID tidak valid',

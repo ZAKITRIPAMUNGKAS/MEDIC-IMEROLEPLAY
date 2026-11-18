@@ -56,10 +56,11 @@ class DutyTrackingController extends Controller
 
         // --- RANKING QUERY (Historical Data Only) ---
         if ($mode !== 'live') {
+            $durationRaw = 'COALESCE(attendances.session_duration, TIMESTAMPDIFF(SECOND, attendances.clock_in, attendances.clock_out), 0)';
             $rankingsQuery = User::select('users.*')
-                ->selectRaw('SUM(attendances.session_duration) as total_duty_seconds')
+                ->selectRaw("SUM({$durationRaw}) as total_duty_seconds")
                 ->selectRaw('COUNT(attendances.id) as session_count')
-                ->selectRaw('AVG(attendances.session_duration) as avg_duty_seconds')
+                ->selectRaw("AVG({$durationRaw}) as avg_duty_seconds")
                 ->join('attendances', 'users.id', '=', 'attendances.user_id')
                 ->whereNotNull('attendances.clock_out');
 

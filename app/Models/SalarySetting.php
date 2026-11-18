@@ -40,18 +40,13 @@ class SalarySetting extends Model
     /**
      * Calculate salary based on hours worked
      * 
-     * Rules:
-     * - < 15 menit (0.25 jam) = $0 (dianggap tidak bekerja)
-     * - 15 menit - < 1 jam = Minimum 10% dari bayaran mingguan
-     * - 1-5 jam = 50%
-     * - 5-<10 jam = 80%
-     * - ≥ 10 jam = 100% + overtime ($500 per jam untuk setiap jam di atas 10)
-     * 
-     * Examples:
-     * - 9.5 jam = 80% weekly salary
-     * - 10 jam = 100% weekly salary
-     * - 12 jam = 100% + (2 × $500) = 100% + $1,000
-     * - 15 jam = 100% + (5 × $500) = 100% + $2,500
+     * Progressive 2-Tier Hourly Rates:
+     * - 5 Jam Pertama (Jam 1 s/d 5)  : 8% per jam
+     *   (1 jam = 8%, 2 jam = 16%, 3 jam = 24%, 4 jam = 32%, 5 jam = 40%)
+     * - 5 Jam Berikutnya (Jam 6 s/d 10): 12% per jam
+     *   (6 jam = 52%, 7 jam = 64%, 8 jam = 76%, 9 jam = 88%, 10 jam = 100%)
+     * - Lembur / Overtime (> 10 jam) : 100% Gaji Pokok + $2.000 per jam lembur
+     * - Batas Minimal (< 15 menit)   : $0 (dianggap tidak aktif bekerja)
      * 
      * @param float $totalHours Total hours worked
      * @return int Calculated salary
@@ -62,47 +57,57 @@ class SalarySetting extends Model
             return 0;
         }
 
-        $weeklySalary = $this->weekly_salary;
         $min15Minutes = 0.25; // 15 menit dalam jam
-        $oneHour = 1.0;
-        $fiveHours = 5.0;
-        $tenHours = 10.0;
-
-        // < 15 menit (0.25 jam) = $0 (dianggap tidak bekerja)
         if ($totalHours < $min15Minutes) {
             return 0;
         }
 
-        // 15 menit - < 1 jam = Minimum 10% dari bayaran mingguan
-        if ($totalHours >= $min15Minutes && $totalHours < $oneHour) {
-            return (int) ($weeklySalary * 0.10);
+        $weeklySalary = (float) $this->weekly_salary;
+
+        // Tier 1: 5 Jam Pertama (8% per jam)
+        if ($totalHours <= 5.0) {
+            $percentage = $totalHours * 0.08;
+            return (int) round($weeklySalary * $percentage);
         }
 
-        // 1-5 jam = 50%
-        if ($totalHours >= $oneHour && $totalHours < $fiveHours) {
-            return (int) ($weeklySalary * 0.50);
+        // Tier 2: 5 Jam Kedua (12% per jam -> jam ke-6 s/d 10)
+        // 5 jam pertama = 40%, jam berikutnya bertambah 12% per jam hingga 100% pada jam ke-10
+        if ($totalHours <= 10.0) {
+            $percentage = 0.40 + (($totalHours - 5.0) * 0.12);
+            return (int) round($weeklySalary * $percentage);
         }
 
-        // 5-<10 jam = 80%
-        if ($totalHours >= $fiveHours && $totalHours < $tenHours) {
-            return (int) ($weeklySalary * 0.80);
+        // Tier 3: Lembur / Overtime (> 10 jam)
+        // 100% Gaji Pokok untuk 10 jam pertama + $2.000 per jam lembur
+        $baseSalary = (int) round($weeklySalary);
+        $overtimeHours = $totalHours - 10.0;
+        $overtimeRatePerHour = 2000;
+        $overtimePay = (int) round($overtimeHours * $overtimeRatePerHour);
+
+        return $baseSalary + $overtimePay;
+    }
+
+    /**
+     * Dapatkan persentase gaji yang dicapai berdasarkan jam kerja (0% - 100%+)
+     *
+     * @param float $totalHours
+     * @return float
+     */
+    public function getSalaryPercentage(float $totalHours): float
+    {
+        if ($totalHours < 0.25) {
+            return 0.0;
         }
 
-        // ≥ 10 jam = 100% + overtime
-        // Base: 100% weekly salary untuk 10 jam pertama
-        // Overtime: (total jam - 10) × $2000 per jam
-        $baseSalary = (int) $weeklySalary;
-
-        if ($totalHours > $tenHours) {
-            $overtimeHours = $totalHours - $tenHours;
-            $overtimeRatePerHour = 2000;
-            $overtimePay = $overtimeHours * $overtimeRatePerHour;
-
-            return (int) ($baseSalary + $overtimePay);
+        if ($totalHours <= 5.0) {
+            return round($totalHours * 8.0, 1);
         }
 
-        // Exactly 10 hours = 100% weekly salary, no overtime
-        return $baseSalary;
+        if ($totalHours <= 10.0) {
+            return round(40.0 + (($totalHours - 5.0) * 12.0), 1);
+        }
+
+        return 100.0;
     }
 
     /**

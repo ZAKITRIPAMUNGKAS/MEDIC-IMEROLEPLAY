@@ -998,10 +998,33 @@ class User extends Authenticatable
 
     /**
      * Get total duty duration in seconds (all-time)
+     * Toleran terhadap session_duration yang bernilai null (menghitung langsung dari selisih clock_in & clock_out)
+     * serta mendukung fallback ke tabel absensi jika attendances belum disinkronkan.
      */
     public function getTotalDutySeconds(): int
     {
-        return $this->attendances()->whereNotNull('clock_out')->sum('session_duration') ?? 0;
+        $attendances = $this->attendances()->get();
+        $totalSeconds = 0;
+
+        foreach ($attendances as $att) {
+            if ($att->session_duration && $att->session_duration > 0) {
+                $totalSeconds += (int) $att->session_duration;
+            } elseif ($att->clock_in && $att->clock_out) {
+                $totalSeconds += max(0, $att->clock_in->diffInSeconds($att->clock_out));
+            } elseif ($att->total_hours && $att->total_hours > 0) {
+                $totalSeconds += (int) ($att->total_hours * 60);
+            }
+        }
+
+        // Fallback: Jika di tabel attendances belum ada, cek langsung dari tabel absensi FiveM
+        if ($totalSeconds === 0 && !empty($this->citizen_id)) {
+            $absensiList = Absensi::byPlayer($this->citizen_id)->completed()->get();
+            foreach ($absensiList as $abs) {
+                $totalSeconds += (int) ($abs->getDurationInSeconds() ?? 0);
+            }
+        }
+
+        return $totalSeconds;
     }
 
     /**

@@ -27,13 +27,23 @@ class AttendanceIntegrationService
             $user = $this->findUserByPlayerId($playerId, $playerName);
 
             if (!$user) {
-                Log::warning('User not found for player', [
-                    'player_id' => $playerId,
+                // Simpan data absensi otomatis sebagai 'unmapped' agar data TIDAK HILANG / TERBUANG
+                $absensi = $this->saveAutomaticAttendance($playerId, $playerName, $clockIn, $clockOut, $timeOnDuty);
+                $absensi->update([
+                    'source' => 'unmapped',
+                    'notes'  => 'Menunggu verifikasi profil / pengaturan Citizen ID di web'
+                ]);
+
+                Log::warning('[AttendanceIntegration] User not found for player, saved to absensi as unmapped', [
+                    'player_id'   => $playerId,
                     'player_name' => $playerName
                 ]);
+
                 return [
-                    'success' => false,
-                    'message' => 'User tidak ditemukan untuk player ID: ' . $playerId
+                    'success'  => true,
+                    'message'  => 'Data absensi tersimpan (Menunggu sinkronisasi profil web)',
+                    'data'     => $absensi,
+                    'unmapped' => true
                 ];
             }
 
@@ -84,9 +94,9 @@ class AttendanceIntegrationService
         $rawPlayerId = (string) $playerId;
         $normalizedPlayerId = trim(strtolower($rawPlayerId));
         
-        // Bersihkan prefix umum FiveM (char1:, char2:, citizen:, cid:, id:, license:, steam:, discord:)
-        $strippedPlayerId = preg_replace('/^(char\d+:|citizen:|cid:|id:|license:|license2:|steam:|discord:)/i', '', $normalizedPlayerId);
-        $strippedPlayerId = trim(str_replace(['#', ' ', '-', '.'], '', $strippedPlayerId));
+        // Bersihkan prefix umum FiveM (char1:, char2:, citizen:, cid:, id:, license:, steam:, discord:, qb:, esx:)
+        $strippedPlayerId = preg_replace('/^(char\d+:|citizen:|cid:|id:|license:|license2:|steam:|discord:|qbus:|qb:|esx:|rh:|alta:|medic:|ems:)/i', '', $normalizedPlayerId);
+        $strippedPlayerId = trim(str_replace(['#', ' ', '-', '.', ':'], '', $strippedPlayerId));
 
         // 1. Coba cari berdasarkan citizen_id atau staff_id - Exact Match Case-Insensitive
         $user = User::where(function($q) use ($normalizedPlayerId, $strippedPlayerId) {
@@ -106,7 +116,7 @@ class AttendanceIntegrationService
                 $q->where(function($sq) use ($strippedPlayerId) {
                     $sq->whereNotNull('citizen_id')
                        ->where(function($ssq) use ($strippedPlayerId) {
-                           $ssq->whereRaw("LOWER(REPLACE(REPLACE(REPLACE(TRIM(citizen_id), ' ', ''), '#', ''), '-', '')) = ?", [$strippedPlayerId])
+                           $ssq->whereRaw("LOWER(REPLACE(REPLACE(REPLACE(REPLACE(TRIM(citizen_id), ' ', ''), '#', ''), '-', ''), ':', '')) = ?", [$strippedPlayerId])
                                ->orWhereRaw("LOWER(REPLACE(citizen_id, 'char1:', '')) = ?", [$strippedPlayerId])
                                ->orWhereRaw("LOWER(REPLACE(citizen_id, 'char2:', '')) = ?", [$strippedPlayerId])
                                ->orWhereRaw("LOWER(REPLACE(citizen_id, 'citizen:', '')) = ?", [$strippedPlayerId]);
@@ -115,7 +125,7 @@ class AttendanceIntegrationService
                 ->orWhere(function($sq) use ($strippedPlayerId) {
                     $sq->whereNotNull('staff_id')
                        ->where(function($ssq) use ($strippedPlayerId) {
-                           $ssq->whereRaw("LOWER(REPLACE(REPLACE(REPLACE(TRIM(staff_id), ' ', ''), '#', ''), '-', '')) = ?", [$strippedPlayerId])
+                           $ssq->whereRaw("LOWER(REPLACE(REPLACE(REPLACE(REPLACE(TRIM(staff_id), ' ', ''), '#', ''), '-', ''), ':', '')) = ?", [$strippedPlayerId])
                                ->orWhereRaw("LOWER(REPLACE(staff_id, 'char1:', '')) = ?", [$strippedPlayerId])
                                ->orWhereRaw("LOWER(REPLACE(staff_id, 'char2:', '')) = ?", [$strippedPlayerId])
                                ->orWhereRaw("LOWER(REPLACE(staff_id, 'citizen:', '')) = ?", [$strippedPlayerId]);
@@ -176,11 +186,30 @@ class AttendanceIntegrationService
                     ]);
                     
                     // Auto-sync citizen_id & staff_id jika kosong pada user yang cocok
-                    if (empty($user->citizen_id) && !empty($strippedPlayerId)) {
+                    if (empty($user->citizen_id) && !empty($strippedPlayerId) && !str_starts_with($normalizedPlayerId, 'license:')) {
                         $user->citizen_id = strtoupper($strippedPlayerId);
                         $user->staff_id = $user->staff_id ?: strtoupper($strippedPlayerId);
                         $user->save();
                     }
+
+                    return $user;
+                }
+            }
+
+            // 5. Coba cari jika playerName cocok dengan username email akun web (misal Steam Name = username email pendaftaran)
+            $alphanumericName = preg_replace('/[^a-zA-Z0-9]/', '', strtolower($cleanPlayerName));
+            if (strlen($alphanumericName) >= 4) {
+                $user = User::whereRaw("LOWER(REPLACE(SUBSTRING_INDEX(email, '@', 1), '.', '')) LIKE ?", ['%' . $alphanumericName . '%'])
+                    ->orWhereRaw("? LIKE CONCAT('%', LOWER(REPLACE(SUBSTRING_INDEX(email, '@', 1), '.', '')), '%')", [$alphanumericName])
+                    ->first();
+
+                if ($user) {
+                    Log::info('[AttendanceIntegration] User matched via email username fallback', [
+                        'player_id'     => $playerId,
+                        'player_name'   => $playerName,
+                        'matched_user'  => $user->name,
+                        'matched_email' => $user->email,
+                    ]);
 
                     return $user;
                 }
@@ -400,8 +429,8 @@ class AttendanceIntegrationService
         // 1. Jika ini adalah Clock Out, tutup SEMUA sesi aktif sebelumnya untuk player ini
         // Ini untuk membersihkan "zombie session" jika terjadi error sebelumnya
         if ($clockOut) {
-            $activeSessions = Absensi::where('player_id', $playerId)
-                ->whereNull('clock_out')
+            $activeSessions = Absensi::byPlayer($playerId)
+                ->active()
                 ->get();
 
             foreach ($activeSessions as $session) {
@@ -704,5 +733,71 @@ class AttendanceIntegrationService
         $seconds = round(($remainingMinutes - floor($remainingMinutes)) * 60);
 
         return sprintf('%02d:%02d:%02d', $hours, floor($remainingMinutes), (int)$seconds);
+    }
+
+    /**
+     * Sinkronkan riwayat absensi FiveM terdahulu yang cocok dengan user (Retroactive Auto-Sync)
+     * Dipanggil otomatis saat staf menyimpan profil / memperbarui Citizen ID.
+     */
+    public function syncUserPastAbsensi(User $user): int
+    {
+        $citId = trim((string)($user->citizen_id ?: $user->staff_id));
+        if (empty($citId)) {
+            return 0;
+        }
+
+        $stripped = preg_replace('/^(char\d+:|citizen:|cid:|id:|license:|license2:|steam:|discord:|qbus:|qb:|esx:|rh:|alta:|medic:|ems:)/i', '', strtolower($citId));
+        $stripped = trim(str_replace(['#', ' ', '-', '.', ':'], '', $stripped));
+
+        $variants = array_filter(array_unique([
+            $citId,
+            strtolower($citId),
+            strtoupper($citId),
+            $stripped,
+            strtoupper($stripped),
+            'char1:' . $stripped,
+            'char2:' . $stripped,
+            'citizen:' . $stripped,
+        ]));
+
+        $absensiQuery = Absensi::whereIn('player_id', $variants);
+        if (!empty($user->name) && strlen(trim($user->name)) >= 3) {
+            $absensiQuery->orWhere('player_name', 'LIKE', '%' . trim($user->name) . '%');
+        }
+
+        $records = $absensiQuery->orderBy('clock_in', 'asc')->get();
+        $synced = 0;
+
+        foreach ($records as $record) {
+            // Cek apakah sudah ada di attendances
+            $exists = Attendance::where('user_id', $user->id)
+                ->where('clock_in', $record->clock_in)
+                ->first();
+
+            if (!$exists) {
+                $this->createManualAttendanceRecord($user, $record);
+                $synced++;
+            } else {
+                // Update session_duration & clock_out jika record di attendances belum lengkap
+                if ($record->clock_out && (!$exists->clock_out || is_null($exists->session_duration))) {
+                    $exists->update([
+                        'clock_out'        => $record->clock_out,
+                        'is_active'        => false,
+                        'session_duration' => $this->calculateDurationSeconds($record->clock_in, $record->clock_out),
+                        'total_hours'      => $this->calculateDuration($record->clock_in, $record->clock_out),
+                    ]);
+                    $synced++;
+                }
+            }
+
+            if ($record->source === 'unmapped') {
+                $record->update([
+                    'source' => 'automatic',
+                    'notes'  => 'Tersinkronisasi otomatis dengan akun ' . $user->name . ' (' . ($user->citizen_id ?: $user->staff_id) . ')'
+                ]);
+            }
+        }
+
+        return $synced;
     }
 }
