@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Absensi;
 use App\Models\Attendance;
+use App\Models\LeaveRequest;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -44,6 +45,22 @@ class AttendanceIntegrationService
                     'message'  => 'Data absensi tersimpan (Menunggu sinkronisasi profil web)',
                     'data'     => $absensi,
                     'unmapped' => true
+                ];
+            }
+
+            // Blokir jika user sedang dalam periode cuti yang disetujui
+            $dutyDate = $clockIn ? Carbon::parse($clockIn)->toDateString() : now()->toDateString();
+            if (LeaveRequest::isOnLeave($user->id, $dutyDate)) {
+                Log::info('[AttendanceIntegration] Clock-in ditolak karena user sedang cuti', [
+                    'user_id'    => $user->id,
+                    'player_id'  => $playerId,
+                    'duty_date'  => $dutyDate,
+                ]);
+
+                return [
+                    'success' => false,
+                    'message' => 'Clock-in ditolak: ' . $user->name . ' sedang dalam periode cuti yang disetujui. Jam kerja tidak akan dicatat.',
+                    'on_leave' => true,
                 ];
             }
 

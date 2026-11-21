@@ -48,6 +48,38 @@ class LeaveRequest extends Model
         return $this->belongsTo(User::class, 'approved_by');
     }
 
+    // ─── Scopes ───────────────────────────────────────────────────────────────
+
+    /**
+     * Scope: cuti approved yang sedang berlangsung pada tanggal tertentu.
+     */
+    public function scopeActiveOnDate($query, $date = null)
+    {
+        $date = $date ?? now()->toDateString();
+
+        return $query->where('status', self::STATUS_APPROVED)
+                     ->where('start_date', '<=', $date)
+                     ->where('end_date', '>=', $date);
+    }
+
+    // ─── Static Helpers ───────────────────────────────────────────────────────
+
+    /**
+     * Cek apakah user sedang dalam periode cuti approved hari ini.
+     *
+     * @param int $userId
+     * @param string|null $date  Format Y-m-d, default hari ini
+     * @return bool
+     */
+    public static function isOnLeave(int $userId, ?string $date = null): bool
+    {
+        $date = $date ?? now()->toDateString();
+
+        return static::where('user_id', $userId)
+            ->activeOnDate($date)
+            ->exists();
+    }
+
     // ─── Accessors ────────────────────────────────────────────────────────────
 
     public function getStatusLabelAttribute(): string

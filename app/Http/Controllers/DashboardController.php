@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Cache;
+use App\Models\LeaveRequest;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -619,6 +620,11 @@ class DashboardController extends Controller
         }
 
         $user = Auth::user();
+
+        // Blokir clock-in jika user sedang dalam periode cuti yang disetujui
+        if (LeaveRequest::isOnLeave($user->id)) {
+            return back()->with('error', 'Clock in ditolak: Anda sedang dalam periode cuti yang disetujui. Jam kerja tidak akan dicatat selama cuti berlangsung.');
+        }
 
         // Use database transaction for data consistency
         DB::beginTransaction();
