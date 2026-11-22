@@ -417,23 +417,21 @@ class OperationRecordController extends Controller
     }
 
     // API for Member Search (Select2 / Autocomplete)
+    // Pencarian TIDAK dibatasi per rumah sakit — dokter lintas RS bisa saling tag
+    // karena operasi kolaborasi Alta ↔ Roxwood adalah hal yang lazim.
+    // Label "[Alta]" / "[Roxwood]" ditampilkan agar dokter tahu asal RS anggota.
     public function searchMembers(Request $request)
     {
         $this->checkPermission();
-        $userHospital = strtolower(trim(Auth::user()->hospital ?? ''));
         
         $search = trim($request->get('q', ''));
         
-        $query = User::query()->where('is_active', true);
+        $query = User::query()
+            ->where('is_active', true)
+            ->whereNotIn('id', [Auth::id()]); // exclude diri sendiri dari pilihan
 
-        if ($userHospital !== '') {
-            $query->where(function($q) use ($userHospital) {
-                $q->where('hospital', $userHospital)
-                  ->orWhere('hospital', 'like', '%' . $userHospital . '%')
-                  ->orWhereNull('hospital')
-                  ->orWhere('hospital', '');
-            });
-        }
+        // Filter berdasarkan role staf — exclude role non-medis jika ada
+        // (Trainee tetap bisa di-tag sebagai anggota tim operasi)
         
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
@@ -444,13 +442,18 @@ class OperationRecordController extends Controller
             });
         }
         
-        $users = $query->select('id', 'name', 'staff_id', 'citizen_id')->limit(25)->get();
+        $users = $query->select('id', 'name', 'staff_id', 'citizen_id', 'hospital')->limit(30)->get();
         
         $formatted = $users->map(function ($user) {
             $label = $user->name;
             $cid = $user->citizen_id ?: $user->staff_id;
             if ($cid) {
                 $label .= ' (' . $cid . ')';
+            }
+            // Tampilkan label RS asal agar dokter bisa membedakan anggota lintas RS
+            if (!empty($user->hospital)) {
+                $hospitalLabel = ucfirst(strtolower($user->hospital));
+                $label .= ' [' . $hospitalLabel . ']';
             }
             return ['id' => $user->id, 'text' => $label];
         });
