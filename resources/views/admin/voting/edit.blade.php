@@ -103,6 +103,20 @@
                     </button>
                 </div>
 
+                {{-- WARNING: jika sudah ada suara masuk, edit kandidat akan menghapus semua suara --}}
+                @php $existingVotesCount = $voting->votes()->count(); @endphp
+                @if($existingVotesCount > 0)
+                    <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/40 text-amber-300 text-sm space-y-1">
+                        <div class="flex items-center gap-2 font-bold">
+                            <i class="fas fa-exclamation-triangle text-amber-400"></i>
+                            Peringatan: Voting ini sudah memiliki <strong>{{ $existingVotesCount }} suara</strong> masuk
+                        </div>
+                        <p class="text-xs text-amber-400/80">
+                            Jika Anda mengubah daftar kandidat di bawah, <strong>semua suara yang sudah masuk akan terhapus permanen</strong> karena kandidat lama ikut dihapus. Sebaiknya hanya ubah informasi voting (judul, deskripsi, status) tanpa menyentuh kandidat.
+                        </p>
+                    </div>
+                @endif
+
                 <div id="candidates-container" class="space-y-6">
                     @foreach($voting->candidates as $index => $candidate)
                         <div class="candidate-row p-5 rounded-xl bg-slate-950 border border-slate-800 relative space-y-4">

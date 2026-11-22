@@ -119,8 +119,6 @@
             @foreach($voting->candidates as $candidate)
                 @php
                     $isUserChoice = ($votedCandidateId === $candidate->id);
-                    $votesCount = $candidate->votesCount();
-                    $percentage = $candidate->percentageOfTotal();
                     $userObj = $candidate->user;
                 @endphp
                 <div class="relative rounded-2xl bg-slate-900 border {{ $isUserChoice ? 'border-emerald-500/80 ring-2 ring-emerald-500/20' : 'border-slate-800 hover:border-slate-700' }} p-6 flex flex-col justify-between transition-all duration-300 shadow-xl">

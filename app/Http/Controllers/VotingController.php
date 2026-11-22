@@ -295,30 +295,40 @@ class VotingController extends Controller
                 'end_date' => $request->end_date,
             ]);
 
-            // Replace candidates
-            $voting->candidates()->delete();
+            // Proteksi: jika sudah ada suara masuk, JANGAN replace kandidat
+            // karena voting_votes cascade delete ke candidate_id lama → semua suara hilang
+            $hasVotes = $voting->votes()->exists();
 
-            foreach ($request->candidates as $candData) {
-                $photo = null;
-                if (!empty($candData['user_id'])) {
-                    $userObj = User::find($candData['user_id']);
-                    if ($userObj && $userObj->profile_image) {
-                        $photo = $userObj->profile_image;
+            if (!$hasVotes) {
+                // Aman replace kandidat — belum ada suara
+                $voting->candidates()->delete();
+
+                foreach ($request->candidates as $candData) {
+                    $photo = null;
+                    if (!empty($candData['user_id'])) {
+                        $userObj = User::find($candData['user_id']);
+                        if ($userObj && $userObj->profile_image) {
+                            $photo = $userObj->profile_image;
+                        }
                     }
-                }
 
-                VotingCandidate::create([
-                    'voting_id' => $voting->id,
-                    'user_id' => $candData['user_id'] ?? null,
-                    'name' => $candData['name'],
-                    'custom_role' => $candData['custom_role'] ?? null,
-                    'vision_mission' => $candData['vision_mission'] ?? null,
-                    'photo' => $photo,
-                ]);
+                    VotingCandidate::create([
+                        'voting_id' => $voting->id,
+                        'user_id' => $candData['user_id'] ?? null,
+                        'name' => $candData['name'],
+                        'custom_role' => $candData['custom_role'] ?? null,
+                        'vision_mission' => $candData['vision_mission'] ?? null,
+                        'photo' => $photo,
+                    ]);
+                }
             }
+            // Jika sudah ada suara: kandidat dibiarkan, hanya info voting yang diupdate
 
             DB::commit();
-            return redirect()->route('admin.voting.index')->with('success', 'Sesi voting berhasil diperbarui!');
+            $msg = $hasVotes
+                ? 'Informasi voting berhasil diperbarui. Daftar kandidat tidak diubah karena sudah ada suara masuk.'
+                : 'Sesi voting berhasil diperbarui!';
+            return redirect()->route('admin.voting.index')->with('success', $msg);
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Gagal memproses update: ' . $e->getMessage())->withInput();
