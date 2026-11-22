@@ -427,11 +427,7 @@ class OperationRecordController extends Controller
         $search = trim($request->get('q', ''));
         
         $query = User::query()
-            ->where('is_active', true)
-            ->whereNotIn('id', [Auth::id()]); // exclude diri sendiri dari pilihan
-
-        // Filter berdasarkan role staf — exclude role non-medis jika ada
-        // (Trainee tetap bisa di-tag sebagai anggota tim operasi)
+            ->where('is_active', true);
         
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
