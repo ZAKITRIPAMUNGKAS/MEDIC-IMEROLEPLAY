@@ -530,13 +530,22 @@ Route::middleware(['auth', 'staff'])->prefix('admin')->name('admin.')->group(fun
         ->name('ai-settings.test');
 
     // Voting Management (Admin / High Command)
-    Route::get('/voting', [VotingController::class, 'adminIndex'])->middleware('permission:manage_users')->name('voting.index');
-    Route::get('/voting/create', [VotingController::class, 'create'])->middleware('permission:manage_users')->name('voting.create');
-    Route::post('/voting', [VotingController::class, 'store'])->middleware('permission:manage_users')->name('voting.store');
-    Route::get('/voting/{id}/edit', [VotingController::class, 'edit'])->middleware('permission:manage_users')->name('voting.edit');
-    Route::put('/voting/{id}', [VotingController::class, 'update'])->middleware('permission:manage_users')->name('voting.update');
-    Route::post('/voting/{id}/toggle-status', [VotingController::class, 'toggleStatus'])->middleware('permission:manage_users')->name('voting.toggle-status');
-    Route::delete('/voting/{id}', [VotingController::class, 'destroy'])->middleware('permission:manage_users')->name('voting.destroy');
+    Route::get('/voting', [VotingController::class, 'adminIndex'])->middleware('permission:manage_users')->name('admin.voting.index');
+    Route::get('/voting/create', [VotingController::class, 'create'])->middleware('permission:manage_users')->name('admin.voting.create');
+    Route::post('/voting', [VotingController::class, 'store'])->middleware('permission:manage_users')->name('admin.voting.store');
+    Route::get('/voting/{id}/edit', [VotingController::class, 'edit'])->middleware('permission:manage_users')->name('admin.voting.edit');
+    Route::put('/voting/{id}', [VotingController::class, 'update'])->middleware('permission:manage_users')->name('admin.voting.update');
+    Route::post('/voting/{id}/toggle-status', [VotingController::class, 'toggleStatus'])->middleware('permission:manage_users')->name('admin.voting.toggle-status');
+    Route::delete('/voting/{id}', [VotingController::class, 'destroy'])->middleware('permission:manage_users')->name('admin.voting.destroy');
+
+    // Compatibility aliases for voting.* route names
+    Route::get('/voting-manage', [VotingController::class, 'adminIndex'])->middleware('permission:manage_users')->name('voting.index');
+    Route::get('/voting-manage/create', [VotingController::class, 'create'])->middleware('permission:manage_users')->name('voting.create');
+    Route::post('/voting-manage', [VotingController::class, 'store'])->middleware('permission:manage_users')->name('voting.store');
+    Route::get('/voting-manage/{id}/edit', [VotingController::class, 'edit'])->middleware('permission:manage_users')->name('voting.edit');
+    Route::put('/voting-manage/{id}', [VotingController::class, 'update'])->middleware('permission:manage_users')->name('voting.update');
+    Route::post('/voting-manage/{id}/toggle-status', [VotingController::class, 'toggleStatus'])->middleware('permission:manage_users')->name('voting.toggle-status');
+    Route::delete('/voting-manage/{id}', [VotingController::class, 'destroy'])->middleware('permission:manage_users')->name('voting.destroy');
 });
 
 // ── Pratinjau Langsung Gambar Sertifikat Resmi (SVG) — Dapat Dilihat Seluruh Medic (Alta & Roxwood) ──

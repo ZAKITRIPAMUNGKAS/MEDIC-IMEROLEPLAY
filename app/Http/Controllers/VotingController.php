@@ -9,9 +9,93 @@ use App\Models\VotingVote;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Log;
 
 class VotingController extends Controller
 {
+    /**
+     * Pastikan tabel voting (votings, voting_candidates, voting_votes)
+     * dan kolom pendukung (audience, weight) sudah ada di database.
+     * Mencegah Error 500 di server shared hosting / cPanel yang belum menjalankan migrate.
+     */
+    private function ensureTablesExist(): void
+    {
+        try {
+            if (!Schema::hasTable('votings')) {
+                Schema::create('votings', function (Blueprint $table) {
+                    $table->id();
+                    $table->string('title');
+                    $table->string('target_position')->nullable();
+                    $table->text('description')->nullable();
+                    $table->string('hospital', 20)->default('all');
+                    $table->string('status', 20)->default('draft');
+                    $table->string('audience', 50)->default('all');
+                    $table->dateTime('start_date')->nullable();
+                    $table->dateTime('end_date')->nullable();
+                    $table->unsignedBigInteger('created_by')->nullable()->index();
+                    $table->timestamps();
+                });
+            } else {
+                if (!Schema::hasColumn('votings', 'audience')) {
+                    try {
+                        Schema::table('votings', function (Blueprint $table) {
+                            $table->string('audience', 50)->default('all')->after('status');
+                        });
+                    } catch (\Throwable $e) {
+                        DB::statement("ALTER TABLE `votings` ADD COLUMN `audience` VARCHAR(50) NOT NULL DEFAULT 'all' AFTER `status`");
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Voting ensureTablesExist votings: ' . $e->getMessage());
+        }
+
+        try {
+            if (!Schema::hasTable('voting_candidates')) {
+                Schema::create('voting_candidates', function (Blueprint $table) {
+                    $table->id();
+                    $table->unsignedBigInteger('voting_id')->index();
+                    $table->unsignedBigInteger('user_id')->nullable()->index();
+                    $table->string('name');
+                    $table->string('custom_role')->nullable();
+                    $table->text('vision_mission')->nullable();
+                    $table->string('photo')->nullable();
+                    $table->timestamps();
+                });
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Voting ensureTablesExist voting_candidates: ' . $e->getMessage());
+        }
+
+        try {
+            if (!Schema::hasTable('voting_votes')) {
+                Schema::create('voting_votes', function (Blueprint $table) {
+                    $table->id();
+                    $table->unsignedBigInteger('voting_id')->index();
+                    $table->unsignedBigInteger('candidate_id')->index();
+                    $table->unsignedBigInteger('user_id')->index();
+                    $table->unsignedTinyInteger('weight')->default(1);
+                    $table->timestamps();
+                    $table->unique(['voting_id', 'user_id'], 'unique_user_vote_per_session');
+                });
+            } else {
+                if (!Schema::hasColumn('voting_votes', 'weight')) {
+                    try {
+                        Schema::table('voting_votes', function (Blueprint $table) {
+                            $table->unsignedTinyInteger('weight')->default(1)->after('user_id');
+                        });
+                    } catch (\Throwable $e) {
+                        DB::statement("ALTER TABLE `voting_votes` ADD COLUMN `weight` TINYINT UNSIGNED NOT NULL DEFAULT 1 AFTER `user_id`");
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Voting ensureTablesExist voting_votes: ' . $e->getMessage());
+        }
+    }
+
     /**
      * Bobot suara berdasarkan level role.
      * level 0-4 = staf biasa (1×)
@@ -35,15 +119,22 @@ class VotingController extends Controller
      */
     public function index(Request $request)
     {
+        $this->ensureTablesExist();
+
         $user     = Auth::user();
         $hospital = $request->query('hospital', 'all');
-        $isManagement = $user->isAdmin() || ($user->role?->level ?? 0) >= 5;
+        $isManagement = $user && ($user->isAdmin() || ($user->role?->level ?? 0) >= 5);
 
         $query = Voting::with(['candidates.user', 'votes'])
             ->where('status', '!=', 'draft');
 
-        // Sembunyikan voting management-only dari staf biasa
-        if (!$isManagement) {
+        $hasAudienceCol = false;
+        try {
+            $hasAudienceCol = Schema::hasColumn('votings', 'audience');
+        } catch (\Throwable $e) {}
+
+        // Sembunyikan voting management-only dari staf biasa jika kolom audience ada
+        if (!$isManagement && $hasAudienceCol) {
             $query->where('audience', 'all');
         }
 
@@ -57,7 +148,7 @@ class VotingController extends Controller
 
         // Stats counts (sesuai akses user)
         $baseQuery = Voting::where('status', '!=', 'draft');
-        if (!$isManagement) {
+        if (!$isManagement && $hasAudienceCol) {
             $baseQuery->where('audience', 'all');
         }
 
@@ -73,6 +164,8 @@ class VotingController extends Controller
      */
     public function show($id)
     {
+        $this->ensureTablesExist();
+
         $voting = Voting::with(['candidates.user', 'candidates.votes', 'votes.voter'])->findOrFail($id);
         $user   = Auth::user();
 
@@ -93,6 +186,8 @@ class VotingController extends Controller
      */
     public function vote(Request $request, $id)
     {
+        $this->ensureTablesExist();
+
         $voting = Voting::findOrFail($id);
         $user   = Auth::user();
 
@@ -116,12 +211,21 @@ class VotingController extends Controller
             ->where('voting_id', $voting->id)
             ->firstOrFail();
 
-        VotingVote::create([
+        $votePayload = [
             'voting_id'    => $voting->id,
             'candidate_id' => $candidate->id,
             'user_id'      => $user->id,
-            'weight'       => $this->getVoteWeight($user),
-        ]);
+        ];
+
+        try {
+            if (Schema::hasColumn('voting_votes', 'weight')) {
+                $votePayload['weight'] = $this->getVoteWeight($user);
+            }
+        } catch (\Throwable $e) {
+            $votePayload['weight'] = $this->getVoteWeight($user);
+        }
+
+        VotingVote::create($votePayload);
 
         return redirect()->route('staff.voting.show', $voting->id)
             ->with('success', 'Terima kasih! Suara Anda (bobot ' . $this->getVoteWeight($user) . '×) telah berhasil disalurkan.');
@@ -132,6 +236,8 @@ class VotingController extends Controller
      */
     public function cancelVote($id)
     {
+        $this->ensureTablesExist();
+
         $voting = Voting::findOrFail($id);
         $user   = Auth::user();
 
@@ -156,6 +262,8 @@ class VotingController extends Controller
      */
     public function adminIndex(Request $request)
     {
+        $this->ensureTablesExist();
+
         $hospital = $request->query('hospital', 'all');
         $status = $request->query('status', 'all');
 
@@ -179,6 +287,8 @@ class VotingController extends Controller
      */
     public function create()
     {
+        $this->ensureTablesExist();
+
         // Get registered users to populate candidate select dropdown
         $users = User::with('role')
             ->where('is_active', true)
@@ -193,6 +303,8 @@ class VotingController extends Controller
      */
     public function store(Request $request)
     {
+        $this->ensureTablesExist();
+
         $request->validate([
             'title' => 'required|string|max:255',
             'target_position' => 'nullable|string|max:255',
@@ -211,17 +323,26 @@ class VotingController extends Controller
 
         DB::beginTransaction();
         try {
-            $voting = Voting::create([
+            $createPayload = [
                 'title' => $request->title,
                 'target_position' => $request->target_position,
                 'description' => $request->description,
                 'hospital' => $request->hospital,
-                'audience' => $request->audience,
                 'status' => $request->status,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
                 'created_by' => Auth::id(),
-            ]);
+            ];
+
+            try {
+                if (Schema::hasColumn('votings', 'audience')) {
+                    $createPayload['audience'] = $request->audience;
+                }
+            } catch (\Throwable $e) {
+                $createPayload['audience'] = $request->audience;
+            }
+
+            $voting = Voting::create($createPayload);
 
             foreach ($request->candidates as $candData) {
                 // If user_id is provided, auto fill candidate photo if available from user model
@@ -256,6 +377,8 @@ class VotingController extends Controller
      */
     public function edit($id)
     {
+        $this->ensureTablesExist();
+
         $voting = Voting::with('candidates')->findOrFail($id);
         $users = User::with('role')->where('is_active', true)->orderBy('name', 'asc')->get();
 
@@ -267,6 +390,8 @@ class VotingController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $this->ensureTablesExist();
+
         $voting = Voting::findOrFail($id);
 
         $request->validate([
@@ -284,20 +409,32 @@ class VotingController extends Controller
 
         DB::beginTransaction();
         try {
-            $voting->update([
+            $updatePayload = [
                 'title' => $request->title,
                 'target_position' => $request->target_position,
                 'description' => $request->description,
                 'hospital' => $request->hospital,
-                'audience' => $request->audience,
                 'status' => $request->status,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
-            ]);
+            ];
+
+            try {
+                if (Schema::hasColumn('votings', 'audience')) {
+                    $updatePayload['audience'] = $request->audience;
+                }
+            } catch (\Throwable $e) {
+                $updatePayload['audience'] = $request->audience;
+            }
+
+            $voting->update($updatePayload);
 
             // Proteksi: jika sudah ada suara masuk, JANGAN replace kandidat
             // karena voting_votes cascade delete ke candidate_id lama → semua suara hilang
-            $hasVotes = $voting->votes()->exists();
+            $hasVotes = false;
+            try {
+                $hasVotes = $voting->votes()->exists();
+            } catch (\Throwable $e) {}
 
             if (!$hasVotes) {
                 // Aman replace kandidat — belum ada suara
@@ -340,6 +477,8 @@ class VotingController extends Controller
      */
     public function toggleStatus(Request $request, $id)
     {
+        $this->ensureTablesExist();
+
         $voting = Voting::findOrFail($id);
         $status = $request->input('status');
 
@@ -371,6 +510,8 @@ class VotingController extends Controller
      */
     public function destroy($id)
     {
+        $this->ensureTablesExist();
+
         $voting = Voting::findOrFail($id);
         $voting->delete();
 

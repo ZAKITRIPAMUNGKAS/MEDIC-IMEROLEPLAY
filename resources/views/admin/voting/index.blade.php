@@ -91,7 +91,7 @@
                                         </div>
                                     @endif
                                     <div class="text-[11px] text-slate-500 mt-0.5">
-                                        Dibuat oleh {{ $voting->creator->name ?? 'Admin' }} &bull; {{ $voting->created_at->format('d/m/Y H:i') }}
+                                        Dibuat oleh {{ $voting->creator->name ?? 'Admin' }} &bull; {{ optional($voting->created_at)->format('d/m/Y H:i') ?? '-' }}
                                     </div>
                                 </td>
 

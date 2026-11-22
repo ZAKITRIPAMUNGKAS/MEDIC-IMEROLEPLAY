@@ -44,16 +44,24 @@ class VotingCandidate extends Model
     /** Total bobot suara untuk kandidat ini */
     public function weightedScore()
     {
-        return $this->votes()->sum('weight');
+        try {
+            return (int) $this->votes()->sum('weight');
+        } catch (\Throwable $e) {
+            return (int) $this->votes()->count();
+        }
     }
 
     /** Persentase berbasis bobot (bukan jumlah kepala) */
     public function percentageOfTotal()
     {
-        $totalWeight = $this->voting ? $this->voting->totalWeightedVotes() : 0;
-        if ($totalWeight === 0) {
+        try {
+            $totalWeight = $this->voting ? $this->voting->totalWeightedVotes() : 0;
+            if ($totalWeight === 0) {
+                return 0;
+            }
+            return round(($this->weightedScore() / $totalWeight) * 100, 1);
+        } catch (\Throwable $e) {
             return 0;
         }
-        return round(($this->weightedScore() / $totalWeight) * 100, 1);
     }
 }

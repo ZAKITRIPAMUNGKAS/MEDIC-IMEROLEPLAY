@@ -101,7 +101,7 @@
                             <i class="fas fa-vote-yea"></i> Bobot Suara Anda: {{ $userWeight }}×
                         </span>
                     @endif
-                    <span><i class="fas fa-calendar-alt text-slate-500 mr-1"></i> Dibuat: {{ $voting->created_at->translatedFormat('d F Y H:i') }}</span>
+                    <span><i class="fas fa-calendar-alt text-slate-500 mr-1"></i> Dibuat: {{ optional($voting->created_at)->translatedFormat('d F Y H:i') ?? '-' }}</span>
                 </div>
             </div>
         </div>

@@ -52,24 +52,36 @@ class Voting extends Model
     /** Total bobot semua suara */
     public function totalWeightedVotes()
     {
-        return $this->votes()->sum('weight');
+        try {
+            return (int) $this->votes()->sum('weight');
+        } catch (\Throwable $e) {
+            return (int) $this->votes()->count();
+        }
     }
 
     public function hasUserVoted($userId)
     {
-        return $this->votes()->where('user_id', $userId)->exists();
+        try {
+            return $this->votes()->where('user_id', $userId)->exists();
+        } catch (\Throwable $e) {
+            return false;
+        }
     }
 
     public function getUserVoteCandidateId($userId)
     {
-        $vote = $this->votes()->where('user_id', $userId)->first();
-        return $vote ? $vote->candidate_id : null;
+        try {
+            $vote = $this->votes()->where('user_id', $userId)->first();
+            return $vote ? $vote->candidate_id : null;
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 
     /** Apakah voting ini hanya untuk management (staff_manager ke atas) */
     public function isManagementOnly()
     {
-        return $this->audience === 'management';
+        return isset($this->audience) && $this->audience === 'management';
     }
 
     /** Cek apakah user boleh melihat/ikut voting ini */
