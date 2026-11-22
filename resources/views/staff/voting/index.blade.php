@@ -116,16 +116,25 @@
                                     </span>
                                 @endif
 
-                                <!-- Status Badge -->
-                                @if($voting->status === 'active')
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Aktif
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-800 text-slate-400">
-                                        <i class="fas fa-lock text-xs"></i> Ditutup
-                                    </span>
-                                @endif
+                                <div class="flex items-center gap-1.5">
+                                    {{-- Badge Khusus Management --}}
+                                    @if($voting->isManagementOnly())
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-rose-500/10 text-rose-400 border border-rose-500/30">
+                                            <i class="fas fa-lock text-xs"></i> Management
+                                        </span>
+                                    @endif
+
+                                    <!-- Status Badge -->
+                                    @if($voting->status === 'active')
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Aktif
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-800 text-slate-400">
+                                            <i class="fas fa-lock text-xs"></i> Ditutup
+                                        </span>
+                                    @endif
+                                </div>
                             </div>
 
                             <!-- Title & Position -->

@@ -35,17 +35,25 @@ class VotingCandidate extends Model
         return $this->hasMany(VotingVote::class, 'candidate_id');
     }
 
+    /** Jumlah voter (kepala) untuk kandidat ini */
     public function votesCount()
     {
         return $this->votes()->count();
     }
 
+    /** Total bobot suara untuk kandidat ini */
+    public function weightedScore()
+    {
+        return $this->votes()->sum('weight');
+    }
+
+    /** Persentase berbasis bobot (bukan jumlah kepala) */
     public function percentageOfTotal()
     {
-        $total = $this->voting ? $this->voting->totalVotesCount() : 0;
-        if ($total === 0) {
+        $totalWeight = $this->voting ? $this->voting->totalWeightedVotes() : 0;
+        if ($totalWeight === 0) {
             return 0;
         }
-        return round(($this->votesCount() / $total) * 100, 1);
+        return round(($this->weightedScore() / $totalWeight) * 100, 1);
     }
 }

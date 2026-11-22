@@ -17,6 +17,7 @@ class Voting extends Model
         'description',
         'hospital',
         'status',
+        'audience',
         'start_date',
         'end_date',
         'created_by',
@@ -42,9 +43,16 @@ class Voting extends Model
         return $this->hasMany(VotingVote::class, 'voting_id');
     }
 
+    /** Total jumlah voter (kepala), bukan bobot */
     public function totalVotesCount()
     {
         return $this->votes()->count();
+    }
+
+    /** Total bobot semua suara */
+    public function totalWeightedVotes()
+    {
+        return $this->votes()->sum('weight');
     }
 
     public function hasUserVoted($userId)
@@ -56,6 +64,23 @@ class Voting extends Model
     {
         $vote = $this->votes()->where('user_id', $userId)->first();
         return $vote ? $vote->candidate_id : null;
+    }
+
+    /** Apakah voting ini hanya untuk management (staff_manager ke atas) */
+    public function isManagementOnly()
+    {
+        return $this->audience === 'management';
+    }
+
+    /** Cek apakah user boleh melihat/ikut voting ini */
+    public function canUserAccess($user)
+    {
+        if (!$this->isManagementOnly()) {
+            return true;
+        }
+        // management = level >= 5 atau admin
+        $level = $user->role?->level ?? 0;
+        return $user->isAdmin() || $level >= 5;
     }
 
     public function isRoxwood()

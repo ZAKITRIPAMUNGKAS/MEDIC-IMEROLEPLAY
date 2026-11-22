@@ -254,6 +254,7 @@ Route::middleware(['auth', 'staff'])->group(function () {
     Route::get('/staff/voting', [VotingController::class, 'index'])->name('staff.voting.index');
     Route::get('/staff/voting/{id}', [VotingController::class, 'show'])->name('staff.voting.show');
     Route::post('/staff/voting/{id}/vote', [VotingController::class, 'vote'])->name('staff.voting.vote');
+    Route::delete('/staff/voting/{id}/cancel-vote', [VotingController::class, 'cancelVote'])->name('staff.voting.cancel');
 
     // Operations routes for staff
     Route::get('/staff/operations', [\App\Http\Controllers\Staff\OperationRecordController::class, 'index'])->name('staff.operations.index');

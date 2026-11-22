@@ -76,7 +76,8 @@
 
             <div class="flex flex-wrap items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800/50 gap-4">
                 <div class="flex items-center gap-4">
-                    <span><i class="fas fa-users text-slate-500 mr-1"></i> Total Suara: <strong class="text-slate-200">{{ $voting->totalVotesCount() }}</strong></span>
+                    <span><i class="fas fa-users text-slate-500 mr-1"></i> Total Suara: <strong class="text-slate-200">{{ $voting->totalVotesCount() }} orang</strong></span>
+                    <span><i class="fas fa-weight-hanging text-slate-500 mr-1"></i> Total Bobot: <strong class="text-slate-200">{{ $voting->totalWeightedVotes() }}</strong></span>
                     <span><i class="fas fa-user-check text-slate-500 mr-1"></i> Status Anda: 
                         @if($hasVoted)
                             <strong class="text-emerald-400">Sudah Memilih</strong>
@@ -85,7 +86,21 @@
                         @endif
                     </span>
                 </div>
-                <div>
+                <div class="flex items-center gap-3">
+                    {{-- Badge bobot user --}}
+                    @if($userWeight >= 5)
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-500/10 border border-rose-500/30 text-rose-300">
+                            <i class="fas fa-crown"></i> Bobot Suara Anda: {{ $userWeight }}×
+                        </span>
+                    @elseif($userWeight >= 4)
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/10 border border-amber-500/30 text-amber-300">
+                            <i class="fas fa-star"></i> Bobot Suara Anda: {{ $userWeight }}×
+                        </span>
+                    @else
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-slate-800 border border-slate-700 text-slate-400">
+                            <i class="fas fa-vote-yea"></i> Bobot Suara Anda: {{ $userWeight }}×
+                        </span>
+                    @endif
                     <span><i class="fas fa-calendar-alt text-slate-500 mr-1"></i> Dibuat: {{ $voting->created_at->translatedFormat('d F Y H:i') }}</span>
                 </div>
             </div>
@@ -165,11 +180,12 @@
                         <div class="space-y-1.5 pt-2 border-t border-slate-800/60">
                             <div class="flex justify-between items-center text-xs font-semibold">
                                 <span class="text-slate-400">Perolehan Suara</span>
-                                <span class="text-slate-200">{{ $votesCount }} Suara ({{ $percentage }}%)</span>
+                                <span class="text-slate-200">{{ $candidate->votesCount() }} orang &middot; <span class="text-indigo-300 font-bold">{{ $candidate->percentageOfTotal() }}%</span></span>
                             </div>
                             <div class="w-full bg-slate-950 h-3 rounded-full overflow-hidden p-0.5 border border-slate-800">
-                                <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 h-full rounded-full transition-all duration-700 shadow-sm" style="width: {{ $percentage }}%"></div>
+                                <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 h-full rounded-full transition-all duration-700 shadow-sm" style="width: {{ $candidate->percentageOfTotal() }}%"></div>
                             </div>
+                            <p class="text-[10px] text-slate-500">Bobot: {{ $candidate->weightedScore() }} dari {{ $voting->totalWeightedVotes() }} total</p>
                         </div>
                     </div>
 
@@ -178,16 +194,27 @@
                         @if($voting->status === 'active')
                             @if($hasVoted)
                                 @if($isUserChoice)
-                                    <button disabled class="w-full py-2.5 rounded-xl bg-emerald-500/20 text-emerald-300 font-bold text-sm border border-emerald-500/40 cursor-not-allowed">
-                                        <i class="fas fa-check-circle mr-1"></i> Suara Telah Diberikan
-                                    </button>
+                                    <div class="space-y-2">
+                                        <button disabled class="w-full py-2.5 rounded-xl bg-emerald-500/20 text-emerald-300 font-bold text-sm border border-emerald-500/40 cursor-not-allowed">
+                                            <i class="fas fa-check-circle mr-1"></i> Suara Telah Diberikan
+                                        </button>
+                                        {{-- Tombol Cancel Vote --}}
+                                        <form action="{{ route('staff.voting.cancel', $voting->id) }}" method="POST"
+                                              onsubmit="return confirm('Batalkan suara Anda? Anda bisa memilih kandidat lain setelahnya.');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="w-full py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-medium text-xs border border-rose-500/30 transition-all">
+                                                <i class="fas fa-undo mr-1"></i> Batalkan & Ganti Pilihan
+                                            </button>
+                                        </form>
+                                    </div>
                                 @else
                                     <button disabled class="w-full py-2.5 rounded-xl bg-slate-800 text-slate-500 font-medium text-sm cursor-not-allowed">
                                         Anda Memilih Kandidat Lain
                                     </button>
                                 @endif
                             @else
-                                <form action="{{ route('staff.voting.vote', $voting->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin memberikan suara kepada {{ addslashes($candidate->name) }}? Pilihan Anda tidak dapat diubah.');">
+                                <form action="{{ route('staff.voting.vote', $voting->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin memberikan suara kepada {{ addslashes($candidate->name) }}?');">
                                     @csrf
                                     <input type="hidden" name="candidate_id" value="{{ $candidate->id }}">
                                     <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm shadow-lg shadow-indigo-900/30 transition-all transform hover:-translate-y-0.5 active:translate-y-0">

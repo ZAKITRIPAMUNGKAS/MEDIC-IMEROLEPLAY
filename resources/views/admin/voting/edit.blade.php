@@ -61,6 +61,16 @@
                         </select>
                     </div>
 
+                    <!-- Audience / Visibilitas -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-slate-400 mb-2">Visibilitas Voting <span class="text-rose-400">*</span></label>
+                        <select name="audience" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="all" {{ old('audience', $voting->audience ?? 'all') === 'all' ? 'selected' : '' }}>👥 Semua Staf (Umum)</option>
+                            <option value="management" {{ old('audience', $voting->audience) === 'management' ? 'selected' : '' }}>🔒 Khusus Management (Staff Manager ke atas)</option>
+                        </select>
+                        <p class="text-[11px] text-slate-500 mt-1.5">Voting "Khusus Management" tidak akan muncul di halaman staf biasa.</p>
+                    </div>
+
                     <!-- Status -->
                     <div>
                         <label class="block text-xs font-bold uppercase text-slate-400 mb-2">Status Sesi <span class="text-rose-400">*</span></label>

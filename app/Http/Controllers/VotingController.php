@@ -13,14 +13,39 @@ use Illuminate\Support\Facades\DB;
 class VotingController extends Controller
 {
     /**
+     * Bobot suara berdasarkan level role.
+     * level 0-4 = staf biasa (1×)
+     * level 5   = staff_manager (4×)
+     * level 6+  = manajer / executive / admin (5×)
+     */
+    private function getVoteWeight($user): int
+    {
+        if ($user->isAdmin()) {
+            return 5;
+        }
+        $level = $user->role?->level ?? 0;
+        if ($level >= 6) return 5; // manajer, executive
+        if ($level === 5) return 4; // staff_manager
+        return 1; // semua staf biasa
+    }
+
+    /**
      * Display voting list for staff members (with hospital tab filtering).
+     * Voting bertipe 'management' disembunyikan dari staf biasa.
      */
     public function index(Request $request)
     {
+        $user     = Auth::user();
         $hospital = $request->query('hospital', 'all');
+        $isManagement = $user->isAdmin() || ($user->role?->level ?? 0) >= 5;
 
         $query = Voting::with(['candidates.user', 'votes'])
             ->where('status', '!=', 'draft');
+
+        // Sembunyikan voting management-only dari staf biasa
+        if (!$isManagement) {
+            $query->where('audience', 'all');
+        }
 
         if ($hospital === 'alta') {
             $query->whereIn('hospital', ['alta', 'all']);
@@ -30,16 +55,15 @@ class VotingController extends Controller
 
         $votings = $query->orderBy('created_at', 'desc')->paginate(10);
 
-        // Stats counts
-        $altaCount = Voting::where('status', '!=', 'draft')
-            ->whereIn('hospital', ['alta', 'all'])
-            ->count();
+        // Stats counts (sesuai akses user)
+        $baseQuery = Voting::where('status', '!=', 'draft');
+        if (!$isManagement) {
+            $baseQuery->where('audience', 'all');
+        }
 
-        $roxwoodCount = Voting::where('status', '!=', 'draft')
-            ->whereIn('hospital', ['roxwood', 'all'])
-            ->count();
-
-        $activeCount = Voting::where('status', 'active')->count();
+        $altaCount    = (clone $baseQuery)->whereIn('hospital', ['alta', 'all'])->count();
+        $roxwoodCount = (clone $baseQuery)->whereIn('hospital', ['roxwood', 'all'])->count();
+        $activeCount  = (clone $baseQuery)->where('status', 'active')->count();
 
         return view('staff.voting.index', compact('votings', 'hospital', 'altaCount', 'roxwoodCount', 'activeCount'));
     }
@@ -50,12 +74,18 @@ class VotingController extends Controller
     public function show($id)
     {
         $voting = Voting::with(['candidates.user', 'candidates.votes', 'votes.voter'])->findOrFail($id);
-        $user = Auth::user();
+        $user   = Auth::user();
 
-        $hasVoted = $voting->hasUserVoted($user->id);
+        // Blokir staf biasa dari voting management-only
+        if (!$voting->canUserAccess($user)) {
+            abort(403, 'Voting ini hanya dapat diakses oleh Staff Manager dan Manajer.');
+        }
+
+        $hasVoted        = $voting->hasUserVoted($user->id);
         $votedCandidateId = $voting->getUserVoteCandidateId($user->id);
+        $userWeight      = $this->getVoteWeight($user);
 
-        return view('staff.voting.show', compact('voting', 'hasVoted', 'votedCandidateId'));
+        return view('staff.voting.show', compact('voting', 'hasVoted', 'votedCandidateId', 'userWeight'));
     }
 
     /**
@@ -64,33 +94,61 @@ class VotingController extends Controller
     public function vote(Request $request, $id)
     {
         $voting = Voting::findOrFail($id);
-        $user = Auth::user();
+        $user   = Auth::user();
+
+        if (!$voting->canUserAccess($user)) {
+            return redirect()->back()->with('error', 'Voting ini hanya dapat diakses oleh Staff Manager dan Manajer.');
+        }
 
         if ($voting->status !== 'active') {
             return redirect()->back()->with('error', 'Sesi voting ini sedang tidak aktif atau sudah ditutup.');
         }
 
         if ($voting->hasUserVoted($user->id)) {
-            return redirect()->back()->with('error', 'Anda sudah memberikan suara pada sesi voting ini.');
+            return redirect()->back()->with('error', 'Anda sudah memberikan suara. Gunakan tombol "Batalkan Suara" untuk mengganti pilihan.');
         }
 
         $request->validate([
             'candidate_id' => 'required|exists:voting_candidates,id',
         ]);
 
-        // Ensure candidate belongs to this voting
         $candidate = VotingCandidate::where('id', $request->candidate_id)
             ->where('voting_id', $voting->id)
             ->firstOrFail();
 
         VotingVote::create([
-            'voting_id' => $voting->id,
+            'voting_id'    => $voting->id,
             'candidate_id' => $candidate->id,
-            'user_id' => $user->id,
+            'user_id'      => $user->id,
+            'weight'       => $this->getVoteWeight($user),
         ]);
 
         return redirect()->route('staff.voting.show', $voting->id)
-            ->with('success', 'Terima kasih! Suara Anda telah berhasil disalurkan.');
+            ->with('success', 'Terima kasih! Suara Anda (bobot ' . $this->getVoteWeight($user) . '×) telah berhasil disalurkan.');
+    }
+
+    /**
+     * Cancel vote — hapus suara user dari voting ini selama masih aktif.
+     */
+    public function cancelVote($id)
+    {
+        $voting = Voting::findOrFail($id);
+        $user   = Auth::user();
+
+        if ($voting->status !== 'active') {
+            return redirect()->back()->with('error', 'Suara hanya bisa dibatalkan selama voting masih aktif.');
+        }
+
+        $deleted = VotingVote::where('voting_id', $voting->id)
+            ->where('user_id', $user->id)
+            ->delete();
+
+        if ($deleted) {
+            return redirect()->route('staff.voting.show', $voting->id)
+                ->with('success', 'Suara Anda berhasil dibatalkan. Silakan pilih kandidat lain.');
+        }
+
+        return redirect()->back()->with('error', 'Tidak ada suara yang ditemukan untuk dibatalkan.');
     }
 
     /**
@@ -140,6 +198,7 @@ class VotingController extends Controller
             'target_position' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'hospital' => 'required|in:alta,roxwood,all',
+            'audience' => 'required|in:all,management',
             'status' => 'required|in:draft,active,closed',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
@@ -157,6 +216,7 @@ class VotingController extends Controller
                 'target_position' => $request->target_position,
                 'description' => $request->description,
                 'hospital' => $request->hospital,
+                'audience' => $request->audience,
                 'status' => $request->status,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
@@ -214,6 +274,7 @@ class VotingController extends Controller
             'target_position' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'hospital' => 'required|in:alta,roxwood,all',
+            'audience' => 'required|in:all,management',
             'status' => 'required|in:draft,active,closed',
             'start_date' => 'nullable|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
@@ -228,6 +289,7 @@ class VotingController extends Controller
                 'target_position' => $request->target_position,
                 'description' => $request->description,
                 'hospital' => $request->hospital,
+                'audience' => $request->audience,
                 'status' => $request->status,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,

@@ -15,6 +15,7 @@ class VotingVote extends Model
         'voting_id',
         'candidate_id',
         'user_id',
+        'weight',
     ];
 
     public function voting()
