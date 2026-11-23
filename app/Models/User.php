@@ -364,6 +364,18 @@ class User extends Authenticatable
         return !is_null($this->role_id);
     }
 
+    public function isDoctor(): bool
+    {
+        $roleLevel = $this->role?->level ?? 0;
+        $medicLevel = $this->medicRole?->level ?? 0;
+        $roleName = strtolower($this->role?->name ?? '');
+        $medicName = strtolower($this->medicRole?->name ?? '');
+
+        return $roleLevel >= 3 || $medicLevel >= 3 ||
+            str_contains($roleName, 'dokter') || str_contains($medicName, 'dokter') ||
+            str_contains($roleName, 'spesialis') || str_contains($medicName, 'spesialis');
+    }
+
 
     public function isAdmin()
     {
@@ -430,9 +442,21 @@ class User extends Authenticatable
             }
         }
 
-        // Dokter Spesialis ke atas (level >= 4) dapat mengelola Jadwal Dokter
+        // Dokter Spesialis ke atas (level >= 4) atau staf dengan gelar dokter/spesialis dapat mengelola Jadwal Dokter
         if ($permission === 'manage_doctor_schedules') {
-            if ($this->role && $this->role->level >= 4) {
+            $roleLevel = $this->role?->level ?? 0;
+            $medicLevel = $this->medicRole?->level ?? 0;
+            $roleName = strtolower($this->role?->name ?? '');
+            $medicName = strtolower($this->medicRole?->name ?? '');
+
+            if ($roleLevel >= 4 || $medicLevel >= 4) {
+                return true;
+            }
+
+            if (str_contains($roleName, 'spesialis') || str_contains($medicName, 'spesialis') ||
+                str_contains($roleName, 'specialist') || str_contains($medicName, 'specialist') ||
+                str_contains($roleName, 'dokter') || str_contains($medicName, 'dokter')
+            ) {
                 return true;
             }
         }

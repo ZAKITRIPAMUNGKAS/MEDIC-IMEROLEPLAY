@@ -14,7 +14,7 @@ class PublicController extends Controller
 {
     public function doctorSchedule()
     {
-        $poliList = \App\Http\Controllers\Admin\DoctorScheduleController::POLI_LIST;
+        $poliList = \App\Http\Controllers\Admin\DoctorScheduleController::getPoliList();
         
         $schedules = DoctorSchedule::where('is_active', true)
             ->orderBy('doctor_name')
