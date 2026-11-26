@@ -206,11 +206,7 @@ Route::middleware(['guest'])->group(function () {
 
 Route::middleware(['auth', 'staff'])->group(function () {
     Route::get('/staff/dashboard', [DashboardController::class, 'index'])->name('staff.dashboard');
-    Route::get('/staff/anatomy', function () {
-        return view('staff.anatomy', [
-            'anatomyUrl' => config('services.anatomy.url'),
-        ]);
-    })->name('staff.anatomy');
+    Route::get('/staff/anatomy', [DashboardController::class, 'anatomy'])->name('staff.anatomy');
     Route::post('/staff/logout', [StaffController::class, 'logout'])->name('staff.logout');
 
     // AI Chat Assistant (available to all staff)

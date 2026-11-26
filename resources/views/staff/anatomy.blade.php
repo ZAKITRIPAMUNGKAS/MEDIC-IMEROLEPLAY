@@ -3,6 +3,10 @@
 @section('title', 'Anatomy Tubuh 3D - Portal Medis iMe')
 
 @section('content')
+@php
+    $anatomyUrl = !empty($anatomyUrl) ? $anatomyUrl : 'https://apotikmedicalcenter.my.id/anatomy/';
+    $anatomyHost = parse_url((string) $anatomyUrl, PHP_URL_HOST) ?: $anatomyUrl;
+@endphp
 <style>
     footer,
     footer.footer-default-theme {
@@ -84,7 +88,7 @@
             <div class="w-10 h-10 rounded-full border-2 border-cyan-400/30 border-t-cyan-400 animate-spin"></div>
             <div class="text-center px-4">
                 <p class="text-sm font-semibold text-white">Memuat Anatomy Tubuh 3D...</p>
-                <p class="text-xs text-slate-400 mt-0.5">Mengambil konten langsung dari {{ parse_url($anatomyUrl, PHP_URL_HOST) ?? $anatomyUrl }}</p>
+                <p class="text-xs text-slate-400 mt-0.5">Mengambil konten langsung dari {{ $anatomyHost }}</p>
             </div>
         </div>
 

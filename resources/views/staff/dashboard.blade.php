@@ -581,7 +581,7 @@
                     </a>
 
                     <!-- Anatomy Tubuh -->
-                    <a href="{{ route('staff.anatomy') }}" class="sidebar-link flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold">
+                    <a href="{{ \Illuminate\Support\Facades\Route::has('staff.anatomy') ? route('staff.anatomy') : url('/staff/anatomy') }}" class="sidebar-link flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold">
                         <div class="flex items-center gap-3">
                             <i class="fa-solid fa-brain w-4 text-center text-cyan-300"></i>
                             <span>Anatomy Tubuh</span>

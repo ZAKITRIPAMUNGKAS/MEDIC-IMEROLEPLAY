@@ -1492,7 +1492,7 @@
                         </a>
 
                         {{-- Anatomy Tubuh --}}
-                        <a href="{{ route('staff.anatomy') }}" class="inline-flex items-center gap-1.5 h-9 px-3 {{ request()->routeIs('staff.anatomy') ? 'bg-cyan-500/30 border-cyan-300/60 ring-1 ring-cyan-300/50' : 'bg-white/10 hover:bg-white/20 border-white/20' }} text-white text-xs font-medium rounded-lg border transition-all duration-200 whitespace-nowrap" title="Buka Viewer Anatomy Tubuh 3D">
+                        <a href="{{ \Illuminate\Support\Facades\Route::has('staff.anatomy') ? route('staff.anatomy') : url('/staff/anatomy') }}" class="inline-flex items-center gap-1.5 h-9 px-3 {{ request()->routeIs('staff.anatomy') ? 'bg-cyan-500/30 border-cyan-300/60 ring-1 ring-cyan-300/50' : 'bg-white/10 hover:bg-white/20 border-white/20' }} text-white text-xs font-medium rounded-lg border transition-all duration-200 whitespace-nowrap" title="Buka Viewer Anatomy Tubuh 3D">
                             <i class="fas fa-brain text-sm text-cyan-300"></i><span>Anatomy Tubuh</span>
                         </a>
 
@@ -1875,7 +1875,7 @@
                             <span>Dashboard Utama</span>
                         </a>
 
-                        <a href="{{ route('staff.anatomy') }}"
+                        <a href="{{ \Illuminate\Support\Facades\Route::has('staff.anatomy') ? route('staff.anatomy') : url('/staff/anatomy') }}"
                             class="flex items-center justify-between text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors {{ request()->routeIs('staff.anatomy') ? 'bg-cyan-500/20 text-white border border-cyan-400/30' : '' }}">
                             <span class="flex items-center gap-3">
                                 <i class="fas fa-brain w-5 text-cyan-400 text-sm"></i>

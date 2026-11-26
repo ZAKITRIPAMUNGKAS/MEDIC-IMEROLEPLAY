@@ -55,6 +55,31 @@ class AnatomyRouteTest extends TestCase
         $this->assertStringContainsString('Anatomy Tubuh', $bladeSource);
 
         $compiled = Blade::compileString($bladeSource);
-        $this->assertStringContainsString("route('staff.anatomy')", $compiled);
+        $this->assertStringContainsString("staff.anatomy", $compiled);
+    }
+
+    public function test_anatomy_page_falls_back_cleanly_when_config_is_null(): void
+    {
+        config(['services.anatomy.url' => null]);
+
+        $role = StaffRole::create([
+            'name' => 'paramedic',
+            'display_name' => 'Paramedic',
+            'permissions' => [],
+        ]);
+
+        $user = User::factory()->create([
+            'staff_id' => '99883',
+            'name' => 'Dr. Fallback Tester',
+            'email' => 'fallback@example.com',
+            'role_id' => $role->id,
+            'is_active' => true,
+            'status' => 'offline',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('staff.anatomy'));
+
+        $response->assertStatus(200);
+        $response->assertSee('https://apotikmedicalcenter.my.id/anatomy/', false);
     }
 }

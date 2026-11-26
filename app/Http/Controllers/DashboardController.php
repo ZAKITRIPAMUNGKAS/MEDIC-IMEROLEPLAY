@@ -1181,4 +1181,11 @@ class DashboardController extends Controller
             ];
         }
     }
+
+    public function anatomy()
+    {
+        return view('staff.anatomy', [
+            'anatomyUrl' => config('services.anatomy.url') ?: 'https://apotikmedicalcenter.my.id/anatomy/',
+        ]);
+    }
 }
