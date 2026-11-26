@@ -40,4 +40,8 @@ return [
         'port' => env('FIVEM_SERVER_PORT', '30120'),
     ],
 
+    'anatomy' => [
+        'url' => env('ANATOMY_WEB_URL', 'https://apotikmedicalcenter.my.id/anatomy/'),
+    ],
+
 ];

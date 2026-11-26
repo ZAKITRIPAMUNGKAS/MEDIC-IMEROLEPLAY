@@ -1491,6 +1491,11 @@
                             <i class="fas fa-tachometer-alt text-sm"></i><span>Dashboard</span>
                         </a>
 
+                        {{-- Anatomy Tubuh --}}
+                        <a href="{{ route('staff.anatomy') }}" class="inline-flex items-center gap-1.5 h-9 px-3 {{ request()->routeIs('staff.anatomy') ? 'bg-cyan-500/30 border-cyan-300/60 ring-1 ring-cyan-300/50' : 'bg-white/10 hover:bg-white/20 border-white/20' }} text-white text-xs font-medium rounded-lg border transition-all duration-200 whitespace-nowrap" title="Buka Viewer Anatomy Tubuh 3D">
+                            <i class="fas fa-brain text-sm text-cyan-300"></i><span>Anatomy Tubuh</span>
+                        </a>
+
                         {{-- Profil --}}
                         <a href="{{ route('staff.profile') }}" class="inline-flex items-center gap-1.5 h-9 px-3 bg-white/10 hover:bg-white/20 text-white text-xs font-medium rounded-lg border border-white/20 transition-all duration-200 whitespace-nowrap">
                             <i class="fas fa-user-cog text-sm"></i><span>Profil</span>
@@ -1868,6 +1873,15 @@
                             class="flex items-center gap-3 text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors">
                             <i class="fas fa-tachometer-alt w-5 text-sky-400 text-sm"></i>
                             <span>Dashboard Utama</span>
+                        </a>
+
+                        <a href="{{ route('staff.anatomy') }}"
+                            class="flex items-center justify-between text-slate-200 hover:text-white hover:bg-white/10 px-3 py-2 rounded-xl text-sm font-medium transition-colors {{ request()->routeIs('staff.anatomy') ? 'bg-cyan-500/20 text-white border border-cyan-400/30' : '' }}">
+                            <span class="flex items-center gap-3">
+                                <i class="fas fa-brain w-5 text-cyan-400 text-sm"></i>
+                                <span>Anatomy Tubuh</span>
+                            </span>
+                            <span class="text-[10px] font-bold bg-cyan-500/20 text-cyan-200 border border-cyan-400/30 px-2 py-0.5 rounded-full">3D</span>
                         </a>
                         
                         <a href="{{ route('staff.profile') }}"

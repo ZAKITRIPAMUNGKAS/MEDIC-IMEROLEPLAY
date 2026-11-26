@@ -580,6 +580,15 @@
                         <span>Dashboard</span>
                     </a>
 
+                    <!-- Anatomy Tubuh -->
+                    <a href="{{ route('staff.anatomy') }}" class="sidebar-link flex items-center justify-between px-3 py-2 rounded-xl text-xs font-semibold">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-brain w-4 text-center text-cyan-300"></i>
+                            <span>Anatomy Tubuh</span>
+                        </div>
+                        <span class="text-[9px] font-bold bg-cyan-500/20 border border-cyan-400/30 text-cyan-200 px-1.5 py-0.5 rounded-full">3D</span>
+                    </a>
+
                     <!-- Profil Pengaturan -->
                     <a href="{{ route('staff.profile') }}" class="sidebar-link flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold">
                         <i class="fa-solid fa-user-gear w-4 text-center text-sky-300"></i>
