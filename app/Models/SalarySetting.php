@@ -45,7 +45,7 @@ class SalarySetting extends Model
      *   (1 jam = 8%, 2 jam = 16%, 3 jam = 24%, 4 jam = 32%, 5 jam = 40%)
      * - 5 Jam Berikutnya (Jam 6 s/d 10): 12% per jam
      *   (6 jam = 52%, 7 jam = 64%, 8 jam = 76%, 9 jam = 88%, 10 jam = 100%)
-     * - Lembur / Overtime (> 10 jam) : 100% Gaji Pokok + $2.000 per jam lembur
+     * - Lembur / Overtime (> 10 jam) : 100% Gaji Pokok + $2.500 per jam lembur
      * - Batas Minimal (< 15 menit)   : $0 (dianggap tidak aktif bekerja)
      * 
      * @param float $totalHours Total hours worked
@@ -78,10 +78,10 @@ class SalarySetting extends Model
         }
 
         // Tier 3: Lembur / Overtime (> 10 jam)
-        // 100% Gaji Pokok untuk 10 jam pertama + $2.000 per jam lembur
+        // 100% Gaji Pokok untuk 10 jam pertama + $2.500 per jam lembur
         $baseSalary = (int) round($weeklySalary);
         $overtimeHours = $totalHours - 10.0;
-        $overtimeRatePerHour = 2000;
+        $overtimeRatePerHour = 2500;
         $overtimePay = (int) round($overtimeHours * $overtimeRatePerHour);
 
         return $baseSalary + $overtimePay;
