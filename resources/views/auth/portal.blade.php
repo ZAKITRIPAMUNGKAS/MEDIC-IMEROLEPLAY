@@ -4,6 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Portal Staf Medis - Login & Register</title>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
@@ -503,7 +507,7 @@
                                 class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-sky-500 transition-colors">
                                 <i class="fas fa-envelope"></i>
                             </div>
-                            <input type="text" name="email"
+                            <input type="email" name="email" value="{{ old('email') }}" autocomplete="email"
                                 class="form-input w-full pl-11 pr-4 py-4 rounded-xl text-sm bg-slate-100 border-transparent focus:bg-white"
                                 placeholder="Email Address" required>
                         </div>
@@ -800,6 +804,44 @@
                 icon.classList.add('fa-eye');
             }
         }
+
+        // Keep CSRF token fresh (handles bfcache back navigation & idle tabs after logout)
+        function refreshPortalCsrfToken() {
+            return fetch('{{ route("csrf.token") }}', {
+                method: 'GET',
+                credentials: 'same-origin',
+                cache: 'no-store',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+                .then(res => res.ok ? res.json() : null)
+                .then(data => {
+                    if (data && data.csrf_token) {
+                        const meta = document.querySelector('meta[name="csrf-token"]');
+                        if (meta) meta.setAttribute('content', data.csrf_token);
+                        document.querySelectorAll('input[name="_token"]').forEach(el => {
+                            el.value = data.csrf_token;
+                        });
+                    }
+                })
+                .catch(() => {});
+        }
+
+        window.addEventListener('pageshow', (event) => {
+            if (event.persisted) {
+                refreshPortalCsrfToken();
+            }
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                refreshPortalCsrfToken();
+            }
+        });
+
+        setInterval(refreshPortalCsrfToken, 15 * 60 * 1000);
     </script>
 </body>
 

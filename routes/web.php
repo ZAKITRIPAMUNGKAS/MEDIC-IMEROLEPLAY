@@ -51,8 +51,11 @@ Route::get('/api-online-users', function () {
 Route::get('/portal-auth', function () {
     $allowedRoles = ['trainee', 'perawat', 'co_ass', 'dokter_umum', 'dokter_spesialis'];
     $roles = \App\Models\StaffRole::whereIn('name', $allowedRoles)->orderBy('level', 'asc')->get();
-    return view('auth.portal', compact('roles'));
-})->name('portal.auth');
+    return response()
+        ->view('auth.portal', compact('roles'))
+        ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+        ->header('Pragma', 'no-cache');
+})->middleware('guest')->name('portal.auth');
 
 // Default login route (redirect to staff login)
 Route::get('/login', function () {
@@ -204,10 +207,17 @@ Route::middleware(['guest'])->group(function () {
     Route::post('/staff/register', [StaffController::class, 'register'])->middleware('throttle:5,1')->name('staff.register.post');
 });
 
+// Logout route (accessible regardless of staff role/expired auth so users can always log out cleanly)
+Route::post('/staff/logout', [StaffController::class, 'logout'])->name('staff.logout');
+Route::get('/staff/logout', function () {
+    return auth()->check() && auth()->user()->isStaff()
+        ? redirect()->route('staff.dashboard')
+        : redirect()->route('public.index');
+});
+
 Route::middleware(['auth', 'staff'])->group(function () {
     Route::get('/staff/dashboard', [DashboardController::class, 'index'])->name('staff.dashboard');
     Route::get('/staff/anatomy', [DashboardController::class, 'anatomy'])->name('staff.anatomy');
-    Route::post('/staff/logout', [StaffController::class, 'logout'])->name('staff.logout');
 
     // AI Chat Assistant (available to all staff)
     Route::post('/staff/ai-chat', [\App\Http\Controllers\Staff\AiChatController::class, 'send'])->name('staff.ai-chat');

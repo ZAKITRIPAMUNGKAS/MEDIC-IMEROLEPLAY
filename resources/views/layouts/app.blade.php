@@ -30,11 +30,11 @@
     <link rel="stylesheet" href="{{ asset('css/font-awesome.min.css') }}?v=v2_{{ time() }}">
 
     <script>
-        // Auto-purge stale service worker caches (e.g. ime-medis-cache-v1)
+        // Auto-purge stale service worker caches (e.g. ime-medis-cache-v1/v2)
         if ('caches' in window) {
             caches.keys().then(function(names) {
                 names.forEach(function(name) {
-                    if (name !== 'ime-medis-cache-v2') {
+                    if (name !== 'ime-medis-cache-v3') {
                         caches.delete(name);
                     }
                 });
@@ -3672,7 +3672,7 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register("{{ asset('sw.js') }}?v={{ time() }}")
+                navigator.serviceWorker.register("{{ asset('sw.js') }}?v=3")
                     .then(reg => console.log('PWA ServiceWorker registered:', reg.scope))
                     .catch(err => console.error('PWA ServiceWorker error:', err));
             });

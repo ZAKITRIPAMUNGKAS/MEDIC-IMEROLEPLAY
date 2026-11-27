@@ -3,16 +3,12 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
+use Illuminate\Session\TokenMismatchException;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\EnsureUserIsStaff;
-use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use Illuminate\Session\Middleware\StartSession;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
-use Illuminate\Auth\Middleware\Authenticate;
-use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -25,15 +21,19 @@ return Application::configure(basePath: dirname(__DIR__))
         // Trust reverse proxies (e.g. Cloudflare, CDN, reverse proxies) to detect real visitor IP & mitigate DDoS
         $middleware->trustProxies(at: '*', headers: SymfonyRequest::HEADER_X_FORWARDED_FOR | SymfonyRequest::HEADER_X_FORWARDED_HOST | SymfonyRequest::HEADER_X_FORWARDED_PORT | SymfonyRequest::HEADER_X_FORWARDED_PROTO);
 
-        // Web group to enable cookies, sessions, errors and CSRF
+        // Append custom web middleware (Laravel already includes cookie encryption, session, errors, and CSRF)
         $middleware->web(append: [
-            EncryptCookies::class,
-            AddQueuedCookiesToResponse::class,
-            StartSession::class,
-            ShareErrorsFromSession::class,
-            VerifyCsrfToken::class,
             \App\Http\Middleware\UpdateLastSeen::class,
         ]);
+
+        // Redirect authenticated staff away from guest routes to staff.dashboard
+        $middleware->redirectUsersTo(function () {
+            $user = auth()->user();
+
+            return ($user && method_exists($user, 'isStaff') && $user->isStaff())
+                ? route('staff.dashboard')
+                : route('public.index');
+        });
 
         // API group untuk middleware khusus API
         $middleware->api(append: [
@@ -43,8 +43,6 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Common aliases
         $middleware->alias([
-            'auth' => Authenticate::class,
-            'guest' => RedirectIfAuthenticated::class,
             'admin' => EnsureUserIsAdmin::class,
             'staff' => EnsureUserIsStaff::class,
             'permission' => \App\Http\Middleware\CheckPermission::class,
@@ -55,5 +53,72 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $handleTokenMismatch = function (Request $request) {
+            \Log::warning('419 Page Expired handled', [
+                'url' => $request->url(),
+                'method' => $request->method(),
+                'ip' => $request->ip(),
+                'user_id' => auth()->id(),
+            ]);
+
+            if ($request->hasSession()) {
+                $request->session()->regenerateToken();
+            }
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'Session telah berakhir. Silakan refresh halaman dan coba lagi.',
+                    'error' => 'TOKEN_MISMATCH',
+                    'csrf_token' => csrf_token(),
+                ], 419);
+            }
+
+            if ($request->is('staff/logout')) {
+                if (!auth()->check()) {
+                    return redirect()->route('public.index');
+                }
+
+                return redirect()->route('staff.dashboard')
+                    ->with('error', 'Sesi halaman kedaluwarsa. Silakan klik tombol keluar lagi.');
+            }
+
+            if ($request->is('staff/login') || $request->is('login')) {
+                return redirect()->route('staff.login')
+                    ->with('error', 'Sesi halaman login telah berakhir. Silakan coba login kembali.')
+                    ->withInput($request->except('_token', 'password'));
+            }
+
+            if ($request->is('staff/register')) {
+                return redirect()->route('staff.register')
+                    ->with('error', 'Sesi halaman registrasi telah berakhir. Silakan coba daftar kembali.')
+                    ->withInput($request->except('_token', 'password', 'password_confirmation'));
+            }
+
+            if (str_contains($request->url(), 'clock-out')) {
+                return redirect()->back()
+                    ->with('error', 'Session telah berakhir. Silakan refresh halaman dan coba clock out lagi.')
+                    ->withInput($request->except('_token', 'password'));
+            }
+
+            if (auth()->check()) {
+                return redirect()->route('staff.dashboard')
+                    ->with('error', 'Session halaman telah berakhir. Silakan coba lagi.');
+            }
+
+            return redirect()->route('staff.login')
+                ->with('error', 'Session telah berakhir. Silakan login kembali.')
+                ->withInput($request->except('_token', 'password', 'password_confirmation'));
+        };
+
+        $exceptions->render(function (TokenMismatchException $e, Request $request) use ($handleTokenMismatch) {
+            return $handleTokenMismatch($request);
+        });
+
+        $exceptions->render(function (HttpExceptionInterface $e, Request $request) use ($handleTokenMismatch) {
+            if ($e->getStatusCode() === 419) {
+                return $handleTokenMismatch($request);
+            }
+
+            return null;
+        });
     })->create();

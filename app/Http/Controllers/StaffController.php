@@ -45,10 +45,14 @@ class StaffController extends Controller
         $allowedRoles = ['trainee', 'perawat'];
         $roles = StaffRole::whereIn('name', $allowedRoles)->orderBy('level', 'asc')->get();
 
-        return view('auth.portal', [
-            'mode' => 'login',
-            'roles' => $roles
-        ]);
+        return response()
+            ->view('auth.portal', [
+                'mode' => 'login',
+                'roles' => $roles
+            ])
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     public function login(Request $request)
@@ -149,12 +153,19 @@ class StaffController extends Controller
         // Webhook logout sebelum session direset
         // Webhook system removed for better performance
 
-        Auth::logout();
+        if (Auth::check()) {
+            Auth::logout();
+        }
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        if ($request->hasSession()) {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
 
-        return redirect()->route('public.index');
+        return redirect()
+            ->route('public.index')
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache');
     }
 
     public function showRegisterForm()
@@ -164,7 +175,15 @@ class StaffController extends Controller
         $roles = StaffRole::whereIn('name', $allowedRoles)
             ->orderBy('level', 'asc')
             ->get();
-        return view('auth.portal', compact('roles'))->with('mode', 'register');
+
+        return response()
+            ->view('auth.portal', [
+                'roles' => $roles,
+                'mode' => 'register',
+            ])
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', '0');
     }
 
     public function register(Request $request)
