@@ -90,7 +90,7 @@
                             </div>
                             <div class="flex items-center gap-2">
                                 @if($canManagePrograms)
-                                <button type="button" onclick="openEditProgramModal({{ json_encode($t) }})"
+                                <button type="button" data-program="{{ json_encode($t) }}" onclick="openEditProgramModal(this)"
                                         class="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-[10px] font-bold flex items-center gap-1 transition-all shadow-sm"
                                         title="Ubah Jadwal & Tanggal Pelatihan">
                                     <i class="fas fa-calendar-alt text-amber-400"></i> Edit Jadwal
@@ -350,7 +350,10 @@
         </div>
 
         <script>
-            function openEditProgramModal(program) {
+            function openEditProgramModal(buttonOrProgram) {
+                const program = buttonOrProgram instanceof HTMLElement
+                    ? JSON.parse(buttonOrProgram.dataset.program || '{}')
+                    : buttonOrProgram;
                 const modal = document.getElementById('editProgramModal');
                 const form = document.getElementById('editProgramForm');
                 if (!modal || !form) return;

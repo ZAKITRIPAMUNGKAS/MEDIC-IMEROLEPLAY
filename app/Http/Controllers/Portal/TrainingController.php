@@ -101,6 +101,7 @@ class TrainingController extends Controller
         $defaultName = $user->name ?? '';
         $defaultPhone = $user->phone_number ?? '';
         $defaultRole = $user->role?->display_name ?? $user->role?->name ?? '';
+        $program = TrainingProgram::getProgram($normalizedType);
 
         return view('portal.training.form', compact(
             'normalizedType',
@@ -110,7 +111,8 @@ class TrainingController extends Controller
             'batches',
             'defaultName',
             'defaultPhone',
-            'defaultRole'
+            'defaultRole',
+            'program'
         ));
     }
 
@@ -121,6 +123,12 @@ class TrainingController extends Controller
     {
         $normalizedType = $this->normalizeType($type);
         $user = Auth::user();
+        $program = TrainingProgram::getProgram($normalizedType);
+
+        if ($program && !($program['is_active'] ?? true)) {
+            return redirect()->route('portal.training.index')
+                ->with('error', 'Pendaftaran untuk pelatihan ini sedang ditutup.');
+        }
 
         // Validation rules per training type
         if ($normalizedType === TrainingApplication::TYPE_OPERASI) {

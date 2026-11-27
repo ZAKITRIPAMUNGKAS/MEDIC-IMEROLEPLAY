@@ -1,24 +1,13 @@
 @extends('layouts.app')
 
 @php
-    $formTitles = [
-        'operasi'              => 'FORMULIR PENDAFTARAN PELATIHAN OPERASI FASE XIII',
-        'surat_menyurat'       => 'Formulir Pendaftaran Surat Menyurat',
-        'visum_hidup'          => 'PENDAFTARAN PELATIHAN VISUM HIDUP',
-        'rekam_medis'          => 'PENDAFTARAN PELATIHAN REKAM MEDIS',
-        'pemulsaran_jenazah'   => 'PENDAFTARAN PELATIHAN PEMULSARAN JENAZAH',
-    ];
+    $activeProgram = $program ?? \App\Models\TrainingProgram::getProgram($normalizedType) ?? [];
 
-    $formDescriptions = [
-        'operasi'             => 'Pendaftaran Pelatihan Operasi dibuka pada 5–7 September 2026. Kegiatan pelatihan akan dilaksanakan pada 8 September 2026 oleh Department People & Development bagian MOT (Medical of Trainer) sebagai upaya meningkatkan pengetahuan dan keterampilan peserta terkait prosedur operasi dan keselamatan pasien.',
-        'surat_menyurat'      => '(Minimal Co-Ass) Pelatihan tata naskah dinas, penulisan surat resmi, dan korespondensi internal maupun eksternal IME Medical Center.',
-        'visum_hidup'         => 'PELATIHAN VISUM HIDUP yang diselenggarakan oleh Medical Science & Laboratory bersama People & Development Department – IME Medical Center. Semua Dokter Umum WAJIB mengikuti dan opsional bagi dokter spesialis, nanti yang sudah ikut pelatihan bakal dapat sertifikat dan yang tidak mengikuti di periode sekarang wajib mengikuti di periode berikutnya bareng dengan dokter baru, Terimakasih',
-        'rekam_medis'         => 'Pelatihan Rekam Medis diselenggarakan oleh divisi Medical Science & Laboratory (MSL) IME Medical Center. Pelatihan ini mencakup tata cara pengisian rekam medis, pengarsipan data klinis pasien, dan standar dokumentasi medis sesuai prosedur rumah sakit.',
-        'pemulsaran_jenazah'  => 'Pelatihan Pemulsaran Jenazah diselenggarakan oleh Divisi People & Development IME Medical Center. Peserta akan mempelajari prosedur penanganan jenazah secara profesional sesuai dengan standar medis dan etika yang berlaku.',
-    ];
-
-    $currentTitle = $formTitles[$normalizedType] ?? 'Formulir Pendaftaran Pelatihan';
-    $currentDesc  = $formDescriptions[$normalizedType] ?? '';
+    $currentTitle     = $activeProgram['title'] ?? 'Formulir Pendaftaran Pelatihan';
+    $currentDesc      = $activeProgram['desc'] ?? '';
+    $currentOrganizer = $activeProgram['organizer'] ?? 'Divisi PND (People & Development)';
+    $currentBadge     = $activeProgram['badge'] ?? 'Divisi PND';
+    $isProgramActive  = $activeProgram['is_active'] ?? true;
 @endphp
 
 @section('title', $currentTitle . ' — IME Medical Center')
@@ -70,7 +59,7 @@
                     @elseif($normalizedType === 'pemulsaran_jenazah') text-amber-400
                     @else text-purple-400 @endif">
                     <i class="fas fa-shield-alt"></i>
-                    <span>Official Registration Form • Divisi PND</span>
+                    <span>Official Registration Form • {{ $currentOrganizer }}</span>
                 </div>
 
                 <h1 class="text-2xl sm:text-3xl font-black text-white leading-tight tracking-wide mb-3">
@@ -78,7 +67,7 @@
                 </h1>
 
                 <div class="text-sm text-white/70 leading-relaxed space-y-2 border-t border-white/10 pt-4">
-                    <p>{{ $currentDesc }}</p>
+                    <p>{!! nl2br(e($currentDesc)) !!}</p>
                 </div>
 
                 <div class="mt-4 pt-3 border-t border-white/5 flex flex-wrap items-center justify-between gap-2 text-xs text-white/50">
@@ -90,6 +79,19 @@
                 </div>
             </div>
         </div>
+
+        {{-- Closed Alert if inactive --}}
+        @if(!$isProgramActive)
+        <div class="mb-6 p-4 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-200 text-sm flex items-start gap-3 shadow-lg">
+            <div class="w-8 h-8 rounded-xl bg-rose-500/20 flex items-center justify-center shrink-0 text-rose-400 mt-0.5">
+                <i class="fas fa-lock text-base"></i>
+            </div>
+            <div>
+                <div class="font-bold text-rose-300">Pendaftaran Pelatihan Sedang Ditutup</div>
+                <div class="text-xs text-rose-200/80 mt-1">Formulir ini saat ini dinonaktifkan oleh pengelola pelatihan.</div>
+            </div>
+        </div>
+        @endif
 
         {{-- Main Submission Form --}}
         <form action="{{ route('portal.training.submit', $type) }}" method="POST" class="space-y-6">
@@ -302,20 +304,20 @@
                     <span>Kembali ke Beranda Pelatihan</span>
                 </a>
 
-                <button type="submit" class="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-sm tracking-wide text-white shadow-xl transition-all flex items-center justify-center gap-2.5
+                <button type="submit" @if(!$isProgramActive) disabled @endif class="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-sm tracking-wide text-white shadow-xl transition-all flex items-center justify-center gap-2.5 disabled:opacity-50 disabled:cursor-not-allowed
                     @if($normalizedType === 'operasi') bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-emerald-600/30
                     @elseif($normalizedType === 'surat_menyurat') bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-blue-600/30
                     @elseif($normalizedType === 'rekam_medis') bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 shadow-cyan-600/30
                     @elseif($normalizedType === 'pemulsaran_jenazah') bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 shadow-amber-600/30
                     @else bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 shadow-purple-600/30 @endif">
                     <i class="fas fa-paper-plane"></i>
-                    <span>Kirim Formulir Pendaftaran</span>
+                    <span>{{ $isProgramActive ? 'Kirim Formulir Pendaftaran' : 'Pendaftaran Ditutup' }}</span>
                 </button>
             </div>
 
             {{-- Footer Notes --}}
             <div class="text-center text-[11px] text-white/40 pt-4">
-                Formulir ini dikelola oleh <strong>Divisi People & Development (PND)</strong> IME Medical Center. Data yang Anda kirimkan akan diverifikasi oleh tim panitia.
+                Formulir ini dikelola oleh <strong>{{ $currentOrganizer }}</strong> IME Medical Center. Data yang Anda kirimkan akan diverifikasi oleh tim panitia.
             </div>
         </form>
 

@@ -115,50 +115,46 @@ class TrainingProgram extends Model
     {
         $defaults = self::defaultPrograms();
 
-        // 1. Try DB if table exists and accessible
-        try {
-            if (Schema::hasTable('training_programs')) {
-                $dbRecords = self::orderBy('sort_order')->get()->keyBy('key');
-                if ($dbRecords->isNotEmpty()) {
-                    $merged = [];
-                    foreach ($defaults as $k => $def) {
-                        if ($dbRecords->has($k)) {
-                            $rec = $dbRecords->get($k);
-                            $def['title']       = $rec->title ?? $def['title'];
-                            $def['short_title'] = $rec->short_title ?? $def['short_title'];
-                            $def['organizer']   = $rec->organizer ?? $def['organizer'];
-                            $def['desc']        = $rec->desc ?? $def['desc'];
-                            $def['requirement'] = $rec->requirement ?? ($def['requirement'] ?? null);
-                            $def['badge']       = $rec->badge ?? $def['badge'];
-                            $def['badge_color'] = $rec->badge_color ?? $def['badge_color'];
-                            $def['icon']        = $rec->icon ?? $def['icon'];
-                            $def['is_active']   = (bool) $rec->is_active;
-                        }
-                        $def['route'] = route('portal.training.form', $k);
-                        $merged[$k] = $def;
-                    }
-                    return array_values($merged);
-                }
-            }
-        } catch (\Throwable $e) {
-            // Fallback to JSON
-        }
-
-        // 2. Try JSON storage
+        // 1. Load JSON fallback overrides first if present
         $jsonPath = self::getJsonStoragePath();
         if (File::exists($jsonPath)) {
             try {
                 $json = json_decode(File::get($jsonPath), true);
                 if (is_array($json)) {
                     foreach ($json as $k => $item) {
-                        if (isset($defaults[$k])) {
-                            $defaults[$k] = array_merge($defaults[$k], $item);
+                        $normalizedKey = str_replace('_', '-', (string) $k);
+                        if (isset($defaults[$normalizedKey]) && is_array($item)) {
+                            $defaults[$normalizedKey] = array_merge($defaults[$normalizedKey], $item);
                         }
                     }
                 }
             } catch (\Throwable $e) {
                 // Ignore JSON error and keep defaults
             }
+        }
+
+        // 2. Overlay DB records if table exists and has entries
+        try {
+            if (Schema::hasTable('training_programs')) {
+                $dbRecords = self::orderBy('sort_order')->get()->keyBy('key');
+                foreach ($defaults as $k => $def) {
+                    if ($dbRecords->has($k)) {
+                        $rec = $dbRecords->get($k);
+                        $def['title']       = $rec->title ?? $def['title'];
+                        $def['short_title'] = $rec->short_title ?? $def['short_title'];
+                        $def['organizer']   = $rec->organizer ?? $def['organizer'];
+                        $def['desc']        = $rec->desc ?? $def['desc'];
+                        $def['requirement'] = $rec->requirement ?? ($def['requirement'] ?? null);
+                        $def['badge']       = $rec->badge ?? $def['badge'];
+                        $def['badge_color'] = $rec->badge_color ?? $def['badge_color'];
+                        $def['icon']        = $rec->icon ?? $def['icon'];
+                        $def['is_active']   = (bool) $rec->is_active;
+                        $defaults[$k]       = $def;
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            // Fallback to JSON/defaults
         }
 
         foreach ($defaults as $k => &$def) {
@@ -169,10 +165,26 @@ class TrainingProgram extends Model
     }
 
     /**
+     * Get a single training program by key (supports hyphen or underscore)
+     */
+    public static function getProgram(string $key): ?array
+    {
+        $normalizedKey = str_replace('_', '-', trim($key));
+        foreach (self::getAllPrograms() as $program) {
+            if (($program['key'] ?? null) === $normalizedKey) {
+                return $program;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Save / Update a program schedule by key
      */
     public static function saveProgram(string $key, array $data): bool
     {
+        $key = str_replace('_', '-', trim($key));
         $defaults = self::defaultPrograms();
         if (!isset($defaults[$key])) {
             return false;
