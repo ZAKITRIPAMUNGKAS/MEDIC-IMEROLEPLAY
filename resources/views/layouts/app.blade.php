@@ -2628,9 +2628,10 @@
                 return;
             }
 
-            // Skip forms that should submit normally (public forms with error handling)
+            // Skip forms that should submit normally (public forms with error handling or explicit opt-out)
             // These forms need to redirect normally to show flash messages
             if (form.id === 'medicalForm' ||
+                form.hasAttribute('data-no-ajax') ||
                 (form.action && form.action.includes('/form/submit')) ||
                 (form.action && form.action.includes('/staff/logout')) ||
                 (form.action && form.action.includes('clock-out'))) {
@@ -2640,6 +2641,11 @@
 
             if (form.method.toLowerCase() === 'post') {
                 e.preventDefault();
+
+                // Guard against rapid double/multiple clicks while request is in flight
+                if (form.dataset.submitting === '1') {
+                    return;
+                }
 
                 // Get action from data-action attribute first (more reliable), fallback to action attribute
                 let formAction = form.getAttribute('data-action') || form.getAttribute('action');
@@ -2651,6 +2657,28 @@
                     return;
                 }
 
+                form.dataset.submitting = '1';
+                const submitButtons = form.querySelectorAll('button[type="submit"], input[type="submit"]');
+                submitButtons.forEach(btn => btn.disabled = true);
+
+                const resetSubmittingState = function () {
+                    delete form.dataset.submitting;
+                    submitButtons.forEach(btn => btn.disabled = false);
+                };
+
+                const buildFormData = function () {
+                    let fd;
+                    try {
+                        fd = e.submitter ? new FormData(form, e.submitter) : new FormData(form);
+                    } catch (_) {
+                        fd = new FormData(form);
+                        if (e.submitter && e.submitter.name) {
+                            fd.append(e.submitter.name, e.submitter.value ?? '');
+                        }
+                    }
+                    return fd;
+                };
+
                 const originalSubmit = function () {
                     // Remove event listener to prevent infinite loop
                     form.removeEventListener('submit', originalSubmit);
@@ -2661,7 +2689,7 @@
                 fetch(formAction, {
                     method: 'POST',
                     credentials: 'same-origin', // Include cookies for same-origin requests
-                    body: new FormData(form),
+                    body: buildFormData(),
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
@@ -2676,7 +2704,8 @@
                                 // Retry submission
                                 return fetch(formAction, {
                                     method: 'POST',
-                                    body: new FormData(form),
+                                    credentials: 'same-origin',
+                                    body: buildFormData(),
                                     headers: {
                                         'X-Requested-With': 'XMLHttpRequest',
                                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
@@ -2702,9 +2731,7 @@
                                         window.location.href = data.redirect_url;
                                     } else if (data.message) {
                                         alert(data.message);
-                                        if (data.redirect_url) {
-                                            window.location.href = data.redirect_url;
-                                        }
+                                        resetSubmittingState();
                                     }
                                 } else {
                                     // Error response (status 422, 400, etc)
@@ -2717,6 +2744,7 @@
                                     }
                                     console.log('Showing error alert:', errorMessage);
                                     alert(errorMessage);
+                                    resetSubmittingState();
                                     // Don't redirect on error, let user fix the form
                                     return;
                                 }
@@ -2724,6 +2752,7 @@
                             }).catch(err => {
                                 console.error('Error parsing JSON:', err);
                                 alert('Terjadi kesalahan saat memproses response dari server.');
+                                resetSubmittingState();
                             });
                         } else {
                             // Regular form submission (HTML response)
@@ -2739,12 +2768,14 @@
                                 return response.text().then(text => {
                                     console.error('Form submission failed:', text);
                                     alert('Terjadi kesalahan saat mengirim form. Status: ' + response.status);
+                                    resetSubmittingState();
                                 });
                             }
                         }
                     })
                     .catch(error => {
                         console.error('Form submission error:', error);
+                        resetSubmittingState();
                         // Fallback to regular form submission
                         originalSubmit();
                     });

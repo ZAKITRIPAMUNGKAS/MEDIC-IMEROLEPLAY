@@ -94,7 +94,7 @@
         @endif
 
         {{-- Main Submission Form --}}
-        <form action="{{ route('portal.training.submit', $type) }}" method="POST" class="space-y-6">
+        <form id="trainingRegistrationForm" action="{{ route('portal.training.submit', $type) }}" method="POST" data-no-ajax="true" class="space-y-6">
             @csrf
 
             {{-- 1. NAMA IC --}}
@@ -304,7 +304,7 @@
                     <span>Kembali ke Beranda Pelatihan</span>
                 </a>
 
-                <button type="submit" @if(!$isProgramActive) disabled @endif class="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-sm tracking-wide text-white shadow-xl transition-all flex items-center justify-center gap-2.5 disabled:opacity-50 disabled:cursor-not-allowed
+                <button type="submit" id="trainingSubmitBtn" @if(!$isProgramActive) disabled @endif class="w-full sm:w-auto px-8 py-3.5 rounded-xl font-bold text-sm tracking-wide text-white shadow-xl transition-all flex items-center justify-center gap-2.5 disabled:opacity-50 disabled:cursor-not-allowed
                     @if($normalizedType === 'operasi') bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 shadow-emerald-600/30
                     @elseif($normalizedType === 'surat_menyurat') bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 shadow-blue-600/30
                     @elseif($normalizedType === 'rekam_medis') bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 shadow-cyan-600/30
@@ -323,4 +323,23 @@
 
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const regForm = document.getElementById('trainingRegistrationForm');
+        const submitBtn = document.getElementById('trainingSubmitBtn');
+        if (!regForm || !submitBtn) return;
+
+        let isSubmitting = false;
+        regForm.addEventListener('submit', function (e) {
+            if (isSubmitting) {
+                e.preventDefault();
+                return;
+            }
+            isSubmitting = true;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Mengirim Pendaftaran...</span>';
+        });
+    });
+</script>
 @endsection

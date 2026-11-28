@@ -190,8 +190,9 @@
         </div>
 
         {{-- Bulk Action & Table Form --}}
-        <form id="bulkForm" action="{{ route('portal.pnd.training.bulk') }}" method="POST">
+        <form id="bulkForm" action="{{ route('portal.pnd.training.bulk') }}" method="POST" data-no-ajax="true">
             @csrf
+            <input type="hidden" name="action" id="bulkActionInput" value="">
 
             {{-- Bulk Action Bar (Hidden by default, shown when items selected) --}}
             <div id="bulkActionBar" class="hidden mb-4 p-3 rounded-xl bg-slate-900/90 border border-emerald-500/30 flex flex-wrap items-center justify-between gap-3 shadow-xl">
@@ -200,13 +201,13 @@
                     <span><strong id="selectedCount" class="text-white">0</strong> data terpilih</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button type="submit" name="action" value="approve" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition-all flex items-center gap-1.5">
+                    <button type="submit" onclick="return submitBulkAction('approve')" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition-all flex items-center gap-1.5">
                         <i class="fas fa-check"></i> Setujui Terpilih
                     </button>
-                    <button type="submit" name="action" value="reject" class="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold transition-all flex items-center gap-1.5">
+                    <button type="submit" onclick="return submitBulkAction('reject')" class="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold transition-all flex items-center gap-1.5">
                         <i class="fas fa-times"></i> Tolak Terpilih
                     </button>
-                    <button type="submit" name="action" value="delete" onclick="return confirm('Apakah Anda yakin ingin menghapus data pendaftaran terpilih?')" class="px-3 py-1.5 rounded-lg bg-red-800/80 hover:bg-red-700 text-white text-xs font-semibold transition-all flex items-center gap-1.5">
+                    <button type="submit" onclick="return submitBulkAction('delete')" class="px-3 py-1.5 rounded-lg bg-red-800/80 hover:bg-red-700 text-white text-xs font-semibold transition-all flex items-center gap-1.5">
                         <i class="fas fa-trash"></i> Hapus
                     </button>
                 </div>
@@ -362,7 +363,9 @@
 
                                         {{-- Delete Button --}}
                                         <button type="button"
-                                                onclick="deleteItem({{ $item->id }}, '{{ addslashes($item->nama_ic) }}')"
+                                                data-delete-url="{{ route('portal.pnd.training.destroy', $item->id) }}"
+                                                data-item-name="{{ $item->nama_ic }}"
+                                                onclick="deleteItem(this)"
                                                 class="w-8 h-8 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 flex items-center justify-center transition-all text-xs shadow-sm"
                                                 title="Hapus Data">
                                             <i class="fas fa-trash-alt"></i>
@@ -386,7 +389,7 @@
 </div>
 
 {{-- Hidden Delete Form --}}
-<form id="deleteForm" method="POST" action="" class="hidden">
+<form id="deleteForm" method="POST" action="" data-no-ajax="true" class="hidden">
     @csrf
     @method('DELETE')
 </form>
@@ -404,7 +407,7 @@
             </button>
         </div>
 
-        <form id="reviewForm" method="POST" action="">
+        <form id="reviewForm" method="POST" action="" data-no-ajax="true">
             @csrf
             <div class="mb-4">
                 <div class="text-xs text-white/50">Peserta:</div>
@@ -719,11 +722,33 @@
         }, 200);
     }
 
+    // Bulk action helper (sets hidden action input reliably before native POST)
+    function submitBulkAction(action) {
+        const checkedCount = document.querySelectorAll('.item-checkbox:checked').length;
+        if (checkedCount === 0) {
+            alert('Pilih minimal 1 data pendaftaran terlebih dahulu.');
+            return false;
+        }
+        if (action === 'delete' && !confirm(`Apakah Anda yakin ingin menghapus ${checkedCount} data pendaftaran terpilih?`)) {
+            return false;
+        }
+        const actionInput = document.getElementById('bulkActionInput');
+        if (actionInput) {
+            actionInput.value = action;
+        }
+        return true;
+    }
+
     // Delete single item
-    function deleteItem(id, name) {
+    function deleteItem(btn) {
+        const url = btn?.dataset?.deleteUrl;
+        const name = btn?.dataset?.itemName || 'peserta ini';
+        if (!url) return;
+
         if (confirm(`Apakah Anda yakin ingin menghapus data pendaftaran "${name}"?`)) {
+            btn.disabled = true;
             const form = document.getElementById('deleteForm');
-            form.action = `/portal/pnd/training/${id}`;
+            form.action = url;
             form.submit();
         }
     }

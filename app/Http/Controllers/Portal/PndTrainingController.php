@@ -232,17 +232,17 @@ class PndTrainingController extends Controller
         $validated = $request->validate([
             'action' => 'required|in:approve,reject,delete',
             'ids'    => 'required|array|min:1',
-            'ids.*'  => 'integer|exists:training_applications,id',
+            'ids.*'  => 'integer',
             'notes'  => 'nullable|string|max:500',
         ]);
 
-        $ids    = $validated['ids'];
+        $ids    = array_values(array_unique(array_map('intval', $validated['ids'])));
         $action = $validated['action'];
         $notes  = $validated['notes'] ?? null;
 
         if ($action === 'delete') {
-            TrainingApplication::whereIn('id', $ids)->delete();
-            return back()->with('success', count($ids) . ' data pendaftaran berhasil dihapus.');
+            $deletedCount = TrainingApplication::whereIn('id', $ids)->delete();
+            return back()->with('success', $deletedCount . ' data pendaftaran berhasil dihapus.');
         }
 
         if ($action === 'approve') {
@@ -271,11 +271,16 @@ class PndTrainingController extends Controller
     /**
      * Delete application
      */
-    public function destroy(TrainingApplication $application)
+    public function destroy($application)
     {
         $this->checkIsPnd();
-        $name = $application->nama_ic;
-        $application->delete();
+        $record = TrainingApplication::find($application);
+        if (!$record) {
+            return back()->with('info', 'Data pendaftaran sudah dihapus sebelumnya.');
+        }
+
+        $name = $record->nama_ic;
+        $record->delete();
 
         return back()->with('success', "Data pendaftaran {$name} berhasil dihapus.");
     }

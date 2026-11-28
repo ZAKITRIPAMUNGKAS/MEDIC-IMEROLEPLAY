@@ -200,8 +200,66 @@ class LeaveRequestController extends Controller
         }
 
         $requests = $query->paginate(30)->withQueryString();
+        $canDeleteLeave = $this->canDeleteLeave($user);
 
-        return view('portal.leave.manage', compact('requests'));
+        return view('portal.leave.manage', compact('requests', 'canDeleteLeave'));
+    }
+
+    // ─── Divisi IE / Executive / Admin: Hapus Pengajuan Cuti ─────────────────
+
+    public function destroy(Request $request, $leave)
+    {
+        $this->checkCanDelete();
+
+        $user = Auth::user();
+        $record = LeaveRequest::with('user:id,name,hospital')->find($leave);
+        if (!$record) {
+            return redirect()->route('portal.leave.manage')
+                ->with('info', 'Data pengajuan cuti sudah dihapus sebelumnya.');
+        }
+
+        if (!$user->isAdmin()) {
+            $ownerHospital = strtolower(trim($record->user?->hospital ?? 'alta'));
+            $actorHospital = strtolower(trim($user->hospital ?? 'alta'));
+            if ($ownerHospital !== $actorHospital) {
+                abort(403, 'Anda tidak berwenang menghapus cuti lintas rumah sakit.');
+            }
+        }
+
+        $applicantName = $record->applicant_name ?? $record->user?->name ?? 'Staf';
+        $record->delete();
+
+        $redirectTo = $request->input('redirect_to') === 'manage'
+            ? redirect()->route('portal.leave.manage')
+            : back();
+
+        return $redirectTo->with('success', "Data pengajuan cuti milik {$applicantName} berhasil dihapus.");
+    }
+
+    public function bulkDestroy(Request $request)
+    {
+        $this->checkCanDelete();
+
+        $validated = $request->validate([
+            'ids'   => 'required|array|min:1',
+            'ids.*' => 'integer',
+        ], [
+            'ids.required' => 'Pilih minimal satu data cuti untuk dihapus.',
+            'ids.min'      => 'Pilih minimal satu data cuti untuk dihapus.',
+        ]);
+
+        $user = Auth::user();
+        $ids  = array_values(array_unique(array_map('intval', $validated['ids'])));
+
+        $query = LeaveRequest::whereIn('id', $ids);
+        if (!$user->isAdmin()) {
+            $actorHospital = $user->hospital ?? 'alta';
+            $query->whereHas('user', fn ($u) => $u->where('hospital', $actorHospital));
+        }
+
+        $deletedCount = $query->delete();
+
+        return back()->with('success', "{$deletedCount} data pengajuan cuti berhasil dihapus.");
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────
@@ -219,6 +277,22 @@ class LeaveRequestController extends Controller
         $user = Auth::user();
         if (!$user->isManagerOrAbove() && !$user->isInDivision('ie') && !$user->isAdmin()) {
             abort(403, 'Hanya Divisi IE dan Manajemen yang dapat mengelola dan menyetujui cuti.');
+        }
+    }
+
+    private function canDeleteLeave(?User $user): bool
+    {
+        if (!$user) {
+            return false;
+        }
+
+        return $user->isAdmin() || $user->isExecutiveOrAbove() || $user->isInDivision('ie');
+    }
+
+    private function checkCanDelete(): void
+    {
+        if (!$this->canDeleteLeave(Auth::user())) {
+            abort(403, 'Hanya Divisi IE, Executive, atau Admin yang berwenang menghapus data cuti.');
         }
     }
 }

@@ -46,6 +46,13 @@
             </div>
         @endif
 
+        @if(session('info'))
+            <div class="bg-sky-500/20 border border-sky-500/40 rounded-xl px-4 py-3 text-sky-200 text-sm flex items-center gap-2 shadow-lg">
+                <i class="fas fa-info-circle text-sky-400"></i>
+                <span>{{ session('info') }}</span>
+            </div>
+        @endif
+
         {{-- Status Filter Tabs --}}
         <div class="flex flex-wrap items-center gap-2">
             @php $currentStatus = request('status', ''); @endphp
@@ -67,12 +74,38 @@
             </a>
         </div>
 
+        @php
+            $canDeleteLeave = $canDeleteLeave ?? (auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('ie'));
+        @endphp
+
         {{-- Tabel Pengajuan Cuti --}}
+        @if($canDeleteLeave)
+        <form id="leaveBulkDeleteForm" method="POST" action="{{ route('portal.leave.bulk-destroy') }}" data-no-ajax="true">
+            @csrf
+            <div id="leaveBulkActionBar" class="hidden mb-4 p-3 rounded-xl bg-slate-900/90 border border-rose-500/30 flex flex-wrap items-center justify-between gap-3 shadow-xl">
+                <div class="flex items-center gap-2 text-xs text-white/80">
+                    <i class="fas fa-check-double text-rose-400"></i>
+                    <span><strong id="leaveSelectedCount" class="text-white">0</strong> data cuti terpilih</span>
+                </div>
+                <button type="submit"
+                        onclick="return confirm('Apakah Anda yakin ingin menghapus semua data cuti yang dipilih?')"
+                        class="px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold transition-all flex items-center gap-1.5 shadow-md">
+                    <i class="fas fa-trash-alt"></i> Hapus Cuti Terpilih
+                </button>
+            </div>
+        </form>
+        @endif
+
         <div class="glass-effect rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
             <div class="overflow-x-auto w-full">
                 <table class="w-full text-sm divide-y divide-white/10" style="display: table !important; min-width: 800px;">
                     <thead>
                         <tr class="bg-white/5 border-b border-white/10 text-slate-300 text-xs font-semibold uppercase tracking-wider">
+                            @if($canDeleteLeave)
+                            <th class="px-4 py-4 w-10 text-center">
+                                <input type="checkbox" id="leaveSelectAll" class="w-4 h-4 rounded bg-white/10 border-white/20 text-rose-500 focus:ring-0 cursor-pointer">
+                            </th>
+                            @endif
                             <th class="px-5 py-4 text-left">Pemohon</th>
                             <th class="px-5 py-4 text-left">Periode Cuti</th>
                             <th class="px-5 py-4 text-center">Durasi</th>
@@ -84,6 +117,11 @@
                     <tbody class="divide-y divide-white/5 text-slate-200">
                         @forelse($requests as $req)
                         <tr class="hover:bg-white/5 transition-colors">
+                            @if($canDeleteLeave)
+                            <td class="px-4 py-4 text-center">
+                                <input type="checkbox" form="leaveBulkDeleteForm" name="ids[]" value="{{ $req->id }}" class="leave-item-checkbox w-4 h-4 rounded bg-white/10 border-white/20 text-rose-500 focus:ring-0 cursor-pointer">
+                            </td>
+                            @endif
                             <td class="px-5 py-4">
                                 <div class="flex items-center gap-3">
                                     <div class="w-9 h-9 rounded-full bg-gradient-to-br from-rose-500/30 to-amber-500/30 border border-white/20 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
@@ -154,12 +192,23 @@
                                             <i class="fas fa-times mr-1"></i> Tolak
                                         </button>
                                     @endif
+
+                                    @if($canDeleteLeave)
+                                        <button type="button"
+                                                data-delete-url="{{ route('portal.leave.destroy', $req) }}"
+                                                data-applicant-name="{{ $req->applicant_name ?? $req->user?->name ?? 'Staf' }}"
+                                                onclick="deleteLeaveItem(this)"
+                                                class="px-2.5 py-1.5 rounded-lg bg-red-500/20 hover:bg-red-600 text-red-300 hover:text-white border border-red-500/30 text-xs font-semibold transition-all"
+                                                title="Hapus Data Cuti">
+                                            <i class="fas fa-trash-alt mr-1"></i> Hapus
+                                        </button>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="px-5 py-10 text-center text-slate-400">
+                            <td colspan="{{ $canDeleteLeave ? 7 : 6 }}" class="px-5 py-10 text-center text-slate-400">
                                 <i class="fas fa-inbox text-3xl mb-2 text-slate-500 block"></i>
                                 Tidak ada data pengajuan cuti yang ditemukan.
                             </td>
@@ -178,6 +227,12 @@
             </div>
             @endif
         </div>
+        @if($canDeleteLeave)
+        <form id="leaveDeleteForm" method="POST" action="" data-no-ajax="true" class="hidden">
+            @csrf
+            @method('DELETE')
+        </form>
+        @endif
 
     </div>
 </div>
@@ -233,5 +288,52 @@ function closeRejectModal() {
     const modal = document.getElementById('rejectModal');
     modal.classList.add('hidden');
 }
+
+function deleteLeaveItem(btn) {
+    const url = btn?.dataset?.deleteUrl;
+    const name = btn?.dataset?.applicantName || 'staf ini';
+    if (!url) return;
+
+    if (confirm(`Apakah Anda yakin ingin menghapus data pengajuan cuti milik "${name}"?`)) {
+        btn.disabled = true;
+        const form = document.getElementById('leaveDeleteForm');
+        form.action = url;
+        form.submit();
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const selectAll = document.getElementById('leaveSelectAll');
+    const checkboxes = document.querySelectorAll('.leave-item-checkbox');
+    const bulkBar = document.getElementById('leaveBulkActionBar');
+    const countEl = document.getElementById('leaveSelectedCount');
+
+    function updateLeaveBulkBar() {
+        if (!bulkBar || !countEl) return;
+        const count = document.querySelectorAll('.leave-item-checkbox:checked').length;
+        if (count > 0) {
+            bulkBar.classList.remove('hidden');
+            countEl.textContent = count;
+        } else {
+            bulkBar.classList.add('hidden');
+        }
+    }
+
+    if (selectAll) {
+        selectAll.addEventListener('change', function () {
+            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+            updateLeaveBulkBar();
+        });
+    }
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', function () {
+            updateLeaveBulkBar();
+            if (!this.checked && selectAll) {
+                selectAll.checked = false;
+            }
+        });
+    });
+});
 </script>
 @endsection

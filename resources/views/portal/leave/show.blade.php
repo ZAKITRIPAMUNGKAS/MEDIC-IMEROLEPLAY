@@ -109,6 +109,21 @@
                 </form>
             </div>
             @endif
+            {{-- Hapus Cuti (Divisi IE / Executive / Admin) --}}
+            @if(auth()->user()->isAdmin() || auth()->user()->isExecutiveOrAbove() || auth()->user()->isInDivision('ie'))
+            <div class="px-6 py-4 border-t border-white/10 bg-white/[0.03] flex justify-end">
+                <form method="POST" action="{{ route('portal.leave.destroy', $leave) }}" data-no-ajax="true"
+                      onsubmit="return confirm('Apakah Anda yakin ingin menghapus data pengajuan cuti ini?')">
+                    @csrf
+                    @method('DELETE')
+                    <input type="hidden" name="redirect_to" value="manage">
+                    <button type="submit"
+                            class="px-4 py-2 bg-red-500/20 hover:bg-red-600 text-red-300 hover:text-white font-semibold rounded-xl border border-red-500/30 transition-all text-xs flex items-center gap-1.5">
+                        <i class="fas fa-trash-alt"></i> Hapus Data Cuti
+                    </button>
+                </form>
+            </div>
+            @endif
         </div>
     </div>
 </div>

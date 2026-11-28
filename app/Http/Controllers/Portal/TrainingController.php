@@ -7,6 +7,7 @@ use App\Models\TrainingProgram;
 use App\Models\TrainingApplication;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class TrainingController extends Controller
 {
@@ -130,152 +131,179 @@ class TrainingController extends Controller
                 ->with('error', 'Pendaftaran untuk pelatihan ini sedang ditutup.');
         }
 
-        // Validation rules per training type
-        if ($normalizedType === TrainingApplication::TYPE_OPERASI) {
-            $validated = $request->validate([
-                'nama_ic' => ['required', 'string', 'max:255'],
-                'gender'  => ['required', 'string', 'in:Laki-laki,Perempuan,Laki-Laki'],
-                'batch'   => ['required', 'string', 'max:50'],
-            ], [
-                'nama_ic.required' => 'NAMA IC wajib diisi.',
-                'gender.required'  => 'JENIS KELAMIN wajib dipilih.',
-                'batch.required'   => 'BATCH wajib dipilih.',
-            ]);
+        $config = $this->formConfigForType($normalizedType);
+        $validated = $request->validate($config['rules'], $config['messages']);
 
-            // Normalize gender to 'Laki-laki' or 'Perempuan'
-            $gender = (strcasecmp($validated['gender'], 'laki-laki') === 0) ? 'Laki-laki' : 'Perempuan';
+        $gender = (strcasecmp($validated['gender'], 'laki-laki') === 0)
+            ? $config['male_label']
+            : 'Perempuan';
+        $batch = trim($validated['batch']);
 
-            TrainingApplication::create([
+        $lock = Cache::lock("training_submit_{$user->id}_{$normalizedType}", 10);
+
+        try {
+            if (!$lock->get()) {
+                return $this->duplicateSubmissionResponse(
+                    $request,
+                    'Pengiriman sedang diproses. Mohon tunggu sebentar dan tidak menekan tombol kirim berulang kali.'
+                );
+            }
+
+            // Prevent duplicate pending registration for the same training + batch or rapid double submission
+            $existingDuplicate = TrainingApplication::where('user_id', $user->id)
+                ->where('training_type', $normalizedType)
+                ->where(function ($q) use ($batch) {
+                    $q->where(function ($pendingQ) use ($batch) {
+                        $pendingQ->where('status', TrainingApplication::STATUS_PENDING)
+                            ->whereRaw('LOWER(TRIM(batch)) = ?', [mb_strtolower($batch)]);
+                    })->orWhere('created_at', '>=', now()->subSeconds(15));
+                })
+                ->exists();
+
+            if ($existingDuplicate) {
+                return $this->duplicateSubmissionResponse(
+                    $request,
+                    'Anda sudah memiliki pendaftaran yang masih menunggu review untuk pelatihan dan batch ini. Tidak perlu mengirim ulang.'
+                );
+            }
+
+            $payload = [
                 'user_id'       => $user->id,
                 'training_type' => $normalizedType,
                 'nama_ic'       => trim($validated['nama_ic']),
                 'gender'        => $gender,
-                'batch'         => trim($validated['batch']),
+                'batch'         => $batch,
                 'status'        => TrainingApplication::STATUS_PENDING,
-            ]);
+            ];
 
-            return redirect()->route('portal.training.index')
-                ->with('success', 'Pendaftaran Pelatihan Operasi berhasil dikirim! Silakan menunggu verifikasi dari Divisi PND.');
+            if (array_key_exists('phone_ic', $validated)) {
+                $payload['phone_ic'] = trim($validated['phone_ic']);
+            }
+            if (array_key_exists('jabatan', $validated)) {
+                $payload['jabatan'] = trim($validated['jabatan']);
+            }
 
-        } elseif ($normalizedType === TrainingApplication::TYPE_SURAT_MENYURAT) {
-            $validated = $request->validate([
-                'nama_ic'  => ['required', 'string', 'max:255'],
-                'gender'   => ['required', 'string', 'in:Laki-Laki,Laki-laki,Perempuan'],
-                'phone_ic' => ['required', 'string', 'max:50'],
-                'jabatan'  => ['required', 'string', 'in:Co-Ass,Dokter,Dokter Spesialis'],
-                'batch'    => ['required', 'string', 'max:50'],
-            ], [
-                'nama_ic.required'  => 'Nama (IC) wajib diisi.',
-                'gender.required'   => 'Jenis Kelamin wajib dipilih.',
-                'phone_ic.required' => 'Nomor Telepon (IC) wajib diisi.',
-                'jabatan.required'  => 'Jabatan Saat Ini wajib dipilih.',
-                'batch.required'    => 'BATCH wajib dipilih.',
-            ]);
-
-            $gender = (strcasecmp($validated['gender'], 'laki-laki') === 0) ? 'Laki-Laki' : 'Perempuan';
-
-            TrainingApplication::create([
-                'user_id'       => $user->id,
-                'training_type' => $normalizedType,
-                'nama_ic'       => trim($validated['nama_ic']),
-                'gender'        => $gender,
-                'phone_ic'      => trim($validated['phone_ic']),
-                'jabatan'       => trim($validated['jabatan']),
-                'batch'         => trim($validated['batch']),
-                'status'        => TrainingApplication::STATUS_PENDING,
-            ]);
-
-            return redirect()->route('portal.training.index')
-                ->with('success', 'Pendaftaran Pelatihan Surat Menyurat berhasil dikirim! Divisi PND akan memverifikasi berkas Anda.');
-
-        } elseif ($normalizedType === TrainingApplication::TYPE_VISUM_HIDUP) {
-            $validated = $request->validate([
-                'nama_ic'  => ['required', 'string', 'max:255'],
-                'gender'   => ['required', 'string', 'in:Laki-Laki,Laki-laki,Perempuan'],
-                'phone_ic' => ['required', 'string', 'max:50'],
-                'jabatan'  => ['required', 'string', 'in:Dokter Umum,Dokter Spesialis'],
-                'batch'    => ['required', 'string', 'max:50'],
-            ], [
-                'nama_ic.required'  => 'NAMA (IC) wajib diisi.',
-                'gender.required'   => 'Jenis Kelamin wajib dipilih.',
-                'phone_ic.required' => 'Nomor Telepon (IC) wajib diisi.',
-                'jabatan.required'  => 'Jabatan Saat Ini wajib dipilih.',
-                'batch.required'    => 'BATCH wajib dipilih.',
-            ]);
-
-            $gender = (strcasecmp($validated['gender'], 'laki-laki') === 0) ? 'Laki-Laki' : 'Perempuan';
-
-            TrainingApplication::create([
-                'user_id'       => $user->id,
-                'training_type' => $normalizedType,
-                'nama_ic'       => trim($validated['nama_ic']),
-                'gender'        => $gender,
-                'phone_ic'      => trim($validated['phone_ic']),
-                'jabatan'       => trim($validated['jabatan']),
-                'batch'         => trim($validated['batch']),
-                'status'        => TrainingApplication::STATUS_PENDING,
-            ]);
-
-            return redirect()->route('portal.training.index')
-                ->with('success', 'Pendaftaran Pelatihan Visum Hidup berhasil dikirim! Silakan menunggu konfirmasi dari Divisi PND.');
-
-        } elseif ($normalizedType === TrainingApplication::TYPE_REKAM_MEDIS) {
-            $validated = $request->validate([
-                'nama_ic'  => ['required', 'string', 'max:255'],
-                'gender'   => ['required', 'string', 'in:Laki-Laki,Laki-laki,Perempuan'],
-                'phone_ic' => ['required', 'string', 'max:50'],
-                'batch'    => ['required', 'string', 'max:50'],
-            ], [
-                'nama_ic.required'  => 'NAMA (IC) wajib diisi.',
-                'gender.required'   => 'Jenis Kelamin wajib dipilih.',
-                'phone_ic.required' => 'Nomor Telepon (IC) wajib diisi.',
-                'batch.required'    => 'BATCH wajib dipilih.',
-            ]);
-
-            $gender = (strcasecmp($validated['gender'], 'laki-laki') === 0) ? 'Laki-Laki' : 'Perempuan';
-
-            TrainingApplication::create([
-                'user_id'       => $user->id,
-                'training_type' => $normalizedType,
-                'nama_ic'       => trim($validated['nama_ic']),
-                'gender'        => $gender,
-                'phone_ic'      => trim($validated['phone_ic']),
-                'batch'         => trim($validated['batch']),
-                'status'        => TrainingApplication::STATUS_PENDING,
-            ]);
-
-            return redirect()->route('portal.training.index')
-                ->with('success', 'Pendaftaran Pelatihan Rekam Medis berhasil dikirim! Silakan menunggu konfirmasi dari Divisi PND.');
-
-        } elseif ($normalizedType === TrainingApplication::TYPE_PEMULSARAN_JENAZAH) {
-            $validated = $request->validate([
-                'nama_ic'  => ['required', 'string', 'max:255'],
-                'gender'   => ['required', 'string', 'in:Laki-Laki,Laki-laki,Perempuan'],
-                'phone_ic' => ['required', 'string', 'max:50'],
-                'batch'    => ['required', 'string', 'max:50'],
-            ], [
-                'nama_ic.required'  => 'NAMA (IC) wajib diisi.',
-                'gender.required'   => 'Jenis Kelamin wajib dipilih.',
-                'phone_ic.required' => 'Nomor Telepon (IC) wajib diisi.',
-                'batch.required'    => 'BATCH wajib dipilih.',
-            ]);
-
-            $gender = (strcasecmp($validated['gender'], 'laki-laki') === 0) ? 'Laki-Laki' : 'Perempuan';
-
-            TrainingApplication::create([
-                'user_id'       => $user->id,
-                'training_type' => $normalizedType,
-                'nama_ic'       => trim($validated['nama_ic']),
-                'gender'        => $gender,
-                'phone_ic'      => trim($validated['phone_ic']),
-                'batch'         => trim($validated['batch']),
-                'status'        => TrainingApplication::STATUS_PENDING,
-            ]);
-
-            return redirect()->route('portal.training.index')
-                ->with('success', 'Pendaftaran Pelatihan Pemulsaran Jenazah berhasil dikirim! Silakan menunggu konfirmasi dari Divisi PND.');
+            TrainingApplication::create($payload);
+        } finally {
+            optional($lock)->release();
         }
 
-        abort(400, 'Tipe pelatihan tidak valid.');
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $config['success_message'],
+                'redirect_url' => route('portal.training.index'),
+            ]);
+        }
+
+        return redirect()->route('portal.training.index')
+            ->with('success', $config['success_message']);
+    }
+
+    private function duplicateSubmissionResponse(Request $request, string $message)
+    {
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => $message,
+            ], 422);
+        }
+
+        return redirect()->route('portal.training.index')
+            ->with('error', $message);
+    }
+
+    private function formConfigForType(string $normalizedType): array
+    {
+        $configs = [
+            TrainingApplication::TYPE_OPERASI => [
+                'rules' => [
+                    'nama_ic' => ['required', 'string', 'max:255'],
+                    'gender'  => ['required', 'string', 'in:Laki-laki,Perempuan,Laki-Laki'],
+                    'batch'   => ['required', 'string', 'max:50'],
+                ],
+                'messages' => [
+                    'nama_ic.required' => 'NAMA IC wajib diisi.',
+                    'gender.required'  => 'JENIS KELAMIN wajib dipilih.',
+                    'batch.required'   => 'BATCH wajib dipilih.',
+                ],
+                'male_label' => 'Laki-laki',
+                'success_message' => 'Pendaftaran Pelatihan Operasi berhasil dikirim! Silakan menunggu verifikasi dari Divisi PND.',
+            ],
+            TrainingApplication::TYPE_SURAT_MENYURAT => [
+                'rules' => [
+                    'nama_ic'  => ['required', 'string', 'max:255'],
+                    'gender'   => ['required', 'string', 'in:Laki-Laki,Laki-laki,Perempuan'],
+                    'phone_ic' => ['required', 'string', 'max:50'],
+                    'jabatan'  => ['required', 'string', 'in:Co-Ass,Dokter,Dokter Spesialis'],
+                    'batch'    => ['required', 'string', 'max:50'],
+                ],
+                'messages' => [
+                    'nama_ic.required'  => 'Nama (IC) wajib diisi.',
+                    'gender.required'   => 'Jenis Kelamin wajib dipilih.',
+                    'phone_ic.required' => 'Nomor Telepon (IC) wajib diisi.',
+                    'jabatan.required'  => 'Jabatan Saat Ini wajib dipilih.',
+                    'batch.required'    => 'BATCH wajib dipilih.',
+                ],
+                'male_label' => 'Laki-Laki',
+                'success_message' => 'Pendaftaran Pelatihan Surat Menyurat berhasil dikirim! Divisi PND akan memverifikasi berkas Anda.',
+            ],
+            TrainingApplication::TYPE_VISUM_HIDUP => [
+                'rules' => [
+                    'nama_ic'  => ['required', 'string', 'max:255'],
+                    'gender'   => ['required', 'string', 'in:Laki-Laki,Laki-laki,Perempuan'],
+                    'phone_ic' => ['required', 'string', 'max:50'],
+                    'jabatan'  => ['required', 'string', 'in:Dokter Umum,Dokter Spesialis'],
+                    'batch'    => ['required', 'string', 'max:50'],
+                ],
+                'messages' => [
+                    'nama_ic.required'  => 'NAMA (IC) wajib diisi.',
+                    'gender.required'   => 'Jenis Kelamin wajib dipilih.',
+                    'phone_ic.required' => 'Nomor Telepon (IC) wajib diisi.',
+                    'jabatan.required'  => 'Jabatan Saat Ini wajib dipilih.',
+                    'batch.required'    => 'BATCH wajib dipilih.',
+                ],
+                'male_label' => 'Laki-Laki',
+                'success_message' => 'Pendaftaran Pelatihan Visum Hidup berhasil dikirim! Silakan menunggu konfirmasi dari Divisi PND.',
+            ],
+            TrainingApplication::TYPE_REKAM_MEDIS => [
+                'rules' => [
+                    'nama_ic'  => ['required', 'string', 'max:255'],
+                    'gender'   => ['required', 'string', 'in:Laki-Laki,Laki-laki,Perempuan'],
+                    'phone_ic' => ['required', 'string', 'max:50'],
+                    'batch'    => ['required', 'string', 'max:50'],
+                ],
+                'messages' => [
+                    'nama_ic.required'  => 'NAMA (IC) wajib diisi.',
+                    'gender.required'   => 'Jenis Kelamin wajib dipilih.',
+                    'phone_ic.required' => 'Nomor Telepon (IC) wajib diisi.',
+                    'batch.required'    => 'BATCH wajib dipilih.',
+                ],
+                'male_label' => 'Laki-Laki',
+                'success_message' => 'Pendaftaran Pelatihan Rekam Medis berhasil dikirim! Silakan menunggu konfirmasi dari Divisi PND.',
+            ],
+            TrainingApplication::TYPE_PEMULSARAN_JENAZAH => [
+                'rules' => [
+                    'nama_ic'  => ['required', 'string', 'max:255'],
+                    'gender'   => ['required', 'string', 'in:Laki-Laki,Laki-laki,Perempuan'],
+                    'phone_ic' => ['required', 'string', 'max:50'],
+                    'batch'    => ['required', 'string', 'max:50'],
+                ],
+                'messages' => [
+                    'nama_ic.required'  => 'NAMA (IC) wajib diisi.',
+                    'gender.required'   => 'Jenis Kelamin wajib dipilih.',
+                    'phone_ic.required' => 'Nomor Telepon (IC) wajib diisi.',
+                    'batch.required'    => 'BATCH wajib dipilih.',
+                ],
+                'male_label' => 'Laki-Laki',
+                'success_message' => 'Pendaftaran Pelatihan Pemulsaran Jenazah berhasil dikirim! Silakan menunggu konfirmasi dari Divisi PND.',
+            ],
+        ];
+
+        if (!isset($configs[$normalizedType])) {
+            abort(400, 'Tipe pelatihan tidak valid.');
+        }
+
+        return $configs[$normalizedType];
     }
 }

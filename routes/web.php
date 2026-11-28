@@ -577,11 +577,13 @@ Route::middleware(['auth', 'alta_only'])->prefix('portal')->name('portal.')->gro
         Route::get('/public-list',[\App\Http\Controllers\Portal\LeaveRequestController::class, 'publicList'])->name('public-list');
         Route::get('/create',     [\App\Http\Controllers\Portal\LeaveRequestController::class, 'create'])->name('create');
         Route::post('/',          [\App\Http\Controllers\Portal\LeaveRequestController::class, 'store'])->name('store');
-        Route::get('/{leave}',    [\App\Http\Controllers\Portal\LeaveRequestController::class, 'show'])->name('show');
-        // Manager ke atas: manage all
+        // Manager ke atas / IE: manage all
         Route::get('/manage/all', [\App\Http\Controllers\Portal\LeaveRequestController::class, 'manage'])->name('manage');
+        Route::post('/manage/bulk-delete', [\App\Http\Controllers\Portal\LeaveRequestController::class, 'bulkDestroy'])->name('bulk-destroy');
+        Route::get('/{leave}',    [\App\Http\Controllers\Portal\LeaveRequestController::class, 'show'])->name('show');
         Route::post('/{leave}/approve', [\App\Http\Controllers\Portal\LeaveRequestController::class, 'approve'])->name('approve');
         Route::post('/{leave}/reject',  [\App\Http\Controllers\Portal\LeaveRequestController::class, 'reject'])->name('reject');
+        Route::delete('/{leave}',       [\App\Http\Controllers\Portal\LeaveRequestController::class, 'destroy'])->name('destroy');
     });
 
     // ── Pengajuan Resign (Semua Anggota; PND & IE untuk approval) ─────────────
